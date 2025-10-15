@@ -29,6 +29,10 @@ Strategie zur Einforderung eines angemessenen Anteils...
 
 See [SETUP.md](SETUP.md) for installation and configuration instructions.
 
+## Project Progress
+
+See [TODO.md](TODO.md) for current tasks and roadmap.
+
 ## License
 
 MIT
