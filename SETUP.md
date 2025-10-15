@@ -1,4 +1,9 @@
-# Quick Setup Guide
+# Setup Guide
+
+## Prerequisites
+
+- Go 1.21 or later
+- X API credentials (OAuth 1.0a User Context)
 
 ## 1. Get X API Credentials
 
@@ -21,7 +26,14 @@ Go to https://developer.x.com/en/portal/dashboard
      - Access Token
      - Access Token Secret
 
-## 2. Configure the App
+## 2. Install
+
+```bash
+git clone https://github.com/SiiiTschiii/zuerichratsinfo.git
+cd zuerichratsinfo
+```
+
+## 3. Configure the App
 
 ```bash
 # Copy the example environment file
@@ -36,7 +48,7 @@ X_ACCESS_SECRET=your_access_secret_here
 
 **Important**: Never commit your `.env` file to git! It's already in `.gitignore`.
 
-## 3. Run the App
+## 4. Run the App
 
 ```bash
 # Using the helper script
@@ -66,20 +78,6 @@ Strategie zur Einforderung eines angemessenen Anteils...
 
 3. Posts it to X as @zuerichratsinfo
 
-## Testing Without Posting
-
-To test the API fetch without posting to X, you can comment out the posting section in `main.go` temporarily:
-
-```go
-// Post to X
-// err = postTweet(apiKey, apiSecret, accessToken, accessSecret, message)
-// if err != nil {
-//     log.Fatalf("Error posting tweet: %v", err)
-// }
-
-fmt.Println("Would post tweet (posting disabled for testing)")
-```
-
 ## Troubleshooting
 
 - **403 Forbidden from X**: Check that your app has "Read and Write" permissions
@@ -87,11 +85,14 @@ fmt.Println("Would post tweet (posting disabled for testing)")
 - **403 from Zurich API**: This is normal from web browsers, but should work from the Go client
 - **Environment variables not loading**: Make sure your `.env` file has no extra spaces or quotes around values
 
-## Next Steps
+## Development
 
-Once this works, you can:
+To test without posting to X, comment out the posting section in `main.go`:
 
-- Set up a cron job to run it periodically
-- Deploy it to a server or GitHub Actions
-- Add filtering to only post certain types of geschäfte
-- Track what's been posted to avoid duplicates
+```go
+// err = postTweet(apiKey, apiSecret, accessToken, accessSecret, message)
+// if err != nil {
+//     log.Fatalf("Error posting tweet: %v", err)
+// }
+fmt.Println("(Posting disabled for testing)")
+```
