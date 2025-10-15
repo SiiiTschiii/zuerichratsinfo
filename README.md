@@ -9,6 +9,7 @@ Follow [@zuerichratsinfo](https://x.com/zuerichratsinfo) for the latest council 
 Automatically posts new council business (motions, written questions, proposals) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) to X.
 
 Example tweet:
+
 ```
 🏛️ Neues Geschäft im Gemeinderat Zürich
 
