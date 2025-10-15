@@ -10,3 +10,4 @@
   - Decide what type of council business to post (e.g., only Motions, or all new submissions) and when to post (immediately, daily summary, etc.).
 - [ ] Tag relevant X accounts
   - Enhance the bot to tag relevant Gemeinderat X accounts in posts, based on author/submitter.
+- [ ] Desing a Logo for the x.com account
