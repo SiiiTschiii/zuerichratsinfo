@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -25,6 +26,9 @@ func main() {
 
 	// Format tweet message
 	message := formatVoteTweet(geschaeft)
+	// Add timestamp for uniqueness during development
+	timestamp := fmt.Sprintf("\n[dev %s]", time.Now().Format("2006-01-02 15:04:05"))
+	message += timestamp
 	fmt.Printf("Tweet to post:\n%s\n\n", message)
 
 	// Post to X
