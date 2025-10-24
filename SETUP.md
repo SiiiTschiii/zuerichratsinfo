@@ -77,6 +77,39 @@ Strategie zur Einforderung eines angemessenen Anteils...
 - **403 from Zurich API**: This is normal from web browsers, but should work from the Go client
 - **Environment variables not loading**: Make sure your `.env` file has no extra spaces or quotes around values
 
+## 5. Set Up GitHub Actions (Optional)
+
+To automate the bot with GitHub Actions:
+
+1. **Add Repository Secrets**
+
+   - Go to your GitHub repository
+   - Navigate to Settings → Secrets and variables → Actions
+   - Click "New repository secret" and add each of these:
+     - `X_API_KEY` - Your API Key from X
+     - `X_API_SECRET` - Your API Secret from X
+     - `X_ACCESS_TOKEN` - Your Access Token from X
+     - `X_ACCESS_SECRET` - Your Access Secret from X
+
+2. **The Workflow is Already Set Up**
+
+   - The workflow file is at `.github/workflows/bot.yml`
+   - It runs hourly at minute 0 (e.g., 1:00, 2:00, 3:00, etc.)
+   - You can also trigger it manually from the Actions tab
+
+3. **Customize the Schedule**
+
+   - Edit `.github/workflows/bot.yml`
+   - Change the cron expression to your preferred schedule:
+     - Hourly: `'0 * * * *'` (current setting)
+     - Daily at 9 AM: `'0 9 * * *'`
+     - Every 6 hours: `'0 */6 * * *'`
+     - Twice daily (9 AM and 5 PM): `'0 9,17 * * *'`
+
+4. **Monitor the Workflow**
+   - Go to the "Actions" tab in your GitHub repository
+   - You'll see the workflow runs and their logs
+
 ## Development
 
 To test without posting to X, comment out the posting section in `main.go`:
