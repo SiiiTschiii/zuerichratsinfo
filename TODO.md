@@ -4,7 +4,7 @@
   - Create GitHub repo
   - Set up Go project structure
   - First version that fetches data from PARIS API and posts to X
-- [ ] Automate with GitHub Actions
+- [x] Automate with GitHub Actions
   - Set up a GitHub Actions workflow to run the bot on a schedule (e.g., hourly or daily) and post to X automatically.
 - [ ] Define first real use case
   - Decide what type of council business to post (e.g., only Motions, or all new submissions) and when to post (immediately, daily summary, etc.).
@@ -14,4 +14,10 @@
   - Create simple image posts with text on colored backgrounds (varying colors per post, add shadows)
   - This would enable expansion to visual-first platforms like Instagram and TikTok
   - Start simple: uni-colored background + large text + basic shadow effects
-- [ ] Desing a Logo for the x.com account
+- [ ] Design a Logo for the x.com account
+- [ ] Write a transparent X account description
+  - Draft a clear, trustworthy profile description for @zuerichratsinfo on X
+  - Explain that all information is sourced from the official Zurich City Council (https://www.gemeinderat-zuerich.ch/)
+  - Link to the open-source code repository
+  - Target audience: regional politicians and Zurich citizens (not tech-savvy)
+  - Use simple, direct language to build trust and transparency
