@@ -10,4 +10,8 @@
   - Decide what type of council business to post (e.g., only Motions, or all new submissions) and when to post (immediately, daily summary, etc.).
 - [ ] Tag relevant X accounts
   - Enhance the bot to tag relevant Gemeinderat X accounts in posts, based on author/submitter.
+- [ ] Generate visual posts (images)
+  - Create simple image posts with text on colored backgrounds (varying colors per post, add shadows)
+  - This would enable expansion to visual-first platforms like Instagram and TikTok
+  - Start simple: uni-colored background + large text + basic shadow effects
 - [ ] Desing a Logo for the x.com account
