@@ -51,15 +51,7 @@ X_ACCESS_SECRET=your_access_secret_here
 ## 4. Run the App
 
 ```bash
-# Using the helper script
 ./run.sh
-
-# Or manually
-go run .
-
-# Or build and run
-go build -o zurichratsinfo
-./zurichratsinfo
 ```
 
 ## What It Does
