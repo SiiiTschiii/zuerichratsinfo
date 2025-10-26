@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"github.com/cgerber/zurichratsinfo/pkg/zurichapi"
 )
 
 func main() {
@@ -18,14 +20,15 @@ func main() {
 		log.Fatal("Missing X API credentials. Please set X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, and X_ACCESS_SECRET environment variables.")
 	}
 
-	// Fetch latest geschaeft from Zurich council API
-	geschaeft, err := fetchLatestVote()
+	// Create API client and fetch latest geschaeft from Zurich council API
+	client := zurichapi.NewClient()
+	geschaeft, err := client.FetchLatestGeschaeft()
 	if err != nil {
 		log.Fatalf("Error fetching latest geschaeft: %v", err)
 	}
 
 	// Format tweet message
-	message := formatVoteTweet(geschaeft)
+	message := zurichapi.FormatGeschaeftTweet(geschaeft)
 	// Add timestamp for uniqueness during development
 	timestamp := fmt.Sprintf("\n[dev %s]", time.Now().Format("2006-01-02 15:04:05"))
 	message += timestamp
