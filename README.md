@@ -25,6 +25,8 @@ Strategie zur Einforderung eines angemessenen Anteils...
 - [Zurich Council PARIS API](https://opendatazurich.github.io/paris-api/)
 - X API v2 with OAuth 1.0a
 
+For Zurich Council PARIS API usage examples and queries, see [pkg/zurichapi/README.md](pkg/zurichapi/README.md).
+
 ## Setup
 
 See [SETUP.md](SETUP.md) for installation and configuration instructions.

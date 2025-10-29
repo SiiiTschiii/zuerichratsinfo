@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -26,6 +27,9 @@ func findMarkdownLinks(path string) ([]string, error) {
 }
 
 func main() {
+	verbose := flag.Bool("v", false, "verbose: show tree even when all files are linked")
+	flag.Parse()
+	
 	root := "."
 	mdFiles := map[string]bool{}
 	parentLinks := map[string][]string{}
@@ -62,29 +66,55 @@ func main() {
 		}
 	}
 
-	// Print tree
-	fmt.Println("Markdown file reference tree:")
+	// Check for unreferenced .md files (excluding root README.md)
+	unrefCount := 0
+	var unreferenced []string
+	for file, referenced := range mdFiles {
+		if !referenced && file != "./README.md" && file != "README.md" {
+			unreferenced = append(unreferenced, file)
+			unrefCount++
+		}
+	}
+	
+	// Print tree function
 	var printTree func(string, string)
 	printTree = func(file, prefix string) {
-		fmt.Println(prefix + filepath.Base(file))
+		// Clean up the path for display
+		displayPath := strings.TrimPrefix(file, "./")
+		fmt.Println(prefix + displayPath)
 		for _, child := range parentLinks[file] {
 			printTree(child, prefix+"  ")
 		}
 	}
+	
+	// Find the root README
+	rootReadme := ""
 	if _, ok := mdFiles["./README.md"]; ok {
-		printTree("./README.md", "")
+		rootReadme = "./README.md"
+	} else if _, ok := mdFiles["README.md"]; ok {
+		rootReadme = "README.md"
 	}
-
-	// Print unreferenced .md files (excluding README.md as root)
-	fmt.Println("\nUnreferenced .md files:")
-	unrefCount := 0
-	for file, referenced := range mdFiles {
-		if !referenced && filepath.Base(file) != "README.md" {
-			fmt.Println("  ", file)
-			unrefCount++
+	
+	// Show tree if verbose or if there are unreferenced files
+	if *verbose || unrefCount > 0 {
+		fmt.Println("Markdown file reference tree:")
+		if rootReadme != "" {
+			printTree(rootReadme, "")
+		}
+		
+		// In verbose mode, also show all markdown files
+		if *verbose && unrefCount == 0 {
+			fmt.Println("\n✓ All markdown files are properly linked")
 		}
 	}
-	if unrefCount == 0 {
-		fmt.Println("  (none)")
+	
+	// Only output unreferenced files if there are any
+	if unrefCount > 0 {
+		fmt.Println("\nUnreferenced .md files:")
+		for _, file := range unreferenced {
+			displayPath := strings.TrimPrefix(file, "./")
+			fmt.Println("  ", displayPath)
+		}
+		os.Exit(1)
 	}
 }
