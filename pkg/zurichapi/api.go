@@ -7,8 +7,9 @@ import (
 
 const (
 	// Base URLs for the Zurich city council APIs
-	GeschaeftBaseURL = "https://www.gemeinderat-zuerich.ch/api/geschaeft"
-	KontaktBaseURL   = "https://www.gemeinderat-zuerich.ch/api/kontakt"
+	GeschaeftBaseURL  = "https://www.gemeinderat-zuerich.ch/api/geschaeft"
+	KontaktBaseURL    = "https://www.gemeinderat-zuerich.ch/api/kontakt"
+	AbstimmungBaseURL = "https://www.gemeinderat-zuerich.ch/api/abstimmung"
 )
 
 // FetchLatestGeschaeft fetches the most recent geschaeft from the Zurich council API
@@ -53,4 +54,27 @@ func (c *Client) FetchAllKontakte() ([]Kontakt, error) {
 	}
 
 	return contacts, nil
+}
+
+// FetchRecentAbstimmungen fetches the n most recent abstimmungen (votes) from the Zurich council API
+func (c *Client) FetchRecentAbstimmungen(limit int) ([]Abstimmung, error) {
+	url := fmt.Sprintf("%s/searchdetails?q=seq%%3E0%%20sortBy%%20seq/sort.descending&l=de-CH&s=1&m=%d", 
+		AbstimmungBaseURL, limit)
+
+	body, err := c.makeRequest(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp AbstimmungSearchResponse
+	if err := xml.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("failed to parse XML response: %w", err)
+	}
+
+	abstimmungen := make([]Abstimmung, len(resp.Hits))
+	for i, hit := range resp.Hits {
+		abstimmungen[i] = hit.Abstimmung
+	}
+
+	return abstimmungen, nil
 }

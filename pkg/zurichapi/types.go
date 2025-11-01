@@ -83,3 +83,56 @@ type KontaktSearchResponse struct {
 type KontaktHit struct {
 	Kontakt Kontakt `xml:"Kontakt"`
 }
+
+// Abstimmung represents a vote from the Zurich city council
+type Abstimmung struct {
+	OBJGUID                 string  `xml:"OBJ_GUID,attr"`
+	SEQ                     string  `xml:"SEQ,attr"`
+	SitzungGuid             string  `xml:"SitzungGuid"`
+	SitzungTitel            string  `xml:"SitzungTitel"`
+	SitzungDatum            string  `xml:"SitzungDatum"`
+	TraktandumGuid          string  `xml:"TraktandumGuid"`
+	TraktandumNr            string  `xml:"TraktandumNr"`
+	TraktandumTitel         string  `xml:"TraktandumTitel"`
+	GeschaeftGuid           string  `xml:"GeschaeftGuid"`
+	GeschaeftTitel          string  `xml:"GeschaeftTitel"`
+	GeschaeftGrNr           string  `xml:"GeschaeftGrNr"`
+	GeschaeftRatsgeschaeftsart string `xml:"GeschaeftRatsgeschaeftsart"`
+	Abstimmungstitel        string  `xml:"Abstimmungstitel"`
+	Nummer                  string  `xml:"Nummer"`
+	Abstimmungstyp          string  `xml:"Abstimmungstyp"`
+	AnzahlJa                *int    `xml:"Anzahl_Ja"`
+	AnzahlNein              *int    `xml:"Anzahl_Nein"`
+	AnzahlEnthaltung        *int    `xml:"Anzahl_Enthaltung"`
+	AnzahlAbwesend          *int    `xml:"Anzahl_Abwesend"`
+	Schlussresultat         string  `xml:"Schlussresultat"`
+	Stimmabgaben            struct {
+		Stimmabgabe []Stimmabgabe `xml:"Stimmabgabe"`
+	} `xml:"Stimmabgaben"`
+}
+
+// Stimmabgabe represents an individual vote by a council member
+type Stimmabgabe struct {
+	OBJGUID               string `xml:"OBJ_GUID,attr"`
+	KontaktGuid           string `xml:"KontaktGuid"`
+	Name                  string `xml:"Name"`
+	Vorname               string `xml:"Vorname"`
+	Partei                string `xml:"Partei"`
+	Fraktion              string `xml:"Fraktion"`
+	Spezialfunktion       string `xml:"Spezialfunktion"`
+	Geschlecht            string `xml:"Geschlecht"`
+	Alter                 *int   `xml:"Alter"`
+	Abstimmungsverhalten  string `xml:"Abstimmungsverhalten"`
+}
+
+// AbstimmungSearchResponse represents the XML response from the abstimmung API
+type AbstimmungSearchResponse struct {
+	XMLName xml.Name        `xml:"SearchDetailResponse"`
+	NumHits int             `xml:"numHits,attr"`
+	Hits    []AbstimmungHit `xml:"Hit"`
+}
+
+// AbstimmungHit represents a single result in the abstimmung search response
+type AbstimmungHit struct {
+	Abstimmung Abstimmung `xml:"Abstimmung"`
+}
