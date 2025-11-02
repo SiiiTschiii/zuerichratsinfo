@@ -6,7 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/cgerber/zurichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/xapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 func main() {
@@ -35,7 +36,7 @@ func main() {
 	fmt.Printf("Tweet to post:\n%s\n\n", message)
 
 	// Post to X
-	err = postTweet(apiKey, apiSecret, accessToken, accessSecret, message)
+	err = xapi.PostTweet(apiKey, apiSecret, accessToken, accessSecret, message)
 	if err != nil {
 		log.Fatalf("Error posting tweet: %v", err)
 	}

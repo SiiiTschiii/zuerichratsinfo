@@ -1,4 +1,4 @@
-package main
+package xapi
 
 import (
 	"bytes"
@@ -16,8 +16,8 @@ import (
 	"time"
 )
 
-// postTweet posts a tweet using X API v2 with OAuth 1.0a User Context
-func postTweet(apiKey, apiSecret, accessToken, accessSecret, message string) error {
+// PostTweet posts a tweet using X API v2 with OAuth 1.0a User Context
+func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message string) error {
 	// X API v2 endpoint for creating tweets
 	apiURL := "https://api.x.com/2/tweets"
 

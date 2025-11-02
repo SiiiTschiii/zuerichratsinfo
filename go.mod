@@ -1,3 +1,3 @@
-module github.com/cgerber/zurichratsinfo
+module github.com/siiitschiii/zuerichratsinfo
 
 go 1.21

@@ -1,5 +1,7 @@
 # Zurich API Package
 
+https://opendatazurich.github.io/paris-api/
+
 Get the 125 active members of the Zurich Gemeinderat and their functions. Removing members of the stadtrat and duplicates like Stimmenzählende, and Ratssekretariat.
 
 ```
