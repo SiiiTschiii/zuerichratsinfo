@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/siiitschiii/zurichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 func main() {
