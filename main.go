@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/xapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
@@ -21,19 +20,30 @@ func main() {
 		log.Fatal("Missing X API credentials. Please set X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, and X_ACCESS_SECRET environment variables.")
 	}
 
-	// Create API client and fetch latest geschaeft from Zurich council API
+	// Create API client and fetch latest abstimmung from Zurich council API
 	client := zurichapi.NewClient()
-	geschaeft, err := client.FetchLatestGeschaeft()
+	abstimmungen, err := client.FetchRecentAbstimmungen(1)
 	if err != nil {
-		log.Fatalf("Error fetching latest geschaeft: %v", err)
+		log.Fatalf("Error fetching latest abstimmung: %v", err)
 	}
+	
+	if len(abstimmungen) == 0 {
+		log.Fatal("No abstimmungen found")
+	}
+	
+	abstimmung := &abstimmungen[0]
 
 	// Format tweet message
-	message := zurichapi.FormatGeschaeftTweet(geschaeft)
-	// Add timestamp for uniqueness during development
-	timestamp := fmt.Sprintf("\n[dev %s]", time.Now().Format("2006-01-02 15:04:05"))
-	message += timestamp
+	message := zurichapi.FormatAbstimmungTweet(abstimmung)
+	
+	// Truncate to 280 characters if needed (count runes, not bytes, for Unicode)
+	if len([]rune(message)) > 280 {
+		runes := []rune(message)
+		message = string(runes[:277]) + "..."
+	}
+	
 	fmt.Printf("Tweet to post:\n%s\n\n", message)
+	fmt.Printf("Character count: %d\n\n", len([]rune(message)))
 
 	// Post to X
 	err = xapi.PostTweet(apiKey, apiSecret, accessToken, accessSecret, message)
