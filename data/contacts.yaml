@@ -1,0 +1,182 @@
+# Contact to Social Media Mapping
+# This file maps names of politicians to their social media accounts
+# Last updated: 2025-11-05
+
+version: "1.0"
+contacts:
+  - name: "Amstad Micha"
+    instagram: ["https://www.instagram.com/michaamstad/?hl=de"]
+    linkedin: ["https://www.linkedin.com/in/micha-amstad-698383141"]
+    bluesky: ["https://web-cdn.bsky.app/profile/michaamstad.bsky.social"]
+
+  - name: "Angele Florine"
+    x: ["https://x.com/AngeleFlorine"]
+    linkedin: ["https://www.linkedin.com/in/florine-angele/"]
+
+  - name: "Avdili Përparim"
+    x: ["https://x.com/PerparimAvdili"]
+    facebook: ["https://www.facebook.com/perparim.avdili"]
+    instagram: ["https://www.instagram.com/perparim.avdili/?hl=de"]
+    linkedin: ["https://www.linkedin.com/in/perparimavdili/"]
+
+  - name: "Bögli Moritz"
+    x: ["https://x.com/MoritzBoegli"]
+
+  - name: "Can Lara"
+    x: ["https://x.com/laramelizcan"]
+
+  - name: "Cavalli Nicolas"
+    x: ["https://x.com/CavalliGLP"]
+    facebook: ["https://www.facebook.com/ncavglp"]
+    instagram: ["https://www.instagram.com/nicolas_cavalli_glp/"]
+    linkedin: ["https://www.linkedin.com/in/nicolas-cavalli-64b640153/"]
+
+  - name: "Dellenbach Hans"
+    x: ["https://x.com/HansDellenbach"]
+    linkedin: ["https://www.linkedin.com/in/hansdellenbach"]
+
+  - name: "Egger Heidi"
+    facebook: ["https://www.facebook.com/heidieggerzuerich"]
+    instagram: ["https://www.instagram.com/heidiegger1512/"]
+
+  - name: "Frey Selina"
+    instagram: [www.instagram.com/selina_frey_glp/]
+    linkedin: ["https://www.linkedin.com/in/selinafrey"]
+
+  - name: "Gallizzi Sandra"
+    facebook: ["https://www.facebook.com/sandragallizzi"]
+    instagram: ["https://www.instagram.com/mylife_by_sandrag"]
+
+  - name: "Garcia Nuñez David"
+    x: ["https://x.com/thuritch"]
+
+  - name: "Gediz Murat"
+    facebook: ["https://www.facebook.com/share/16EwYFRNqK/?mibextid=wwXIfr"]
+    instagram: ["https://www.instagram.com/murat_gediz?igsh=MXByb29zbGkxcXN3bA%3D%3D&utm_source=qr"]
+    linkedin: ["https://www.linkedin.com/in/murat-gediz-aaaa54139/"]
+
+  - name: "Graff Anna"
+    x: ["https://x.com/annagraff_"]
+    facebook: ["https://www.facebook.com/anna.graff.52"]
+    instagram: ["https://www.instagram.com/annagraff_"]
+    linkedin: ["https://www.linkedin.com/in/annagraff/"]
+
+  - name: "Habegger Rahel"
+    facebook: ["https://www.facebook.com/rahelsarahabegger"]
+    linkedin: ["https://www.linkedin.com/in/rahel-habegger-03677a1a3"]
+
+  - name: "Henz Yves"
+    x: ["https://x.com/HenzYves"]
+    instagram: ["https://www.instagram.com/yves.henz/"]
+
+  - name: "Hofstetter Thomas"
+    facebook: ["https://www.facebook.com/thomas.hofstetter.84"]
+    instagram: ["https://www.instagram.com/thomas.hofstetter.84"]
+
+  - name: "Huber Christine"
+    x: ["https://x.com/chhuber7"]
+    instagram: ["https://www.instagram.com/chhuber7"]
+    linkedin: ["https://www.linkedin.com/in/christine-huber-bab494238"]
+
+  - name: "Hurni Loïc"
+    linkedin: ["https://www.linkedin.com/in/lo%C3%AFc-hurni-b22b45194/"]
+
+  - name: "Hurschler Roland"
+    x: ["https://x.com/rrolee_"]
+    facebook: ["https://www.facebook.com/roland.hurschler.9"]
+    instagram: ["https://www.instagram.com/rroleeh"]
+    linkedin: ["https://ch.linkedin.com/in/roland-hurschler-24b812a8"]
+
+  - name: "Kipfer Attila"
+    facebook: [facebook.com/attila.kipfer]
+    linkedin: ["https://ch.linkedin.com/in/attila-kipfer-6620a898"]
+
+  - name: "Lamprecht Pascal"
+    x: [www.x.com/pascallamprecht]
+    facebook: [www.facebook.com/pascal.lamprecht.5]
+    instagram: [www.instagram.com/pascallamprecht]
+    linkedin: [ch.linkedin.com/in/pascal-lamprecht-68b239151]
+
+  - name: "Maggi Luca"
+    x: ["https://x.com/LucaMaggiJG"]
+
+  - name: "Mahrer Liv"
+    facebook: ["https://www.facebook.com/profile.php?id=100063702649427"]
+    instagram: ["https://www.instagram.com/livmahrer/"]
+
+  - name: "Moser Felix"
+    facebook: ["https://www.facebook.com/felix.moser"]
+    instagram: ["https://www.instagram.com/felixmoser/"]
+
+  - name: "Oberholzer Beat"
+    x: ["https://x.com/BeatOber"]
+    facebook: ["https://www.facebook.com/oberholzer.beat"]
+    instagram: ["https://instagram.com/beat_oberholzer"]
+    linkedin: ["https://linkedin.com/in/beatober"]
+
+  - name: "Rühli Frank"
+    instagram: ["https://www.instagram.com/frank_ruehli/?hl=de"]
+    linkedin: ["https://www.linkedin.com/in/frank-r%C3%BChli-3b0bb182/?originalSubdomain=ch"]
+
+  - name: "Schmaltz Anna-Béatrice"
+    x: ["https://x.com/annabschmaltz"]
+    instagram: ["https://www.instagram.com/anna.beatrice.schmaltz/"]
+    linkedin: ["https://www.linkedin.com/in/anna-b%C3%A9atrice-schmaltz-5aa663197/"]
+
+  - name: "Schmid Michael"
+    facebook: ["https://www.facebook.com/michael.schmid.946517"]
+    linkedin: ["https://www.linkedin.com/in/michael-schmid-0a4230128/"]
+
+  - name: "Siev Ronny"
+    x: ["https://x.com/RonnySiev"]
+    facebook: ["https://www.facebook.com/ronny.siev"]
+    instagram: ["https://www.instagram.com/ronnysiev"]
+    linkedin: ["https://www.linkedin.com/in/ronny-siev-4272774a"]
+
+  - name: "Sobernheim Sven"
+    facebook: ["https://www.facebook.com/sven.zurich"]
+    instagram: ["https://www.instagram.com/sob_zurich/"]
+    linkedin: ["https://www.linkedin.com/in/sven-sobernheim-2283521ba/"]
+
+  - name: "Spielman Jehuda"
+    x: ["https://x.com/JehudaSpielman"]
+    facebook: ["https://www.facebook.com/JehudaSpielman/"]
+    instagram: ["https://instagram.com/JehudaSpielman/"]
+    linkedin: ["https://linkedin.com/in/JehudaSpielman"]
+
+  - name: "Späth Dominique"
+    instagram: ["https://www.instagram.com/dominiquespaeth/"]
+
+  - name: "Stählin Patrick"
+    facebook: ["https://www.facebook.com/PatrickStaehlin/"]
+    instagram: ["https://www.instagram.com/patrick.staehlin/"]
+    linkedin: ["https://www.linkedin.com/in/patrickstaehlin"]
+    bluesky: ["https://bsky.app/profile/patrickstaehlin.ch"]
+
+  - name: "Tobler Marcel"
+    instagram: ["https://www.instagram.com/marceltobler/"]
+    linkedin: ["https://www.linkedin.com/in/marceltoblerzrh/"]
+
+  - name: "Tschannen Emanuel"
+    facebook: ["https://www.facebook.com/emanuel.tschannen"]
+    instagram: ["https://www.instagram.com/emanuel_tschannen"]
+    linkedin: ["https://www.linkedin.com/in/emanueltschannen"]
+
+  - name: "Verbali Marita"
+    facebook: ["https://www.facebook.com/maritaverbaliFDP/", "https://www.facebook.com/marita.verbali"]
+    instagram: ["https://www.instagram.com/marita_verbali/"]
+    linkedin: ["https://www.linkedin.com/in/marita-verbali-86087478/?originalSubdomain=ch"]
+
+  - name: "Voellmy Xenia"
+    linkedin: [www.linkedin.com/in/xenia-voellmy]
+
+  - name: "Waser Dominik"
+    x: ["https://x.com/domiwaser"]
+    facebook: ["https://www.facebook.com/dominik.waser.503/"]
+    instagram: ["https://www.instagram.com/dominik_waser/"]
+    linkedin: ["https://www.linkedin.com/in/dominik-waser-366118224/"]
+
+  - name: "Wiesmann Barbara"
+    x: ["https://x.com/bawizu"]
+    facebook: ["https://www.facebook.com/barbara.wiesmann"]
+    instagram: ["https://www.instagram.com/barbara_wiesmann/"]
