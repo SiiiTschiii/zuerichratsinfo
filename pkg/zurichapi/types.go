@@ -136,3 +136,31 @@ type AbstimmungSearchResponse struct {
 type AbstimmungHit struct {
 	Abstimmung Abstimmung `xml:"Abstimmung"`
 }
+// Behoerdenmandat represents a mandate from the Zurich city council
+type Behoerdenmandat struct {
+	OBJGUID  string `xml:"OBJ_GUID,attr"`
+	SEQ      string `xml:"SEQ,attr"`
+	Name     string `xml:"Name"`
+	Vorname  string `xml:"Vorname"`
+	Funktion string `xml:"Funktion"`
+	Gremium  string `xml:"Gremium"`
+	Dauer    struct {
+		Start string `xml:"Start"`
+		End   string `xml:"End"`
+	} `xml:"Dauer"`
+	Partei   string `xml:"Partei"`
+	Fraktion string `xml:"Fraktion"`
+}
+
+// BehoerdenmandatSearchResponse represents the XML response from the behoerdenmandat API
+type BehoerdenmandatSearchResponse struct {
+	XMLName xml.Name             `xml:"SearchDetailResponse"`
+	NumHits int                  `xml:"numHits,attr"`
+	Hits    []BehoerdenmandatHit `xml:"Hit"`
+}
+
+// BehoerdenmandatHit represents a single result in the behoerdenmandat search response
+// Note: The XML uses "Behordenmandat" (without 'e') despite the API being called "behoerdenmandat"
+type BehoerdenmandatHit struct {
+	Behoerdenmandat Behoerdenmandat `xml:"Behordenmandat"`
+}

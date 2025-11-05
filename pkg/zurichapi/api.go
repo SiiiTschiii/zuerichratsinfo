@@ -1,15 +1,17 @@
 package zurichapi
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
 )
 
 const (
 	// Base URLs for the Zurich city council APIs
-	GeschaeftBaseURL  = "https://www.gemeinderat-zuerich.ch/api/geschaeft"
-	KontaktBaseURL    = "https://www.gemeinderat-zuerich.ch/api/kontakt"
-	AbstimmungBaseURL = "https://www.gemeinderat-zuerich.ch/api/abstimmung"
+	GeschaeftBaseURL      = "https://www.gemeinderat-zuerich.ch/api/geschaeft"
+	KontaktBaseURL        = "https://www.gemeinderat-zuerich.ch/api/kontakt"
+	AbstimmungBaseURL     = "https://www.gemeinderat-zuerich.ch/api/abstimmung"
+	BehoerdenmandatBaseURL = "https://www.gemeinderat-zuerich.ch/api/behoerdenmandat"
 )
 
 // FetchLatestGeschaeft fetches the most recent geschaeft from the Zurich council API
@@ -78,3 +80,58 @@ func (c *Client) FetchRecentAbstimmungen(limit int) ([]Abstimmung, error) {
 
 	return abstimmungen, nil
 }
+// GetActiveMandates fetches active mandates from the Gemeinderat
+// A mandate is considered active if its End date is "9999-12-31 00:00:00" or later
+// excludeFunktionen is an optional list of Funktion values to exclude from results
+func (c *Client) GetActiveMandates(excludeFunktionen ...string) ([]Behoerdenmandat, error) {
+	// Query for active Gemeinderat mandates using API search fields
+	// dauer_end >= "9999-12-31 00:00:00" filters for active mandates
+	url := BehoerdenmandatBaseURL + "/searchdetails?q=gremium%20adj%20Gemeinderat%20and%20dauer_end%20%3E%3D%20%229999-12-31%2000:00:00%22&l=de-CH"
+
+	body, err := c.makeRequest(url)
+	if err != nil {
+		return nil, err
+	}
+
+	// Strip the namespace declaration which causes issues with Go's XML parser
+	body = bytes.ReplaceAll(body, []byte(` xmlns="http://www.cmiag.ch/cdws/Behoerdenmandat"`), []byte(""))
+
+	var resp BehoerdenmandatSearchResponse
+	if err := xml.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("failed to parse XML response: %w", err)
+	}
+
+	// Build a set of excluded functions for efficient lookup
+	excludeSet := make(map[string]bool)
+	for _, f := range excludeFunktionen {
+		excludeSet[f] = true
+	}
+
+	// Filter out excluded functions
+	var activeMandates []Behoerdenmandat
+	for _, hit := range resp.Hits {
+		mandat := hit.Behoerdenmandat
+		
+		// Skip if this function is in the exclude list
+		if excludeSet[mandat.Funktion] {
+			continue
+		}
+
+		activeMandates = append(activeMandates, mandat)
+	}
+
+	return activeMandates, nil
+}
+
+// FetchActiveGemeinderatMandates fetches all active Gemeinderat member mandates
+// This is a convenience function that excludes Stadtrat, Stimmenzählende, and Ratssekretariat roles
+func (c *Client) FetchActiveGemeinderatMandates() ([]Behoerdenmandat, error) {
+	return c.GetActiveMandates(
+		"Stadtrat",
+		"Stimmenzählende",
+		"Ratssekretariat",
+		"Präsidium Stadtrat",
+		"Mitglied Stadtrat",
+	)
+}
+
