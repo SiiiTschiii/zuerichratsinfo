@@ -33,17 +33,11 @@ func main() {
 	
 	abstimmung := &abstimmungen[0]
 
-	// Format tweet message
-	message := zurichapi.FormatAbstimmungTweet(abstimmung)
-	
-	// Truncate to 280 characters if needed (count runes, not bytes, for Unicode)
-	if len([]rune(message)) > 280 {
-		runes := []rune(message)
-		message = string(runes[:277]) + "..."
-	}
+	// Format tweet message using the new vote post format
+	message := zurichapi.FormatVotePost(abstimmung)
 	
 	fmt.Printf("Tweet to post:\n%s\n\n", message)
-	fmt.Printf("Character count: %d\n\n", len([]rune(message)))
+	fmt.Printf("Character count: %d\n\n", len(message))
 
 	// Post to X
 	err = xapi.PostTweet(apiKey, apiSecret, accessToken, accessSecret, message)
