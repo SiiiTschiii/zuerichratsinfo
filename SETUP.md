@@ -48,7 +48,21 @@ X_ACCESS_SECRET=your_access_secret_here
 
 **Important**: Never commit your `.env` file to git! It's already in `.gitignore`.
 
-## 4. Run the App
+## 4. Test Without Posting
+
+Preview what will be posted without actually posting to X:
+
+```bash
+# Preview the latest vote
+go run cmd/generate_vote_post/main.go
+
+# Preview the last 5 votes
+go run cmd/generate_vote_post/main.go 5
+```
+
+## 5. Post to X
+
+When you're ready to post the latest vote to X:
 
 ```bash
 ./run.sh
@@ -56,16 +70,18 @@ X_ACCESS_SECRET=your_access_secret_here
 
 ## What It Does
 
-1. Fetches the latest "Geschäft" (council business) from Zurich's council API
-2. Formats it into a tweet like:
+The bot automatically:
 
-```
-🏛️ Neues Geschäft im Gemeinderat Zürich
-
-📋 2025/459: Motion
-📅 01.10.2025 von Anjushka Früh (SP)
-
-Strategie zur Einforderung eines angemessenen Anteils...
-```
-
+1. Fetches the latest council vote (Abstimmung) from Zurich's PARIS API
+2. Formats it into a post with:
+   - Vote date and result (accepted/rejected)
+   - Vote description
+   - Vote statistics (yes, no, abstentions, absent)
+   - Shortened link to the official vote details
 3. Posts it to X as @zuerichratsinfo
+
+## Troubleshooting
+
+- **"Missing X API credentials" error**: Make sure your `.env` file exists and contains all four credentials
+- **Post too long**: The bot automatically shortens URLs using is.gd to save characters
+- **API rate limits**: X API has rate limits. If you hit them, wait and try again later

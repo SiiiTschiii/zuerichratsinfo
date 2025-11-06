@@ -3,13 +3,13 @@ package zurichapi
 import (
 	"fmt"
 	"strings"
+
+	"github.com/siiitschiii/zuerichratsinfo/pkg/urlshorten"
 )
 
 // FormatVotePost creates a formatted X post for a vote (Abstimmung)
 // This is the main function to format vote posts for X/Twitter
 func FormatVotePost(vote *Abstimmung) string {
-	const maxLength = 280
-	
 	// Prepare fixed components
 	date := formatVoteDate(vote.SitzungDatum)
 	header := fmt.Sprintf("🗳️  Gemeinderat | Abstimmung vom %s\n\n", date)
@@ -24,14 +24,16 @@ func FormatVotePost(vote *Abstimmung) string {
 	voteCounts := fmt.Sprintf("📊 %s Ja | %s Nein | %s Enthaltung | %s Abwesend\n\n", 
 		ja, nein, enthaltung, abwesend)
 	
+	// Generate and shorten the link
 	link := generateVoteLink(vote.OBJGUID)
+	link = urlshorten.ShortenURL(link)
 	linkLine := fmt.Sprintf("🔗 %s", link)
 	
-	// Calculate available space for title
+	// Build the full title
 	title := cleanVoteTitle(vote.TraktandumTitel)
 	resultPrefix := fmt.Sprintf("%s %s: ", resultEmoji, result)
 	
-	// Build post and check length
+	// Build post
 	var sb strings.Builder
 	sb.WriteString(header)
 	sb.WriteString(resultPrefix)
@@ -40,31 +42,7 @@ func FormatVotePost(vote *Abstimmung) string {
 	sb.WriteString(voteCounts)
 	sb.WriteString(linkLine)
 	
-	post := sb.String()
-	
-	// If too long, shorten the title
-	if len(post) > maxLength {
-		// Calculate how much we need to cut
-		fixedLength := len(header) + len(resultPrefix) + len("\n\n") + len(voteCounts) + len(linkLine)
-		availableForTitle := maxLength - fixedLength - 3 // -3 for "..."
-		
-		if availableForTitle > 0 {
-			// Truncate title at word boundary
-			title = truncateAtWord(title, availableForTitle) + "..."
-		}
-		
-		// Rebuild post with shortened title
-		sb.Reset()
-		sb.WriteString(header)
-		sb.WriteString(resultPrefix)
-		sb.WriteString(title)
-		sb.WriteString("\n\n")
-		sb.WriteString(voteCounts)
-		sb.WriteString(linkLine)
-		post = sb.String()
-	}
-	
-	return post
+	return sb.String()
 }
 
 // formatVoteDate formats the date from ISO format to DD.MM.YYYY
@@ -120,24 +98,6 @@ func cleanVoteTitle(title string) string {
 	}
 	
 	return title
-}
-
-// truncateAtWord truncates a string to maxLen at the nearest word boundary
-func truncateAtWord(s string, maxLen int) string {
-	if len(s) <= maxLen {
-		return s
-	}
-	
-	// Find the last space before maxLen
-	truncated := s[:maxLen]
-	lastSpace := strings.LastIndex(truncated, " ")
-	
-	if lastSpace > 0 {
-		return s[:lastSpace]
-	}
-	
-	// If no space found, just truncate at maxLen
-	return truncated
 }
 
 // formatVoteCount formats a nullable int pointer

@@ -2,28 +2,18 @@
 
 A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Zürich) on X.
 
-Follow [@zuerichratsinfo](https://x.com/zuerichratsinfo) for the latest council submissions.
+Follow [@zuerichratsinfo](https://x.com/zuerichratsinfo) for the latest council votes.
 
 ## What It Does
 
-Automatically posts new council business (motions, written questions, proposals) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) to X.
-
-Example tweet:
-
-```
-🏛️ Neues Geschäft im Gemeinderat Zürich
-
-📋 2025/459: Motion
-📅 01.10.2025 von Anjushka Früh (SP)
-
-Strategie zur Einforderung eines angemessenen Anteils...
-```
+Automatically posts council vote results (Abstimmungen) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) to X.
 
 ## Tech Stack
 
 - Go
-- Zurich Council PARIS API, see [pkg/zurichapi/README.md](pkg/zurichapi/README.md).
-- X API v2, see [pkg/xapi/README.md](pkg/xapi/README.md).
+- Zurich Council PARIS API, see [pkg/zurichapi/README.md](pkg/zurichapi/README.md)
+- X API v2 with OAuth 1.0a, see [pkg/xapi/README.md](pkg/xapi/README.md)
+- is.gd API for URL shortening
 
 ## Setup
 

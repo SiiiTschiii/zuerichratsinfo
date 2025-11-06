@@ -8,6 +8,8 @@
   - Set up a GitHub Actions workflow to run the bot on a schedule (e.g., hourly or daily) and post to X automatically.
 - [x] Define first real use case
   - Decide what type of council business to post (e.g., only Motions, or all new submissions) and when to post (immediately, daily summary, etc.).
+- [ ] use verified account.
+- [ ] post all new abstimmungen. how to avoid duplicates? store last posted id in a file in the repo? with a github action that commits to the repo?
 - [ ] Tag relevant X accounts
   - Enhance the bot to tag relevant Gemeinderat X accounts in posts, based on author/submitter.
 - [ ] Generate visual posts (images)
