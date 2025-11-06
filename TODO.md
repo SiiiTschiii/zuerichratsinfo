@@ -8,18 +8,13 @@
   - Set up a GitHub Actions workflow to run the bot on a schedule (e.g., hourly or daily) and post to X automatically.
 - [x] Define first real use case
   - Decide what type of council business to post (e.g., only Motions, or all new submissions) and when to post (immediately, daily summary, etc.).
-- [ ] use verified account.
-- [ ] post all new abstimmungen. how to avoid duplicates? store last posted id in a file in the repo? with a github action that commits to the repo?
+- [x] Design a Logo for the x.com account
+- [x] Write a transparent X account description
+- [x] use verified account, also to be ablo to post more than 280 characters if needed.
+- [ ] post all new abstimmungen. how to avoid duplicates? keep track of a published abstimmuneng log. In the repo with the github action that commits to it after it run?
 - [ ] Tag relevant X accounts
   - Enhance the bot to tag relevant Gemeinderat X accounts in posts, based on author/submitter.
 - [ ] Generate visual posts (images)
   - Create simple image posts with text on colored backgrounds (varying colors per post, add shadows)
   - This would enable expansion to visual-first platforms like Instagram and TikTok
   - Start simple: uni-colored background + large text + basic shadow effects
-- [ ] Design a Logo for the x.com account
-- [ ] Write a transparent X account description
-  - Draft a clear, trustworthy profile description for @zuerichratsinfo on X
-  - Explain that all information is sourced from the official Zurich City Council (https://www.gemeinderat-zuerich.ch/)
-  - Link to the open-source code repository
-  - Target audience: regional politicians and Zurich citizens (not tech-savvy)
-  - Use simple, direct language to build trust and transparency

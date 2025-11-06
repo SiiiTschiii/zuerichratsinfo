@@ -29,7 +29,7 @@ func FormatVotePost(vote *Abstimmung) string {
 	link = urlshorten.ShortenURL(link)
 	linkLine := fmt.Sprintf("🔗 %s", link)
 	
-	// Build the full title
+	// Build the full title (no truncation needed with verified account)
 	title := cleanVoteTitle(vote.TraktandumTitel)
 	resultPrefix := fmt.Sprintf("%s %s: ", resultEmoji, result)
 	
