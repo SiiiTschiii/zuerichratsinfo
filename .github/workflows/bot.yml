@@ -15,6 +15,8 @@ on:
 jobs:
   post-update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -42,4 +44,14 @@ jobs:
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
+          X_MAX_POSTS_PER_RUN: ${{ vars.X_MAX_POSTS_PER_RUN }}
         run: go run .
+
+      - name: Commit updated vote log
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/posted_votes_x.json
+          git diff --staged --quiet || git commit -m "Update posted votes log [skip ci]"
+          git push
