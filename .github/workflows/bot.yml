@@ -1,9 +1,8 @@
 name: Zurich Ratsinfo Bot
 
 on:
-  # Run every Friday at 12:30 CET (11:30 UTC)
   schedule:
-    - cron: "30 11 * * 5"
+    - cron: "0 8 * * *"
 
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
