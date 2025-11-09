@@ -11,8 +11,20 @@ import (
 )
 
 func main() {
-	// Load rate limit configuration from environment
-	maxVotesToCheck := getEnvInt("MAX_VOTES_TO_CHECK", 50)
+	// Get number of votes to check from command line argument, or environment, or default
+	maxVotesToCheck := 50
+	if len(os.Args) > 1 {
+		// Command line argument takes priority
+		if n, err := strconv.Atoi(os.Args[1]); err == nil && n > 0 {
+			maxVotesToCheck = n
+		} else {
+			log.Fatalf("Invalid argument: please provide a positive number")
+		}
+	} else {
+		// Fall back to environment variable
+		maxVotesToCheck = getEnvInt("MAX_VOTES_TO_CHECK", 50)
+	}
+	
 	maxPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
 
 	// Load the vote log for X platform

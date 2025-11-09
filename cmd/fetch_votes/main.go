@@ -3,22 +3,34 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"strconv"
 	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 func main() {
+	// Get number of votes from command line argument, default to 10
+	numVotes := 10
+	if len(os.Args) > 1 {
+		if n, err := strconv.Atoi(os.Args[1]); err == nil && n > 0 {
+			numVotes = n
+		} else {
+			log.Fatalf("Invalid argument: please provide a positive number")
+		}
+	}
+
 	// Create API client
 	client := zurichapi.NewClient()
 
-	// Fetch the 10 most recent votes
-	votes, err := client.FetchRecentAbstimmungen(10)
+	// Fetch the most recent votes
+	votes, err := client.FetchRecentAbstimmungen(numVotes)
 	if err != nil {
 		log.Fatalf("Error fetching votes: %v", err)
 	}
 
-	fmt.Printf("🗳️  Last 10 Council Votes\n")
+	fmt.Printf("🗳️  Last %d Council Votes\n", numVotes)
 	fmt.Printf("═══════════════════════════════════════════════════════════════════════════\n\n")
 
 	for i, vote := range votes {
