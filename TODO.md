@@ -11,9 +11,9 @@
 - [x] Design a Logo for the x.com account
 - [x] Write a transparent X account description
 - [x] use verified account, also to be ablo to post more than 280 characters if needed.
-- [ ] post all new abstimmungen. how to avoid duplicates? keep track of a published abstimmuneng log. In the repo with the github action that commits to it after it run?
-- [ ] Tag relevant X accounts
-  - Enhance the bot to tag relevant Gemeinderat X accounts in posts, based on author/submitter.
+- [x] post all new abstimmungen. how to avoid duplicates? keep track of a published abstimmuneng log. In the repo with the github action that commits to it after it run?
+- [x] Tag relevant X accounts. Enhance the bot to tag relevant Gemeinderat X accounts in posts, based on author/submitter.
+- [ ] Curate the contacts.yaml with social media accounts.
 - [ ] Generate visual posts (images)
   - Create simple image posts with text on colored backgrounds (varying colors per post, add shadows)
   - This would enable expansion to visual-first platforms like Instagram and TikTok

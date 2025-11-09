@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -26,6 +28,14 @@ func main() {
 	}
 	
 	maxPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
+
+	// Load contacts for X handle tagging
+	contactsPath := filepath.Join("data", "contacts.yaml")
+	contactMapper, err := contacts.LoadContacts(contactsPath)
+	if err != nil {
+		log.Printf("Warning: Could not load contacts for tagging: %v", err)
+		contactMapper = nil // Continue without tagging
+	}
 
 	// Load the vote log for X platform
 	voteLog, err := votelog.Load(votelog.PlatformX)
@@ -70,7 +80,7 @@ func main() {
 	fmt.Printf("🚀 Would post these %d votes:\n\n", len(votesToPost))
 	
 	for i, vote := range votesToPost {
-		message := zurichapi.FormatVotePost(&vote)
+		message := zurichapi.FormatVotePost(&vote, contactMapper)
 		fmt.Printf("─────────────────────────────────────────────────────────────────\n")
 		fmt.Printf("[%d/%d] Vote ID: %s\n", i+1, len(votesToPost), vote.OBJGUID[:8]+"...")
 		fmt.Printf("Date: %s\n", vote.SitzungDatum[:10])

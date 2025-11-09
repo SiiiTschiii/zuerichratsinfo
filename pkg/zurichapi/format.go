@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/urlshorten"
 )
 
 // FormatVotePost creates a formatted X post for a vote (Abstimmung)
 // This is the main function to format vote posts for X/Twitter
-func FormatVotePost(vote *Abstimmung) string {
+func FormatVotePost(vote *Abstimmung, contactMapper *contacts.Mapper) string {
 	// Prepare fixed components
 	date := formatVoteDate(vote.SitzungDatum)
 	header := fmt.Sprintf("🗳️  Gemeinderat | Abstimmung vom %s\n\n", date)
@@ -31,6 +32,12 @@ func FormatVotePost(vote *Abstimmung) string {
 	
 	// Build the full title (no truncation needed with verified account)
 	title := cleanVoteTitle(vote.TraktandumTitel)
+	
+	// Tag X handles in the title if contact mapper is provided
+	if contactMapper != nil {
+		title = contactMapper.TagXHandlesInText(title)
+	}
+	
 	resultPrefix := fmt.Sprintf("%s %s: ", resultEmoji, result)
 	
 	// Build post
