@@ -21,6 +21,7 @@ type Contact struct {
 	Facebook  []string `yaml:"facebook,omitempty"`
 	Instagram []string `yaml:"instagram,omitempty"`
 	LinkedIn  []string `yaml:"linkedin,omitempty"`
+	TikTok    []string `yaml:"tiktok,omitempty"`
 	Bluesky   []string `yaml:"bluesky,omitempty"`
 }
 
@@ -46,9 +47,11 @@ func main() {
 		hasX := len(contact.X) > 0
 		hasFacebook := len(contact.Facebook) > 0
 		hasInstagram := len(contact.Instagram) > 0
+		hasLinkedIn := len(contact.LinkedIn) > 0
+		hasTikTok := len(contact.TikTok) > 0
 		hasBluesky := len(contact.Bluesky) > 0
 
-		if hasX && hasFacebook && hasInstagram && hasBluesky {
+		if hasX && hasFacebook && hasInstagram && hasLinkedIn && hasTikTok && hasBluesky {
 			continue
 		}
 
@@ -72,6 +75,16 @@ func main() {
 		if !hasFacebook {
 			fbSearch := url.QueryEscape(searchName + " Zürich")
 			fmt.Printf("- Facebook: https://www.facebook.com/search/top?q=%s\n", fbSearch)
+		}
+		
+		if !hasLinkedIn {
+			linkedInSearch := url.QueryEscape(searchName)
+			fmt.Printf("- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=%s\n", linkedInSearch)
+		}
+		
+		if !hasTikTok {
+			tiktokSearch := url.QueryEscape(searchName)
+			fmt.Printf("- TikTok: https://www.tiktok.com/search?q=%s\n", tiktokSearch)
 		}
 		
 		if !hasBluesky {

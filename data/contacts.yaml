@@ -14,12 +14,18 @@ contacts:
     x: ["https://x.com/mehblau"]
 
   - name: "Andreas Hauri"
+    instagram: ["https://www.instagram.com/andreas_hauri"]
+    x: ["https://x.com/andreashauri"]
+    facebook: ["https://www.facebook.com/StadtratHauri"]
+    linkedin: ["https://www.linkedin.com/in/andreas-hauri-02a35217/"]
 
   - name: "André Odermatt"
+    facebook: ["https://www.facebook.com/aodermatt"]
 
   - name: "Angele Florine"
     x: ["https://x.com/AngeleFlorine"]
     linkedin: ["https://www.linkedin.com/in/florine-angele/"]
+    instagram: ["https://www.instagram.com/florineangele/"]
 
   - name: "Angelica Eichenberger"
 
@@ -216,6 +222,7 @@ contacts:
   - name: "Maya Kägi Götz"
 
   - name: "Michael Baumer"
+    linkedin: ["https://www.linkedin.com/in/michael-baumer-aa432537/"]
 
   - name: "Michele Romagnolo"
 
