@@ -234,10 +234,10 @@ contacts:
 	// When: formatting for VS Code
 	result := formatYAMLForVSCode(goYAML)
 
-	// Then: should use 2-space for list, 4-space for fields
+	// Then: should use 2-space for list, 4-space for fields, and quote names
 	expected := `version: "1.0"
 contacts:
-  - name: Test Person
+  - name: "Test Person"
     x: '@test'
     facebook: https://facebook.com/test`
 

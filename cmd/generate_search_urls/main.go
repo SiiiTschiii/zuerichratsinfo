@@ -63,8 +63,8 @@ func main() {
 		searchName := strings.Join(parts, " ")
 		
 		if !hasX {
-			xSearch := url.QueryEscape(searchName + " Zürich Gemeinderat")
-			fmt.Printf("- X/Twitter: https://x.com/search?q=%s\n", xSearch)
+			xSearch := url.QueryEscape(searchName)
+			fmt.Printf("- X/Twitter: https://x.com/search?q=%s&src=typed_query&f=user\n", xSearch)
 		}
 		
 		if !hasInstagram {
