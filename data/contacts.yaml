@@ -4,14 +4,31 @@
 
 version: "1.0"
 contacts:
+  - name: "SP Zürich"
+    bluesky: ["https://bsky.app/profile/spzuerich.ch"]
+    tiktok: ["https://www.tiktok.com/@spzuerich"]
+    facebook: ["https://www.facebook.com/SPStadtZuerich/"]
+    instagram: ["https://www.instagram.com/spzuerich/"]
+
+  - name: "FDP Zürich"
+    instagram: ["https://www.instagram.com/mehblau/"]
+    x: ["https://x.com/mehblau"]
+    facebook: ["https://www.facebook.com/fdpstadtzuerich/"]
+    linkedin: ["https://www.linkedin.com/company/fdp-stadt-z%C3%BCrich/"]
+
+  - name: "Grüne Zürich"
+    instagram: ["https://www.instagram.com/gruenezuerich/"]
+    facebook: ["https://www.facebook.com/gruenezuerich"]
+    x: ["https://x.com/GrueneZuerich"]
+
+  - name: "Die Mitte Stadt Zürich"
+    x: ["https://x.com/Mitte_StadtZH"]
+    facebook: ["https://www.facebook.com/DieMitteStadtZH"]
+
   - name: "Amstad Micha"
     instagram: ["https://www.instagram.com/michaamstad/?hl=de"]
     linkedin: ["https://www.linkedin.com/in/micha-amstad-698383141"]
     bluesky: ["https://web-cdn.bsky.app/profile/michaamstad.bsky.social"]
-
-  - name: "Andreas Egli"
-    instagram: ["https://www.instagram.com/mehblau/"]
-    x: ["https://x.com/mehblau"]
 
   - name: "Andreas Hauri"
     instagram: ["https://www.instagram.com/andreas_hauri"]
@@ -28,22 +45,28 @@ contacts:
     instagram: ["https://www.instagram.com/florineangele/"]
 
   - name: "Angelica Eichenberger"
-
-  - name: "Anjushka Früh"
+    x: ["https://x.com/AngelicaEichen1"]
+    instagram: ["https://www.instagram.com/angelica_eichenberger/"]
+    facebook: ["https://www.facebook.com/angelica.eichenberger.908"]
 
   - name: "Ann-Catherine Nabholz"
+    linkedin: ["https://www.linkedin.com/in/ann-catherine-nabholz-7059202ba/"]
 
   - name: "Anthony Goldstein"
+    linkedin: ["https://www.linkedin.com/in/anthony-goldstein-50589693/"]
 
   - name: "Avdili Përparim"
     x: ["https://x.com/PerparimAvdili"]
     facebook: ["https://www.facebook.com/perparim.avdili"]
     instagram: ["https://www.instagram.com/perparim.avdili/?hl=de"]
     linkedin: ["https://www.linkedin.com/in/perparimavdili/"]
-
-  - name: "Balz Bürgisser"
+    tiktok: ["https://www.tiktok.com/@perparim.avdili"]
+    bluesky: ["https://bsky.app/profile/perparimzh.bsky.social"]
 
   - name: "Benedikt Gerth"
+    instagram: ["https://www.instagram.com/ben_zh78/"]
+    facebook: ["https://www.facebook.com/benedikt.gerth"]
+    linkedin: ["https://www.linkedin.com/in/benedikt-gerth-839a332/"]
 
   - name: "Bernhard im Oberdorf"
 

@@ -2,75 +2,9 @@
 
 # Copy these URLs to find social media accounts
 
-## Angelica Eichenberger
-
-- X/Twitter: https://x.com/search?q=Angelica+Eichenberger+Z%C3%BCrich+Gemeinderat
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Angelica+Eichenberger
-- Facebook: https://www.facebook.com/search/top?q=Angelica+Eichenberger+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Angelica+Eichenberger
-- TikTok: https://www.tiktok.com/search?q=Angelica+Eichenberger
-- Bluesky: https://bsky.app/search?q=Angelica+Eichenberger
-- Google: https://www.google.com/search?q=Angelica+Eichenberger+Gemeinderat+Z%C3%BCrich+social+media
-
-## Anjushka Früh
-
-- X/Twitter: https://x.com/search?q=Anjushka+Fr%C3%BCh+Z%C3%BCrich+Gemeinderat
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Anjushka+Fr%C3%BCh
-- Facebook: https://www.facebook.com/search/top?q=Anjushka+Fr%C3%BCh+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Anjushka+Fr%C3%BCh
-- TikTok: https://www.tiktok.com/search?q=Anjushka+Fr%C3%BCh
-- Bluesky: https://bsky.app/search?q=Anjushka+Fr%C3%BCh
-- Google: https://www.google.com/search?q=Anjushka+Fr%C3%BCh+Gemeinderat+Z%C3%BCrich+social+media
-
-## Ann-Catherine Nabholz
-
-- X/Twitter: https://x.com/search?q=Ann-Catherine+Nabholz+Z%C3%BCrich+Gemeinderat
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Ann-Catherine+Nabholz
-- Facebook: https://www.facebook.com/search/top?q=Ann-Catherine+Nabholz+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Ann-Catherine+Nabholz
-- TikTok: https://www.tiktok.com/search?q=Ann-Catherine+Nabholz
-- Bluesky: https://bsky.app/search?q=Ann-Catherine+Nabholz
-- Google: https://www.google.com/search?q=Ann-Catherine+Nabholz+Gemeinderat+Z%C3%BCrich+social+media
-
-## Anthony Goldstein
-
-- X/Twitter: https://x.com/search?q=Anthony+Goldstein+Z%C3%BCrich+Gemeinderat
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Anthony+Goldstein
-- Facebook: https://www.facebook.com/search/top?q=Anthony+Goldstein+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Anthony+Goldstein
-- TikTok: https://www.tiktok.com/search?q=Anthony+Goldstein
-- Bluesky: https://bsky.app/search?q=Anthony+Goldstein
-- Google: https://www.google.com/search?q=Anthony+Goldstein+Gemeinderat+Z%C3%BCrich+social+media
-
-## Avdili Përparim
-
-- TikTok: https://www.tiktok.com/search?q=Avdili+P%C3%ABrparim
-- Bluesky: https://bsky.app/search?q=Avdili+P%C3%ABrparim
-- Google: https://www.google.com/search?q=Avdili+P%C3%ABrparim+Gemeinderat+Z%C3%BCrich+social+media
-
-## Balz Bürgisser
-
-- X/Twitter: https://x.com/search?q=Balz+B%C3%BCrgisser+Z%C3%BCrich+Gemeinderat
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Balz+B%C3%BCrgisser
-- Facebook: https://www.facebook.com/search/top?q=Balz+B%C3%BCrgisser+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Balz+B%C3%BCrgisser
-- TikTok: https://www.tiktok.com/search?q=Balz+B%C3%BCrgisser
-- Bluesky: https://bsky.app/search?q=Balz+B%C3%BCrgisser
-- Google: https://www.google.com/search?q=Balz+B%C3%BCrgisser+Gemeinderat+Z%C3%BCrich+social+media
-
-## Benedikt Gerth
-
-- X/Twitter: https://x.com/search?q=Benedikt+Gerth+Z%C3%BCrich+Gemeinderat
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Benedikt+Gerth
-- Facebook: https://www.facebook.com/search/top?q=Benedikt+Gerth+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Benedikt+Gerth
-- TikTok: https://www.tiktok.com/search?q=Benedikt+Gerth
-- Bluesky: https://bsky.app/search?q=Benedikt+Gerth
-- Google: https://www.google.com/search?q=Benedikt+Gerth+Gemeinderat+Z%C3%BCrich+social+media
-
 ## Bernhard im Oberdorf
 
-- X/Twitter: https://x.com/search?q=Bernhard+im+Oberdorf+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Bernhard+im+Oberdorf&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Bernhard+im+Oberdorf
 - Facebook: https://www.facebook.com/search/top?q=Bernhard+im+Oberdorf+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Bernhard+im+Oberdorf
@@ -80,7 +14,7 @@
 
 ## Brigitte Fürer
 
-- X/Twitter: https://x.com/search?q=Brigitte+F%C3%BCrer+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Brigitte+F%C3%BCrer&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Brigitte+F%C3%BCrer
 - Facebook: https://www.facebook.com/search/top?q=Brigitte+F%C3%BCrer+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Brigitte+F%C3%BCrer
@@ -114,7 +48,7 @@
 
 ## Christian Huser
 
-- X/Twitter: https://x.com/search?q=Christian+Huser+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Christian+Huser&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Christian+Huser
 - Facebook: https://www.facebook.com/search/top?q=Christian+Huser+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Christian+Huser
@@ -124,7 +58,7 @@
 
 ## Christian Häberli
 
-- X/Twitter: https://x.com/search?q=Christian+H%C3%A4berli+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Christian+H%C3%A4berli&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Christian+H%C3%A4berli
 - Facebook: https://www.facebook.com/search/top?q=Christian+H%C3%A4berli+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Christian+H%C3%A4berli
@@ -134,7 +68,7 @@
 
 ## Christian Traber
 
-- X/Twitter: https://x.com/search?q=Christian+Traber+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Christian+Traber&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Christian+Traber
 - Facebook: https://www.facebook.com/search/top?q=Christian+Traber+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Christian+Traber
@@ -144,7 +78,7 @@
 
 ## Cordelia Forde
 
-- X/Twitter: https://x.com/search?q=Cordelia+Forde+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Cordelia+Forde&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Cordelia+Forde
 - Facebook: https://www.facebook.com/search/top?q=Cordelia+Forde+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Cordelia+Forde
@@ -154,7 +88,7 @@
 
 ## Corine Mauch
 
-- X/Twitter: https://x.com/search?q=Corine+Mauch+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Corine+Mauch&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Corine+Mauch
 - Facebook: https://www.facebook.com/search/top?q=Corine+Mauch+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Corine+Mauch
@@ -164,7 +98,7 @@
 
 ## Dafi Muharemi
 
-- X/Twitter: https://x.com/search?q=Dafi+Muharemi+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Dafi+Muharemi&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Dafi+Muharemi
 - Facebook: https://www.facebook.com/search/top?q=Dafi+Muharemi+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Dafi+Muharemi
@@ -174,7 +108,7 @@
 
 ## Daniel Leupi
 
-- X/Twitter: https://x.com/search?q=Daniel+Leupi+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Daniel+Leupi&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Daniel+Leupi
 - Facebook: https://www.facebook.com/search/top?q=Daniel+Leupi+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Daniel+Leupi
@@ -184,7 +118,7 @@
 
 ## Deborah Wettstein
 
-- X/Twitter: https://x.com/search?q=Deborah+Wettstein+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Deborah+Wettstein&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Deborah+Wettstein
 - Facebook: https://www.facebook.com/search/top?q=Deborah+Wettstein+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Deborah+Wettstein
@@ -202,7 +136,7 @@
 
 ## Derek Richter
 
-- X/Twitter: https://x.com/search?q=Derek+Richter+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Derek+Richter&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Derek+Richter
 - Facebook: https://www.facebook.com/search/top?q=Derek+Richter+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Derek+Richter
@@ -212,7 +146,7 @@
 
 ## Egger Heidi
 
-- X/Twitter: https://x.com/search?q=Egger+Heidi+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Egger+Heidi&src=typed_query&f=user
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Egger+Heidi
 - TikTok: https://www.tiktok.com/search?q=Egger+Heidi
 - Bluesky: https://bsky.app/search?q=Egger+Heidi
@@ -220,7 +154,7 @@
 
 ## Fanny de Weck
 
-- X/Twitter: https://x.com/search?q=Fanny+de+Weck+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Fanny+de+Weck&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Fanny+de+Weck
 - Facebook: https://www.facebook.com/search/top?q=Fanny+de+Weck+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Fanny+de+Weck
@@ -230,7 +164,7 @@
 
 ## Filippo Leutenegger
 
-- X/Twitter: https://x.com/search?q=Filippo+Leutenegger+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Filippo+Leutenegger&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Filippo+Leutenegger
 - Facebook: https://www.facebook.com/search/top?q=Filippo+Leutenegger+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Filippo+Leutenegger
@@ -240,7 +174,7 @@
 
 ## Florian Blättler
 
-- X/Twitter: https://x.com/search?q=Florian+Bl%C3%A4ttler+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Florian+Bl%C3%A4ttler&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Florian+Bl%C3%A4ttler
 - Facebook: https://www.facebook.com/search/top?q=Florian+Bl%C3%A4ttler+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Florian+Bl%C3%A4ttler
@@ -250,7 +184,7 @@
 
 ## Florian Utz
 
-- X/Twitter: https://x.com/search?q=Florian+Utz+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Florian+Utz&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Florian+Utz
 - Facebook: https://www.facebook.com/search/top?q=Florian+Utz+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Florian+Utz
@@ -260,7 +194,7 @@
 
 ## Flurin Capaul
 
-- X/Twitter: https://x.com/search?q=Flurin+Capaul+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Flurin+Capaul&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Flurin+Capaul
 - Facebook: https://www.facebook.com/search/top?q=Flurin+Capaul+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Flurin+Capaul
@@ -270,7 +204,7 @@
 
 ## Frank-Elmar Linxweiler
 
-- X/Twitter: https://x.com/search?q=Frank-Elmar+Linxweiler+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Frank-Elmar+Linxweiler&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Frank-Elmar+Linxweiler
 - Facebook: https://www.facebook.com/search/top?q=Frank-Elmar+Linxweiler+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Frank-Elmar+Linxweiler
@@ -280,7 +214,7 @@
 
 ## Frey Selina
 
-- X/Twitter: https://x.com/search?q=Frey+Selina+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Frey+Selina&src=typed_query&f=user
 - Facebook: https://www.facebook.com/search/top?q=Frey+Selina+Z%C3%BCrich
 - TikTok: https://www.tiktok.com/search?q=Frey+Selina
 - Bluesky: https://bsky.app/search?q=Frey+Selina
@@ -288,7 +222,7 @@
 
 ## Gallizzi Sandra
 
-- X/Twitter: https://x.com/search?q=Gallizzi+Sandra+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Gallizzi+Sandra&src=typed_query&f=user
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Gallizzi+Sandra
 - TikTok: https://www.tiktok.com/search?q=Gallizzi+Sandra
 - Bluesky: https://bsky.app/search?q=Gallizzi+Sandra
@@ -305,7 +239,7 @@
 
 ## Gediz Murat
 
-- X/Twitter: https://x.com/search?q=Gediz+Murat+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Gediz+Murat&src=typed_query&f=user
 - TikTok: https://www.tiktok.com/search?q=Gediz+Murat
 - Bluesky: https://bsky.app/search?q=Gediz+Murat
 - Google: https://www.google.com/search?q=Gediz+Murat+Gemeinderat+Z%C3%BCrich+social+media
@@ -318,7 +252,7 @@
 
 ## Guy Krayenbühl
 
-- X/Twitter: https://x.com/search?q=Guy+Krayenb%C3%BChl+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Guy+Krayenb%C3%BChl&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Guy+Krayenb%C3%BChl
 - Facebook: https://www.facebook.com/search/top?q=Guy+Krayenb%C3%BChl+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Guy+Krayenb%C3%BChl
@@ -328,7 +262,7 @@
 
 ## Habegger Rahel
 
-- X/Twitter: https://x.com/search?q=Habegger+Rahel+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Habegger+Rahel&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Habegger+Rahel
 - TikTok: https://www.tiktok.com/search?q=Habegger+Rahel
 - Bluesky: https://bsky.app/search?q=Habegger+Rahel
@@ -336,7 +270,7 @@
 
 ## Hannah Locher
 
-- X/Twitter: https://x.com/search?q=Hannah+Locher+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Hannah+Locher&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Hannah+Locher
 - Facebook: https://www.facebook.com/search/top?q=Hannah+Locher+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Hannah+Locher
@@ -354,7 +288,7 @@
 
 ## Hofstetter Thomas
 
-- X/Twitter: https://x.com/search?q=Hofstetter+Thomas+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Hofstetter+Thomas&src=typed_query&f=user
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Hofstetter+Thomas
 - TikTok: https://www.tiktok.com/search?q=Hofstetter+Thomas
 - Bluesky: https://bsky.app/search?q=Hofstetter+Thomas
@@ -369,7 +303,7 @@
 
 ## Hurni Loïc
 
-- X/Twitter: https://x.com/search?q=Hurni+Lo%C3%AFc+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Hurni+Lo%C3%AFc&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Hurni+Lo%C3%AFc
 - Facebook: https://www.facebook.com/search/top?q=Hurni+Lo%C3%AFc+Z%C3%BCrich
 - TikTok: https://www.tiktok.com/search?q=Hurni+Lo%C3%AFc
@@ -384,7 +318,7 @@
 
 ## Isabel Garcia
 
-- X/Twitter: https://x.com/search?q=Isabel+Garcia+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Isabel+Garcia&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Isabel+Garcia
 - Facebook: https://www.facebook.com/search/top?q=Isabel+Garcia+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Isabel+Garcia
@@ -394,7 +328,7 @@
 
 ## Ivo Bieri
 
-- X/Twitter: https://x.com/search?q=Ivo+Bieri+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Ivo+Bieri&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Ivo+Bieri
 - Facebook: https://www.facebook.com/search/top?q=Ivo+Bieri+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Ivo+Bieri
@@ -404,7 +338,7 @@
 
 ## Jean-Marc Jung
 
-- X/Twitter: https://x.com/search?q=Jean-Marc+Jung+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Jean-Marc+Jung&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Jean-Marc+Jung
 - Facebook: https://www.facebook.com/search/top?q=Jean-Marc+Jung+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Jean-Marc+Jung
@@ -414,7 +348,7 @@
 
 ## Johann Widmer
 
-- X/Twitter: https://x.com/search?q=Johann+Widmer+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Johann+Widmer&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Johann+Widmer
 - Facebook: https://www.facebook.com/search/top?q=Johann+Widmer+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Johann+Widmer
@@ -424,7 +358,7 @@
 
 ## Jonas Keller
 
-- X/Twitter: https://x.com/search?q=Jonas+Keller+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Jonas+Keller&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Jonas+Keller
 - Facebook: https://www.facebook.com/search/top?q=Jonas+Keller+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Jonas+Keller
@@ -434,7 +368,7 @@
 
 ## Julia Hofstetter
 
-- X/Twitter: https://x.com/search?q=Julia+Hofstetter+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Julia+Hofstetter&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Julia+Hofstetter
 - Facebook: https://www.facebook.com/search/top?q=Julia+Hofstetter+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Julia+Hofstetter
@@ -444,7 +378,7 @@
 
 ## Jürg Rauser
 
-- X/Twitter: https://x.com/search?q=J%C3%BCrg+Rauser+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=J%C3%BCrg+Rauser&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=J%C3%BCrg+Rauser
 - Facebook: https://www.facebook.com/search/top?q=J%C3%BCrg+Rauser+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=J%C3%BCrg+Rauser
@@ -454,7 +388,7 @@
 
 ## Karen Hug
 
-- X/Twitter: https://x.com/search?q=Karen+Hug+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Karen+Hug&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Karen+Hug
 - Facebook: https://www.facebook.com/search/top?q=Karen+Hug+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Karen+Hug
@@ -464,7 +398,7 @@
 
 ## Karin Rykart
 
-- X/Twitter: https://x.com/search?q=Karin+Rykart+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Karin+Rykart&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Karin+Rykart
 - Facebook: https://www.facebook.com/search/top?q=Karin+Rykart+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Karin+Rykart
@@ -474,7 +408,7 @@
 
 ## Karin Stepinski
 
-- X/Twitter: https://x.com/search?q=Karin+Stepinski+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Karin+Stepinski&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Karin+Stepinski
 - Facebook: https://www.facebook.com/search/top?q=Karin+Stepinski+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Karin+Stepinski
@@ -484,7 +418,7 @@
 
 ## Karin Weyermann
 
-- X/Twitter: https://x.com/search?q=Karin+Weyermann+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Karin+Weyermann&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Karin+Weyermann
 - Facebook: https://www.facebook.com/search/top?q=Karin+Weyermann+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Karin+Weyermann
@@ -494,7 +428,7 @@
 
 ## Kipfer Attila
 
-- X/Twitter: https://x.com/search?q=Kipfer+Attila+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Kipfer+Attila&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Kipfer+Attila
 - TikTok: https://www.tiktok.com/search?q=Kipfer+Attila
 - Bluesky: https://bsky.app/search?q=Kipfer+Attila
@@ -508,7 +442,7 @@
 
 ## Lea Herzig
 
-- X/Twitter: https://x.com/search?q=Lea+Herzig+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Lea+Herzig&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Lea+Herzig
 - Facebook: https://www.facebook.com/search/top?q=Lea+Herzig+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Lea+Herzig
@@ -518,7 +452,7 @@
 
 ## Leah Heuri
 
-- X/Twitter: https://x.com/search?q=Leah+Heuri+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Leah+Heuri&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Leah+Heuri
 - Facebook: https://www.facebook.com/search/top?q=Leah+Heuri+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Leah+Heuri
@@ -528,7 +462,7 @@
 
 ## Lisa Diggelmann
 
-- X/Twitter: https://x.com/search?q=Lisa+Diggelmann+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Lisa+Diggelmann&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Lisa+Diggelmann
 - Facebook: https://www.facebook.com/search/top?q=Lisa+Diggelmann+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Lisa+Diggelmann
@@ -547,7 +481,7 @@
 
 ## Mahrer Liv
 
-- X/Twitter: https://x.com/search?q=Mahrer+Liv+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Mahrer+Liv&src=typed_query&f=user
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Mahrer+Liv
 - TikTok: https://www.tiktok.com/search?q=Mahrer+Liv
 - Bluesky: https://bsky.app/search?q=Mahrer+Liv
@@ -555,7 +489,7 @@
 
 ## Maleica Landolt
 
-- X/Twitter: https://x.com/search?q=Maleica+Landolt+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Maleica+Landolt&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Maleica+Landolt
 - Facebook: https://www.facebook.com/search/top?q=Maleica+Landolt+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Maleica+Landolt
@@ -565,7 +499,7 @@
 
 ## Marco Denoth
 
-- X/Twitter: https://x.com/search?q=Marco+Denoth+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Marco+Denoth&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Marco+Denoth
 - Facebook: https://www.facebook.com/search/top?q=Marco+Denoth+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Marco+Denoth
@@ -575,7 +509,7 @@
 
 ## Markus Haselbach
 
-- X/Twitter: https://x.com/search?q=Markus+Haselbach+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Markus+Haselbach&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Markus+Haselbach
 - Facebook: https://www.facebook.com/search/top?q=Markus+Haselbach+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Markus+Haselbach
@@ -585,7 +519,7 @@
 
 ## Markus Knauss
 
-- X/Twitter: https://x.com/search?q=Markus+Knauss+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Markus+Knauss&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Markus+Knauss
 - Facebook: https://www.facebook.com/search/top?q=Markus+Knauss+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Markus+Knauss
@@ -595,7 +529,7 @@
 
 ## Markus Merki
 
-- X/Twitter: https://x.com/search?q=Markus+Merki+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Markus+Merki&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Markus+Merki
 - Facebook: https://www.facebook.com/search/top?q=Markus+Merki+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Markus+Merki
@@ -605,7 +539,7 @@
 
 ## Martin Busekros
 
-- X/Twitter: https://x.com/search?q=Martin+Busekros+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Martin+Busekros&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Martin+Busekros
 - Facebook: https://www.facebook.com/search/top?q=Martin+Busekros+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Martin+Busekros
@@ -615,7 +549,7 @@
 
 ## Martin Bürki
 
-- X/Twitter: https://x.com/search?q=Martin+B%C3%BCrki+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Martin+B%C3%BCrki&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Martin+B%C3%BCrki
 - Facebook: https://www.facebook.com/search/top?q=Martin+B%C3%BCrki+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Martin+B%C3%BCrki
@@ -625,7 +559,7 @@
 
 ## Martina Zürcher
 
-- X/Twitter: https://x.com/search?q=Martina+Z%C3%BCrcher+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Martina+Z%C3%BCrcher&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Martina+Z%C3%BCrcher
 - Facebook: https://www.facebook.com/search/top?q=Martina+Z%C3%BCrcher+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Martina+Z%C3%BCrcher
@@ -635,7 +569,7 @@
 
 ## Mathias Egloff
 
-- X/Twitter: https://x.com/search?q=Mathias+Egloff+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Mathias+Egloff&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Mathias+Egloff
 - Facebook: https://www.facebook.com/search/top?q=Mathias+Egloff+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Mathias+Egloff
@@ -645,7 +579,7 @@
 
 ## Matthias Renggli
 
-- X/Twitter: https://x.com/search?q=Matthias+Renggli+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Matthias+Renggli&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Matthias+Renggli
 - Facebook: https://www.facebook.com/search/top?q=Matthias+Renggli+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Matthias+Renggli
@@ -655,7 +589,7 @@
 
 ## Maya Kägi Götz
 
-- X/Twitter: https://x.com/search?q=Maya+K%C3%A4gi+G%C3%B6tz+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Maya+K%C3%A4gi+G%C3%B6tz&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Maya+K%C3%A4gi+G%C3%B6tz
 - Facebook: https://www.facebook.com/search/top?q=Maya+K%C3%A4gi+G%C3%B6tz+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Maya+K%C3%A4gi+G%C3%B6tz
@@ -665,17 +599,16 @@
 
 ## Michael Baumer
 
-- X/Twitter: https://x.com/search?q=Michael+Baumer+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Michael+Baumer&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Michael+Baumer
 - Facebook: https://www.facebook.com/search/top?q=Michael+Baumer+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Michael+Baumer
 - TikTok: https://www.tiktok.com/search?q=Michael+Baumer
 - Bluesky: https://bsky.app/search?q=Michael+Baumer
 - Google: https://www.google.com/search?q=Michael+Baumer+Gemeinderat+Z%C3%BCrich+social+media
 
 ## Michele Romagnolo
 
-- X/Twitter: https://x.com/search?q=Michele+Romagnolo+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Michele+Romagnolo&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Michele+Romagnolo
 - Facebook: https://www.facebook.com/search/top?q=Michele+Romagnolo+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Michele+Romagnolo
@@ -685,7 +618,7 @@
 
 ## Moser Felix
 
-- X/Twitter: https://x.com/search?q=Moser+Felix+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Moser+Felix&src=typed_query&f=user
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Moser+Felix
 - TikTok: https://www.tiktok.com/search?q=Moser+Felix
 - Bluesky: https://bsky.app/search?q=Moser+Felix
@@ -693,7 +626,7 @@
 
 ## Nadina Diday
 
-- X/Twitter: https://x.com/search?q=Nadina+Diday+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Nadina+Diday&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Nadina+Diday
 - Facebook: https://www.facebook.com/search/top?q=Nadina+Diday+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Nadina+Diday
@@ -703,7 +636,7 @@
 
 ## Niyazi Erdem
 
-- X/Twitter: https://x.com/search?q=Niyazi+Erdem+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Niyazi+Erdem&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Niyazi+Erdem
 - Facebook: https://www.facebook.com/search/top?q=Niyazi+Erdem+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Niyazi+Erdem
@@ -719,7 +652,7 @@
 
 ## Oliver Heimgartner
 
-- X/Twitter: https://x.com/search?q=Oliver+Heimgartner+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Oliver+Heimgartner&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Oliver+Heimgartner
 - Facebook: https://www.facebook.com/search/top?q=Oliver+Heimgartner+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Oliver+Heimgartner
@@ -729,7 +662,7 @@
 
 ## Patricia Petermann Loewe
 
-- X/Twitter: https://x.com/search?q=Patricia+Petermann+Loewe+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Patricia+Petermann+Loewe&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Patricia+Petermann+Loewe
 - Facebook: https://www.facebook.com/search/top?q=Patricia+Petermann+Loewe+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Patricia+Petermann+Loewe
@@ -739,7 +672,7 @@
 
 ## Patrick Tscherrig
 
-- X/Twitter: https://x.com/search?q=Patrick+Tscherrig+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Patrick+Tscherrig&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Patrick+Tscherrig
 - Facebook: https://www.facebook.com/search/top?q=Patrick+Tscherrig+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Patrick+Tscherrig
@@ -749,7 +682,7 @@
 
 ## Patrik Brunner
 
-- X/Twitter: https://x.com/search?q=Patrik+Brunner+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Patrik+Brunner&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Patrik+Brunner
 - Facebook: https://www.facebook.com/search/top?q=Patrik+Brunner+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Patrik+Brunner
@@ -759,7 +692,7 @@
 
 ## Raphael Golta
 
-- X/Twitter: https://x.com/search?q=Raphael+Golta+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Raphael+Golta&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Raphael+Golta
 - Facebook: https://www.facebook.com/search/top?q=Raphael+Golta+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Raphael+Golta
@@ -769,7 +702,7 @@
 
 ## Reis Luzhnica
 
-- X/Twitter: https://x.com/search?q=Reis+Luzhnica+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Reis+Luzhnica&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Reis+Luzhnica
 - Facebook: https://www.facebook.com/search/top?q=Reis+Luzhnica+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Reis+Luzhnica
@@ -779,7 +712,7 @@
 
 ## Reto Brüesch
 
-- X/Twitter: https://x.com/search?q=Reto+Br%C3%BCesch+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Reto+Br%C3%BCesch&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Reto+Br%C3%BCesch
 - Facebook: https://www.facebook.com/search/top?q=Reto+Br%C3%BCesch+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Reto+Br%C3%BCesch
@@ -789,7 +722,7 @@
 
 ## Roger Bartholdi
 
-- X/Twitter: https://x.com/search?q=Roger+Bartholdi+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Roger+Bartholdi&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Roger+Bartholdi
 - Facebook: https://www.facebook.com/search/top?q=Roger+Bartholdi+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roger+Bartholdi
@@ -799,7 +732,7 @@
 
 ## Roger Föhn
 
-- X/Twitter: https://x.com/search?q=Roger+F%C3%B6hn+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Roger+F%C3%B6hn&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Roger+F%C3%B6hn
 - Facebook: https://www.facebook.com/search/top?q=Roger+F%C3%B6hn+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roger+F%C3%B6hn
@@ -809,7 +742,7 @@
 
 ## Roger Meier
 
-- X/Twitter: https://x.com/search?q=Roger+Meier+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Roger+Meier&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Roger+Meier
 - Facebook: https://www.facebook.com/search/top?q=Roger+Meier+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roger+Meier
@@ -819,7 +752,7 @@
 
 ## Roger Suter
 
-- X/Twitter: https://x.com/search?q=Roger+Suter+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Roger+Suter&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Roger+Suter
 - Facebook: https://www.facebook.com/search/top?q=Roger+Suter+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roger+Suter
@@ -829,7 +762,7 @@
 
 ## Roland Hohmann
 
-- X/Twitter: https://x.com/search?q=Roland+Hohmann+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Roland+Hohmann&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Roland+Hohmann
 - Facebook: https://www.facebook.com/search/top?q=Roland+Hohmann+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roland+Hohmann
@@ -839,7 +772,7 @@
 
 ## Ruedi Schneider
 
-- X/Twitter: https://x.com/search?q=Ruedi+Schneider+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Ruedi+Schneider&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Ruedi+Schneider
 - Facebook: https://www.facebook.com/search/top?q=Ruedi+Schneider+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Ruedi+Schneider
@@ -849,7 +782,7 @@
 
 ## Rühli Frank
 
-- X/Twitter: https://x.com/search?q=R%C3%BChli+Frank+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=R%C3%BChli+Frank&src=typed_query&f=user
 - Facebook: https://www.facebook.com/search/top?q=R%C3%BChli+Frank+Z%C3%BCrich
 - TikTok: https://www.tiktok.com/search?q=R%C3%BChli+Frank
 - Bluesky: https://bsky.app/search?q=R%C3%BChli+Frank
@@ -857,7 +790,7 @@
 
 ## Sabine Koch
 
-- X/Twitter: https://x.com/search?q=Sabine+Koch+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sabine+Koch&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Sabine+Koch
 - Facebook: https://www.facebook.com/search/top?q=Sabine+Koch+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sabine+Koch
@@ -867,7 +800,7 @@
 
 ## Samuel Balsiger
 
-- X/Twitter: https://x.com/search?q=Samuel+Balsiger+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Samuel+Balsiger&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Samuel+Balsiger
 - Facebook: https://www.facebook.com/search/top?q=Samuel+Balsiger+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Samuel+Balsiger
@@ -877,7 +810,7 @@
 
 ## Sandro Gähler
 
-- X/Twitter: https://x.com/search?q=Sandro+G%C3%A4hler+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sandro+G%C3%A4hler&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Sandro+G%C3%A4hler
 - Facebook: https://www.facebook.com/search/top?q=Sandro+G%C3%A4hler+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sandro+G%C3%A4hler
@@ -887,7 +820,7 @@
 
 ## Sanija Ameti
 
-- X/Twitter: https://x.com/search?q=Sanija+Ameti+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sanija+Ameti&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Sanija+Ameti
 - Facebook: https://www.facebook.com/search/top?q=Sanija+Ameti+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sanija+Ameti
@@ -904,7 +837,7 @@
 
 ## Schmid Michael
 
-- X/Twitter: https://x.com/search?q=Schmid+Michael+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Schmid+Michael&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Schmid+Michael
 - TikTok: https://www.tiktok.com/search?q=Schmid+Michael
 - Bluesky: https://bsky.app/search?q=Schmid+Michael
@@ -912,7 +845,7 @@
 
 ## Sebastian Vogel
 
-- X/Twitter: https://x.com/search?q=Sebastian+Vogel+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sebastian+Vogel&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Sebastian+Vogel
 - Facebook: https://www.facebook.com/search/top?q=Sebastian+Vogel+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sebastian+Vogel
@@ -922,7 +855,7 @@
 
 ## Sebastian Zopfi
 
-- X/Twitter: https://x.com/search?q=Sebastian+Zopfi+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sebastian+Zopfi&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Sebastian+Zopfi
 - Facebook: https://www.facebook.com/search/top?q=Sebastian+Zopfi+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sebastian+Zopfi
@@ -932,7 +865,7 @@
 
 ## Selina Walgis
 
-- X/Twitter: https://x.com/search?q=Selina+Walgis+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Selina+Walgis&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Selina+Walgis
 - Facebook: https://www.facebook.com/search/top?q=Selina+Walgis+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Selina+Walgis
@@ -942,7 +875,7 @@
 
 ## Serap Kahriman
 
-- X/Twitter: https://x.com/search?q=Serap+Kahriman+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Serap+Kahriman&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Serap+Kahriman
 - Facebook: https://www.facebook.com/search/top?q=Serap+Kahriman+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Serap+Kahriman
@@ -952,7 +885,7 @@
 
 ## Severin Meier
 
-- X/Twitter: https://x.com/search?q=Severin+Meier+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Severin+Meier&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Severin+Meier
 - Facebook: https://www.facebook.com/search/top?q=Severin+Meier+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Severin+Meier
@@ -962,7 +895,7 @@
 
 ## Sibylle Kauer
 
-- X/Twitter: https://x.com/search?q=Sibylle+Kauer+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sibylle+Kauer&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Sibylle+Kauer
 - Facebook: https://www.facebook.com/search/top?q=Sibylle+Kauer+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sibylle+Kauer
@@ -978,7 +911,7 @@
 
 ## Simon Kälin-Werth
 
-- X/Twitter: https://x.com/search?q=Simon+K%C3%A4lin-Werth+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Simon+K%C3%A4lin-Werth&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Simon+K%C3%A4lin-Werth
 - Facebook: https://www.facebook.com/search/top?q=Simon+K%C3%A4lin-Werth+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Simon+K%C3%A4lin-Werth
@@ -988,7 +921,7 @@
 
 ## Simone Brander
 
-- X/Twitter: https://x.com/search?q=Simone+Brander+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Simone+Brander&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Simone+Brander
 - Facebook: https://www.facebook.com/search/top?q=Simone+Brander+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Simone+Brander
@@ -998,14 +931,14 @@
 
 ## Sobernheim Sven
 
-- X/Twitter: https://x.com/search?q=Sobernheim+Sven+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sobernheim+Sven&src=typed_query&f=user
 - TikTok: https://www.tiktok.com/search?q=Sobernheim+Sven
 - Bluesky: https://bsky.app/search?q=Sobernheim+Sven
 - Google: https://www.google.com/search?q=Sobernheim+Sven+Gemeinderat+Z%C3%BCrich+social+media
 
 ## Sofia Karakostas
 
-- X/Twitter: https://x.com/search?q=Sofia+Karakostas+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sofia+Karakostas&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Sofia+Karakostas
 - Facebook: https://www.facebook.com/search/top?q=Sofia+Karakostas+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sofia+Karakostas
@@ -1015,7 +948,7 @@
 
 ## Sophie Blaser
 
-- X/Twitter: https://x.com/search?q=Sophie+Blaser+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sophie+Blaser&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Sophie+Blaser
 - Facebook: https://www.facebook.com/search/top?q=Sophie+Blaser+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sophie+Blaser
@@ -1031,7 +964,7 @@
 
 ## Späth Dominique
 
-- X/Twitter: https://x.com/search?q=Sp%C3%A4th+Dominique+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Sp%C3%A4th+Dominique&src=typed_query&f=user
 - Facebook: https://www.facebook.com/search/top?q=Sp%C3%A4th+Dominique+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sp%C3%A4th+Dominique
 - TikTok: https://www.tiktok.com/search?q=Sp%C3%A4th+Dominique
@@ -1040,7 +973,7 @@
 
 ## Stefan Reusser
 
-- X/Twitter: https://x.com/search?q=Stefan+Reusser+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Stefan+Reusser&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Stefan+Reusser
 - Facebook: https://www.facebook.com/search/top?q=Stefan+Reusser+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Stefan+Reusser
@@ -1050,7 +983,7 @@
 
 ## Stefan Urech
 
-- X/Twitter: https://x.com/search?q=Stefan+Urech+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Stefan+Urech&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Stefan+Urech
 - Facebook: https://www.facebook.com/search/top?q=Stefan+Urech+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Stefan+Urech
@@ -1060,7 +993,7 @@
 
 ## Stephan Iten
 
-- X/Twitter: https://x.com/search?q=Stephan+Iten+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Stephan+Iten&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Stephan+Iten
 - Facebook: https://www.facebook.com/search/top?q=Stephan+Iten+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Stephan+Iten
@@ -1070,13 +1003,13 @@
 
 ## Stählin Patrick
 
-- X/Twitter: https://x.com/search?q=St%C3%A4hlin+Patrick+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=St%C3%A4hlin+Patrick&src=typed_query&f=user
 - TikTok: https://www.tiktok.com/search?q=St%C3%A4hlin+Patrick
 - Google: https://www.google.com/search?q=St%C3%A4hlin+Patrick+Gemeinderat+Z%C3%BCrich+social+media
 
 ## Stéphane Braune
 
-- X/Twitter: https://x.com/search?q=St%C3%A9phane+Braune+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=St%C3%A9phane+Braune&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=St%C3%A9phane+Braune
 - Facebook: https://www.facebook.com/search/top?q=St%C3%A9phane+Braune+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=St%C3%A9phane+Braune
@@ -1086,7 +1019,7 @@
 
 ## Susan Wiget
 
-- X/Twitter: https://x.com/search?q=Susan+Wiget+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Susan+Wiget&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Susan+Wiget
 - Facebook: https://www.facebook.com/search/top?q=Susan+Wiget+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Susan+Wiget
@@ -1096,7 +1029,7 @@
 
 ## Tamara Bosshardt
 
-- X/Twitter: https://x.com/search?q=Tamara+Bosshardt+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Tamara+Bosshardt&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Tamara+Bosshardt
 - Facebook: https://www.facebook.com/search/top?q=Tamara+Bosshardt+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Tamara+Bosshardt
@@ -1106,7 +1039,7 @@
 
 ## Tanja Maag
 
-- X/Twitter: https://x.com/search?q=Tanja+Maag+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Tanja+Maag&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Tanja+Maag
 - Facebook: https://www.facebook.com/search/top?q=Tanja+Maag+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Tanja+Maag
@@ -1116,7 +1049,7 @@
 
 ## Tobler Marcel
 
-- X/Twitter: https://x.com/search?q=Tobler+Marcel+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Tobler+Marcel&src=typed_query&f=user
 - Facebook: https://www.facebook.com/search/top?q=Tobler+Marcel+Z%C3%BCrich
 - TikTok: https://www.tiktok.com/search?q=Tobler+Marcel
 - Bluesky: https://bsky.app/search?q=Tobler+Marcel
@@ -1124,7 +1057,7 @@
 
 ## Tom Cassee
 
-- X/Twitter: https://x.com/search?q=Tom+Cassee+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Tom+Cassee&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Tom+Cassee
 - Facebook: https://www.facebook.com/search/top?q=Tom+Cassee+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Tom+Cassee
@@ -1134,14 +1067,14 @@
 
 ## Tschannen Emanuel
 
-- X/Twitter: https://x.com/search?q=Tschannen+Emanuel+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Tschannen+Emanuel&src=typed_query&f=user
 - TikTok: https://www.tiktok.com/search?q=Tschannen+Emanuel
 - Bluesky: https://bsky.app/search?q=Tschannen+Emanuel
 - Google: https://www.google.com/search?q=Tschannen+Emanuel+Gemeinderat+Z%C3%BCrich+social+media
 
 ## Urs Riklin
 
-- X/Twitter: https://x.com/search?q=Urs+Riklin+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Urs+Riklin&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Urs+Riklin
 - Facebook: https://www.facebook.com/search/top?q=Urs+Riklin+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Urs+Riklin
@@ -1151,7 +1084,7 @@
 
 ## Ursina Merkler
 
-- X/Twitter: https://x.com/search?q=Ursina+Merkler+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Ursina+Merkler&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Ursina+Merkler
 - Facebook: https://www.facebook.com/search/top?q=Ursina+Merkler+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Ursina+Merkler
@@ -1161,14 +1094,14 @@
 
 ## Verbali Marita
 
-- X/Twitter: https://x.com/search?q=Verbali+Marita+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Verbali+Marita&src=typed_query&f=user
 - TikTok: https://www.tiktok.com/search?q=Verbali+Marita
 - Bluesky: https://bsky.app/search?q=Verbali+Marita
 - Google: https://www.google.com/search?q=Verbali+Marita+Gemeinderat+Z%C3%BCrich+social+media
 
 ## Voellmy Xenia
 
-- X/Twitter: https://x.com/search?q=Voellmy+Xenia+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Voellmy+Xenia&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Voellmy+Xenia
 - Facebook: https://www.facebook.com/search/top?q=Voellmy+Xenia+Z%C3%BCrich
 - TikTok: https://www.tiktok.com/search?q=Voellmy+Xenia
@@ -1177,7 +1110,7 @@
 
 ## Walter Anken
 
-- X/Twitter: https://x.com/search?q=Walter+Anken+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Walter+Anken&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Walter+Anken
 - Facebook: https://www.facebook.com/search/top?q=Walter+Anken+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Walter+Anken
@@ -1200,7 +1133,7 @@
 
 ## Yasmine Bourgeois
 
-- X/Twitter: https://x.com/search?q=Yasmine+Bourgeois+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Yasmine+Bourgeois&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Yasmine+Bourgeois
 - Facebook: https://www.facebook.com/search/top?q=Yasmine+Bourgeois+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Yasmine+Bourgeois
@@ -1210,7 +1143,7 @@
 
 ## Yves Peier
 
-- X/Twitter: https://x.com/search?q=Yves+Peier+Z%C3%BCrich+Gemeinderat
+- X/Twitter: https://x.com/search?q=Yves+Peier&src=typed_query&f=user
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Yves+Peier
 - Facebook: https://www.facebook.com/search/top?q=Yves+Peier+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Yves+Peier
