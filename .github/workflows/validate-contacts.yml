@@ -1,0 +1,35 @@
+name: Validate Contacts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/contacts.yaml"
+      - "cmd/validate_contacts/**"
+      - ".github/workflows/validate-contacts.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "data/contacts.yaml"
+      - "cmd/validate_contacts/**"
+      - ".github/workflows/validate-contacts.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Validate contacts.yaml
+        run: go run cmd/validate_contacts/main.go data/contacts.yaml
