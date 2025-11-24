@@ -6,7 +6,8 @@ Follow [@zuerichratsinfo](https://x.com/zuerichratsinfo) for the latest council 
 
 ## What It Does
 
-Automatically posts council vote results (Abstimmungen) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) to X.
+- **Automated Vote Posts**: Shares council vote results (Abstimmungen) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) on X
+- **Social Media Mapping**: Curates an extensive mapping of Zurich politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok) - see [data/contacts.yaml](data/contacts.yaml)
 
 ## Tech Stack
 
