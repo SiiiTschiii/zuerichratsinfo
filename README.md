@@ -9,6 +9,10 @@ Follow [@zuerichratsinfo](https://x.com/zuerichratsinfo) for the latest council 
 - **Automated Vote Posts**: Shares council vote results (Abstimmungen) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) on X
 - **Social Media Mapping**: Curates an extensive mapping of Zurich politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok) - see [data/contacts.yaml](data/contacts.yaml)
 
+### Contributing to the Social Media Mapping
+
+Found an error or want to add a politician's social media account? Please [open an issue](https://github.com/SiiiTschiii/zuerichratsinfo/issues/new) or submit a pull request!
+
 ## Tech Stack
 
 - Go
