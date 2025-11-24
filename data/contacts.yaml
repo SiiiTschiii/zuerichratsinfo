@@ -68,12 +68,10 @@ contacts:
     facebook: ["https://www.facebook.com/benedikt.gerth"]
     linkedin: ["https://www.linkedin.com/in/benedikt-gerth-839a332/"]
 
-  - name: "Bernhard im Oberdorf"
-
-  - name: "Brigitte Fürer"
-
   - name: "Bögli Moritz"
     x: ["https://x.com/MoritzBoegli"]
+    instagram: ["https://www.instagram.com/moritzboegli/"]
+    facebook: ["https://www.facebook.com/moritz.bogli"]
 
   - name: "Can Lara"
     x: ["https://x.com/laramelizcan"]
@@ -83,16 +81,20 @@ contacts:
     facebook: ["https://www.facebook.com/ncavglp"]
     instagram: ["https://www.instagram.com/nicolas_cavalli_glp/"]
     linkedin: ["https://www.linkedin.com/in/nicolas-cavalli-64b640153/"]
+    bluesky: ["https://bsky.app/profile/cavalliglp.bsky.social"]
+    tiktok: ["https://www.tiktok.com/@nicolas.cavalli.glp"]
 
   - name: "Christian Huser"
-
-  - name: "Christian Häberli"
+    x: ["https://x.com/christianhuser"]
+    facebook: ["https://www.facebook.com/christian.huser.5"]
+    linkedin: ["https://www.linkedin.com/in/christian-huser-77708a161/"]
 
   - name: "Christian Traber"
-
-  - name: "Cordelia Forde"
+    facebook: ["https://www.facebook.com/christian.traber.90"]
 
   - name: "Corine Mauch"
+    instagram: ["https://www.instagram.com/corine_mauch/"]
+    facebook: ["https://www.facebook.com/stadtpraesidentin"]
 
   - name: "Dafi Muharemi"
 
@@ -123,7 +125,7 @@ contacts:
   - name: "Frank-Elmar Linxweiler"
 
   - name: "Frey Selina"
-    instagram: [www.instagram.com/selina_frey_glp/]
+    instagram: ["https://www.instagram.com/selina_frey_glp/"]
     linkedin: ["https://www.linkedin.com/in/selinafrey"]
 
   - name: "Gallizzi Sandra"
@@ -200,14 +202,14 @@ contacts:
   - name: "Karin Weyermann"
 
   - name: "Kipfer Attila"
-    facebook: [facebook.com/attila.kipfer]
+    facebook: ["https://www.facebook.com/attila.kipfer"]
     linkedin: ["https://ch.linkedin.com/in/attila-kipfer-6620a898"]
 
   - name: "Lamprecht Pascal"
-    x: [www.x.com/pascallamprecht]
-    facebook: [www.facebook.com/pascal.lamprecht.5]
-    instagram: [www.instagram.com/pascallamprecht]
-    linkedin: [ch.linkedin.com/in/pascal-lamprecht-68b239151]
+    x: ["https://www.x.com/pascallamprecht"]
+    facebook: ["https://www.facebook.com/pascal.lamprecht.5"]
+    instagram: ["https://www.instagram.com/pascallamprecht"]
+    linkedin: ["https://ch.linkedin.com/in/pascal-lamprecht-68b239151"]
 
   - name: "Lea Herzig"
 
@@ -402,7 +404,7 @@ contacts:
       ]
 
   - name: "Voellmy Xenia"
-    linkedin: [www.linkedin.com/in/xenia-voellmy]
+    linkedin: ["https://www.linkedin.com/in/xenia-voellmy"]
 
   - name: "Walter Anken"
 
