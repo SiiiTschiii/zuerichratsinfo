@@ -96,28 +96,46 @@ contacts:
     facebook: ["https://www.facebook.com/stadtpraesidentin"]
 
   - name: "Dafi Muharemi"
+    facebook: ["https://www.facebook.com/gadaf.muharemi/"]
+    linkedin: ["https://www.linkedin.com/in/dafi-muharemi-2b55a5125/"]
 
   - name: "Daniel Leupi"
+    facebook: ["https://www.facebook.com/stadtratleupi/"]
+    instagram: ["https://www.instagram.com/daniel.leupi/"]
+    x: ["https://x.com/danielleupi"]
+    linkedin: ["https://www.linkedin.com/in/daniel-leupi-34b58b159/"]
+    bluesky: ["https://bsky.app/profile/daniel-leupi.bsky.social"]
 
   - name: "Deborah Wettstein"
+    instagram: ["https://www.instagram.com/deborah.wettstein/"]
+    x: ["https://x.com/DeboWettstein"]
+    facebook: ["https://www.facebook.com/debowettstein"]
+    linkedin: ["https://www.linkedin.com/in/deborahwettstein/"]
 
   - name: "Dellenbach Hans"
     x: ["https://x.com/HansDellenbach"]
     linkedin: ["https://www.linkedin.com/in/hansdellenbach"]
+    instagram: ["https://www.instagram.com/dellenbachhans/"]
 
   - name: "Derek Richter"
+    linkedin: ["https://www.linkedin.com/in/derekrichter/"]
 
   - name: "Egger Heidi"
     facebook: ["https://www.facebook.com/heidieggerzuerich"]
     instagram: ["https://www.instagram.com/heidiegger1512/"]
 
-  - name: "Fanny de Weck"
-
   - name: "Filippo Leutenegger"
+    x: ["https://x.com/F_Leutenegger"]
+    facebook: ["https://www.facebook.com/filippo.leutenegger"]
+    linkedin: ["https://www.linkedin.com/in/filippo-leutenegger-6bb863123/"]
 
   - name: "Florian Blättler"
+    x: ["https://x.com/MesoPerm"]
+    linkedin: ["https://www.linkedin.com/in/florian-bl%C3%A4ttler/"]
+    bluesky: ["https://bsky.app/profile/mesoperm.bsky.social"]
 
   - name: "Florian Utz"
+    facebook: ["https://www.facebook.com/florian.utz.526"]
 
   - name: "Flurin Capaul"
 
