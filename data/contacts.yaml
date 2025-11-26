@@ -138,8 +138,16 @@ contacts:
     facebook: ["https://www.facebook.com/florian.utz.526"]
 
   - name: "Flurin Capaul"
+    x: ["https://x.com/FlurinCapaul"]
+    instagram: ["https://www.instagram.com/flurin_capaul/"]
+    facebook: ["https://www.facebook.com/flurin.capaul.14"]
+    linkedin: ["https://www.linkedin.com/in/flurin/"]
+    tiktok: ["https://www.tiktok.com/@flurincapaul"]
+    bluesky: ["https://bsky.app/profile/flurin-capaul.bsky.social"]
 
   - name: "Frank-Elmar Linxweiler"
+    linkedin:
+      ["https://www.linkedin.com/in/frank-elmar-linxweiler-frm-0591063/"]
 
   - name: "Frey Selina"
     instagram: ["https://www.instagram.com/selina_frey_glp/"]
