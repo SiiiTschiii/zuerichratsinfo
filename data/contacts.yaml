@@ -1,5 +1,5 @@
 # Contact to Social Media Mapping
-# This file maps names of politicians to their social media accounts
+# This file maps names of politicians of the city of Zurich to their social media accounts
 
 version: "1.0"
 contacts:
@@ -23,6 +23,11 @@ contacts:
   - name: "Die Mitte Stadt Zürich"
     x: ["https://x.com/Mitte_StadtZH"]
     facebook: ["https://www.facebook.com/DieMitteStadtZH"]
+
+  - name: "GLP Stadt Zürich"
+    instagram: ["https://www.instagram.com/glpstadtzrh/"]
+    facebook: ["https://www.facebook.com/glpStadtZuerich"]
+    x: ["https://x.com/glpstadtzuerich"]
 
   - name: "Amstad Micha"
     instagram: ["https://www.instagram.com/michaamstad/?hl=de"]
@@ -156,9 +161,13 @@ contacts:
   - name: "Gallizzi Sandra"
     facebook: ["https://www.facebook.com/sandragallizzi"]
     instagram: ["https://www.instagram.com/mylife_by_sandrag"]
+    linkedin: ["https://www.linkedin.com/in/sandra-gallizzi-8b00a033b/"]
 
   - name: "Garcia Nuñez David"
     x: ["https://x.com/thuritch"]
+    instagram: ["https://www.instagram.com/sandra_gallizzi/"]
+    linkedin: ["https://www.linkedin.com/in/david-garcia-nu%C3%B1ez-2a47694b/"]
+    bluesky: ["https://bsky.app/profile/thuritch.bsky.social"]
 
   - name: "Gediz Murat"
     facebook: ["https://www.facebook.com/share/16EwYFRNqK/?mibextid=wwXIfr"]
@@ -167,24 +176,30 @@ contacts:
         "https://www.instagram.com/murat_gediz?igsh=MXByb29zbGkxcXN3bA%3D%3D&utm_source=qr",
       ]
     linkedin: ["https://www.linkedin.com/in/murat-gediz-aaaa54139/"]
+    x: ["https://x.com/gediz_zh"]
 
   - name: "Graff Anna"
     x: ["https://x.com/annagraff_"]
     facebook: ["https://www.facebook.com/anna.graff.52"]
     instagram: ["https://www.instagram.com/annagraff_"]
     linkedin: ["https://www.linkedin.com/in/annagraff/"]
+    bluesky: ["https://bsky.app/profile/annagraff.bsky.social"]
 
   - name: "Guy Krayenbühl"
+    linkedin: ["https://www.linkedin.com/in/guy-krayenb%C3%BChl-922b19153/"]
 
   - name: "Habegger Rahel"
     facebook: ["https://www.facebook.com/rahelsarahabegger"]
     linkedin: ["https://www.linkedin.com/in/rahel-habegger-03677a1a3"]
 
   - name: "Hannah Locher"
+    facebook: ["https://www.facebook.com/hannah.locher"]
 
   - name: "Henz Yves"
     x: ["https://x.com/HenzYves"]
     instagram: ["https://www.instagram.com/yves.henz/"]
+    tiktok: ["https://www.tiktok.com/@yves_henz"]
+    bluesky: ["https://bsky.app/profile/yveshenz.bsky.social"]
 
   - name: "Hofstetter Thomas"
     facebook: ["https://www.facebook.com/thomas.hofstetter.84"]
