@@ -14,7 +14,7 @@
 - [x] post all new abstimmungen. how to avoid duplicates? keep track of a published abstimmuneng log. In the repo with the github action that commits to it after it run?
 - [x] Tag relevant X accounts. Enhance the bot to tag relevant Gemeinderat X accounts in posts, based on author/submitter.
 - [ ] Curate the contacts.yaml with social media accounts.
-- [ ] Group Abstimmungen with the same date and Gschäft into one single post
+- [x] Group Abstimmungen with the same date and Gschäft into one single post
 - [ ] Based on the contacts.yaml, dedice which social media platforms to expand to next (Instagram, Facebook, LinkedIn, TikTok, Bluesky)
 - [ ] Generate visual posts (images)
   - Create simple image posts with text on colored backgrounds (varying colors per post, add shadows)

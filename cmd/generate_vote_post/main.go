@@ -5,9 +5,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
@@ -23,7 +25,7 @@ func main() {
 		contactMapper = nil // Continue without tagging
 	}
 
-	// Determine how many votes to fetch (default: 1)
+	// Determine how many votes to show (default: 1)
 	numVotes := 1
 	if len(os.Args) > 1 {
 		var n int
@@ -32,22 +34,25 @@ func main() {
 		}
 	}
 
-	// Fetch the most recent votes
-	votes, err := client.FetchRecentAbstimmungen(numVotes)
+	// Use empty vote log (show all votes, not just unposted)
+	emptyLog := votelog.NewEmpty(votelog.PlatformX)
+
+	// Prepare votes (same logic as main.go)
+	groups, err := voteposting.PrepareVoteGroups(client, emptyLog, numVotes)
 	if err != nil {
-		log.Fatalf("Error fetching votes: %v", err)
+		log.Fatalf("Error preparing votes: %v", err)
 	}
 
-	if len(votes) == 0 {
+	if len(groups) == 0 {
 		log.Fatal("No votes found")
 	}
 
-	// Generate posts for each vote
-	for i, vote := range votes {
-		if i > 0 {
-			fmt.Println("\n" + strings.Repeat("─", 80) + "\n")
-		}
-		post := zurichapi.FormatVotePost(&vote, contactMapper)
-		fmt.Println(post)
+	// Create X platform (for formatting only, no posting)
+	xPlatform := x.NewXPlatform("", "", "", "", contactMapper, numVotes)
+
+	// Dry run - just print, don't post
+	_, err = voteposting.PostToPlatform(groups, xPlatform, emptyLog, true)
+	if err != nil {
+		log.Fatalf("Error: %v", err)
 	}
 }

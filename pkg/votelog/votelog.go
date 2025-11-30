@@ -117,6 +117,16 @@ func (l *VoteLog) Count() int {
 	return len(l.Votes)
 }
 
+// NewEmpty creates an empty vote log (useful for testing or when we want to show all votes)
+func NewEmpty(platform Platform) *VoteLog {
+	return &VoteLog{
+		Platform: platform,
+		Votes:    []VoteEntry{},
+		filepath: getLogFilePath(platform),
+		index:    make(map[string]VoteEntry),
+	}
+}
+
 // getLogFilePath returns the file path for a platform's log
 func getLogFilePath(platform Platform) string {
 	return fmt.Sprintf("data/posted_votes_%s.json", platform)

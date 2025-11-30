@@ -70,21 +70,49 @@ func main() {
 		return
 	}
 
-	// Show what would be posted
-	votesToPost := unpostedVotes
-	if len(unpostedVotes) > maxPostsPerRun {
-		fmt.Printf("⚠️  Would limit to %d posts per run (found %d unposted)\n\n", maxPostsPerRun, len(unpostedVotes))
-		votesToPost = unpostedVotes[:maxPostsPerRun]
+	// Group votes by business matter and date
+	voteGroups, err := client.GroupAbstimmungenByGeschaeft(unpostedVotes)
+	if err != nil {
+		log.Fatalf("Error grouping votes: %v", err)
+	}
+	fmt.Printf("📦 Grouped into %d post(s)\n\n", len(voteGroups))
+
+	// Limit number of posts
+	// Count individual votes, but always include complete groups
+	groupsToPost := voteGroups
+	if len(voteGroups) > 0 {
+		voteCount := 0
+		groupLimit := len(voteGroups)
+		for i, group := range voteGroups {
+			if voteCount+len(group) > maxPostsPerRun {
+				groupLimit = i
+				break
+			}
+			voteCount += len(group)
+		}
+		if groupLimit < len(voteGroups) {
+			fmt.Printf("⚠️  Would limit to %d groups (%d votes) per run (found %d groups with %d total votes)\n\n", 
+				groupLimit, voteCount, len(voteGroups), len(unpostedVotes))
+			groupsToPost = voteGroups[:groupLimit]
+		}
 	}
 
-	fmt.Printf("🚀 Would post these %d votes:\n\n", len(votesToPost))
+	fmt.Printf("🚀 Would post these %d groups:\n\n", len(groupsToPost))
 	
-	for i, vote := range votesToPost {
-		message := zurichapi.FormatVotePost(&vote, contactMapper)
+	for i, group := range groupsToPost {
+		message := zurichapi.FormatVoteGroupPost(group, contactMapper)
 		fmt.Printf("─────────────────────────────────────────────────────────────────\n")
-		fmt.Printf("[%d/%d] Vote ID: %s\n", i+1, len(votesToPost), vote.OBJGUID[:8]+"...")
-		fmt.Printf("Date: %s\n", vote.SitzungDatum[:10])
-		fmt.Printf("\n%s\n", message)
+		fmt.Printf("[%d/%d] Group with %d vote(s)\n", i+1, len(groupsToPost), len(group))
+		fmt.Printf("Business: %s\n", group[0].GeschaeftGrNr)
+		fmt.Printf("Date: %s\n", group[0].SitzungDatum[:10])
+		fmt.Printf("Vote IDs: ")
+		for j, vote := range group {
+			if j > 0 {
+				fmt.Printf(", ")
+			}
+			fmt.Printf("%s", vote.OBJGUID[:8]+"...")
+		}
+		fmt.Printf("\n\n%s\n", message)
 		fmt.Printf("\nCharacter count: %d\n", len(message))
 	}
 	fmt.Printf("─────────────────────────────────────────────────────────────────\n")

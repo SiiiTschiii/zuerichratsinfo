@@ -9,7 +9,8 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/xapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
@@ -45,65 +46,36 @@ func main() {
 	}
 	fmt.Printf("Loaded vote log: %d votes already posted\n", voteLog.Count())
 
-	// Fetch recent votes from Zurich council API
+	// Create API client
 	client := zurichapi.NewClient()
-	abstimmungen, err := client.FetchRecentAbstimmungen(maxVotesToCheck)
+
+	// Prepare votes for posting (platform-agnostic)
+	groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
 	if err != nil {
-		log.Fatalf("Error fetching abstimmungen: %v", err)
-	}
-	
-	if len(abstimmungen) == 0 {
-		log.Fatal("No abstimmungen found")
+		log.Fatalf("Error preparing votes: %v", err)
 	}
 
-	// Filter out already posted votes
-	var unpostedVotes []zurichapi.Abstimmung
-	for _, vote := range abstimmungen {
-		if !voteLog.IsPosted(vote.OBJGUID) {
-			unpostedVotes = append(unpostedVotes, vote)
-		}
-	}
-
-	fmt.Printf("Found %d unposted votes out of %d recent votes\n", len(unpostedVotes), len(abstimmungen))
-
-	if len(unpostedVotes) == 0 {
+	if len(groups) == 0 {
 		fmt.Println("No new votes to post!")
 		return
 	}
 
-	// Limit posts per run to avoid rate limits
-	if len(unpostedVotes) > maxPostsPerRun {
-		fmt.Printf("Limiting to %d posts per run (found %d unposted)\n", maxPostsPerRun, len(unpostedVotes))
-		unpostedVotes = unpostedVotes[:maxPostsPerRun]
+	fmt.Printf("Found %d group(s) to post\n", len(groups))
+
+	// Create X platform poster
+	xPlatform := x.NewXPlatform(
+		apiKey, apiSecret, accessToken, accessSecret,
+		contactMapper,
+		maxPostsPerRun,
+	)
+
+	// Post to platform
+	posted, err := voteposting.PostToPlatform(groups, xPlatform, voteLog, false)
+	if err != nil {
+		log.Fatalf("Error posting: %v", err)
 	}
 
-	// Post each unposted vote
-	successCount := 0
-	for i, vote := range unpostedVotes {
-		fmt.Printf("\n[%d/%d] Posting vote %s...\n", i+1, len(unpostedVotes), vote.OBJGUID)
-		
-		// Format message
-		message := zurichapi.FormatVotePost(&vote, contactMapper)
-		fmt.Printf("Message (%d chars):\n%s\n\n", len(message), message)
-
-		// Post to X
-		err = xapi.PostTweet(apiKey, apiSecret, accessToken, accessSecret, message)
-		if err != nil {
-			log.Printf("ERROR: Failed to post vote %s: %v", vote.OBJGUID, err)
-			continue // Skip this one, try next
-		}
-
-		// Mark as posted and save immediately
-		voteLog.MarkAsPosted(vote.OBJGUID)
-		if err := voteLog.Save(); err != nil {
-			log.Printf("WARNING: Failed to save vote log: %v", err)
-		}
-
-		successCount++
-		fmt.Printf("✅ Successfully posted!\n")
-	}
-
-	fmt.Printf("\n🎉 Posted %d new votes successfully!\n", successCount)
+	fmt.Printf("\n🎉 Posted %d new group(s) successfully!\n", posted)
 }
 
 // getEnvInt gets an integer from environment variable with a default value

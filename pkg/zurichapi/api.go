@@ -80,6 +80,34 @@ func (c *Client) FetchRecentAbstimmungen(limit int) ([]Abstimmung, error) {
 
 	return abstimmungen, nil
 }
+
+// FetchAbstimmungenForTraktandum fetches all votes for a specific Traktandum by its GUID
+func (c *Client) FetchAbstimmungenForTraktandum(traktandumGuid string) ([]Abstimmung, error) {
+	// Query the Abstimmung API for this specific TraktandumGuid
+	// Using "traktandumguid any" syntax (text fields require "any" relation)
+	url := fmt.Sprintf("%s/searchdetails?q=traktandumguid%%20any%%20%%22%s%%22&l=de-CH",
+		AbstimmungBaseURL,
+		traktandumGuid)
+
+	body, err := c.makeRequest(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp AbstimmungSearchResponse
+	if err := xml.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("failed to parse XML response: %w", err)
+	}
+
+	// Extract all Abstimmungen from hits
+	var abstimmungen []Abstimmung
+	for _, hit := range resp.Hits {
+		abstimmungen = append(abstimmungen, hit.Abstimmung)
+	}
+
+	return abstimmungen, nil
+}
+
 // GetActiveMandates fetches active mandates from the Gemeinderat
 // A mandate is considered active if its End date is "9999-12-31 00:00:00" or later
 // excludeFunktionen is an optional list of Funktion values to exclude from results
@@ -133,5 +161,86 @@ func (c *Client) FetchActiveGemeinderatMandates() ([]Behoerdenmandat, error) {
 		"Präsidium Stadtrat",
 		"Mitglied Stadtrat",
 	)
+}
+
+// GroupAbstimmungenByGeschaeft groups abstimmungen by their business matter (GeschaeftGrNr)
+// and voting session date (SitzungDatum). Returns a slice of vote groups.
+// This method also ensures that if the last vote belongs to a multi-vote Geschäft,
+// all votes from that Geschäft are fetched and included in the group.
+func (c *Client) GroupAbstimmungenByGeschaeft(votes []Abstimmung) ([][]Abstimmung, error) {
+	if len(votes) == 0 {
+		return nil, nil
+	}
+	
+	// First, ensure the last vote's group is complete if needed
+	completeVotes, err := c.ensureCompleteGroupIfNeeded(votes)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Build a map keyed by "GeschaeftGrNr|SitzungDatum"
+	groupMap := make(map[string][]Abstimmung)
+	
+	for _, vote := range completeVotes {
+		// Extract just the date part (YYYY-MM-DD) from SitzungDatum
+		date := vote.SitzungDatum
+		if len(date) > 10 {
+			date = date[:10]
+		}
+		
+		key := vote.GeschaeftGrNr + "|" + date
+		groupMap[key] = append(groupMap[key], vote)
+	}
+	
+	// Convert map to slice of groups, preserving the order of first occurrence
+	seen := make(map[string]bool)
+	var groups [][]Abstimmung
+	
+	for _, vote := range completeVotes {
+		date := vote.SitzungDatum
+		if len(date) > 10 {
+			date = date[:10]
+		}
+		key := vote.GeschaeftGrNr + "|" + date
+		
+		if !seen[key] {
+			seen[key] = true
+			groups = append(groups, groupMap[key])
+		}
+	}
+	
+	return groups, nil
+}
+
+// ensureCompleteGroupIfNeeded checks if the last vote belongs to a multi-vote Geschäft
+// and fetches any missing votes from that Geschäft/date if needed
+func (c *Client) ensureCompleteGroupIfNeeded(votes []Abstimmung) ([]Abstimmung, error) {
+	if len(votes) == 0 {
+		return votes, nil
+	}
+	
+	lastVote := votes[len(votes)-1]
+	
+	// Fetch all votes for this Traktandum using the TraktandumGuid
+	allVotesForTraktandum, err := c.FetchAbstimmungenForTraktandum(lastVote.TraktandumGuid)
+	if err != nil {
+		// If we can't fetch, just return what we have
+		return votes, nil
+	}
+	
+	// Count how many votes we already have for this Traktandum
+	existingIDs := make(map[string]bool)
+	for _, v := range votes {
+		existingIDs[v.OBJGUID] = true
+	}
+	
+	// Append missing votes from the same Traktandum
+	for _, v := range allVotesForTraktandum {
+		if !existingIDs[v.OBJGUID] {
+			votes = append(votes, v)
+		}
+	}
+	
+	return votes, nil
 }
 
