@@ -204,11 +204,13 @@ contacts:
   - name: "Hofstetter Thomas"
     facebook: ["https://www.facebook.com/thomas.hofstetter.84"]
     instagram: ["https://www.instagram.com/thomas.hofstetter.84"]
+    linkedin: ["https://www.linkedin.com/in/thomas-hofstetter-11aa07388/"]
 
   - name: "Huber Christine"
     x: ["https://x.com/chhuber7"]
     instagram: ["https://www.instagram.com/chhuber7"]
     linkedin: ["https://www.linkedin.com/in/christine-huber-bab494238"]
+    bluesky: ["https://bsky.app/profile/chhuber7.bsky.social"]
 
   - name: "Hurni Loïc"
     linkedin: ["https://www.linkedin.com/in/lo%C3%AFc-hurni-b22b45194/"]

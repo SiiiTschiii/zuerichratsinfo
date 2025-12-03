@@ -2,30 +2,6 @@
 
 # Copy these URLs to find social media accounts
 
-## Hofstetter Thomas
-
-- X/Twitter: https://x.com/search?q=Hofstetter+Thomas&src=typed_query&f=user
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Hofstetter+Thomas
-- TikTok: https://www.tiktok.com/search?q=Hofstetter+Thomas
-- Bluesky: https://bsky.app/search?q=Hofstetter+Thomas
-- Google: https://www.google.com/search?q=Hofstetter+Thomas+Gemeinderat+Z%C3%BCrich+social+media
-
-## Huber Christine
-
-- Facebook: https://www.facebook.com/search/top?q=Huber+Christine+Z%C3%BCrich
-- TikTok: https://www.tiktok.com/search?q=Huber+Christine
-- Bluesky: https://bsky.app/search?q=Huber+Christine
-- Google: https://www.google.com/search?q=Huber+Christine+Gemeinderat+Z%C3%BCrich+social+media
-
-## Hurni Loïc
-
-- X/Twitter: https://x.com/search?q=Hurni+Lo%C3%AFc&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Hurni+Lo%C3%AFc
-- Facebook: https://www.facebook.com/search/top?q=Hurni+Lo%C3%AFc+Z%C3%BCrich
-- TikTok: https://www.tiktok.com/search?q=Hurni+Lo%C3%AFc
-- Bluesky: https://bsky.app/search?q=Hurni+Lo%C3%AFc
-- Google: https://www.google.com/search?q=Hurni+Lo%C3%AFc+Gemeinderat+Z%C3%BCrich+social+media
-
 ## Hurschler Roland
 
 - TikTok: https://www.tiktok.com/search?q=Hurschler+Roland
