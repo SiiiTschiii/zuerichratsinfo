@@ -3,19 +3,24 @@
 
 version: "1.0"
 contacts:
-  - name: "SP Zürich"
+  - name: "SP Stadt Zürich"
     bluesky: ["https://bsky.app/profile/spzuerich.ch"]
     tiktok: ["https://www.tiktok.com/@spzuerich"]
     facebook: ["https://www.facebook.com/SPStadtZuerich/"]
     instagram: ["https://www.instagram.com/spzuerich/"]
 
-  - name: "FDP Zürich"
+  - name: "SVP Stadt Zürich"
+    instagram: ["https://www.instagram.com/svp_stadt_zuerich/"]
+    x: ["https://x.com/svp_stadt_zh"]
+    facebook: ["https://www.facebook.com/SVPStadtZuerich"]
+
+  - name: "FDP Stadt Zürich"
     instagram: ["https://www.instagram.com/mehblau/"]
     x: ["https://x.com/mehblau"]
     facebook: ["https://www.facebook.com/fdpstadtzuerich/"]
     linkedin: ["https://www.linkedin.com/company/fdp-stadt-z%C3%BCrich/"]
 
-  - name: "Grüne Zürich"
+  - name: "Grüne Stadt Zürich"
     instagram: ["https://www.instagram.com/gruenezuerich/"]
     facebook: ["https://www.facebook.com/gruenezuerich"]
     x: ["https://x.com/GrueneZuerich"]
@@ -220,14 +225,17 @@ contacts:
     facebook: ["https://www.facebook.com/roland.hurschler.9"]
     instagram: ["https://www.instagram.com/rroleeh"]
     linkedin: ["https://ch.linkedin.com/in/roland-hurschler-24b812a8"]
-
-  - name: "Isabel Garcia"
+    bluesky: ["https://bsky.app/profile/rrolee.bsky.social"]
 
   - name: "Ivo Bieri"
-
-  - name: "Jean-Marc Jung"
+    x: ["https://x.com/ivo_bieri"]
+    linkdein: ["https://www.linkedin.com/in/ivo-bieri/"]
 
   - name: "Johann Widmer"
+    x: ["https://x.com/WidmerJohann"]
+    facebook: ["https://www.facebook.com/profile.php?id=100077478961604"]
+    linkedin: ["https://www.linkedin.com/in/johann-hannes-widmer-3a361030a/"]
+    tiktok: ["https://www.tiktok.com/@johann_widmer"]
 
   - name: "Jonas Keller"
 

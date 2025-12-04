@@ -2,52 +2,6 @@
 
 # Copy these URLs to find social media accounts
 
-## Hurschler Roland
-
-- TikTok: https://www.tiktok.com/search?q=Hurschler+Roland
-- Bluesky: https://bsky.app/search?q=Hurschler+Roland
-- Google: https://www.google.com/search?q=Hurschler+Roland+Gemeinderat+Z%C3%BCrich+social+media
-
-## Isabel Garcia
-
-- X/Twitter: https://x.com/search?q=Isabel+Garcia&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Isabel+Garcia
-- Facebook: https://www.facebook.com/search/top?q=Isabel+Garcia+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Isabel+Garcia
-- TikTok: https://www.tiktok.com/search?q=Isabel+Garcia
-- Bluesky: https://bsky.app/search?q=Isabel+Garcia
-- Google: https://www.google.com/search?q=Isabel+Garcia+Gemeinderat+Z%C3%BCrich+social+media
-
-## Ivo Bieri
-
-- X/Twitter: https://x.com/search?q=Ivo+Bieri&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Ivo+Bieri
-- Facebook: https://www.facebook.com/search/top?q=Ivo+Bieri+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Ivo+Bieri
-- TikTok: https://www.tiktok.com/search?q=Ivo+Bieri
-- Bluesky: https://bsky.app/search?q=Ivo+Bieri
-- Google: https://www.google.com/search?q=Ivo+Bieri+Gemeinderat+Z%C3%BCrich+social+media
-
-## Jean-Marc Jung
-
-- X/Twitter: https://x.com/search?q=Jean-Marc+Jung&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Jean-Marc+Jung
-- Facebook: https://www.facebook.com/search/top?q=Jean-Marc+Jung+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Jean-Marc+Jung
-- TikTok: https://www.tiktok.com/search?q=Jean-Marc+Jung
-- Bluesky: https://bsky.app/search?q=Jean-Marc+Jung
-- Google: https://www.google.com/search?q=Jean-Marc+Jung+Gemeinderat+Z%C3%BCrich+social+media
-
-## Johann Widmer
-
-- X/Twitter: https://x.com/search?q=Johann+Widmer&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Johann+Widmer
-- Facebook: https://www.facebook.com/search/top?q=Johann+Widmer+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Johann+Widmer
-- TikTok: https://www.tiktok.com/search?q=Johann+Widmer
-- Bluesky: https://bsky.app/search?q=Johann+Widmer
-- Google: https://www.google.com/search?q=Johann+Widmer+Gemeinderat+Z%C3%BCrich+social+media
-
 ## Jonas Keller
 
 - X/Twitter: https://x.com/search?q=Jonas+Keller&src=typed_query&f=user
