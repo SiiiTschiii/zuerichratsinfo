@@ -229,7 +229,7 @@ contacts:
 
   - name: "Ivo Bieri"
     x: ["https://x.com/ivo_bieri"]
-    linkdein: ["https://www.linkedin.com/in/ivo-bieri/"]
+    linkedin: ["https://www.linkedin.com/in/ivo-bieri/"]
 
   - name: "Johann Widmer"
     x: ["https://x.com/WidmerJohann"]
