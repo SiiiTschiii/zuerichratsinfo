@@ -15,8 +15,8 @@
 - [x] Tag relevant X accounts. Enhance the bot to tag relevant Gemeinderat X accounts in posts, based on author/submitter.
 - [ ] Curate the contacts.yaml with social media accounts.
 - [ ] Contact politicians on x.com and some news orgs to follow and share the account.
-- [ ] Add a way to suppport the project (e.g., GitHub Sponsors, Buy Me a Coffee, etc.). The x.com premium accounts / paid API features.
-- [ ] Add a thank you section in the README to acknowledge contributors and supporters.
+- [x] Add a way to suppport the project (e.g., GitHub Sponsors, Buy Me a Coffee, etc.). The x.com premium accounts / paid API features.
+- [x] Add a thank you section in the README to acknowledge contributors and supporters.
 - [x] Group Abstimmungen with the same date and Gschäft into one single post
 - [ ] Based on the contacts.yaml, dedice which social media platforms to expand to next (Instagram, Facebook, LinkedIn, TikTok, Bluesky
 - [ ] Generate visual posts (images)

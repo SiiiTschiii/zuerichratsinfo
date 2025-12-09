@@ -42,11 +42,19 @@ See [SETUP.md](SETUP.md) for installation and configuration instructions.
 
 See [TODO.md](TODO.md) for current tasks and roadmap.
 
+## Support This Project
+
+Help keep @zuerichratsinfo running! Your support covers the costs for X Premium account and API access.
+
+<a href="https://buymeacoffee.com/zuerichratsinfo" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
+This is a non-profit civic tech project. Every contribution helps make local politics more accessible! 🙏
+
 ## Acknowledgments
 
 Special thanks to:
 
-- **[Alexander Guentert](https://github.com/alexanderguentert)** from [Open Data Zurich](https://opendatazurich.github.io) for support in integrating the Paris-API, Gemeinderat Stadt Zürich (GRZ)
+- **[Alexander Guentert](https://github.com/alexanderguentert)** from [Open Data Zurich](https://opendatazurich.github.io) for support in integrating the Paris-API, Gemeinderat Stadt Zürich
 
 ## License
 
