@@ -238,16 +238,30 @@ contacts:
     tiktok: ["https://www.tiktok.com/@johann_widmer"]
 
   - name: "Jonas Keller"
+    instagram: ["https://www.instagram.com/jonaskellerzh/"]
+    facebook: ["https://www.facebook.com/jonaskellerzh/"]
+    linkedin: ["https://www.linkedin.com/in/jonas-keller-15b3701b7/"]
+    bluesky: ["https://bsky.app/profile/jonaskellerzh.bsky.social"]
 
   - name: "Julia Hofstetter"
+    x: ["https://x.com/JuliaHofstette6"]
+    instagram: ["https://www.instagram.com/juliagirlitz/"]
+    linkedin: ["https://www.linkedin.com/in/julia-hofstetter-382546201/"]
+    bluesky: ["https://bsky.app/profile/juliahofstetter.bsky.social"]
 
   - name: "Jürg Rauser"
-
-  - name: "Karen Hug"
+    instagram: ["https://www.instagram.com/juergrauser/"]
 
   - name: "Karin Rykart"
+    facebook: ["https://www.facebook.com/karinrykart/"]
+    instagram: ["https://www.instagram.com/KarinRykart/"]
+    linkedin: ["https://www.linkedin.com/in/karin-rykart-9ab8b480/"]
 
   - name: "Karin Stepinski"
+    x: ["https://x.com/StepinskiKarin"]
+    instagram: ["https://www.instagram.com/p/B1WekEKAvjb/"]
+    facebook: ["https://www.facebook.com/karin.stepinski"]
+    linkedin: ["https://www.linkedin.com/in/karin-stepinski-001ab1145/"]
 
   - name: "Karin Weyermann"
 
