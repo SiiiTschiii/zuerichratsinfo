@@ -1,4 +1,4 @@
-package zurichapi
+package x
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/urlshorten"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 var geschaeftNumberRegex = regexp.MustCompile(`^\d+/\d+\s+`)
@@ -14,13 +15,13 @@ var geschaeftNumberUnderscoreRegex = regexp.MustCompile(`^\d+_\d+\s+`)
 
 // FormatVotePost creates a formatted X post for a vote (Abstimmung)
 // This is the main function to format vote posts for X/Twitter
-func FormatVotePost(vote *Abstimmung, contactMapper *contacts.Mapper) string {
-	return FormatVoteGroupPost([]Abstimmung{*vote}, contactMapper)
+func FormatVotePost(vote *zurichapi.Abstimmung, contactMapper *contacts.Mapper) string {
+	return FormatVoteGroupPost([]zurichapi.Abstimmung{*vote}, contactMapper)
 }
 
 // FormatVoteGroupPost creates a formatted X post for a group of related votes
 // (multiple votes on the same business matter on the same day)
-func FormatVoteGroupPost(votes []Abstimmung, contactMapper *contacts.Mapper) string {
+func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) string {
 	if len(votes) == 0 {
 		return ""
 	}

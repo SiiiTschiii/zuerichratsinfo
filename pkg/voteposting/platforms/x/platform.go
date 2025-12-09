@@ -47,7 +47,7 @@ maxPostsPerRun int,
 
 // Format formats a group of votes into X-specific content
 func (p *XPlatform) Format(votes []zurichapi.Abstimmung) (platforms.Content, error) {
-	message := zurichapi.FormatVoteGroupPost(votes, p.contactMapper)
+	message := FormatVoteGroupPost(votes, p.contactMapper)
 	return &XContent{message: message}, nil
 }
 

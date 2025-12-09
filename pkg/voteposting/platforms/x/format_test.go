@@ -1,8 +1,10 @@
-package zurichapi
+package x
 
 import (
 	"strings"
 	"testing"
+
+	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 func TestCleanVoteTitle(t *testing.T) {
@@ -86,12 +88,12 @@ func TestCleanVoteTitle(t *testing.T) {
 func TestFormatVoteGroupPost_PreservesPostulatMotion(t *testing.T) {
 	tests := []struct {
 		name          string
-		votes         []Abstimmung
+		votes         []zurichapi.Abstimmung
 		expectedParts []string // Parts that should appear in the output
 	}{
 		{
 			name: "Single vote with Postulat in title",
-			votes: []Abstimmung{
+			votes: []zurichapi.Abstimmung{
 				{
 					OBJGUID:        "test-guid-1",
 					GeschaeftGrNr:  "2025/100",
@@ -112,7 +114,7 @@ func TestFormatVoteGroupPost_PreservesPostulatMotion(t *testing.T) {
 		},
 		{
 			name: "Single vote with Motion in title",
-			votes: []Abstimmung{
+			votes: []zurichapi.Abstimmung{
 				{
 					OBJGUID:        "test-guid-2",
 					GeschaeftGrNr:  "2025/200",

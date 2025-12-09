@@ -9,6 +9,7 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
@@ -100,7 +101,7 @@ func main() {
 	fmt.Printf("🚀 Would post these %d groups:\n\n", len(groupsToPost))
 	
 	for i, group := range groupsToPost {
-		message := zurichapi.FormatVoteGroupPost(group, contactMapper)
+		message := x.FormatVoteGroupPost(group, contactMapper)
 		fmt.Printf("─────────────────────────────────────────────────────────────────\n")
 		fmt.Printf("[%d/%d] Group with %d vote(s)\n", i+1, len(groupsToPost), len(group))
 		fmt.Printf("Business: %s\n", group[0].GeschaeftGrNr)
