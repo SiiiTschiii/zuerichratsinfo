@@ -42,6 +42,12 @@ See [SETUP.md](SETUP.md) for installation and configuration instructions.
 
 See [TODO.md](TODO.md) for current tasks and roadmap.
 
+## Acknowledgments
+
+Special thanks to:
+
+- **[Alexander Guentert](https://github.com/alexanderguentert)** from [Open Data Zurich](https://opendatazurich.github.io) for support in integrating the Paris-API, Gemeinderat Stadt Zürich (GRZ)
+
 ## License
 
 MIT
