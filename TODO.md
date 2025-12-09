@@ -23,7 +23,3 @@
   - Create simple image posts with text on colored backgrounds (varying colors per post, add shadows)
   - This would enable expansion to visual-first platforms like Instagram and TikTok
   - Start simple: uni-colored background + large text + basic shadow effects
-
-# Bugs
-
-- [ ] "Postulat" is cutoff in the title. e.g.https://x.com/zuerichratsinfo/status/1996128312289275937?s=20

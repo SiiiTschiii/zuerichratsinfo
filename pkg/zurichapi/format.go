@@ -2,11 +2,15 @@ package zurichapi
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/urlshorten"
 )
+
+var geschaeftNumberRegex = regexp.MustCompile(`^\d+/\d+\s+`)
+var geschaeftNumberUnderscoreRegex = regexp.MustCompile(`^\d+_\d+\s+`)
 
 // FormatVotePost creates a formatted X post for a vote (Abstimmung)
 // This is the main function to format vote posts for X/Twitter
@@ -147,15 +151,9 @@ func cleanVoteTitle(title string) string {
 	parts := strings.Fields(title)
 	title = strings.Join(parts, " ")
 	
-	// Strip Geschäft number from the beginning (e.g., "2024/431 ")
-	// Pattern: YYYY/NNN at the start followed by space
-	if len(title) > 8 && title[4] == '/' {
-		// Find the first space after the number
-		spaceIdx := strings.Index(title[8:], " ")
-		if spaceIdx != -1 {
-			title = title[8+spaceIdx+1:]
-		}
-	}
+	// Strip Geschäft number from the beginning (e.g., "2024/431 " or "2025/84 ")
+	// Pattern: number/number followed by space
+	title = geschaeftNumberRegex.ReplaceAllString(title, "")
 	
 	return title
 }
@@ -175,14 +173,8 @@ func cleanVoteSubtitle(subtitle string) string {
 	// Strip Geschäft number patterns:
 	// Pattern 1: "2025/369 " with slash
 	// Pattern 2: "2025_0369 " with underscore
-	if len(subtitle) > 8 {
-		if subtitle[4] == '/' || subtitle[4] == '_' {
-			spaceIdx := strings.Index(subtitle[8:], " ")
-			if spaceIdx != -1 {
-				subtitle = subtitle[8+spaceIdx+1:]
-			}
-		}
-	}
+	subtitle = geschaeftNumberRegex.ReplaceAllString(subtitle, "")
+	subtitle = geschaeftNumberUnderscoreRegex.ReplaceAllString(subtitle, "")
 	
 	return subtitle
 }
