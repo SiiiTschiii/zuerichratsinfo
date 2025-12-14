@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"sort"
+	"strconv"
 )
 
 const (
@@ -192,6 +194,17 @@ func (c *Client) GroupAbstimmungenByGeschaeft(votes []Abstimmung) ([][]Abstimmun
 		groupMap[key] = append(groupMap[key], vote)
 	}
 	
+	// Sort votes within each group by SEQ (ascending) to preserve Sitzung chronological order
+	for key := range groupMap {
+		votes := groupMap[key]
+		sort.Slice(votes, func(i, j int) bool {
+			seqI, _ := strconv.Atoi(votes[i].SEQ)
+			seqJ, _ := strconv.Atoi(votes[j].SEQ)
+			return seqI < seqJ
+		})
+		groupMap[key] = votes
+	}
+	
 	// Convert map to slice of groups, preserving the order of first occurrence
 	seen := make(map[string]bool)
 	var groups [][]Abstimmung
@@ -208,6 +221,13 @@ func (c *Client) GroupAbstimmungenByGeschaeft(votes []Abstimmung) ([][]Abstimmun
 			groups = append(groups, groupMap[key])
 		}
 	}
+	
+	// Sort groups by their minimum SEQ value (oldest first)
+	sort.Slice(groups, func(i, j int) bool {
+		minSeqI, _ := strconv.Atoi(groups[i][0].SEQ) // First vote in group is already sorted to be oldest
+		minSeqJ, _ := strconv.Atoi(groups[j][0].SEQ)
+		return minSeqI < minSeqJ
+	})
 	
 	return groups, nil
 }
