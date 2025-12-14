@@ -263,16 +263,22 @@ contacts:
     linkedin: ["https://www.linkedin.com/in/karin-stepinski-001ab1145/"]
 
   - name: "Karin Weyermann"
+    x: ["https://x.com/KWeyermann"]
+    facebook: ["https://www.facebook.com/ka.weyermann"]
+    linkedin: ["https://www.linkedin.com/in/karin-weyermann-7122b3108/"]
+    tiktok: ["https://www.tiktok.com/@karinweyermann7"]
 
   - name: "Kipfer Attila"
     facebook: ["https://www.facebook.com/attila.kipfer"]
     linkedin: ["https://ch.linkedin.com/in/attila-kipfer-6620a898"]
+    tiktok: ["https://www.tiktok.com/@attila.kipfer"]
 
   - name: "Lamprecht Pascal"
     x: ["https://www.x.com/pascallamprecht"]
     facebook: ["https://www.facebook.com/pascal.lamprecht.5"]
     instagram: ["https://www.instagram.com/pascallamprecht"]
     linkedin: ["https://ch.linkedin.com/in/pascal-lamprecht-68b239151"]
+    bluesky: ["https://bsky.app/profile/pascallamprecht.bsky.social"]
 
   - name: "Lea Herzig"
 

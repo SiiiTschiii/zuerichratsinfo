@@ -2,30 +2,6 @@
 
 # Copy these URLs to find social media accounts
 
-## Karin Weyermann
-
-- X/Twitter: https://x.com/search?q=Karin+Weyermann&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Karin+Weyermann
-- Facebook: https://www.facebook.com/search/top?q=Karin+Weyermann+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Karin+Weyermann
-- TikTok: https://www.tiktok.com/search?q=Karin+Weyermann
-- Bluesky: https://bsky.app/search?q=Karin+Weyermann
-- Google: https://www.google.com/search?q=Karin+Weyermann+Gemeinderat+Z%C3%BCrich+social+media
-
-## Kipfer Attila
-
-- X/Twitter: https://x.com/search?q=Kipfer+Attila&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Kipfer+Attila
-- TikTok: https://www.tiktok.com/search?q=Kipfer+Attila
-- Bluesky: https://bsky.app/search?q=Kipfer+Attila
-- Google: https://www.google.com/search?q=Kipfer+Attila+Gemeinderat+Z%C3%BCrich+social+media
-
-## Lamprecht Pascal
-
-- TikTok: https://www.tiktok.com/search?q=Lamprecht+Pascal
-- Bluesky: https://bsky.app/search?q=Lamprecht+Pascal
-- Google: https://www.google.com/search?q=Lamprecht+Pascal+Gemeinderat+Z%C3%BCrich+social+media
-
 ## Lea Herzig
 
 - X/Twitter: https://x.com/search?q=Lea+Herzig&src=typed_query&f=user
