@@ -280,11 +280,16 @@ contacts:
     linkedin: ["https://ch.linkedin.com/in/pascal-lamprecht-68b239151"]
     bluesky: ["https://bsky.app/profile/pascallamprecht.bsky.social"]
 
-  - name: "Lea Herzig"
-
   - name: "Leah Heuri"
+    x: ["https://x.com/HeuriLeah"]
+    intagram: ["https://www.instagram.com/leah.heuri/"]
+    linkedin: ["https://www.linkedin.com/in/leah-heuri/"]
 
   - name: "Lisa Diggelmann"
+    instagram: ["https://www.instagram.com/lisa_diggelmann/"]
+    x: ["https://x.com/LisaDiggelmann"]
+    facebook: ["https://www.facebook.com/lisa.diggelmann1"]
+    bluesky: ["https://bsky.app/profile/lisadiggelmann.bsky.social"]
 
   - name: "Maggi Luca"
     x: ["https://x.com/LucaMaggiJG"]

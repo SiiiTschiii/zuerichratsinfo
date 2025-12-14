@@ -2,36 +2,6 @@
 
 # Copy these URLs to find social media accounts
 
-## Lea Herzig
-
-- X/Twitter: https://x.com/search?q=Lea+Herzig&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Lea+Herzig
-- Facebook: https://www.facebook.com/search/top?q=Lea+Herzig+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Lea+Herzig
-- TikTok: https://www.tiktok.com/search?q=Lea+Herzig
-- Bluesky: https://bsky.app/search?q=Lea+Herzig
-- Google: https://www.google.com/search?q=Lea+Herzig+Gemeinderat+Z%C3%BCrich+social+media
-
-## Leah Heuri
-
-- X/Twitter: https://x.com/search?q=Leah+Heuri&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Leah+Heuri
-- Facebook: https://www.facebook.com/search/top?q=Leah+Heuri+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Leah+Heuri
-- TikTok: https://www.tiktok.com/search?q=Leah+Heuri
-- Bluesky: https://bsky.app/search?q=Leah+Heuri
-- Google: https://www.google.com/search?q=Leah+Heuri+Gemeinderat+Z%C3%BCrich+social+media
-
-## Lisa Diggelmann
-
-- X/Twitter: https://x.com/search?q=Lisa+Diggelmann&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Lisa+Diggelmann
-- Facebook: https://www.facebook.com/search/top?q=Lisa+Diggelmann+Z%C3%BCrich
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Lisa+Diggelmann
-- TikTok: https://www.tiktok.com/search?q=Lisa+Diggelmann
-- Bluesky: https://bsky.app/search?q=Lisa+Diggelmann
-- Google: https://www.google.com/search?q=Lisa+Diggelmann+Gemeinderat+Z%C3%BCrich+social+media
-
 ## Maggi Luca
 
 - Instagram: https://www.instagram.com/explore/search/keyword/?q=Maggi+Luca
