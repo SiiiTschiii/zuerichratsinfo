@@ -387,7 +387,7 @@ func TestEnsureCompleteGroupLogic(t *testing.T) {
 			}
 
 			lastVote := tt.votes[len(tt.votes)-1]
-			
+
 			// Verify the test data is set up correctly
 			if lastVote.TraktandumGuid == "" {
 				t.Error("Last vote should have TraktandumGuid set")

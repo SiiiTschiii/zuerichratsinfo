@@ -70,9 +70,9 @@ func main() {
 	}
 
 	filepath := os.Args[1]
-	
+
 	errors := validateContactsFile(filepath)
-	
+
 	if len(errors) > 0 {
 		fmt.Printf("❌ Validation failed with %d error(s):\n\n", len(errors))
 		for i, err := range errors {
@@ -222,7 +222,7 @@ func validateURL(urlStr, platform string) error {
 	// Check hostname matches platform
 	hostname := strings.ToLower(parsedURL.Hostname())
 	allowedDomains := platformDomains[platform]
-	
+
 	validDomain := false
 	for _, domain := range allowedDomains {
 		if hostname == domain || strings.HasSuffix(hostname, "."+domain) {
@@ -232,7 +232,7 @@ func validateURL(urlStr, platform string) error {
 	}
 
 	if !validDomain {
-		return fmt.Errorf("URL domain '%s' does not match platform '%s' (expected one of: %v)", 
+		return fmt.Errorf("URL domain '%s' does not match platform '%s' (expected one of: %v)",
 			hostname, platform, allowedDomains)
 	}
 

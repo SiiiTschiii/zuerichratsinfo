@@ -22,7 +22,7 @@ func ExtractXHandleFromURL(url string) string {
 	url = strings.TrimPrefix(url, "https://")
 	url = strings.TrimPrefix(url, "http://")
 	url = strings.TrimPrefix(url, "www.")
-	
+
 	// Handle both x.com and twitter.com
 	if strings.HasPrefix(url, "x.com/") {
 		handle := strings.TrimPrefix(url, "x.com/")
@@ -32,7 +32,7 @@ func ExtractXHandleFromURL(url string) string {
 		handle := strings.TrimPrefix(url, "twitter.com/")
 		return "@" + strings.TrimSpace(handle)
 	}
-	
+
 	return ""
 }
 
@@ -44,16 +44,16 @@ func generateNameVariants(name string) []string {
 	if len(parts) < 2 {
 		return []string{strings.TrimSpace(name)}
 	}
-	
+
 	// Join parts to create normalized original
 	normalized := strings.Join(parts, " ")
 	variants := []string{normalized}
-	
+
 	// Simple reversal: last word becomes first, everything else follows
 	// "A B C" -> "C A B"
 	reversed := parts[len(parts)-1] + " " + strings.Join(parts[:len(parts)-1], " ")
 	variants = append(variants, reversed)
-	
+
 	return variants
 }
 
@@ -63,17 +63,17 @@ func generateNameVariants(name string) []string {
 func (m *Mapper) TagXHandlesInText(text string) string {
 	// Collect all contacts with X accounts and their handles
 	var taggableContacts []XHandleTag
-	
+
 	for _, contact := range m.getAllContacts() {
 		if len(contact.X) == 0 {
 			continue
 		}
-		
+
 		handle := ExtractXHandleFromURL(contact.X[0])
 		if handle == "" {
 			continue
 		}
-		
+
 		// Generate name variants for flexible matching
 		variants := generateNameVariants(contact.Name)
 		for _, variant := range variants {
@@ -83,7 +83,7 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 			})
 		}
 	}
-	
+
 	// Sort by name length (descending) to match longer names first
 	// This prevents "David Garcia" from matching before "David Garcia Nuñez"
 	for i := 0; i < len(taggableContacts); i++ {
@@ -93,7 +93,7 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 			}
 		}
 	}
-	
+
 	// Collect all matches first (position in original text, name, handle)
 	type match struct {
 		start  int
@@ -102,12 +102,12 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 		handle string
 	}
 	var matches []match
-	
+
 	for _, tag := range taggableContacts {
 		// Create a regex that matches the name with word boundaries
 		pattern := fmt.Sprintf(`\b%s\b`, regexp.QuoteMeta(tag.Name))
 		re := regexp.MustCompile(pattern)
-		
+
 		// Find all matches
 		indices := re.FindAllStringIndex(text, -1)
 		for _, idx := range indices {
@@ -119,7 +119,7 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 			})
 		}
 	}
-	
+
 	// Remove overlapping matches (keep longest/first)
 	var filtered []match
 	for _, m1 := range matches {
@@ -137,7 +137,7 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 			filtered = append(filtered, m1)
 		}
 	}
-	
+
 	// Sort by position (descending) so we can work backwards
 	// Working backwards means indices stay valid as we insert
 	for i := 0; i < len(filtered); i++ {
@@ -147,14 +147,14 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 			}
 		}
 	}
-	
+
 	// Apply tags by working backwards through the text
 	result := text
 	for _, m := range filtered {
 		// Insert handle after the name
 		result = result[:m.end] + " " + m.handle + result[m.end:]
 	}
-	
+
 	return result
 }
 
@@ -162,7 +162,7 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 func (m *Mapper) getAllContacts() []Contact {
 	seen := make(map[string]bool)
 	var contacts []Contact
-	
+
 	for _, contact := range m.contacts {
 		// Use name as unique key (since we store both original and normalized)
 		if !seen[contact.Name] {
@@ -170,6 +170,6 @@ func (m *Mapper) getAllContacts() []Contact {
 			contacts = append(contacts, contact)
 		}
 	}
-	
+
 	return contacts
 }

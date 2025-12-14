@@ -57,45 +57,45 @@ func main() {
 
 		missingCount++
 		fmt.Printf("## %s\n", contact.Name)
-		
+
 		// Parse name for search
 		parts := strings.Fields(contact.Name)
 		searchName := strings.Join(parts, " ")
-		
+
 		if !hasX {
 			xSearch := url.QueryEscape(searchName)
 			fmt.Printf("- X/Twitter: https://x.com/search?q=%s&src=typed_query&f=user\n", xSearch)
 		}
-		
+
 		if !hasInstagram {
 			instaSearch := url.QueryEscape(searchName)
 			fmt.Printf("- Instagram: https://www.instagram.com/explore/search/keyword/?q=%s\n", instaSearch)
 		}
-		
+
 		if !hasFacebook {
 			fbSearch := url.QueryEscape(searchName + " Zürich")
 			fmt.Printf("- Facebook: https://www.facebook.com/search/top?q=%s\n", fbSearch)
 		}
-		
+
 		if !hasLinkedIn {
 			linkedInSearch := url.QueryEscape(searchName)
 			fmt.Printf("- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=%s\n", linkedInSearch)
 		}
-		
+
 		if !hasTikTok {
 			tiktokSearch := url.QueryEscape(searchName)
 			fmt.Printf("- TikTok: https://www.tiktok.com/search?q=%s\n", tiktokSearch)
 		}
-		
+
 		if !hasBluesky {
 			bskySearch := url.QueryEscape(searchName)
 			fmt.Printf("- Bluesky: https://bsky.app/search?q=%s\n", bskySearch)
 		}
-		
+
 		// Google search as fallback
 		googleSearch := url.QueryEscape(searchName + " Gemeinderat Zürich social media")
 		fmt.Printf("- Google: https://www.google.com/search?q=%s\n", googleSearch)
-		
+
 		fmt.Println()
 	}
 

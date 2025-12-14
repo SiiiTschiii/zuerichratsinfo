@@ -30,9 +30,9 @@ type XPlatform struct {
 
 // NewXPlatform creates a new X platform poster
 func NewXPlatform(
-apiKey, apiSecret, accessToken, accessSecret string,
-contactMapper *contacts.Mapper,
-maxPostsPerRun int,
+	apiKey, apiSecret, accessToken, accessSecret string,
+	contactMapper *contacts.Mapper,
+	maxPostsPerRun int,
 ) *XPlatform {
 	return &XPlatform{
 		apiKey:         apiKey,
@@ -60,12 +60,12 @@ func (p *XPlatform) Post(content platforms.Content) (bool, error) {
 	}
 
 	err := xapi.PostTweet(
-p.apiKey,
-p.apiSecret,
-p.accessToken,
-p.accessSecret,
-xContent.message,
-)
+		p.apiKey,
+		p.apiSecret,
+		p.accessToken,
+		p.accessSecret,
+		xContent.message,
+	)
 
 	if err != nil {
 		return false, err

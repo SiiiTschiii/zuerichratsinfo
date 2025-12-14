@@ -46,7 +46,7 @@ func LoadContacts(filepath string) (*Mapper, error) {
 	for _, contact := range mapping.Contacts {
 		// Store by exact name
 		contactMap[contact.Name] = contact
-		
+
 		// Also store normalized version (lowercase, trimmed)
 		normalized := strings.ToLower(strings.TrimSpace(contact.Name))
 		contactMap[normalized] = contact
@@ -61,7 +61,7 @@ func (m *Mapper) GetContact(name string) (Contact, bool) {
 	if contact, ok := m.contacts[name]; ok {
 		return contact, true
 	}
-	
+
 	// Try normalized match
 	normalized := strings.ToLower(strings.TrimSpace(name))
 	contact, ok := m.contacts[normalized]

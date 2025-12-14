@@ -29,7 +29,7 @@ func findMarkdownLinks(path string) ([]string, error) {
 func main() {
 	verbose := flag.Bool("v", false, "verbose: show tree even when all files are linked")
 	flag.Parse()
-	
+
 	root := "."
 	mdFiles := map[string]bool{}
 	parentLinks := map[string][]string{}
@@ -75,7 +75,7 @@ func main() {
 			unrefCount++
 		}
 	}
-	
+
 	// Print tree function
 	var printTree func(string, string)
 	printTree = func(file, prefix string) {
@@ -86,7 +86,7 @@ func main() {
 			printTree(child, prefix+"  ")
 		}
 	}
-	
+
 	// Find the root README
 	rootReadme := ""
 	if _, ok := mdFiles["./README.md"]; ok {
@@ -94,20 +94,20 @@ func main() {
 	} else if _, ok := mdFiles["README.md"]; ok {
 		rootReadme = "README.md"
 	}
-	
+
 	// Show tree if verbose or if there are unreferenced files
 	if *verbose || unrefCount > 0 {
 		fmt.Println("Markdown file reference tree:")
 		if rootReadme != "" {
 			printTree(rootReadme, "")
 		}
-		
+
 		// In verbose mode, also show all markdown files
 		if *verbose && unrefCount == 0 {
 			fmt.Println("\n✓ All markdown files are properly linked")
 		}
 	}
-	
+
 	// Only output unreferenced files if there are any
 	if unrefCount > 0 {
 		fmt.Println("\nUnreferenced .md files:")

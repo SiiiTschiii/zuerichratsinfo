@@ -12,7 +12,7 @@ func main() {
 	client := zurichapi.NewClient()
 
 	fmt.Println("📥 Fetching active Gemeinderat mandates...")
-	
+
 	mandates, err := client.FetchActiveGemeinderatMandates()
 	if err != nil {
 		log.Fatalf("Failed to fetch mandates: %v", err)

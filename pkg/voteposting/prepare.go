@@ -59,10 +59,10 @@ func filterUnpostedVotes(votes []zurichapi.Abstimmung, voteLog *votelog.VoteLog)
 // If dryRun is true, only prints the content without posting
 // Returns the number of groups successfully posted
 func PostToPlatform(
-groups [][]zurichapi.Abstimmung,
-platform platforms.Platform,
-voteLog *votelog.VoteLog,
-dryRun bool,
+	groups [][]zurichapi.Abstimmung,
+	platform platforms.Platform,
+	voteLog *votelog.VoteLog,
+	dryRun bool,
 ) (int, error) {
 	posted := 0
 

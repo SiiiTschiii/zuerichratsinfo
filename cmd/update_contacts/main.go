@@ -41,7 +41,7 @@ const contactsFile = "data/contacts.yaml"
 
 func main() {
 	fmt.Println("📥 Fetching contacts from Zurich API...")
-	
+
 	// Step 1: Load existing contacts.yaml
 	existingContacts := loadExistingContacts()
 	fmt.Printf("📋 Loaded %d existing contacts\n", len(existingContacts))
@@ -52,10 +52,10 @@ func main() {
 
 	// Step 3: Merge contacts
 	updated, added, warnings := mergeContacts(existingContacts, apiContacts)
-	
+
 	// Step 4: Save updated contacts.yaml
 	saveContacts(updated)
-	
+
 	// Summary
 	fmt.Println("\n✅ Update complete!")
 	fmt.Printf("   - Total contacts: %d\n", len(updated))
@@ -65,7 +65,7 @@ func main() {
 
 func loadExistingContacts() map[string]*Contact {
 	contacts := make(map[string]*Contact)
-	
+
 	data, err := os.ReadFile(contactsFile)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -147,7 +147,7 @@ func mergeContacts(existing map[string]*Contact, apiContacts []Contact) ([]Conta
 
 	for _, apiContact := range apiContacts {
 		existingContact, exists := existing[apiContact.Name]
-		
+
 		if !exists {
 			// New contact - add it
 			existing[apiContact.Name] = &apiContact
@@ -166,7 +166,7 @@ func mergeContacts(existing map[string]*Contact, apiContacts []Contact) ([]Conta
 	for _, contact := range existing {
 		result = append(result, *contact)
 	}
-	
+
 	// Sort by name for consistent output
 	sort.Slice(result, func(i, j int) bool {
 		return result[i].Name < result[j].Name
@@ -188,7 +188,7 @@ func mergeAccounts(existing, new *Contact) int {
 					break
 				}
 			}
-			
+
 			if !found {
 				// Check if it might be a conflicting account (same platform, different URL)
 				if len(*existingAccounts) > 0 {
@@ -272,12 +272,12 @@ func formatYAMLForVSCode(yamlContent string) string {
 		if leadingSpaces > 0 {
 			var newSpaces int
 			content := strings.TrimLeft(line, " ")
-			
+
 			// List item line (starts with -)
 			if strings.HasPrefix(content, "- ") {
 				// 4 spaces → 2 spaces, 8 spaces → 4 spaces, etc.
 				newSpaces = leadingSpaces / 2
-				
+
 				// Add blank line before each contact (except the first one)
 				if strings.HasPrefix(content, "- name:") && previousWasContact {
 					result = append(result, "")
@@ -289,7 +289,7 @@ func formatYAMLForVSCode(yamlContent string) string {
 				// Pattern: subtract 2 from original
 				newSpaces = leadingSpaces - 2
 			}
-			
+
 			line = strings.Repeat(" ", newSpaces) + content
 		}
 

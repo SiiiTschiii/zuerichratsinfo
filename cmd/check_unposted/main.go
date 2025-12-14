@@ -27,7 +27,7 @@ func main() {
 		// Fall back to environment variable
 		maxVotesToCheck = getEnvInt("MAX_VOTES_TO_CHECK", 50)
 	}
-	
+
 	maxPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
 
 	// Load contacts for X handle tagging
@@ -51,7 +51,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error fetching abstimmungen: %v", err)
 	}
-	
+
 	if len(abstimmungen) == 0 {
 		log.Fatal("No abstimmungen found")
 	}
@@ -92,14 +92,14 @@ func main() {
 			voteCount += len(group)
 		}
 		if groupLimit < len(voteGroups) {
-			fmt.Printf("⚠️  Would limit to %d groups (%d votes) per run (found %d groups with %d total votes)\n\n", 
+			fmt.Printf("⚠️  Would limit to %d groups (%d votes) per run (found %d groups with %d total votes)\n\n",
 				groupLimit, voteCount, len(voteGroups), len(unpostedVotes))
 			groupsToPost = voteGroups[:groupLimit]
 		}
 	}
 
 	fmt.Printf("🚀 Would post these %d groups:\n\n", len(groupsToPost))
-	
+
 	for i, group := range groupsToPost {
 		message := x.FormatVoteGroupPost(group, contactMapper)
 		fmt.Printf("─────────────────────────────────────────────────────────────────\n")

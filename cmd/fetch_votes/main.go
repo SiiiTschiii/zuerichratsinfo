@@ -35,21 +35,21 @@ func main() {
 
 	for i, vote := range votes {
 		fmt.Printf("%d. %s\n", i+1, vote.SitzungDatum[:10])
-		
+
 		// Print traktandum title
 		title := cleanTitle(vote.TraktandumTitel)
 		fmt.Printf("   📋 %s\n", title)
-		
+
 		// Print vote result
 		fmt.Printf("   ✓ Result: %s\n", vote.Schlussresultat)
-		
+
 		// Print vote counts
 		ja := formatCount(vote.AnzahlJa)
 		nein := formatCount(vote.AnzahlNein)
 		enthaltung := formatCount(vote.AnzahlEnthaltung)
 		abwesend := formatCount(vote.AnzahlAbwesend)
-		
-		fmt.Printf("   📊 Votes: %s Ja | %s Nein | %s Enthaltung | %s Abwesend\n", 
+
+		fmt.Printf("   📊 Votes: %s Ja | %s Nein | %s Enthaltung | %s Abwesend\n",
 			ja, nein, enthaltung, abwesend)
 		fmt.Println()
 	}
@@ -61,7 +61,7 @@ func cleanTitle(title string) string {
 	title = strings.ReplaceAll(title, "\r\n", " ")
 	title = strings.ReplaceAll(title, "\n", " ")
 	title = strings.ReplaceAll(title, "\r", " ")
-	
+
 	// Replace multiple spaces with single space
 	parts := strings.Fields(title)
 	return strings.Join(parts, " ")

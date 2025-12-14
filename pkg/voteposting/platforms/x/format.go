@@ -25,40 +25,40 @@ func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.M
 	if len(votes) == 0 {
 		return ""
 	}
-	
+
 	// Use first vote for common metadata
 	firstVote := votes[0]
-	
+
 	// Prepare fixed components
 	date := formatVoteDate(firstVote.SitzungDatum)
 	header := fmt.Sprintf("🗳️  Gemeinderat | Abstimmung vom %s\n\n", date)
-	
+
 	// Build the full title
 	title := cleanVoteTitle(firstVote.TraktandumTitel)
-	
+
 	// Tag X handles in the title if contact mapper is provided
 	if contactMapper != nil {
 		title = contactMapper.TagXHandlesInText(title)
 	}
-	
+
 	// Build post
 	var sb strings.Builder
 	sb.WriteString(header)
-	
+
 	// For single vote, use original format
 	if len(votes) == 1 {
 		vote := votes[0]
 		resultEmoji := getVoteResultEmoji(vote.Schlussresultat)
 		result := getVoteResultText(vote.Schlussresultat)
 		resultPrefix := fmt.Sprintf("%s %s: ", resultEmoji, result)
-		
+
 		ja := formatVoteCount(vote.AnzahlJa)
 		nein := formatVoteCount(vote.AnzahlNein)
 		enthaltung := formatVoteCount(vote.AnzahlEnthaltung)
 		abwesend := formatVoteCount(vote.AnzahlAbwesend)
-		voteCounts := fmt.Sprintf("📊 %s Ja | %s Nein | %s Enthaltung | %s Abwesend\n\n", 
+		voteCounts := fmt.Sprintf("📊 %s Ja | %s Nein | %s Enthaltung | %s Abwesend\n\n",
 			ja, nein, enthaltung, abwesend)
-		
+
 		sb.WriteString(resultPrefix)
 		sb.WriteString(title)
 		sb.WriteString("\n\n")
@@ -68,32 +68,32 @@ func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.M
 		// No overall result - just show the title and individual vote results
 		sb.WriteString(title)
 		sb.WriteString("\n\n")
-		
+
 		// List each vote with its details
 		for i, vote := range votes {
 			ja := formatVoteCount(vote.AnzahlJa)
 			nein := formatVoteCount(vote.AnzahlNein)
 			enthaltung := formatVoteCount(vote.AnzahlEnthaltung)
 			abwesend := formatVoteCount(vote.AnzahlAbwesend)
-			
+
 			voteEmoji := getVoteResultEmoji(vote.Schlussresultat)
 			voteTitle := cleanVoteSubtitle(vote.Abstimmungstitel)
-			
+
 			if voteTitle != "" {
 				sb.WriteString(fmt.Sprintf("%s %s\n", voteEmoji, voteTitle))
 			} else {
 				sb.WriteString(fmt.Sprintf("%s Abstimmung %d\n", voteEmoji, i+1))
 			}
-			sb.WriteString(fmt.Sprintf("📊 %s Ja | %s Nein | %s Enthaltung | %s Abwesend\n", 
+			sb.WriteString(fmt.Sprintf("📊 %s Ja | %s Nein | %s Enthaltung | %s Abwesend\n",
 				ja, nein, enthaltung, abwesend))
-			
+
 			if i < len(votes)-1 {
 				sb.WriteString("\n")
 			}
 		}
 		sb.WriteString("\n")
 	}
-	
+
 	// Generate and shorten the link
 	// For grouped votes, link to the Traktandum (shows all votes together)
 	// For single votes, link to the individual vote
@@ -106,7 +106,7 @@ func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.M
 	link = urlshorten.ShortenURL(link)
 	linkLine := fmt.Sprintf("🔗 %s", link)
 	sb.WriteString(linkLine)
-	
+
 	return sb.String()
 }
 
@@ -147,15 +147,15 @@ func cleanVoteTitle(title string) string {
 	title = strings.ReplaceAll(title, "\r\n", " ")
 	title = strings.ReplaceAll(title, "\n", " ")
 	title = strings.ReplaceAll(title, "\r", " ")
-	
+
 	// Replace multiple spaces with single space
 	parts := strings.Fields(title)
 	title = strings.Join(parts, " ")
-	
+
 	// Strip Geschäft number from the beginning (e.g., "2024/431 " or "2025/84 ")
 	// Pattern: number/number followed by space
 	title = geschaeftNumberRegex.ReplaceAllString(title, "")
-	
+
 	return title
 }
 
@@ -166,17 +166,17 @@ func cleanVoteSubtitle(subtitle string) string {
 	subtitle = strings.ReplaceAll(subtitle, "\r\n", " ")
 	subtitle = strings.ReplaceAll(subtitle, "\n", " ")
 	subtitle = strings.ReplaceAll(subtitle, "\r", " ")
-	
+
 	// Replace multiple spaces with single space
 	parts := strings.Fields(subtitle)
 	subtitle = strings.Join(parts, " ")
-	
+
 	// Strip Geschäft number patterns:
 	// Pattern 1: "2025/369 " with slash
 	// Pattern 2: "2025_0369 " with underscore
 	subtitle = geschaeftNumberRegex.ReplaceAllString(subtitle, "")
 	subtitle = geschaeftNumberUnderscoreRegex.ReplaceAllString(subtitle, "")
-	
+
 	return subtitle
 }
 

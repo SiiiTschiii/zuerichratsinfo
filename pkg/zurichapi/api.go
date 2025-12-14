@@ -10,9 +10,9 @@ import (
 
 const (
 	// Base URLs for the Zurich city council APIs
-	GeschaeftBaseURL      = "https://www.gemeinderat-zuerich.ch/api/geschaeft"
-	KontaktBaseURL        = "https://www.gemeinderat-zuerich.ch/api/kontakt"
-	AbstimmungBaseURL     = "https://www.gemeinderat-zuerich.ch/api/abstimmung"
+	GeschaeftBaseURL       = "https://www.gemeinderat-zuerich.ch/api/geschaeft"
+	KontaktBaseURL         = "https://www.gemeinderat-zuerich.ch/api/kontakt"
+	AbstimmungBaseURL      = "https://www.gemeinderat-zuerich.ch/api/abstimmung"
 	BehoerdenmandatBaseURL = "https://www.gemeinderat-zuerich.ch/api/behoerdenmandat"
 )
 
@@ -62,7 +62,7 @@ func (c *Client) FetchAllKontakte() ([]Kontakt, error) {
 
 // FetchRecentAbstimmungen fetches the n most recent abstimmungen (votes) from the Zurich council API
 func (c *Client) FetchRecentAbstimmungen(limit int) ([]Abstimmung, error) {
-	url := fmt.Sprintf("%s/searchdetails?q=seq%%3E0%%20sortBy%%20seq/sort.descending&l=de-CH&s=1&m=%d", 
+	url := fmt.Sprintf("%s/searchdetails?q=seq%%3E0%%20sortBy%%20seq/sort.descending&l=de-CH&s=1&m=%d",
 		AbstimmungBaseURL, limit)
 
 	body, err := c.makeRequest(url)
@@ -141,7 +141,7 @@ func (c *Client) GetActiveMandates(excludeFunktionen ...string) ([]Behoerdenmand
 	var activeMandates []Behoerdenmandat
 	for _, hit := range resp.Hits {
 		mandat := hit.Behoerdenmandat
-		
+
 		// Skip if this function is in the exclude list
 		if excludeSet[mandat.Funktion] {
 			continue
@@ -173,27 +173,27 @@ func (c *Client) GroupAbstimmungenByGeschaeft(votes []Abstimmung) ([][]Abstimmun
 	if len(votes) == 0 {
 		return nil, nil
 	}
-	
+
 	// First, ensure the last vote's group is complete if needed
 	completeVotes, err := c.ensureCompleteGroupIfNeeded(votes)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Build a map keyed by "GeschaeftGrNr|SitzungDatum"
 	groupMap := make(map[string][]Abstimmung)
-	
+
 	for _, vote := range completeVotes {
 		// Extract just the date part (YYYY-MM-DD) from SitzungDatum
 		date := vote.SitzungDatum
 		if len(date) > 10 {
 			date = date[:10]
 		}
-		
+
 		key := vote.GeschaeftGrNr + "|" + date
 		groupMap[key] = append(groupMap[key], vote)
 	}
-	
+
 	// Sort votes within each group by SEQ (ascending) to preserve Sitzung chronological order
 	for key := range groupMap {
 		votes := groupMap[key]
@@ -204,31 +204,31 @@ func (c *Client) GroupAbstimmungenByGeschaeft(votes []Abstimmung) ([][]Abstimmun
 		})
 		groupMap[key] = votes
 	}
-	
+
 	// Convert map to slice of groups, preserving the order of first occurrence
 	seen := make(map[string]bool)
 	var groups [][]Abstimmung
-	
+
 	for _, vote := range completeVotes {
 		date := vote.SitzungDatum
 		if len(date) > 10 {
 			date = date[:10]
 		}
 		key := vote.GeschaeftGrNr + "|" + date
-		
+
 		if !seen[key] {
 			seen[key] = true
 			groups = append(groups, groupMap[key])
 		}
 	}
-	
+
 	// Sort groups by their minimum SEQ value (oldest first)
 	sort.Slice(groups, func(i, j int) bool {
 		minSeqI, _ := strconv.Atoi(groups[i][0].SEQ) // First vote in group is already sorted to be oldest
 		minSeqJ, _ := strconv.Atoi(groups[j][0].SEQ)
 		return minSeqI < minSeqJ
 	})
-	
+
 	return groups, nil
 }
 
@@ -238,29 +238,28 @@ func (c *Client) ensureCompleteGroupIfNeeded(votes []Abstimmung) ([]Abstimmung, 
 	if len(votes) == 0 {
 		return votes, nil
 	}
-	
+
 	lastVote := votes[len(votes)-1]
-	
+
 	// Fetch all votes for this Traktandum using the TraktandumGuid
 	allVotesForTraktandum, err := c.FetchAbstimmungenForTraktandum(lastVote.TraktandumGuid)
 	if err != nil {
 		// If we can't fetch, just return what we have
 		return votes, nil
 	}
-	
+
 	// Count how many votes we already have for this Traktandum
 	existingIDs := make(map[string]bool)
 	for _, v := range votes {
 		existingIDs[v.OBJGUID] = true
 	}
-	
+
 	// Append missing votes from the same Traktandum
 	for _, v := range allVotesForTraktandum {
 		if !existingIDs[v.OBJGUID] {
 			votes = append(votes, v)
 		}
 	}
-	
+
 	return votes, nil
 }
-

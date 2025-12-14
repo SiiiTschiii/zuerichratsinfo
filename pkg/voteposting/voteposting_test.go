@@ -17,18 +17,18 @@ import (
 func setupTempDir(t *testing.T) func() {
 	tmpDir := t.TempDir()
 	oldWd, _ := os.Getwd()
-	
+
 	// Create data directory in temp location
 	dataDir := filepath.Join(tmpDir, "data")
 	if err := os.MkdirAll(dataDir, 0755); err != nil {
 		t.Fatal(err)
 	}
-	
+
 	// Change to temp directory
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatal(err)
 	}
-	
+
 	return func() {
 		os.Chdir(oldWd)
 	}
@@ -137,7 +137,7 @@ func TestPostToPlatform_DryRun(t *testing.T) {
 
 func TestPostToPlatform_RealPosting(t *testing.T) {
 	defer setupTempDir(t)()
-	
+
 	mockPlatform := &MockPlatform{maxPosts: 10}
 	voteLog := votelog.NewEmpty(votelog.PlatformX)
 
@@ -178,7 +178,7 @@ func TestPostToPlatform_RealPosting(t *testing.T) {
 
 func TestPostToPlatform_LimitRespected(t *testing.T) {
 	defer setupTempDir(t)()
-	
+
 	// Platform that stops after 2 posts
 	mockPlatform := &MockPlatform{maxPosts: 2}
 	voteLog := votelog.NewEmpty(votelog.PlatformX)
@@ -292,7 +292,7 @@ func TestPostToPlatform_EmptyGroups(t *testing.T) {
 
 func TestPostToPlatform_AllVotesInGroupAreLogged(t *testing.T) {
 	defer setupTempDir(t)()
-	
+
 	mockPlatform := &MockPlatform{maxPosts: 10}
 	voteLog := votelog.NewEmpty(votelog.PlatformX)
 
@@ -333,7 +333,7 @@ func TestPostToPlatform_AllVotesInGroupAreLogged(t *testing.T) {
 
 func TestPostToPlatform_MultipleGroupsAllVotesLogged(t *testing.T) {
 	defer setupTempDir(t)()
-	
+
 	mockPlatform := &MockPlatform{maxPosts: 10}
 	voteLog := votelog.NewEmpty(votelog.PlatformX)
 
