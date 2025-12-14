@@ -165,7 +165,7 @@ func TestLoad_NonExistentFile(t *testing.T) {
 func TestPersistenceAcrossMultipleSaves(t *testing.T) {
 	tmpDir := t.TempDir()
 	oldWd, _ := os.Getwd()
-	defer os.Chdir(oldWd)
+	defer func() { _ = os.Chdir(oldWd) }()
 
 	dataDir := filepath.Join(tmpDir, "data")
 	if err := os.MkdirAll(dataDir, 0755); err != nil {

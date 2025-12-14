@@ -194,10 +194,8 @@ func validateContactPlatforms(contact Contact) []ValidationError {
 			break
 		}
 	}
-	if !hasAnyPlatform {
-		// This is just informational, not an error
-		// fmt.Printf("Info: Contact '%s' has no social media platforms\n", contact.Name)
-	}
+	// Note: hasAnyPlatform is computed but not currently used for validation
+	_ = hasAnyPlatform
 
 	return errors
 }

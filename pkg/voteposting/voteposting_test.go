@@ -30,7 +30,7 @@ func setupTempDir(t *testing.T) func() {
 	}
 
 	return func() {
-		os.Chdir(oldWd)
+		_ = os.Chdir(oldWd)
 	}
 }
 
