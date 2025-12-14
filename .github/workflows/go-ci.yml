@@ -36,6 +36,17 @@ jobs:
       - name: Run tests
         run: go test -v ./...
 
+      - name: Run tests with coverage
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.out
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
       - name: Build main.go
         run: go build -v ./main.go
 

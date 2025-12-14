@@ -85,3 +85,7 @@ The bot automatically:
 - **"Missing X API credentials" error**: Make sure your `.env` file exists and contains all four credentials
 - **Post too long**: The bot automatically shortens URLs using is.gd to save characters
 - **API rate limits**: X API has rate limits. If you hit them, wait and try again later
+
+## Development
+
+Run tests with `go test ./...` or use [act](https://github.com/nektos/act) to run the [CI workflow](.github/workflows/go-ci.yml) locally.

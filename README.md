@@ -4,6 +4,18 @@
   <img src="assets/logo.svg" alt="Zurich Ratsinfo Logo" width="200"/>
 </p>
 
+<p align="center">
+  <a href="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/go-ci.yml">
+    <img src="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/go-ci.yml/badge.svg" alt="Tests">
+  </a>
+  <a href="https://codecov.io/gh/SiiiTschiii/zuerichratsinfo">
+    <img src="https://codecov.io/gh/SiiiTschiii/zuerichratsinfo/branch/main/graph/badge.svg" alt="Coverage">
+  </a>
+  <a href="https://goreportcard.com/report/github.com/SiiiTschiii/zuerichratsinfo">
+    <img src="https://goreportcard.com/badge/github.com/SiiiTschiii/zuerichratsinfo" alt="Go Report Card">
+  </a>
+</p>
+
 A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Zürich) on social media platforms and tags relevant politicians based on a curated list of their social media accounts.
 
 ## Supported Platforms
