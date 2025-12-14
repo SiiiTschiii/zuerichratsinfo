@@ -88,4 +88,29 @@ The bot automatically:
 
 ## Development
 
-Run tests with `go test ./...` or use [act](https://github.com/nektos/act) to run the [CI workflow](.github/workflows/go-ci.yml) locally.
+### Testing
+
+```bash
+go test ./...
+```
+
+### Linting
+
+Install and run [golangci-lint](https://golangci-lint.run/):
+
+```bash
+brew install golangci-lint  # macOS
+golangci-lint run           # check all files
+golangci-lint run --new     # only check unstaged changes
+```
+
+**VS Code**: Install the [Go extension](https://marketplace.visualstudio.com/items?itemName=golang.go) - settings are already configured in `.vscode/settings.json`.
+
+### CI Locally
+
+Run workflows locally with [act](https://github.com/nektos/act):
+
+```bash
+brew install act
+act -W .github/workflows/go-ci.yml
+```

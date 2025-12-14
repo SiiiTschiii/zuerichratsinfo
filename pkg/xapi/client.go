@@ -46,14 +46,14 @@ func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message string) err
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to send request: %w", err)
+		return fmt.Errorf("failed to post tweet: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, _ := io.ReadAll(resp.Body)
 
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("X API returned status %d: %s", resp.StatusCode, string(body))
+		return fmt.Errorf("x API returned status %d: %s", resp.StatusCode, string(body))
 	}
 
 	fmt.Printf("✅ Tweet posted successfully!\nResponse: %s\n", string(body))

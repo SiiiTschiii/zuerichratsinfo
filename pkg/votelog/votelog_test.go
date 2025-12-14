@@ -97,7 +97,7 @@ func TestSaveAndLoad(t *testing.T) {
 	// Create temp directory for test
 	tmpDir := t.TempDir()
 	oldWd, _ := os.Getwd()
-	defer os.Chdir(oldWd)
+	defer func() { _ = os.Chdir(oldWd) }()
 
 	// Create data directory in temp location
 	dataDir := filepath.Join(tmpDir, "data")
@@ -140,7 +140,7 @@ func TestLoad_NonExistentFile(t *testing.T) {
 	// Create temp directory
 	tmpDir := t.TempDir()
 	oldWd, _ := os.Getwd()
-	defer os.Chdir(oldWd)
+	defer func() { _ = os.Chdir(oldWd) }()
 
 	// Change to temp directory (no data dir created)
 	if err := os.Chdir(tmpDir); err != nil {
