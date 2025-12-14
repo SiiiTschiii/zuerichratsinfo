@@ -6,10 +6,13 @@
 
 <p align="center">
   <a href="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/go-ci.yml">
-    <img src="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/go-ci.yml/badge.svg" alt="Tests">
+    <img src="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/go-ci.yml/badge.svg" alt="Go CI">
   </a>
-  <a href="https://codecov.io/gh/SiiiTschiii/zuerichratsinfo">
-    <img src="https://codecov.io/gh/SiiiTschiii/zuerichratsinfo/branch/main/graph/badge.svg" alt="Coverage">
+  <a href="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/validate-contacts.yml">
+    <img src="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/validate-contacts.yml/badge.svg" alt="Validate Contacts">
+  </a>
+  <a href="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/bot.yml">
+    <img src="https://img.shields.io/github/last-commit/SiiiTschiii/zuerichratsinfo/main?label=last%20bot%20run&logo=github" alt="Last Bot Run">
   </a>
   <a href="https://goreportcard.com/report/github.com/SiiiTschiii/zuerichratsinfo">
     <img src="https://goreportcard.com/badge/github.com/SiiiTschiii/zuerichratsinfo" alt="Go Report Card">
