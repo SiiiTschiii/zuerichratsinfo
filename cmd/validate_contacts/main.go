@@ -327,50 +327,7 @@ func checkPlatformOrderInFile(filepath string, contactName string) *ValidationEr
 		if platformsInFile[i] != sortedPlatforms[i] {
 			return &ValidationError{
 				ContactName: contactName,
-				Message:     fmt.Sprintf("Platforms are not in alphabetical order. Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/contacts.yaml"),
-			}
-		}
-	}
-	
-	return nil
-}
-
-func checkPlatformOrder(contact Contact) *ValidationError {
-	// Get the order of platforms as they appear in the YAML
-	// Based on the struct field order and which ones have values
-	platformsInFile := []string{}
-	
-	// Check in the order they appear in the struct
-	if len(contact.X) > 0 {
-		platformsInFile = append(platformsInFile, "x")
-	}
-	if len(contact.Facebook) > 0 {
-		platformsInFile = append(platformsInFile, "facebook")
-	}
-	if len(contact.Instagram) > 0 {
-		platformsInFile = append(platformsInFile, "instagram")
-	}
-	if len(contact.LinkedIn) > 0 {
-		platformsInFile = append(platformsInFile, "linkedin")
-	}
-	if len(contact.Bluesky) > 0 {
-		platformsInFile = append(platformsInFile, "bluesky")
-	}
-	if len(contact.TikTok) > 0 {
-		platformsInFile = append(platformsInFile, "tiktok")
-	}
-	
-	// Create a sorted copy
-	sortedPlatforms := make([]string, len(platformsInFile))
-	copy(sortedPlatforms, platformsInFile)
-	sort.Strings(sortedPlatforms)
-	
-	// Compare
-	for i := range platformsInFile {
-		if platformsInFile[i] != sortedPlatforms[i] {
-			return &ValidationError{
-				ContactName: contact.Name,
-				Message:     fmt.Sprintf("Platforms are not in alphabetical order. Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/contacts.yaml"),
+				Message:     "Platforms are not in alphabetical order. Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/contacts.yaml",
 			}
 		}
 	}

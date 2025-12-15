@@ -101,8 +101,8 @@ contacts:
 				t.Fatalf("Failed to create test file: %v", err)
 			}
 
-			// Validate
-			errors := validateContactsFile(tmpFile)
+			// Validate (skip order check for these tests)
+			errors := validateContactsFile(tmpFile, true)
 
 			if len(errors) != tt.wantErrors {
 				t.Errorf("Expected %d errors, got %d", tt.wantErrors, len(errors))
@@ -383,7 +383,7 @@ contacts:
 				t.Fatalf("Failed to create test file: %v", err)
 			}
 
-			errors := validateContactsFile(tmpFile)
+			errors := validateContactsFile(tmpFile, true)
 
 			if len(errors) != tt.wantErrors {
 				t.Errorf("Expected %d errors, got %d", tt.wantErrors, len(errors))
