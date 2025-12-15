@@ -4,23 +4,6 @@
 
 **Note:** Instagram doesn't support direct search links from external browsers. Search for names directly within the Instagram app or website.
 
-## Maggi Luca
-
-- Bluesky: https://bsky.app/search?q=Maggi+Luca
-- Facebook: https://www.facebook.com/search/top?q=Maggi+Luca+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Maggi+Luca+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Maggi+Luca
-- TikTok: https://www.tiktok.com/search?q=Maggi+Luca
-
-## Mahrer Liv
-
-- Bluesky: https://bsky.app/search?q=Mahrer+Liv
-- Google: https://www.google.com/search?q=Mahrer+Liv+Gemeinderat+Z%C3%BCrich+social+media
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Mahrer+Liv
-- TikTok: https://www.tiktok.com/search?q=Mahrer+Liv
-- X/Twitter: https://x.com/search?q=Mahrer+Liv&src=typed_query&f=user
-
 ## Maleica Landolt
 
 - Bluesky: https://bsky.app/search?q=Maleica+Landolt
