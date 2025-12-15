@@ -40,6 +40,8 @@ func main() {
 	fmt.Println("# Social Media Search URLs")
 	fmt.Println("# Copy these URLs to find social media accounts")
 	fmt.Println()
+	fmt.Println("**Note:** Instagram doesn't support direct search links from external browsers. Search for names directly within the Instagram app or website.")
+	fmt.Println()
 
 	missingCount := 0
 	for _, contact := range contactsFile.Contacts {
@@ -68,8 +70,7 @@ func main() {
 		}
 
 		if !hasInstagram {
-			instaSearch := url.QueryEscape(searchName)
-			fmt.Printf("- Instagram: https://www.instagram.com/explore/search/keyword/?q=%s\n", instaSearch)
+			fmt.Println("- Instagram: https://www.instagram.com/")
 		}
 
 		if !hasFacebook {

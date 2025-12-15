@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/url"
 	"os"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -12,12 +14,12 @@ import (
 // Contact represents a council member with their social media accounts
 type Contact struct {
 	Name      string   `yaml:"name"`
-	X         []string `yaml:"x,omitempty"`
+	Bluesky   []string `yaml:"bluesky,omitempty"`
 	Facebook  []string `yaml:"facebook,omitempty"`
 	Instagram []string `yaml:"instagram,omitempty"`
 	LinkedIn  []string `yaml:"linkedin,omitempty"`
-	Bluesky   []string `yaml:"bluesky,omitempty"`
 	TikTok    []string `yaml:"tiktok,omitempty"`
+	X         []string `yaml:"x,omitempty"`
 }
 
 // ContactMapping contains the full mapping structure
@@ -64,14 +66,38 @@ func (e ValidationError) String() string {
 }
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: %s <path-to-contacts.yaml>\n", os.Args[0])
+	sortFlag := flag.Bool("sort", false, "Sort platforms alphabetically and write back to file")
+	flag.Parse()
+
+	if flag.NArg() < 1 {
+		fmt.Fprintf(os.Stderr, "Usage: %s [-sort] <path-to-contacts.yaml>\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  -sort    Sort platforms alphabetically and rewrite the file\n")
 		os.Exit(1)
 	}
 
-	filepath := os.Args[1]
+	filepath := flag.Arg(0)
 
-	errors := validateContactsFile(filepath)
+	// If sorting, validate without order check, then sort
+	if *sortFlag {
+		errors := validateContactsFile(filepath, true) // skip order check
+		if len(errors) > 0 {
+			fmt.Printf("❌ Validation failed with %d error(s):\n\n", len(errors))
+			for i, err := range errors {
+				fmt.Printf("%d. %s\n", i+1, err.String())
+			}
+			os.Exit(1)
+		}
+		
+		if err := sortAndWriteContacts(filepath); err != nil {
+			fmt.Fprintf(os.Stderr, "❌ Failed to sort and write file: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("✅ Platforms sorted alphabetically and file updated.")
+		os.Exit(0)
+	}
+
+	// Normal validation including order check
+	errors := validateContactsFile(filepath, false)
 
 	if len(errors) > 0 {
 		fmt.Printf("❌ Validation failed with %d error(s):\n\n", len(errors))
@@ -85,7 +111,7 @@ func main() {
 	os.Exit(0)
 }
 
-func validateContactsFile(filepath string) []ValidationError {
+func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationError {
 	var errors []ValidationError
 
 	// Read file
@@ -144,6 +170,13 @@ func validateContactsFile(filepath string) []ValidationError {
 
 		// Validate platforms and URLs
 		errors = append(errors, validateContactPlatforms(contact)...)
+		
+		// Check if platforms are in alphabetical order (unless skipping)
+		if !skipOrderCheck {
+			if orderErr := checkPlatformOrderInFile(filepath, contact.Name); orderErr != nil {
+				errors = append(errors, *orderErr)
+			}
+		}
 	}
 
 	return errors
@@ -232,6 +265,144 @@ func validateURL(urlStr, platform string) error {
 	if !validDomain {
 		return fmt.Errorf("URL domain '%s' does not match platform '%s' (expected one of: %v)",
 			hostname, platform, allowedDomains)
+	}
+
+	return nil
+}
+
+func checkPlatformOrderInFile(filepath string, contactName string) *ValidationError {
+	// Read the file and parse line by line to get actual field order
+	data, err := os.ReadFile(filepath)
+	if err != nil {
+		return nil // Skip check if can't read file
+	}
+	
+	lines := strings.Split(string(data), "\n")
+	inContact := false
+	platformsInFile := []string{}
+	
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		
+		// Check if we're at the contact we're looking for
+		if strings.HasPrefix(trimmed, "- name:") || strings.HasPrefix(trimmed, "name:") {
+			// Extract name from the line
+			namePart := strings.TrimPrefix(trimmed, "- name:")
+			namePart = strings.TrimPrefix(namePart, "name:")
+			namePart = strings.TrimSpace(namePart)
+			namePart = strings.Trim(namePart, "\"'")
+			
+			if namePart == contactName {
+				inContact = true
+				platformsInFile = []string{}
+			} else if inContact {
+				// We've moved to the next contact
+				break
+			}
+		} else if inContact && strings.Contains(trimmed, ":") {
+			// Check if this is a platform field
+			parts := strings.SplitN(trimmed, ":", 2)
+			if len(parts) == 2 {
+				fieldName := strings.TrimSpace(parts[0])
+				// Check if it's one of our platform fields
+				if fieldName == "x" || fieldName == "facebook" || fieldName == "instagram" ||
+					fieldName == "linkedin" || fieldName == "bluesky" || fieldName == "tiktok" {
+					platformsInFile = append(platformsInFile, fieldName)
+				}
+			}
+		}
+	}
+	
+	if len(platformsInFile) == 0 {
+		return nil // No platforms to check
+	}
+	
+	// Create a sorted copy
+	sortedPlatforms := make([]string, len(platformsInFile))
+	copy(sortedPlatforms, platformsInFile)
+	sort.Strings(sortedPlatforms)
+	
+	// Compare
+	for i := range platformsInFile {
+		if platformsInFile[i] != sortedPlatforms[i] {
+			return &ValidationError{
+				ContactName: contactName,
+				Message:     fmt.Sprintf("Platforms are not in alphabetical order. Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/contacts.yaml"),
+			}
+		}
+	}
+	
+	return nil
+}
+
+func checkPlatformOrder(contact Contact) *ValidationError {
+	// Get the order of platforms as they appear in the YAML
+	// Based on the struct field order and which ones have values
+	platformsInFile := []string{}
+	
+	// Check in the order they appear in the struct
+	if len(contact.X) > 0 {
+		platformsInFile = append(platformsInFile, "x")
+	}
+	if len(contact.Facebook) > 0 {
+		platformsInFile = append(platformsInFile, "facebook")
+	}
+	if len(contact.Instagram) > 0 {
+		platformsInFile = append(platformsInFile, "instagram")
+	}
+	if len(contact.LinkedIn) > 0 {
+		platformsInFile = append(platformsInFile, "linkedin")
+	}
+	if len(contact.Bluesky) > 0 {
+		platformsInFile = append(platformsInFile, "bluesky")
+	}
+	if len(contact.TikTok) > 0 {
+		platformsInFile = append(platformsInFile, "tiktok")
+	}
+	
+	// Create a sorted copy
+	sortedPlatforms := make([]string, len(platformsInFile))
+	copy(sortedPlatforms, platformsInFile)
+	sort.Strings(sortedPlatforms)
+	
+	// Compare
+	for i := range platformsInFile {
+		if platformsInFile[i] != sortedPlatforms[i] {
+			return &ValidationError{
+				ContactName: contact.Name,
+				Message:     fmt.Sprintf("Platforms are not in alphabetical order. Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/contacts.yaml"),
+			}
+		}
+	}
+	
+	return nil
+}
+
+func sortAndWriteContacts(filepath string) error {
+	// Read the file
+	data, err := os.ReadFile(filepath)
+	if err != nil {
+		return fmt.Errorf("failed to read file: %v", err)
+	}
+
+	// Parse YAML
+	var mapping ContactMapping
+	if err := yaml.Unmarshal(data, &mapping); err != nil {
+		return fmt.Errorf("failed to parse YAML: %v", err)
+	}
+
+	// No need to sort - struct fields are already in alphabetical order
+	// The YAML marshaler will output them in struct field order
+
+	// Marshal back to YAML
+	output, err := yaml.Marshal(&mapping)
+	if err != nil {
+		return fmt.Errorf("failed to marshal YAML: %v", err)
+	}
+
+	// Write back to file
+	if err := os.WriteFile(filepath, output, 0644); err != nil {
+		return fmt.Errorf("failed to write file: %v", err)
 	}
 
 	return nil

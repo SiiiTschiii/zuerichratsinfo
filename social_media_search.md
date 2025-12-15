@@ -2,9 +2,11 @@
 
 # Copy these URLs to find social media accounts
 
+**Note:** Instagram doesn't support direct search links from external browsers. Search for names directly within the Instagram app or website.
+
 ## Maggi Luca
 
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Maggi+Luca
+- Instagram: https://www.instagram.com/ (search for: Maggi Luca)
 - Facebook: https://www.facebook.com/search/top?q=Maggi+Luca+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Maggi+Luca
 - TikTok: https://www.tiktok.com/search?q=Maggi+Luca
@@ -22,7 +24,7 @@
 ## Maleica Landolt
 
 - X/Twitter: https://x.com/search?q=Maleica+Landolt&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Maleica+Landolt
+- Instagram: https://www.instagram.com/ (search for: Maleica Landolt)
 - Facebook: https://www.facebook.com/search/top?q=Maleica+Landolt+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Maleica+Landolt
 - TikTok: https://www.tiktok.com/search?q=Maleica+Landolt
@@ -32,7 +34,7 @@
 ## Marco Denoth
 
 - X/Twitter: https://x.com/search?q=Marco+Denoth&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Marco+Denoth
+- Instagram: https://www.instagram.com/ (search for: Marco Denoth)
 - Facebook: https://www.facebook.com/search/top?q=Marco+Denoth+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Marco+Denoth
 - TikTok: https://www.tiktok.com/search?q=Marco+Denoth
@@ -42,7 +44,7 @@
 ## Markus Haselbach
 
 - X/Twitter: https://x.com/search?q=Markus+Haselbach&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Markus+Haselbach
+- Instagram: https://www.instagram.com/ (search for: Markus Haselbach)
 - Facebook: https://www.facebook.com/search/top?q=Markus+Haselbach+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Markus+Haselbach
 - TikTok: https://www.tiktok.com/search?q=Markus+Haselbach
@@ -52,7 +54,7 @@
 ## Markus Knauss
 
 - X/Twitter: https://x.com/search?q=Markus+Knauss&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Markus+Knauss
+- Instagram: https://www.instagram.com/ (search for: Markus Knauss)
 - Facebook: https://www.facebook.com/search/top?q=Markus+Knauss+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Markus+Knauss
 - TikTok: https://www.tiktok.com/search?q=Markus+Knauss
@@ -62,7 +64,7 @@
 ## Markus Merki
 
 - X/Twitter: https://x.com/search?q=Markus+Merki&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Markus+Merki
+- Instagram: https://www.instagram.com/ (search for: Markus Merki)
 - Facebook: https://www.facebook.com/search/top?q=Markus+Merki+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Markus+Merki
 - TikTok: https://www.tiktok.com/search?q=Markus+Merki
@@ -72,7 +74,7 @@
 ## Martin Busekros
 
 - X/Twitter: https://x.com/search?q=Martin+Busekros&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Martin+Busekros
+- Instagram: https://www.instagram.com/ (search for: Martin Busekros)
 - Facebook: https://www.facebook.com/search/top?q=Martin+Busekros+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Martin+Busekros
 - TikTok: https://www.tiktok.com/search?q=Martin+Busekros
@@ -82,7 +84,7 @@
 ## Martin Bürki
 
 - X/Twitter: https://x.com/search?q=Martin+B%C3%BCrki&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Martin+B%C3%BCrki
+- Instagram: https://www.instagram.com/ (search for: Martin Bürki)
 - Facebook: https://www.facebook.com/search/top?q=Martin+B%C3%BCrki+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Martin+B%C3%BCrki
 - TikTok: https://www.tiktok.com/search?q=Martin+B%C3%BCrki
@@ -92,7 +94,7 @@
 ## Martina Zürcher
 
 - X/Twitter: https://x.com/search?q=Martina+Z%C3%BCrcher&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Martina+Z%C3%BCrcher
+- Instagram: https://www.instagram.com/ (search for: Martina Zürcher)
 - Facebook: https://www.facebook.com/search/top?q=Martina+Z%C3%BCrcher+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Martina+Z%C3%BCrcher
 - TikTok: https://www.tiktok.com/search?q=Martina+Z%C3%BCrcher
@@ -102,7 +104,7 @@
 ## Mathias Egloff
 
 - X/Twitter: https://x.com/search?q=Mathias+Egloff&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Mathias+Egloff
+- Instagram: https://www.instagram.com/ (search for: Mathias Egloff)
 - Facebook: https://www.facebook.com/search/top?q=Mathias+Egloff+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Mathias+Egloff
 - TikTok: https://www.tiktok.com/search?q=Mathias+Egloff
@@ -112,7 +114,7 @@
 ## Matthias Renggli
 
 - X/Twitter: https://x.com/search?q=Matthias+Renggli&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Matthias+Renggli
+- Instagram: https://www.instagram.com/ (search for: Matthias Renggli)
 - Facebook: https://www.facebook.com/search/top?q=Matthias+Renggli+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Matthias+Renggli
 - TikTok: https://www.tiktok.com/search?q=Matthias+Renggli
@@ -122,7 +124,7 @@
 ## Maya Kägi Götz
 
 - X/Twitter: https://x.com/search?q=Maya+K%C3%A4gi+G%C3%B6tz&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Maya+K%C3%A4gi+G%C3%B6tz
+- Instagram: https://www.instagram.com/ (search for: Maya Kägi Götz)
 - Facebook: https://www.facebook.com/search/top?q=Maya+K%C3%A4gi+G%C3%B6tz+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Maya+K%C3%A4gi+G%C3%B6tz
 - TikTok: https://www.tiktok.com/search?q=Maya+K%C3%A4gi+G%C3%B6tz
@@ -132,7 +134,7 @@
 ## Michael Baumer
 
 - X/Twitter: https://x.com/search?q=Michael+Baumer&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Michael+Baumer
+- Instagram: https://www.instagram.com/ (search for: Michael Baumer)
 - Facebook: https://www.facebook.com/search/top?q=Michael+Baumer+Z%C3%BCrich
 - TikTok: https://www.tiktok.com/search?q=Michael+Baumer
 - Bluesky: https://bsky.app/search?q=Michael+Baumer
@@ -141,7 +143,7 @@
 ## Michele Romagnolo
 
 - X/Twitter: https://x.com/search?q=Michele+Romagnolo&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Michele+Romagnolo
+- Instagram: https://www.instagram.com/ (search for: Michele Romagnolo)
 - Facebook: https://www.facebook.com/search/top?q=Michele+Romagnolo+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Michele+Romagnolo
 - TikTok: https://www.tiktok.com/search?q=Michele+Romagnolo
@@ -159,7 +161,7 @@
 ## Nadina Diday
 
 - X/Twitter: https://x.com/search?q=Nadina+Diday&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Nadina+Diday
+- Instagram: https://www.instagram.com/ (search for: Nadina Diday)
 - Facebook: https://www.facebook.com/search/top?q=Nadina+Diday+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Nadina+Diday
 - TikTok: https://www.tiktok.com/search?q=Nadina+Diday
@@ -169,7 +171,7 @@
 ## Niyazi Erdem
 
 - X/Twitter: https://x.com/search?q=Niyazi+Erdem&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Niyazi+Erdem
+- Instagram: https://www.instagram.com/ (search for: Niyazi Erdem)
 - Facebook: https://www.facebook.com/search/top?q=Niyazi+Erdem+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Niyazi+Erdem
 - TikTok: https://www.tiktok.com/search?q=Niyazi+Erdem
@@ -185,7 +187,7 @@
 ## Oliver Heimgartner
 
 - X/Twitter: https://x.com/search?q=Oliver+Heimgartner&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Oliver+Heimgartner
+- Instagram: https://www.instagram.com/ (search for: Oliver Heimgartner)
 - Facebook: https://www.facebook.com/search/top?q=Oliver+Heimgartner+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Oliver+Heimgartner
 - TikTok: https://www.tiktok.com/search?q=Oliver+Heimgartner
@@ -195,7 +197,7 @@
 ## Patricia Petermann Loewe
 
 - X/Twitter: https://x.com/search?q=Patricia+Petermann+Loewe&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Patricia+Petermann+Loewe
+- Instagram: https://www.instagram.com/ (search for: Patricia Petermann Loewe)
 - Facebook: https://www.facebook.com/search/top?q=Patricia+Petermann+Loewe+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Patricia+Petermann+Loewe
 - TikTok: https://www.tiktok.com/search?q=Patricia+Petermann+Loewe
@@ -205,7 +207,7 @@
 ## Patrick Tscherrig
 
 - X/Twitter: https://x.com/search?q=Patrick+Tscherrig&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Patrick+Tscherrig
+- Instagram: https://www.instagram.com/ (search for: Patrick Tscherrig)
 - Facebook: https://www.facebook.com/search/top?q=Patrick+Tscherrig+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Patrick+Tscherrig
 - TikTok: https://www.tiktok.com/search?q=Patrick+Tscherrig
@@ -215,7 +217,7 @@
 ## Patrik Brunner
 
 - X/Twitter: https://x.com/search?q=Patrik+Brunner&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Patrik+Brunner
+- Instagram: https://www.instagram.com/ (search for: Patrik Brunner)
 - Facebook: https://www.facebook.com/search/top?q=Patrik+Brunner+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Patrik+Brunner
 - TikTok: https://www.tiktok.com/search?q=Patrik+Brunner
@@ -225,7 +227,7 @@
 ## Raphael Golta
 
 - X/Twitter: https://x.com/search?q=Raphael+Golta&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Raphael+Golta
+- Instagram: https://www.instagram.com/ (search for: Raphael Golta)
 - Facebook: https://www.facebook.com/search/top?q=Raphael+Golta+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Raphael+Golta
 - TikTok: https://www.tiktok.com/search?q=Raphael+Golta
@@ -235,7 +237,7 @@
 ## Reis Luzhnica
 
 - X/Twitter: https://x.com/search?q=Reis+Luzhnica&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Reis+Luzhnica
+- Instagram: https://www.instagram.com/ (search for: Reis Luzhnica)
 - Facebook: https://www.facebook.com/search/top?q=Reis+Luzhnica+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Reis+Luzhnica
 - TikTok: https://www.tiktok.com/search?q=Reis+Luzhnica
@@ -245,7 +247,7 @@
 ## Reto Brüesch
 
 - X/Twitter: https://x.com/search?q=Reto+Br%C3%BCesch&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Reto+Br%C3%BCesch
+- Instagram: https://www.instagram.com/ (search for: Reto Brüesch)
 - Facebook: https://www.facebook.com/search/top?q=Reto+Br%C3%BCesch+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Reto+Br%C3%BCesch
 - TikTok: https://www.tiktok.com/search?q=Reto+Br%C3%BCesch
@@ -255,7 +257,7 @@
 ## Roger Bartholdi
 
 - X/Twitter: https://x.com/search?q=Roger+Bartholdi&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Roger+Bartholdi
+- Instagram: https://www.instagram.com/ (search for: Roger Bartholdi)
 - Facebook: https://www.facebook.com/search/top?q=Roger+Bartholdi+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roger+Bartholdi
 - TikTok: https://www.tiktok.com/search?q=Roger+Bartholdi
@@ -265,7 +267,7 @@
 ## Roger Föhn
 
 - X/Twitter: https://x.com/search?q=Roger+F%C3%B6hn&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Roger+F%C3%B6hn
+- Instagram: https://www.instagram.com/ (search for: Roger Föhn)
 - Facebook: https://www.facebook.com/search/top?q=Roger+F%C3%B6hn+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roger+F%C3%B6hn
 - TikTok: https://www.tiktok.com/search?q=Roger+F%C3%B6hn
@@ -275,7 +277,7 @@
 ## Roger Meier
 
 - X/Twitter: https://x.com/search?q=Roger+Meier&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Roger+Meier
+- Instagram: https://www.instagram.com/ (search for: Roger Meier)
 - Facebook: https://www.facebook.com/search/top?q=Roger+Meier+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roger+Meier
 - TikTok: https://www.tiktok.com/search?q=Roger+Meier
@@ -285,7 +287,7 @@
 ## Roger Suter
 
 - X/Twitter: https://x.com/search?q=Roger+Suter&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Roger+Suter
+- Instagram: https://www.instagram.com/ (search for: Roger Suter)
 - Facebook: https://www.facebook.com/search/top?q=Roger+Suter+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roger+Suter
 - TikTok: https://www.tiktok.com/search?q=Roger+Suter
@@ -295,7 +297,7 @@
 ## Roland Hohmann
 
 - X/Twitter: https://x.com/search?q=Roland+Hohmann&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Roland+Hohmann
+- Instagram: https://www.instagram.com/ (search for: Roland Hohmann)
 - Facebook: https://www.facebook.com/search/top?q=Roland+Hohmann+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Roland+Hohmann
 - TikTok: https://www.tiktok.com/search?q=Roland+Hohmann
@@ -305,7 +307,7 @@
 ## Ruedi Schneider
 
 - X/Twitter: https://x.com/search?q=Ruedi+Schneider&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Ruedi+Schneider
+- Instagram: https://www.instagram.com/ (search for: Ruedi Schneider)
 - Facebook: https://www.facebook.com/search/top?q=Ruedi+Schneider+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Ruedi+Schneider
 - TikTok: https://www.tiktok.com/search?q=Ruedi+Schneider
@@ -323,7 +325,7 @@
 ## Sabine Koch
 
 - X/Twitter: https://x.com/search?q=Sabine+Koch&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Sabine+Koch
+- Instagram: https://www.instagram.com/ (search for: Sabine Koch)
 - Facebook: https://www.facebook.com/search/top?q=Sabine+Koch+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sabine+Koch
 - TikTok: https://www.tiktok.com/search?q=Sabine+Koch
@@ -333,7 +335,7 @@
 ## Samuel Balsiger
 
 - X/Twitter: https://x.com/search?q=Samuel+Balsiger&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Samuel+Balsiger
+- Instagram: https://www.instagram.com/ (search for: Samuel Balsiger)
 - Facebook: https://www.facebook.com/search/top?q=Samuel+Balsiger+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Samuel+Balsiger
 - TikTok: https://www.tiktok.com/search?q=Samuel+Balsiger
@@ -343,7 +345,7 @@
 ## Sandro Gähler
 
 - X/Twitter: https://x.com/search?q=Sandro+G%C3%A4hler&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Sandro+G%C3%A4hler
+- Instagram: https://www.instagram.com/ (search for: Sandro Gähler)
 - Facebook: https://www.facebook.com/search/top?q=Sandro+G%C3%A4hler+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sandro+G%C3%A4hler
 - TikTok: https://www.tiktok.com/search?q=Sandro+G%C3%A4hler
@@ -353,7 +355,7 @@
 ## Sanija Ameti
 
 - X/Twitter: https://x.com/search?q=Sanija+Ameti&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Sanija+Ameti
+- Instagram: https://www.instagram.com/ (search for: Sanija Ameti)
 - Facebook: https://www.facebook.com/search/top?q=Sanija+Ameti+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sanija+Ameti
 - TikTok: https://www.tiktok.com/search?q=Sanija+Ameti
@@ -370,7 +372,7 @@
 ## Schmid Michael
 
 - X/Twitter: https://x.com/search?q=Schmid+Michael&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Schmid+Michael
+- Instagram: https://www.instagram.com/ (search for: Schmid Michael)
 - TikTok: https://www.tiktok.com/search?q=Schmid+Michael
 - Bluesky: https://bsky.app/search?q=Schmid+Michael
 - Google: https://www.google.com/search?q=Schmid+Michael+Gemeinderat+Z%C3%BCrich+social+media
@@ -378,7 +380,7 @@
 ## Sebastian Vogel
 
 - X/Twitter: https://x.com/search?q=Sebastian+Vogel&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Sebastian+Vogel
+- Instagram: https://www.instagram.com/ (search for: Sebastian Vogel)
 - Facebook: https://www.facebook.com/search/top?q=Sebastian+Vogel+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sebastian+Vogel
 - TikTok: https://www.tiktok.com/search?q=Sebastian+Vogel
@@ -388,7 +390,7 @@
 ## Sebastian Zopfi
 
 - X/Twitter: https://x.com/search?q=Sebastian+Zopfi&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Sebastian+Zopfi
+- Instagram: https://www.instagram.com/ (search for: Sebastian Zopfi)
 - Facebook: https://www.facebook.com/search/top?q=Sebastian+Zopfi+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sebastian+Zopfi
 - TikTok: https://www.tiktok.com/search?q=Sebastian+Zopfi
@@ -398,7 +400,7 @@
 ## Selina Walgis
 
 - X/Twitter: https://x.com/search?q=Selina+Walgis&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Selina+Walgis
+- Instagram: https://www.instagram.com/ (search for: Selina Walgis)
 - Facebook: https://www.facebook.com/search/top?q=Selina+Walgis+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Selina+Walgis
 - TikTok: https://www.tiktok.com/search?q=Selina+Walgis
@@ -408,7 +410,7 @@
 ## Serap Kahriman
 
 - X/Twitter: https://x.com/search?q=Serap+Kahriman&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Serap+Kahriman
+- Instagram: https://www.instagram.com/ (search for: Serap Kahriman)
 - Facebook: https://www.facebook.com/search/top?q=Serap+Kahriman+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Serap+Kahriman
 - TikTok: https://www.tiktok.com/search?q=Serap+Kahriman
@@ -418,7 +420,7 @@
 ## Severin Meier
 
 - X/Twitter: https://x.com/search?q=Severin+Meier&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Severin+Meier
+- Instagram: https://www.instagram.com/ (search for: Severin Meier)
 - Facebook: https://www.facebook.com/search/top?q=Severin+Meier+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Severin+Meier
 - TikTok: https://www.tiktok.com/search?q=Severin+Meier
@@ -428,7 +430,7 @@
 ## Sibylle Kauer
 
 - X/Twitter: https://x.com/search?q=Sibylle+Kauer&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Sibylle+Kauer
+- Instagram: https://www.instagram.com/ (search for: Sibylle Kauer)
 - Facebook: https://www.facebook.com/search/top?q=Sibylle+Kauer+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sibylle+Kauer
 - TikTok: https://www.tiktok.com/search?q=Sibylle+Kauer
@@ -444,7 +446,7 @@
 ## Simon Kälin-Werth
 
 - X/Twitter: https://x.com/search?q=Simon+K%C3%A4lin-Werth&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Simon+K%C3%A4lin-Werth
+- Instagram: https://www.instagram.com/ (search for: Simon Kälin-Werth)
 - Facebook: https://www.facebook.com/search/top?q=Simon+K%C3%A4lin-Werth+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Simon+K%C3%A4lin-Werth
 - TikTok: https://www.tiktok.com/search?q=Simon+K%C3%A4lin-Werth
@@ -454,7 +456,7 @@
 ## Simone Brander
 
 - X/Twitter: https://x.com/search?q=Simone+Brander&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Simone+Brander
+- Instagram: https://www.instagram.com/ (search for: Simone Brander)
 - Facebook: https://www.facebook.com/search/top?q=Simone+Brander+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Simone+Brander
 - TikTok: https://www.tiktok.com/search?q=Simone+Brander
@@ -471,7 +473,7 @@
 ## Sofia Karakostas
 
 - X/Twitter: https://x.com/search?q=Sofia+Karakostas&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Sofia+Karakostas
+- Instagram: https://www.instagram.com/ (search for: Sofia Karakostas)
 - Facebook: https://www.facebook.com/search/top?q=Sofia+Karakostas+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sofia+Karakostas
 - TikTok: https://www.tiktok.com/search?q=Sofia+Karakostas
@@ -481,7 +483,7 @@
 ## Sophie Blaser
 
 - X/Twitter: https://x.com/search?q=Sophie+Blaser&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Sophie+Blaser
+- Instagram: https://www.instagram.com/ (search for: Sophie Blaser)
 - Facebook: https://www.facebook.com/search/top?q=Sophie+Blaser+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sophie+Blaser
 - TikTok: https://www.tiktok.com/search?q=Sophie+Blaser
@@ -506,7 +508,7 @@
 ## Stefan Reusser
 
 - X/Twitter: https://x.com/search?q=Stefan+Reusser&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Stefan+Reusser
+- Instagram: https://www.instagram.com/ (search for: Stefan Reusser)
 - Facebook: https://www.facebook.com/search/top?q=Stefan+Reusser+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Stefan+Reusser
 - TikTok: https://www.tiktok.com/search?q=Stefan+Reusser
@@ -516,7 +518,7 @@
 ## Stefan Urech
 
 - X/Twitter: https://x.com/search?q=Stefan+Urech&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Stefan+Urech
+- Instagram: https://www.instagram.com/ (search for: Stefan Urech)
 - Facebook: https://www.facebook.com/search/top?q=Stefan+Urech+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Stefan+Urech
 - TikTok: https://www.tiktok.com/search?q=Stefan+Urech
@@ -526,7 +528,7 @@
 ## Stephan Iten
 
 - X/Twitter: https://x.com/search?q=Stephan+Iten&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Stephan+Iten
+- Instagram: https://www.instagram.com/ (search for: Stephan Iten)
 - Facebook: https://www.facebook.com/search/top?q=Stephan+Iten+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Stephan+Iten
 - TikTok: https://www.tiktok.com/search?q=Stephan+Iten
@@ -542,7 +544,7 @@
 ## Stéphane Braune
 
 - X/Twitter: https://x.com/search?q=St%C3%A9phane+Braune&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=St%C3%A9phane+Braune
+- Instagram: https://www.instagram.com/ (search for: Stéphane Braune)
 - Facebook: https://www.facebook.com/search/top?q=St%C3%A9phane+Braune+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=St%C3%A9phane+Braune
 - TikTok: https://www.tiktok.com/search?q=St%C3%A9phane+Braune
@@ -552,7 +554,7 @@
 ## Susan Wiget
 
 - X/Twitter: https://x.com/search?q=Susan+Wiget&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Susan+Wiget
+- Instagram: https://www.instagram.com/ (search for: Susan Wiget)
 - Facebook: https://www.facebook.com/search/top?q=Susan+Wiget+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Susan+Wiget
 - TikTok: https://www.tiktok.com/search?q=Susan+Wiget
@@ -562,7 +564,7 @@
 ## Tamara Bosshardt
 
 - X/Twitter: https://x.com/search?q=Tamara+Bosshardt&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Tamara+Bosshardt
+- Instagram: https://www.instagram.com/ (search for: Tamara Bosshardt)
 - Facebook: https://www.facebook.com/search/top?q=Tamara+Bosshardt+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Tamara+Bosshardt
 - TikTok: https://www.tiktok.com/search?q=Tamara+Bosshardt
@@ -572,7 +574,7 @@
 ## Tanja Maag
 
 - X/Twitter: https://x.com/search?q=Tanja+Maag&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Tanja+Maag
+- Instagram: https://www.instagram.com/ (search for: Tanja Maag)
 - Facebook: https://www.facebook.com/search/top?q=Tanja+Maag+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Tanja+Maag
 - TikTok: https://www.tiktok.com/search?q=Tanja+Maag
@@ -590,7 +592,7 @@
 ## Tom Cassee
 
 - X/Twitter: https://x.com/search?q=Tom+Cassee&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Tom+Cassee
+- Instagram: https://www.instagram.com/ (search for: Tom Cassee)
 - Facebook: https://www.facebook.com/search/top?q=Tom+Cassee+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Tom+Cassee
 - TikTok: https://www.tiktok.com/search?q=Tom+Cassee
@@ -607,7 +609,7 @@
 ## Urs Riklin
 
 - X/Twitter: https://x.com/search?q=Urs+Riklin&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Urs+Riklin
+- Instagram: https://www.instagram.com/ (search for: Urs Riklin)
 - Facebook: https://www.facebook.com/search/top?q=Urs+Riklin+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Urs+Riklin
 - TikTok: https://www.tiktok.com/search?q=Urs+Riklin
@@ -617,7 +619,7 @@
 ## Ursina Merkler
 
 - X/Twitter: https://x.com/search?q=Ursina+Merkler&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Ursina+Merkler
+- Instagram: https://www.instagram.com/ (search for: Ursina Merkler)
 - Facebook: https://www.facebook.com/search/top?q=Ursina+Merkler+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Ursina+Merkler
 - TikTok: https://www.tiktok.com/search?q=Ursina+Merkler
@@ -634,7 +636,7 @@
 ## Voellmy Xenia
 
 - X/Twitter: https://x.com/search?q=Voellmy+Xenia&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Voellmy+Xenia
+- Instagram: https://www.instagram.com/ (search for: Voellmy Xenia)
 - Facebook: https://www.facebook.com/search/top?q=Voellmy+Xenia+Z%C3%BCrich
 - TikTok: https://www.tiktok.com/search?q=Voellmy+Xenia
 - Bluesky: https://bsky.app/search?q=Voellmy+Xenia
@@ -643,7 +645,7 @@
 ## Walter Anken
 
 - X/Twitter: https://x.com/search?q=Walter+Anken&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Walter+Anken
+- Instagram: https://www.instagram.com/ (search for: Walter Anken)
 - Facebook: https://www.facebook.com/search/top?q=Walter+Anken+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Walter+Anken
 - TikTok: https://www.tiktok.com/search?q=Walter+Anken
@@ -666,7 +668,7 @@
 ## Yasmine Bourgeois
 
 - X/Twitter: https://x.com/search?q=Yasmine+Bourgeois&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Yasmine+Bourgeois
+- Instagram: https://www.instagram.com/ (search for: Yasmine Bourgeois)
 - Facebook: https://www.facebook.com/search/top?q=Yasmine+Bourgeois+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Yasmine+Bourgeois
 - TikTok: https://www.tiktok.com/search?q=Yasmine+Bourgeois
@@ -676,7 +678,7 @@
 ## Yves Peier
 
 - X/Twitter: https://x.com/search?q=Yves+Peier&src=typed_query&f=user
-- Instagram: https://www.instagram.com/explore/search/keyword/?q=Yves+Peier
+- Instagram: https://www.instagram.com/ (search for: Yves Peier)
 - Facebook: https://www.facebook.com/search/top?q=Yves+Peier+Z%C3%BCrich
 - LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Yves+Peier
 - TikTok: https://www.tiktok.com/search?q=Yves+Peier
@@ -685,7 +687,7 @@
 
 ---
 
-Found 136 people missing social media accounts
+Found 127 people missing social media accounts
 
 💡 Tips:
 
