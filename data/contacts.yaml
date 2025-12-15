@@ -398,11 +398,10 @@ contacts:
     x:
       - https://x.com/LisaDiggelmann
   - name: Maggi Luca
-    x:
-      - https://x.com/LucaMaggiJG
     facebook:
       - https://www.facebook.com/luca.maggi.96
-
+    x:
+      - https://x.com/LucaMaggiJG
   - name: Mahrer Liv
     facebook:
       - https://www.facebook.com/profile.php?id=100063702649427
@@ -413,6 +412,10 @@ contacts:
     x:
       - https://x.com/LivMahrer
   - name: Maleica Landolt
+    facebook:
+      - https://www.facebook.com/maleica.landolt
+    instagram:
+      - https://www.instagram.com/maleicalandolt/
   - name: Marco Denoth
   - name: Markus Haselbach
   - name: Markus Knauss
