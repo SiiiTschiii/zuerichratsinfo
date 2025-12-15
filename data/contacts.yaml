@@ -416,10 +416,40 @@ contacts:
       - https://www.facebook.com/maleica.landolt
     instagram:
       - https://www.instagram.com/maleicalandolt/
+    linkedin:
+      - https://www.linkedin.com/in/maleica-landolt-79699b17/
+    tiktok:
+      - https://www.tiktok.com/@maleicalandolt
+    x:
+      - https://x.com/MaleicaLandolt
   - name: Marco Denoth
+    facebook:
+      - https://www.facebook.com/gemeinderatmarcodenoth
+    instagram:
+      - https://www.instagram.com/marco_denoth
+    linkedin:
+      - https://www.linkedin.com/in/marcodenoth/
+    x:
+      - https://x.com/marco_denoth
   - name: Markus Haselbach
+    facebook:
+      - https://www.facebook.com/markus.haselbach.9
+    instagram:
+      - https://www.instagram.com/markushaselbach/
+    linkedin:
+      - https://www.linkedin.com/in/markus-haselbach-7025957a/
+    tiktok:
+      - https://www.tiktok.com/@markushaselbach
+    x:
+      - https://x.com/Markbach54
   - name: Markus Knauss
+    bluesky:
+      - https://bsky.app/profile/mknauss.bsky.social
+    x:
+      - https://x.com/Markus_Knauss
   - name: Markus Merki
+    linkedin:
+      - https://www.linkedin.com/in/markus-j-merki-571a0844/
   - name: Martin Busekros
   - name: Martin Bürki
   - name: Martina Zürcher

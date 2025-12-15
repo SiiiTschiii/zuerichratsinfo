@@ -4,56 +4,6 @@
 
 **Note:** Instagram doesn't support direct search links from external browsers. Search for names directly within the Instagram app or website.
 
-## Maleica Landolt
-
-- Bluesky: https://bsky.app/search?q=Maleica+Landolt
-- Facebook: https://www.facebook.com/search/top?q=Maleica+Landolt+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Maleica+Landolt+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Maleica+Landolt
-- TikTok: https://www.tiktok.com/search?q=Maleica+Landolt
-- X/Twitter: https://x.com/search?q=Maleica+Landolt&src=typed_query&f=user
-
-## Marco Denoth
-
-- Bluesky: https://bsky.app/search?q=Marco+Denoth
-- Facebook: https://www.facebook.com/search/top?q=Marco+Denoth+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Marco+Denoth+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Marco+Denoth
-- TikTok: https://www.tiktok.com/search?q=Marco+Denoth
-- X/Twitter: https://x.com/search?q=Marco+Denoth&src=typed_query&f=user
-
-## Markus Haselbach
-
-- Bluesky: https://bsky.app/search?q=Markus+Haselbach
-- Facebook: https://www.facebook.com/search/top?q=Markus+Haselbach+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Markus+Haselbach+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Markus+Haselbach
-- TikTok: https://www.tiktok.com/search?q=Markus+Haselbach
-- X/Twitter: https://x.com/search?q=Markus+Haselbach&src=typed_query&f=user
-
-## Markus Knauss
-
-- Bluesky: https://bsky.app/search?q=Markus+Knauss
-- Facebook: https://www.facebook.com/search/top?q=Markus+Knauss+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Markus+Knauss+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Markus+Knauss
-- TikTok: https://www.tiktok.com/search?q=Markus+Knauss
-- X/Twitter: https://x.com/search?q=Markus+Knauss&src=typed_query&f=user
-
-## Markus Merki
-
-- Bluesky: https://bsky.app/search?q=Markus+Merki
-- Facebook: https://www.facebook.com/search/top?q=Markus+Merki+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Markus+Merki+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Markus+Merki
-- TikTok: https://www.tiktok.com/search?q=Markus+Merki
-- X/Twitter: https://x.com/search?q=Markus+Merki&src=typed_query&f=user
-
 ## Martin Busekros
 
 - Bluesky: https://bsky.app/search?q=Martin+Busekros
