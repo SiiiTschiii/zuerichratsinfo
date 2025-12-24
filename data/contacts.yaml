@@ -451,14 +451,52 @@ contacts:
     linkedin:
       - https://www.linkedin.com/in/markus-j-merki-571a0844/
   - name: Martin Busekros
+    instagram:
+      - https://www.instagram.com/martin_busekros/
+    x:
+      - https://x.com/m_busekros
   - name: Martin Bürki
+    facebook:
+      - https://www.facebook.com/buerkim/
+    instagram:
+      - https://www.instagram.com/martinbuerki/
+    linkedin:
+      - https://www.linkedin.com/in/martinbuerki/
   - name: Martina Zürcher
+    facebook:
+      - https://www.facebook.com/MartinaZuercherBoeni
+    linkedin:
+      - https://www.linkedin.com/in/martina-zuercher-boeni/
+    x:
+      - https://x.com/M_ZuercherBoeni
   - name: Mathias Egloff
+    facebook:
+      - https://www.facebook.com/mathias.egloff
+    instagram:
+      - https://www.instagram.com/mathias.egloff/
+    linkedin:
+      - https://www.linkedin.com/in/mathias-egloff-2392b83b/
+    x:
+      - https://x.com/EgloffMathias
   - name: Matthias Renggli
+    facebook:
+      - https://www.facebook.com/mrenggli
+    linkedin:
+      - https://www.linkedin.com/in/matthias-renggli/
   - name: Maya Kägi Götz
+    facebook:
+      - https://www.facebook.com/maya.kagigotz.3
+    linkedin:
+      - https://www.linkedin.com/in/maya-k%C3%A4gi-g%C3%B6tz-092042171/
   - name: Michael Baumer
+    facebook:
+      - https://www.facebook.com/michael.baumer.zuerich
+    instagram:
+      - https://www.instagram.com/baumer.michael/
     linkedin:
       - https://www.linkedin.com/in/michael-baumer-aa432537/
+    x:
+      - https://x.com/michaelbaumer
   - name: Michele Romagnolo
   - name: Moser Felix
     facebook:
