@@ -9,13 +9,14 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 func main() {
 	// Get number of votes to check from command line argument, or environment, or default
-	maxVotesToCheck := 50
+	maxVotesToCheck := 150
 	if len(os.Args) > 1 {
 		// Command line argument takes priority
 		if n, err := strconv.Atoi(os.Args[1]); err == nil && n > 0 {
@@ -28,7 +29,7 @@ func main() {
 		maxVotesToCheck = getEnvInt("MAX_VOTES_TO_CHECK", 50)
 	}
 
-	maxPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
+	fmt.Printf("Configuration: Check last %d votes\n\n", maxVotesToCheck)
 
 	// Load contacts for X handle tagging
 	contactsPath := filepath.Join("data", "contacts.yaml")
@@ -43,67 +44,30 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading vote log: %v", err)
 	}
-	fmt.Printf("📊 Loaded vote log: %d votes already posted\n\n", voteLog.Count())
+	fmt.Printf("Loaded vote log: %d votes already posted\n", voteLog.Count())
 
-	// Fetch recent votes from Zurich council API
+	// Create API client
 	client := zurichapi.NewClient()
-	abstimmungen, err := client.FetchRecentAbstimmungen(maxVotesToCheck)
+
+	// Prepare votes for posting using the same logic as main.go
+	groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
 	if err != nil {
-		log.Fatalf("Error fetching abstimmungen: %v", err)
+		log.Fatalf("Error preparing votes: %v", err)
 	}
 
-	if len(abstimmungen) == 0 {
-		log.Fatal("No abstimmungen found")
-	}
-
-	// Filter out already posted votes
-	var unpostedVotes []zurichapi.Abstimmung
-	for _, vote := range abstimmungen {
-		if !voteLog.IsPosted(vote.OBJGUID) {
-			unpostedVotes = append(unpostedVotes, vote)
-		}
-	}
-
-	fmt.Printf("📝 Found %d unposted votes out of %d recent votes\n\n", len(unpostedVotes), len(abstimmungen))
-
-	if len(unpostedVotes) == 0 {
-		fmt.Println("✨ No new votes to post!")
+	if len(groups) == 0 {
+		fmt.Println("\n✨ No new votes to post!")
 		return
 	}
 
-	// Group votes by business matter and date
-	voteGroups, err := client.GroupAbstimmungenByGeschaeft(unpostedVotes)
-	if err != nil {
-		log.Fatalf("Error grouping votes: %v", err)
-	}
-	fmt.Printf("📦 Grouped into %d post(s)\n\n", len(voteGroups))
+	fmt.Printf("Found %d group(s) to post\n\n", len(groups))
 
-	// Limit number of posts
-	// Count individual votes, but always include complete groups
-	groupsToPost := voteGroups
-	if len(voteGroups) > 0 {
-		voteCount := 0
-		groupLimit := len(voteGroups)
-		for i, group := range voteGroups {
-			if voteCount+len(group) > maxPostsPerRun {
-				groupLimit = i
-				break
-			}
-			voteCount += len(group)
-		}
-		if groupLimit < len(voteGroups) {
-			fmt.Printf("⚠️  Would limit to %d groups (%d votes) per run (found %d groups with %d total votes)\n\n",
-				groupLimit, voteCount, len(voteGroups), len(unpostedVotes))
-			groupsToPost = voteGroups[:groupLimit]
-		}
-	}
+	fmt.Printf("🚀 Would post these %d groups:\n\n", len(groups))
 
-	fmt.Printf("🚀 Would post these %d groups:\n\n", len(groupsToPost))
-
-	for i, group := range groupsToPost {
+	for i, group := range groups {
 		message := x.FormatVoteGroupPost(group, contactMapper)
 		fmt.Printf("─────────────────────────────────────────────────────────────────\n")
-		fmt.Printf("[%d/%d] Group with %d vote(s)\n", i+1, len(groupsToPost), len(group))
+		fmt.Printf("[%d/%d] Group with %d vote(s)\n", i+1, len(groups), len(group))
 		fmt.Printf("Business: %s\n", group[0].GeschaeftGrNr)
 		fmt.Printf("Date: %s\n", group[0].SitzungDatum[:10])
 		fmt.Printf("Vote IDs: ")
