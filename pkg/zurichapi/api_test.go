@@ -1,6 +1,7 @@
 package zurichapi
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 	"testing"
@@ -399,5 +400,173 @@ func TestEnsureCompleteGroupLogic(t *testing.T) {
 			// 3. Merge any missing votes into the result
 			// This test just validates the logic would have the right inputs
 		})
+	}
+}
+
+// TestGroupAbstimmungenByGeschaeft_DateSorting tests that groups are sorted by date first
+func TestGroupAbstimmungenByGeschaeft_DateSorting(t *testing.T) {
+	client := NewClient() // Use NewClient() to get a properly initialized client
+
+	// Create votes from different dates with different TraktandumGuids to avoid API calls
+	votes := []Abstimmung{
+		createTestVoteWithSEQ("vote1", "2025/391", "5266109", "2025-12-11 10:00:00", "Dec 11 vote"),
+		createTestVoteWithSEQ("vote2", "2025/575", "5266081", "2025-12-11 09:00:00", "Dec 11 other"),
+		createTestVoteWithSEQ("vote3", "2025/391", "5267700", "2025-12-10 10:00:00", "Dec 10 vote"),
+	}
+	
+	// Set different TraktandumGuids to avoid triggering ensureCompleteGroupIfNeeded
+	votes[0].TraktandumGuid = "trak-1"
+	votes[1].TraktandumGuid = "trak-2"
+	votes[2].TraktandumGuid = "trak-3"
+
+	groups, err := client.GroupAbstimmungenByGeschaeft(votes)
+	if err != nil {
+		t.Fatalf("GroupAbstimmungenByGeschaeft failed: %v", err)
+	}
+
+	if len(groups) != 3 {
+		t.Fatalf("Expected 3 groups, got %d", len(groups))
+	}
+
+	// Verify order: Dec 10 should come before Dec 11
+	date1 := groups[0][0].SitzungDatum[:10]
+	date2 := groups[1][0].SitzungDatum[:10]
+	date3 := groups[2][0].SitzungDatum[:10]
+
+	if date1 != "2025-12-10" {
+		t.Errorf("First group should be from 2025-12-10, got %s", date1)
+	}
+	if date2 != "2025-12-11" {
+		t.Errorf("Second group should be from 2025-12-11, got %s", date2)
+	}
+	if date3 != "2025-12-11" {
+		t.Errorf("Third group should be from 2025-12-11, got %s", date3)
+	}
+}
+
+// TestGroupAbstimmungenByGeschaeft_MaxSEQSorting tests that groups are sorted by max SEQ within same date
+func TestGroupAbstimmungenByGeschaeft_MaxSEQSorting(t *testing.T) {
+	client := NewClient()
+
+	// Create multiple groups on the same date with different SEQ ranges
+	// Group 1: SEQ 100-200 (last vote: 200)
+	// Group 2: SEQ 50-80 (last vote: 80)
+	// Group 3: SEQ 150-300 (last vote: 300, should be last despite starting in middle)
+	votes := []Abstimmung{
+		createTestVoteWithSEQ("vote1", "2025/391", "100", "2025-12-11 10:00:00", "Group 1 - vote 1"),
+		createTestVoteWithSEQ("vote2", "2025/391", "200", "2025-12-11 10:00:00", "Group 1 - vote 2"),
+		createTestVoteWithSEQ("vote3", "2025/575", "50", "2025-12-11 09:00:00", "Group 2 - vote 1"),
+		createTestVoteWithSEQ("vote4", "2025/575", "80", "2025-12-11 09:00:00", "Group 2 - vote 2"),
+		createTestVoteWithSEQ("vote5", "2025/600", "150", "2025-12-11 11:00:00", "Group 3 - vote 1"),
+		createTestVoteWithSEQ("vote6", "2025/600", "300", "2025-12-11 11:00:00", "Group 3 - vote 2"),
+	}
+	
+	// Set unique TraktandumGuids to avoid API calls
+	for i := range votes {
+		votes[i].TraktandumGuid = fmt.Sprintf("trak-%d", i)
+	}
+
+	groups, err := client.GroupAbstimmungenByGeschaeft(votes)
+	if err != nil {
+		t.Fatalf("GroupAbstimmungenByGeschaeft failed: %v", err)
+	}
+
+	if len(groups) != 3 {
+		t.Fatalf("Expected 3 groups, got %d", len(groups))
+	}
+
+	// Extract last SEQ from each group
+	lastSeq1, _ := strconv.Atoi(groups[0][len(groups[0])-1].SEQ)
+	lastSeq2, _ := strconv.Atoi(groups[1][len(groups[1])-1].SEQ)
+	lastSeq3, _ := strconv.Atoi(groups[2][len(groups[2])-1].SEQ)
+
+	// Verify order: groups should be ordered by their last (max) SEQ
+	if lastSeq1 != 80 {
+		t.Errorf("First group should have max SEQ 80, got %d", lastSeq1)
+	}
+	if lastSeq2 != 200 {
+		t.Errorf("Second group should have max SEQ 200, got %d", lastSeq2)
+	}
+	if lastSeq3 != 300 {
+		t.Errorf("Third group should have max SEQ 300, got %d", lastSeq3)
+	}
+
+	// Verify the GeschaeftGrNr order matches the SEQ order
+	if groups[0][0].GeschaeftGrNr != "2025/575" {
+		t.Errorf("First group should be 2025/575 (max SEQ 80), got %s", groups[0][0].GeschaeftGrNr)
+	}
+	if groups[1][0].GeschaeftGrNr != "2025/391" {
+		t.Errorf("Second group should be 2025/391 (max SEQ 200), got %s", groups[1][0].GeschaeftGrNr)
+	}
+	if groups[2][0].GeschaeftGrNr != "2025/600" {
+		t.Errorf("Third group should be 2025/600 (max SEQ 300), got %s", groups[2][0].GeschaeftGrNr)
+	}
+}
+
+// TestGroupAbstimmungenByGeschaeft_BudgetScenario tests the real-world budget scenario
+// where votes span multiple days and should be grouped correctly
+func TestGroupAbstimmungenByGeschaeft_BudgetScenario(t *testing.T) {
+	client := NewClient()
+
+	// Simulate budget 2025/391 votes across two days
+	// Dec 10: SEQ 5267700 (high, later in time)
+	// Dec 11: SEQ 5261299-5266109 (lower to higher, some early some late)
+	votes := []Abstimmung{
+		// Dec 11 budget votes (early)
+		createTestVoteWithSEQ("v1", "2025/391", "5261299", "2025-12-11 09:00:00", "Antrag 007"),
+		createTestVoteWithSEQ("v2", "2025/391", "5261300", "2025-12-11 09:00:00", "Antrag 008"),
+		// Dec 11 other vote
+		createTestVoteWithSEQ("v3", "2025/575", "5266081", "2025-12-11 10:00:00", "Postulat"),
+		// Dec 11 budget votes (late)
+		createTestVoteWithSEQ("v4", "2025/391", "5266109", "2025-12-11 11:00:00", "Schlussabstimmung"),
+		// Dec 10 budget votes
+		createTestVoteWithSEQ("v5", "2025/391", "5267700", "2025-12-10 10:00:00", "Antrag 005"),
+	}
+	
+	// Set unique TraktandumGuids to avoid API calls
+	for i := range votes {
+		votes[i].TraktandumGuid = fmt.Sprintf("trak-%d", i)
+	}
+
+	groups, err := client.GroupAbstimmungenByGeschaeft(votes)
+	if err != nil {
+		t.Fatalf("GroupAbstimmungenByGeschaeft failed: %v", err)
+	}
+
+	// Should have 3 groups:
+	// 1. Dec 10 budget (2025/391)
+	// 2. Dec 11 budget (2025/391) - all Dec 11 votes together
+	// 3. Dec 11 postulat (2025/575)
+	if len(groups) != 3 {
+		t.Fatalf("Expected 3 groups, got %d", len(groups))
+	}
+
+	// First group: Dec 10 budget
+	if groups[0][0].SitzungDatum[:10] != "2025-12-10" {
+		t.Errorf("First group should be from Dec 10, got %s", groups[0][0].SitzungDatum[:10])
+	}
+	if groups[0][0].GeschaeftGrNr != "2025/391" {
+		t.Errorf("First group should be 2025/391, got %s", groups[0][0].GeschaeftGrNr)
+	}
+
+	// Second group: Dec 11 postulat (finished before budget last vote)
+	if groups[1][0].SitzungDatum[:10] != "2025-12-11" {
+		t.Errorf("Second group should be from Dec 11, got %s", groups[1][0].SitzungDatum[:10])
+	}
+	if groups[1][0].GeschaeftGrNr != "2025/575" {
+		t.Errorf("Second group should be 2025/575, got %s", groups[1][0].GeschaeftGrNr)
+	}
+
+	// Third group: Dec 11 budget (last because max SEQ is highest)
+	if groups[2][0].SitzungDatum[:10] != "2025-12-11" {
+		t.Errorf("Third group should be from Dec 11, got %s", groups[2][0].SitzungDatum[:10])
+	}
+	if groups[2][0].GeschaeftGrNr != "2025/391" {
+		t.Errorf("Third group should be 2025/391, got %s", groups[2][0].GeschaeftGrNr)
+	}
+
+	// Verify the Dec 11 budget group contains all 3 votes
+	if len(groups[2]) != 3 {
+		t.Errorf("Dec 11 budget group should have 3 votes, got %d", len(groups[2]))
 	}
 }

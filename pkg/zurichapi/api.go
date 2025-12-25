@@ -222,11 +222,28 @@ func (c *Client) GroupAbstimmungenByGeschaeft(votes []Abstimmung) ([][]Abstimmun
 		}
 	}
 
-	// Sort groups by their minimum SEQ value (oldest first)
+	// Sort groups by date first (earlier dates first), then by maximum SEQ within each date
+	// Using maximum SEQ means groups are ordered by when they finished (last vote)
 	sort.Slice(groups, func(i, j int) bool {
-		minSeqI, _ := strconv.Atoi(groups[i][0].SEQ) // First vote in group is already sorted to be oldest
-		minSeqJ, _ := strconv.Atoi(groups[j][0].SEQ)
-		return minSeqI < minSeqJ
+		// Extract dates
+		dateI := groups[i][0].SitzungDatum
+		if len(dateI) > 10 {
+			dateI = dateI[:10]
+		}
+		dateJ := groups[j][0].SitzungDatum
+		if len(dateJ) > 10 {
+			dateJ = dateJ[:10]
+		}
+
+		// Sort by date first
+		if dateI != dateJ {
+			return dateI < dateJ
+		}
+
+		// If same date, sort by maximum SEQ (last vote in group determines order)
+		maxSeqI, _ := strconv.Atoi(groups[i][len(groups[i])-1].SEQ)
+		maxSeqJ, _ := strconv.Atoi(groups[j][len(groups[j])-1].SEQ)
+		return maxSeqI < maxSeqJ
 	})
 
 	return groups, nil

@@ -13,6 +13,10 @@ import (
 var geschaeftNumberRegex = regexp.MustCompile(`^\d+/\d+\s+`)
 var geschaeftNumberUnderscoreRegex = regexp.MustCompile(`^\d+_\d+\s+`)
 
+// antragOnlyRegex matches titles that are just "Antrag XXX" or "Anträge XXX bis YYY"
+// These generic titles should be replaced with the GeschaeftTitel
+var antragOnlyRegex = regexp.MustCompile(`^(\d+/\d+\s+)?Antr(a|ä)ge?\s+\d+\.(\s+(bis|–|-)\s+\d+\.)?$`)
+
 // FormatVotePost creates a formatted X post for a vote (Abstimmung)
 // This is the main function to format vote posts for X/Twitter
 func FormatVotePost(vote *zurichapi.Abstimmung, contactMapper *contacts.Mapper) string {
@@ -34,7 +38,9 @@ func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.M
 	header := fmt.Sprintf("🗳️  Gemeinderat | Abstimmung vom %s\n\n", date)
 
 	// Build the full title
-	title := cleanVoteTitle(firstVote.TraktandumTitel)
+	// Use GeschaeftTitel if TraktandumTitel is just a generic "Antrag XXX" pattern
+	title := selectBestTitle(firstVote.TraktandumTitel, firstVote.GeschaeftTitel)
+	title = cleanVoteTitle(title)
 
 	// Tag X handles in the title if contact mapper is provided
 	if contactMapper != nil {
@@ -95,12 +101,17 @@ func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.M
 	}
 
 	// Generate and shorten the link
-	// For grouped votes, link to the Traktandum (shows all votes together)
-	// For single votes, link to the individual vote
+	// Special case: if we're using GeschaeftTitel (because TraktandumTitel is generic "Antrag XXX"),
+	// link to the Geschäft page instead of Traktandum
 	var link string
-	if len(votes) > 1 {
+	if isGenericAntragTitle(firstVote.TraktandumTitel) {
+		// Link to Geschäft for generic "Antrag" titles
+		link = generateGeschaeftLink(firstVote.GeschaeftGuid)
+	} else if len(votes) > 1 {
+		// For grouped votes, link to the Traktandum (shows all votes together)
 		link = generateTraktandumLink(firstVote.SitzungGuid, firstVote.TraktandumGuid)
 	} else {
+		// For single votes, link to the individual vote
 		link = generateVoteLink(firstVote.OBJGUID)
 	}
 	link = urlshorten.ShortenURL(link)
@@ -139,6 +150,28 @@ func getVoteResultText(result string) string {
 		return "Angenommen"
 	}
 	return "Abgelehnt"
+}
+
+// selectBestTitle chooses between TraktandumTitel and GeschaeftTitel
+// If TraktandumTitel is just a generic "Antrag XXX" pattern, use GeschaeftTitel instead
+func selectBestTitle(traktandumTitel, geschaeftTitel string) string {
+	if isGenericAntragTitle(traktandumTitel) {
+		return geschaeftTitel
+	}
+	return traktandumTitel
+}
+
+// isGenericAntragTitle checks if a title is just a generic "Antrag XXX" pattern
+func isGenericAntragTitle(traktandumTitel string) bool {
+	// Clean up the traktandum title for pattern matching
+	cleaned := strings.TrimSpace(traktandumTitel)
+	cleaned = strings.ReplaceAll(cleaned, "\r\n", " ")
+	cleaned = strings.ReplaceAll(cleaned, "\n", " ")
+	cleaned = strings.ReplaceAll(cleaned, "\r", " ")
+	cleaned = strings.Join(strings.Fields(cleaned), " ")
+
+	// Check if it matches the generic "Antrag XXX" pattern
+	return antragOnlyRegex.MatchString(cleaned)
 }
 
 // cleanVoteTitle removes newlines, extra whitespace, and Geschäft number from titles
@@ -197,4 +230,10 @@ func generateVoteLink(objGUID string) string {
 // This shows all votes related to a specific business matter in a session
 func generateTraktandumLink(sitzungGuid, traktandumGuid string) string {
 	return fmt.Sprintf("https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=%s#%s", sitzungGuid, traktandumGuid)
+}
+
+// generateGeschaeftLink creates the link to the Geschäft (business matter) page
+// This shows all information related to a specific Geschäft (e.g., budget 2025/391)
+func generateGeschaeftLink(geschaeftGuid string) string {
+	return fmt.Sprintf("https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=%s", geschaeftGuid)
 }

@@ -87,7 +87,7 @@ func main() {
 			}
 			os.Exit(1)
 		}
-		
+
 		if err := sortAndWriteContacts(filepath); err != nil {
 			fmt.Fprintf(os.Stderr, "❌ Failed to sort and write file: %v\n", err)
 			os.Exit(1)
@@ -170,7 +170,7 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 
 		// Validate platforms and URLs
 		errors = append(errors, validateContactPlatforms(contact)...)
-		
+
 		// Check for empty platforms and platform order in the file
 		if orderErr := checkPlatformOrderInFile(filepath, contact.Name, skipOrderCheck); orderErr != nil {
 			errors = append(errors, *orderErr)
@@ -274,15 +274,15 @@ func checkPlatformOrderInFile(filepath string, contactName string, skipOrderChec
 	if err != nil {
 		return nil // Skip check if can't read file
 	}
-	
+
 	lines := strings.Split(string(data), "\n")
 	inContact := false
 	platformsInFile := []string{}
 	emptyPlatforms := []string{}
-	
+
 	for i, line := range lines {
 		trimmed := strings.TrimSpace(line)
-		
+
 		// Check if we're at the contact we're looking for
 		if strings.HasPrefix(trimmed, "- name:") || strings.HasPrefix(trimmed, "name:") {
 			// Extract name from the line
@@ -290,7 +290,7 @@ func checkPlatformOrderInFile(filepath string, contactName string, skipOrderChec
 			namePart = strings.TrimPrefix(namePart, "name:")
 			namePart = strings.TrimSpace(namePart)
 			namePart = strings.Trim(namePart, "\"'")
-			
+
 			if namePart == contactName {
 				inContact = true
 				platformsInFile = []string{}
@@ -308,7 +308,7 @@ func checkPlatformOrderInFile(filepath string, contactName string, skipOrderChec
 				if fieldName == "x" || fieldName == "facebook" || fieldName == "instagram" ||
 					fieldName == "linkedin" || fieldName == "bluesky" || fieldName == "tiktok" {
 					platformsInFile = append(platformsInFile, fieldName)
-					
+
 					// Check if the platform has an empty value
 					valueAfterColon := strings.TrimSpace(parts[1])
 					if valueAfterColon == "" {
@@ -321,7 +321,7 @@ func checkPlatformOrderInFile(filepath string, contactName string, skipOrderChec
 								hasValue = true
 							}
 						}
-						
+
 						if !hasValue {
 							emptyPlatforms = append(emptyPlatforms, fieldName)
 						}
@@ -330,7 +330,7 @@ func checkPlatformOrderInFile(filepath string, contactName string, skipOrderChec
 			}
 		}
 	}
-	
+
 	// Always check for empty platforms (even when skipOrderCheck is true)
 	if len(emptyPlatforms) > 0 {
 		return &ValidationError{
@@ -338,16 +338,16 @@ func checkPlatformOrderInFile(filepath string, contactName string, skipOrderChec
 			Message:     fmt.Sprintf("Platform(s) without values: %s. Remove the platform field or add a value.", strings.Join(emptyPlatforms, ", ")),
 		}
 	}
-	
+
 	if len(platformsInFile) == 0 || skipOrderCheck {
 		return nil // No platforms to check or skipping order check
 	}
-	
+
 	// Create a sorted copy
 	sortedPlatforms := make([]string, len(platformsInFile))
 	copy(sortedPlatforms, platformsInFile)
 	sort.Strings(sortedPlatforms)
-	
+
 	// Compare
 	for i := range platformsInFile {
 		if platformsInFile[i] != sortedPlatforms[i] {
@@ -357,7 +357,7 @@ func checkPlatformOrderInFile(filepath string, contactName string, skipOrderChec
 			}
 		}
 	}
-	
+
 	return nil
 }
 
