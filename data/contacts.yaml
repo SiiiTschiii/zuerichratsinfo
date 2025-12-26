@@ -498,12 +498,26 @@ contacts:
     x:
       - https://x.com/michaelbaumer
   - name: Michele Romagnolo
+    facebook:
+      - https://www.facebook.com/michele.romagnolo.svp
   - name: Moser Felix
     facebook:
       - https://www.facebook.com/felix.moser
     instagram:
       - https://www.instagram.com/felixmoser/
+    linkedin:
+      - https://www.linkedin.com/in/felixmoser/
+    tiktok:
+      - https://www.tiktok.com/@felixmoser646
+    x:
+      - https://x.com/felix_moser
   - name: Nadina Diday
+    facebook:
+      - https://www.facebook.com/nadina.diday
+    instagram:
+      - https://www.instagram.com/nadinadiday/
+    linkedin:
+      - https://www.linkedin.com/in/nadina-diday-821b602b/
   - name: Niyazi Erdem
   - name: Oberholzer Beat
     facebook:

@@ -4,34 +4,6 @@
 
 **Note:** Instagram doesn't support direct search links from external browsers. Search for names directly within the Instagram app or website.
 
-## Michele Romagnolo
-
-- Bluesky: https://bsky.app/search?q=Michele+Romagnolo
-- Facebook: https://www.facebook.com/search/top?q=Michele+Romagnolo+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Michele+Romagnolo+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Michele+Romagnolo
-- TikTok: https://www.tiktok.com/search?q=Michele+Romagnolo
-- X/Twitter: https://x.com/search?q=Michele+Romagnolo&src=typed_query&f=user
-
-## Moser Felix
-
-- Bluesky: https://bsky.app/search?q=Moser+Felix
-- Google: https://www.google.com/search?q=Moser+Felix+Gemeinderat+Z%C3%BCrich+social+media
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Moser+Felix
-- TikTok: https://www.tiktok.com/search?q=Moser+Felix
-- X/Twitter: https://x.com/search?q=Moser+Felix&src=typed_query&f=user
-
-## Nadina Diday
-
-- Bluesky: https://bsky.app/search?q=Nadina+Diday
-- Facebook: https://www.facebook.com/search/top?q=Nadina+Diday+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Nadina+Diday+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Nadina+Diday
-- TikTok: https://www.tiktok.com/search?q=Nadina+Diday
-- X/Twitter: https://x.com/search?q=Nadina+Diday&src=typed_query&f=user
-
 ## Niyazi Erdem
 
 - Bluesky: https://bsky.app/search?q=Niyazi+Erdem
