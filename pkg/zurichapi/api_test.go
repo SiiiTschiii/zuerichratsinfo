@@ -413,7 +413,7 @@ func TestGroupAbstimmungenByGeschaeft_DateSorting(t *testing.T) {
 		createTestVoteWithSEQ("vote2", "2025/575", "5266081", "2025-12-11 09:00:00", "Dec 11 other"),
 		createTestVoteWithSEQ("vote3", "2025/391", "5267700", "2025-12-10 10:00:00", "Dec 10 vote"),
 	}
-	
+
 	// Set different TraktandumGuids to avoid triggering ensureCompleteGroupIfNeeded
 	votes[0].TraktandumGuid = "trak-1"
 	votes[1].TraktandumGuid = "trak-2"
@@ -460,7 +460,7 @@ func TestGroupAbstimmungenByGeschaeft_MaxSEQSorting(t *testing.T) {
 		createTestVoteWithSEQ("vote5", "2025/600", "150", "2025-12-11 11:00:00", "Group 3 - vote 1"),
 		createTestVoteWithSEQ("vote6", "2025/600", "300", "2025-12-11 11:00:00", "Group 3 - vote 2"),
 	}
-	
+
 	// Set unique TraktandumGuids to avoid API calls
 	for i := range votes {
 		votes[i].TraktandumGuid = fmt.Sprintf("trak-%d", i)
@@ -522,7 +522,7 @@ func TestGroupAbstimmungenByGeschaeft_BudgetScenario(t *testing.T) {
 		// Dec 10 budget votes
 		createTestVoteWithSEQ("v5", "2025/391", "5267700", "2025-12-10 10:00:00", "Antrag 005"),
 	}
-	
+
 	// Set unique TraktandumGuids to avoid API calls
 	for i := range votes {
 		votes[i].TraktandumGuid = fmt.Sprintf("trak-%d", i)

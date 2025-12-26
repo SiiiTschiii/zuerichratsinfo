@@ -14,8 +14,8 @@
   <a href="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/bot.yml">
     <img src="https://img.shields.io/github/last-commit/SiiiTschiii/zuerichratsinfo/main?label=last%20bot%20run&logo=github" alt="Last Bot Run">
   </a>
-  <a href="https://goreportcard.com/report/github.com/SiiiTschiii/zuerichratsinfo">
-    <img src="https://goreportcard.com/badge/github.com/SiiiTschiii/zuerichratsinfo" alt="Go Report Card">
+  <a href="https://goreportcard.com/report/github.com/siiitschiii/zuerichratsinfo">
+    <img src="https://goreportcard.com/badge/github.com/siiitschiii/zuerichratsinfo" alt="Go Report Card">
   </a>
 </p>
 
