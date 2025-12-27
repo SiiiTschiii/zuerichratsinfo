@@ -519,7 +519,10 @@ contacts:
     linkedin:
       - https://www.linkedin.com/in/nadina-diday-821b602b/
   - name: Niyazi Erdem
+      - https://www.facebook.com/niyazi.erdem.129357
   - name: Oberholzer Beat
+    bluesky:
+      - https://bsky.app/profile/beatober.bsky.social
     facebook:
       - https://www.facebook.com/oberholzer.beat
     instagram:
@@ -529,12 +532,50 @@ contacts:
     x:
       - https://x.com/BeatOber
   - name: Oliver Heimgartner
+    facebook:
+      - https://www.facebook.com/oliheimgartner
+    instagram:
+      - https://www.instagram.com/oliverheimgartner/
+    linkedin:
+      - https://www.linkedin.com/in/oliver-heimgartner-a05622129/
+    x:
+      - https://x.com/oliheimgartner
   - name: Patricia Petermann Loewe
+    linkedin:
+      - https://www.linkedin.com/in/patricia-petermann-010462102/
   - name: Patrick Tscherrig
+    facebook:
+      - https://www.facebook.com/patrick.tscherrig
+    linkedin:
+      - https://www.linkedin.com/in/patrick-tscherrig-68069027/
+    x:
+      - https://x.com/p_tscherrig
   - name: Patrik Brunner
+    linkedin:
+      - https://www.linkedin.com/in/patrik-brunner/
   - name: Raphael Golta
+    facebook:
+      - https://www.facebook.com/golta
+    instagram:
+      - https://www.instagram.com/raphael.golta/
+    linkedin:
+      - https://www.linkedin.com/in/golta/
+    x:
+      - https://x.com/golta
   - name: Reis Luzhnica
+    instagram:
+      - https://www.instagram.com/reisluzhnica/
+    linkedin:
+      - https://www.linkedin.com/in/reis-luzhnica-342307292/
+    x:
+      - https://x.com/RLuzhnica
   - name: Reto Brüesch
+    facebook:
+      - https://www.facebook.com/RetoBrueesch
+    instagram:
+      - https://www.instagram.com/reto_br/
+    linkedin:
+      - https://www.linkedin.com/in/reto-br%C3%BCesch-5b1061b1/
   - name: Roger Bartholdi
   - name: Roger Föhn
   - name: Roger Meier
