@@ -576,18 +576,30 @@ contacts:
       - https://www.instagram.com/reto_br/
     linkedin:
       - https://www.linkedin.com/in/reto-br%C3%BCesch-5b1061b1/
-  - name: Roger Bartholdi
-  - name: Roger Föhn
   - name: Roger Meier
-  - name: Roger Suter
-  - name: Roland Hohmann
-  - name: Ruedi Schneider
-  - name: Rühli Frank
+    facebook:
+      - https://www.facebook.com/roger.meier.902
     instagram:
-      - https://www.instagram.com/frank_ruehli/?hl=de
+      - https://www.instagram.com/roger_zh7/
     linkedin:
-      - https://www.linkedin.com/in/frank-r%C3%BChli-3b0bb182/?originalSubdomain=ch
+      - https://www.linkedin.com/in/roger-meier-1516b4ba/
+  - name: Roger Suter
+    facebook:
+      - https://www.facebook.com/profile.php?id=100011706251272
+  - name: Ruedi Schneider
+    instagram:
+      - https://www.instagram.com/ruedi_schneider/
+    linkedin:
+      - https://www.linkedin.com/in/ruedi-schneider/
+    tiktok:
+      - https://www.tiktok.com/@ruedischneider
+    x:
+      - https://x.com/Ruedi_Schneider
   - name: Sabine Koch
+    linkedin:
+      - https://www.linkedin.com/in/sabine-e-koch/
+    x:
+      - https://x.com/SabineEKoch1
   - name: Samuel Balsiger
   - name: Sandro Gähler
   - name: Sanija Ameti
