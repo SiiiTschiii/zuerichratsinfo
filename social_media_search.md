@@ -4,43 +4,6 @@
 
 **Note:** Instagram doesn't support direct search links from external browsers. Search for names directly within the Instagram app or website.
 
-## Samuel Balsiger
-
-- Bluesky: https://bsky.app/search?q=Samuel+Balsiger
-- Facebook: https://www.facebook.com/search/top?q=Samuel+Balsiger+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Samuel+Balsiger+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Samuel+Balsiger
-- TikTok: https://www.tiktok.com/search?q=Samuel+Balsiger
-- X/Twitter: https://x.com/search?q=Samuel+Balsiger&src=typed_query&f=user
-
-## Sandro Gähler
-
-- Bluesky: https://bsky.app/search?q=Sandro+G%C3%A4hler
-- Facebook: https://www.facebook.com/search/top?q=Sandro+G%C3%A4hler+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Sandro+G%C3%A4hler+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sandro+G%C3%A4hler
-- TikTok: https://www.tiktok.com/search?q=Sandro+G%C3%A4hler
-- X/Twitter: https://x.com/search?q=Sandro+G%C3%A4hler&src=typed_query&f=user
-
-## Sanija Ameti
-
-- Bluesky: https://bsky.app/search?q=Sanija+Ameti
-- Facebook: https://www.facebook.com/search/top?q=Sanija+Ameti+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Sanija+Ameti+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Sanija+Ameti
-- TikTok: https://www.tiktok.com/search?q=Sanija+Ameti
-- X/Twitter: https://x.com/search?q=Sanija+Ameti&src=typed_query&f=user
-
-## Schmaltz Anna-Béatrice
-
-- Bluesky: https://bsky.app/search?q=Schmaltz+Anna-B%C3%A9atrice
-- Facebook: https://www.facebook.com/search/top?q=Schmaltz+Anna-B%C3%A9atrice+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Schmaltz+Anna-B%C3%A9atrice+Gemeinderat+Z%C3%BCrich+social+media
-- TikTok: https://www.tiktok.com/search?q=Schmaltz+Anna-B%C3%A9atrice
-
 ## Schmid Michael
 
 - Bluesky: https://bsky.app/search?q=Schmid+Michael

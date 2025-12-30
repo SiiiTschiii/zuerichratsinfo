@@ -601,9 +601,31 @@ contacts:
     x:
       - https://x.com/SabineEKoch1
   - name: Samuel Balsiger
+    linkedin:
+      - https://www.linkedin.com/in/samuel-balsiger-b6076b320/
+    x:
+      - https://x.com/BalsigerSVP
   - name: Sandro Gähler
+    linkedin:
+      - https://www.linkedin.com/in/sandro-g%C3%A4hler-432695150/
+    x:
+      - https://x.com/SandroGaehler
   - name: Sanija Ameti
+    bluesky:
+      - https://bsky.app/profile/cybersandwich.bsky.social
+    facebook:
+      - https://www.facebook.com/sanya.ameti
+    instagram:
+      - https://www.instagram.com/sanija.ameti/
+    linkedin:
+      - https://www.linkedin.com/in/sanijaameti/
+    x:
+      - https://x.com/cybersandwich
   - name: Schmaltz Anna-Béatrice
+    bluesky:
+      - https://bsky.app/profile/annabschmaltz.bsky.social
+    facebook:
+      - https://www.facebook.com/annabschmaltz
     instagram:
       - https://www.instagram.com/anna.beatrice.schmaltz/
     linkedin:
