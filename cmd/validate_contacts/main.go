@@ -159,6 +159,25 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 			continue
 		}
 
+		// Check if name contains URL patterns (signs of corrupted YAML)
+		if strings.Contains(contact.Name, "http://") || strings.Contains(contact.Name, "https://") {
+			errors = append(errors, ValidationError{
+				ContactName: contact.Name,
+				Message:     "Name field contains URL - this indicates corrupted YAML structure. Check if platform data was incorrectly merged into the name field.",
+			})
+		}
+
+		// Check if name contains platform field patterns (e.g., "Name facebook: url")
+		for platform := range supportedPlatforms {
+			if strings.Contains(strings.ToLower(contact.Name), platform+":") {
+				errors = append(errors, ValidationError{
+					ContactName: contact.Name,
+					Message:     fmt.Sprintf("Name field contains platform data ('%s:') - this indicates corrupted YAML structure", platform),
+				})
+				break
+			}
+		}
+
 		// Check for duplicate names
 		if seenNames[contact.Name] {
 			errors = append(errors, ValidationError{

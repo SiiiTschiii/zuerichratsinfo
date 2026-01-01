@@ -519,6 +519,7 @@ contacts:
     linkedin:
       - https://www.linkedin.com/in/nadina-diday-821b602b/
   - name: Niyazi Erdem
+    facebook:
       - https://www.facebook.com/niyazi.erdem.129357
   - name: Oberholzer Beat
     bluesky:
@@ -633,16 +634,53 @@ contacts:
     x:
       - https://x.com/annabschmaltz
   - name: Schmid Michael
+    bluesky:
+      - https://bsky.app/profile/did:plc:fy7i5nqguaqwvqozbguqwjz3
     facebook:
       - https://www.facebook.com/michael.schmid.946517
     linkedin:
       - https://www.linkedin.com/in/michael-schmid-0a4230128/
   - name: Sebastian Vogel
+    facebook:
+      - https://www.facebook.com/SebastianHektorVogel
+    instagram:
+      - https://www.instagram.com/sebastian.h.vogel/
+    linkedin:
+      - https://www.linkedin.com/in/sebastian-hektor-vogel-54803411/
   - name: Sebastian Zopfi
+    linkedin:
+      - https://www.linkedin.com/in/sebastian-luca-zopfi-7b0316135/
   - name: Selina Walgis
+    bluesky:
+      - https://bsky.app/profile/swalgis.bsky.social
+    facebook:
+      - https://www.facebook.com/WalgisSelina
+    instagram:
+      - https://www.instagram.com/selina_walgis/
+    linkedin:
+      - https://www.linkedin.com/in/selina-walgis-7b044715b/
+    x:
+      - https://x.com/s_walgis
   - name: Serap Kahriman
+    facebook:
+      - https://www.facebook.com/serap.kahriman
+      - https://www.facebook.com/profile.php?id=100088897075796
+    instagram:
+      - https://www.instagram.com/serapkahriman_zrh/
+    linkedin:
+      - https://www.linkedin.com/in/serap-kahriman-tr%C3%A4ris-675904170/
+    x:
+      - https://x.com/serap_riri
   - name: Severin Meier
+    instagram:
+      - https://www.instagram.com/severin.a.meier/
+    linkedin:
+      - https://www.linkedin.com/in/severin-meier-50611a58/
   - name: Sibylle Kauer
+    linkedin:
+      - https://www.linkedin.com/in/sibylle-kauer-4b72a8399/
+    x:
+      - https://x.com/KauerSibylle
   - name: Siev Ronny
     facebook:
       - https://www.facebook.com/ronny.siev
@@ -650,10 +688,22 @@ contacts:
       - https://www.instagram.com/ronnysiev
     linkedin:
       - https://www.linkedin.com/in/ronny-siev-4272774a
+    tiktok:
+      - https://www.tiktok.com/@ronnysiev
     x:
       - https://x.com/RonnySiev
   - name: Simon Kälin-Werth
+    facebook:
+      - https://www.facebook.com/simon.kaelinwerth
+    x:
+      - https://x.com/kaelin_simon
   - name: Simone Brander
+    facebook:
+      - https://www.facebook.com/simonebranderzuerich/
+    instagram:
+      - https://www.instagram.com/simone_brander/
+    linkedin:
+      - https://www.linkedin.com/in/simonebrander/
   - name: Sobernheim Sven
     facebook:
       - https://www.facebook.com/sven.zurich

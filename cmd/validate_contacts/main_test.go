@@ -89,6 +89,28 @@ contacts:
 `,
 			wantErrors: 1, // Duplicate name
 		},
+		{
+			name: "corrupted YAML - name field contains URL",
+			yamlContent: `version: "1.0"
+contacts:
+  - name: "Nadina Diday"
+    facebook: ["https://www.facebook.com/nadina.diday"]
+  - name: "Niyazi Erdem - https://www.facebook.com/niyazi.erdem.129357"
+  - name: "Oberholzer Beat"
+    facebook: ["https://www.facebook.com/beatober"]
+`,
+			wantErrors: 1, // Name contains URL instead of proper YAML structure
+		},
+		{
+			name: "corrupted YAML - name with platform data inline",
+			yamlContent: `version: "1.0"
+contacts:
+  - name: "Valid Person"
+    x: ["https://x.com/valid"]
+  - name: "Person Name facebook: https://facebook.com/profile"
+`,
+			wantErrors: 2, // Name contains both URL and platform data (triggers both validation rules)
+		},
 	}
 
 	for _, tt := range tests {
