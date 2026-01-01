@@ -23,14 +23,16 @@ A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Z
 
 ## Supported Platforms
 
-| Platform    | Status     | Account                                           |
-| ----------- | ---------- | ------------------------------------------------- |
-| X (Twitter) | ✅ Active  | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
-| Facebook    | ❌ Planned | -                                                 |
-| Instagram   | ❌ Planned | -                                                 |
-| LinkedIn    | ❌ Planned | -                                                 |
-| Bluesky     | ❌ Planned | -                                                 |
-| TikTok      | ❌ Planned | -                                                 |
+| Platform    | Status     | Gemeinderäte | Account                                           |
+| ----------- | ---------- | ------------ | ------------------------------------------------- |
+| LinkedIn    | ❌ Planned | 85           | -                                                 |
+| Facebook    | ❌ Planned | 76           | -                                                 |
+| Instagram   | ❌ Planned | 70           | -                                                 |
+| X (Twitter) | ✅ Active  | 62           | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
+| Bluesky     | ❌ Planned | 24           | -                                                 |
+| TikTok      | ❌ Planned | 13           | -                                                 |
+
+_Platforms are sorted by coverage. Out of 126 total contacts in [data/contacts.yaml](data/contacts.yaml)._
 
 ## What It Does
 
