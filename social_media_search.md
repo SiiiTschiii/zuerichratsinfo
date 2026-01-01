@@ -4,14 +4,9 @@
 
 **Note:** Instagram doesn't support direct search links from external browsers. Search for names directly within the Instagram app or website.
 
-## Sobernheim Sven
-
-- Bluesky: https://bsky.app/search?q=Sobernheim+Sven
-- Google: https://www.google.com/search?q=Sobernheim+Sven+Gemeinderat+Z%C3%BCrich+social+media
-- TikTok: https://www.tiktok.com/search?q=Sobernheim+Sven
-- X/Twitter: https://x.com/search?q=Sobernheim+Sven&src=typed_query&f=user
-
 ## Sofia Karakostas
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Sofia Karakostas
 
 - Bluesky: https://bsky.app/search?q=Sofia+Karakostas
 - Facebook: https://www.facebook.com/search/top?q=Sofia+Karakostas+Z%C3%BCrich
@@ -23,6 +18,8 @@
 
 ## Sophie Blaser
 
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Sophie Blaser
+
 - Bluesky: https://bsky.app/search?q=Sophie+Blaser
 - Facebook: https://www.facebook.com/search/top?q=Sophie+Blaser+Z%C3%BCrich
 - Google: https://www.google.com/search?q=Sophie+Blaser+Gemeinderat+Z%C3%BCrich+social+media
@@ -33,11 +30,15 @@
 
 ## Spielman Jehuda
 
+**AI Search Prompt:** please find all social media accounts Bluesky, TikTok of Swiss Politician and Zürcher Gemeinderat Spielman Jehuda
+
 - Bluesky: https://bsky.app/search?q=Spielman+Jehuda
 - Google: https://www.google.com/search?q=Spielman+Jehuda+Gemeinderat+Z%C3%BCrich+social+media
 - TikTok: https://www.tiktok.com/search?q=Spielman+Jehuda
 
 ## Späth Dominique
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Späth Dominique
 
 - Bluesky: https://bsky.app/search?q=Sp%C3%A4th+Dominique
 - Facebook: https://www.facebook.com/search/top?q=Sp%C3%A4th+Dominique+Z%C3%BCrich
@@ -47,6 +48,8 @@
 - X/Twitter: https://x.com/search?q=Sp%C3%A4th+Dominique&src=typed_query&f=user
 
 ## Stefan Reusser
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Stefan Reusser
 
 - Bluesky: https://bsky.app/search?q=Stefan+Reusser
 - Facebook: https://www.facebook.com/search/top?q=Stefan+Reusser+Z%C3%BCrich
@@ -58,6 +61,8 @@
 
 ## Stefan Urech
 
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Stefan Urech
+
 - Bluesky: https://bsky.app/search?q=Stefan+Urech
 - Facebook: https://www.facebook.com/search/top?q=Stefan+Urech+Z%C3%BCrich
 - Google: https://www.google.com/search?q=Stefan+Urech+Gemeinderat+Z%C3%BCrich+social+media
@@ -67,6 +72,8 @@
 - X/Twitter: https://x.com/search?q=Stefan+Urech&src=typed_query&f=user
 
 ## Stephan Iten
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Stephan Iten
 
 - Bluesky: https://bsky.app/search?q=Stephan+Iten
 - Facebook: https://www.facebook.com/search/top?q=Stephan+Iten+Z%C3%BCrich
@@ -78,11 +85,15 @@
 
 ## Stählin Patrick
 
+**AI Search Prompt:** please find all social media accounts TikTok, X of Swiss Politician and Zürcher Gemeinderat Stählin Patrick
+
 - Google: https://www.google.com/search?q=St%C3%A4hlin+Patrick+Gemeinderat+Z%C3%BCrich+social+media
 - TikTok: https://www.tiktok.com/search?q=St%C3%A4hlin+Patrick
 - X/Twitter: https://x.com/search?q=St%C3%A4hlin+Patrick&src=typed_query&f=user
 
 ## Stéphane Braune
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Stéphane Braune
 
 - Bluesky: https://bsky.app/search?q=St%C3%A9phane+Braune
 - Facebook: https://www.facebook.com/search/top?q=St%C3%A9phane+Braune+Z%C3%BCrich
@@ -94,6 +105,8 @@
 
 ## Susan Wiget
 
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Susan Wiget
+
 - Bluesky: https://bsky.app/search?q=Susan+Wiget
 - Facebook: https://www.facebook.com/search/top?q=Susan+Wiget+Z%C3%BCrich
 - Google: https://www.google.com/search?q=Susan+Wiget+Gemeinderat+Z%C3%BCrich+social+media
@@ -103,6 +116,8 @@
 - X/Twitter: https://x.com/search?q=Susan+Wiget&src=typed_query&f=user
 
 ## Tamara Bosshardt
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Tamara Bosshardt
 
 - Bluesky: https://bsky.app/search?q=Tamara+Bosshardt
 - Facebook: https://www.facebook.com/search/top?q=Tamara+Bosshardt+Z%C3%BCrich
@@ -114,6 +129,8 @@
 
 ## Tanja Maag
 
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Tanja Maag
+
 - Bluesky: https://bsky.app/search?q=Tanja+Maag
 - Facebook: https://www.facebook.com/search/top?q=Tanja+Maag+Z%C3%BCrich
 - Google: https://www.google.com/search?q=Tanja+Maag+Gemeinderat+Z%C3%BCrich+social+media
@@ -124,6 +141,8 @@
 
 ## Tobler Marcel
 
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, TikTok, X of Swiss Politician and Zürcher Gemeinderat Tobler Marcel
+
 - Bluesky: https://bsky.app/search?q=Tobler+Marcel
 - Facebook: https://www.facebook.com/search/top?q=Tobler+Marcel+Z%C3%BCrich
 - Google: https://www.google.com/search?q=Tobler+Marcel+Gemeinderat+Z%C3%BCrich+social+media
@@ -131,6 +150,8 @@
 - X/Twitter: https://x.com/search?q=Tobler+Marcel&src=typed_query&f=user
 
 ## Tom Cassee
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Tom Cassee
 
 - Bluesky: https://bsky.app/search?q=Tom+Cassee
 - Facebook: https://www.facebook.com/search/top?q=Tom+Cassee+Z%C3%BCrich
@@ -142,12 +163,16 @@
 
 ## Tschannen Emanuel
 
+**AI Search Prompt:** please find all social media accounts Bluesky, TikTok, X of Swiss Politician and Zürcher Gemeinderat Tschannen Emanuel
+
 - Bluesky: https://bsky.app/search?q=Tschannen+Emanuel
 - Google: https://www.google.com/search?q=Tschannen+Emanuel+Gemeinderat+Z%C3%BCrich+social+media
 - TikTok: https://www.tiktok.com/search?q=Tschannen+Emanuel
 - X/Twitter: https://x.com/search?q=Tschannen+Emanuel&src=typed_query&f=user
 
 ## Urs Riklin
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Urs Riklin
 
 - Bluesky: https://bsky.app/search?q=Urs+Riklin
 - Facebook: https://www.facebook.com/search/top?q=Urs+Riklin+Z%C3%BCrich
@@ -159,6 +184,8 @@
 
 ## Ursina Merkler
 
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Ursina Merkler
+
 - Bluesky: https://bsky.app/search?q=Ursina+Merkler
 - Facebook: https://www.facebook.com/search/top?q=Ursina+Merkler+Z%C3%BCrich
 - Google: https://www.google.com/search?q=Ursina+Merkler+Gemeinderat+Z%C3%BCrich+social+media
@@ -169,12 +196,16 @@
 
 ## Verbali Marita
 
+**AI Search Prompt:** please find all social media accounts Bluesky, TikTok, X of Swiss Politician and Zürcher Gemeinderat Verbali Marita
+
 - Bluesky: https://bsky.app/search?q=Verbali+Marita
 - Google: https://www.google.com/search?q=Verbali+Marita+Gemeinderat+Z%C3%BCrich+social+media
 - TikTok: https://www.tiktok.com/search?q=Verbali+Marita
 - X/Twitter: https://x.com/search?q=Verbali+Marita&src=typed_query&f=user
 
 ## Voellmy Xenia
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, TikTok, X of Swiss Politician and Zürcher Gemeinderat Voellmy Xenia
 
 - Bluesky: https://bsky.app/search?q=Voellmy+Xenia
 - Facebook: https://www.facebook.com/search/top?q=Voellmy+Xenia+Z%C3%BCrich
@@ -184,6 +215,8 @@
 - X/Twitter: https://x.com/search?q=Voellmy+Xenia&src=typed_query&f=user
 
 ## Walter Anken
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Walter Anken
 
 - Bluesky: https://bsky.app/search?q=Walter+Anken
 - Facebook: https://www.facebook.com/search/top?q=Walter+Anken+Z%C3%BCrich
@@ -195,11 +228,15 @@
 
 ## Waser Dominik
 
+**AI Search Prompt:** please find all social media accounts Bluesky, TikTok of Swiss Politician and Zürcher Gemeinderat Waser Dominik
+
 - Bluesky: https://bsky.app/search?q=Waser+Dominik
 - Google: https://www.google.com/search?q=Waser+Dominik+Gemeinderat+Z%C3%BCrich+social+media
 - TikTok: https://www.tiktok.com/search?q=Waser+Dominik
 
 ## Wiesmann Barbara
+
+**AI Search Prompt:** please find all social media accounts Bluesky, LinkedIn, TikTok of Swiss Politician and Zürcher Gemeinderat Wiesmann Barbara
 
 - Bluesky: https://bsky.app/search?q=Wiesmann+Barbara
 - Google: https://www.google.com/search?q=Wiesmann+Barbara+Gemeinderat+Z%C3%BCrich+social+media
@@ -207,6 +244,8 @@
 - TikTok: https://www.tiktok.com/search?q=Wiesmann+Barbara
 
 ## Yasmine Bourgeois
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Yasmine Bourgeois
 
 - Bluesky: https://bsky.app/search?q=Yasmine+Bourgeois
 - Facebook: https://www.facebook.com/search/top?q=Yasmine+Bourgeois+Z%C3%BCrich
@@ -217,6 +256,8 @@
 - X/Twitter: https://x.com/search?q=Yasmine+Bourgeois&src=typed_query&f=user
 
 ## Yves Peier
+
+**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Yves Peier
 
 - Bluesky: https://bsky.app/search?q=Yves+Peier
 - Facebook: https://www.facebook.com/search/top?q=Yves+Peier+Z%C3%BCrich

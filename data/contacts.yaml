@@ -705,6 +705,8 @@ contacts:
     linkedin:
       - https://www.linkedin.com/in/simonebrander/
   - name: Sobernheim Sven
+    bluesky:
+      - https://bsky.app/profile/svenzurich.bsky.social
     facebook:
       - https://www.facebook.com/sven.zurich
     instagram:
