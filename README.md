@@ -25,12 +25,12 @@ A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Z
 
 | Platform    | Status     | Gemeinderäte | Account                                           |
 | ----------- | ---------- | ------------ | ------------------------------------------------- |
-| LinkedIn    | ❌ Planned | 86 | -                                                 |
-| Facebook    | ❌ Planned | 77 | -                                                 |
-| Instagram   | ❌ Planned | 71 | -                                                 |
-| X (Twitter) | ✅ Active  | 63 | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
-| Bluesky     | ❌ Planned | 25 | -                                                 |
-| TikTok      | ❌ Planned | 13 | -                                                 |
+| LinkedIn    | ❌ Planned | 86           | -                                                 |
+| Facebook    | ❌ Planned | 77           | -                                                 |
+| Instagram   | ❌ Planned | 71           | -                                                 |
+| X (Twitter) | ✅ Active  | 63           | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
+| Bluesky     | ❌ Planned | 25           | -                                                 |
+| TikTok      | ❌ Planned | 13           | -                                                 |
 
 _Platforms are sorted by coverage. Out of 126 total contacts in [data/contacts.yaml](data/contacts.yaml)._
 
@@ -38,6 +38,7 @@ _Platforms are sorted by coverage. Out of 126 total contacts in [data/contacts.y
 
 - **Automated Vote Posts**: Shares council vote results (Abstimmungen) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) on social media platforms
 - **Politician Tagging**: Automatically tags mentioned politicians using their social media accounts when available in our mapping
+  - _Example: "Postulat von Ivo Bieri @ivo_bieri (SP) und Liv Mahrer @LivMahrer (SP)..."_
 - **Social Media Mapping**: Curates an extensive mapping of Zurich politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok) - see [data/contacts.yaml](data/contacts.yaml)
 
 ### Contributing to the Social Media Mapping
