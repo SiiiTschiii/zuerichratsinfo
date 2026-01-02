@@ -99,7 +99,7 @@ func updateREADME(stats map[string]int, totalContacts int) {
 	// Read README.md
 	readmeData, err := os.ReadFile("README.md")
 	if err != nil {
-		log.Printf("Warning: Could not read README.md: %v", err)
+		fmt.Fprintf(os.Stderr, "Warning: Could not read README.md: %v\n", err)
 		return
 	}
 
@@ -117,11 +117,16 @@ func updateREADME(stats map[string]int, totalContacts int) {
 	}
 
 	// Update each platform's count in the table
+	// Try to match and replace, but don't fail if it doesn't match
+	platformsUpdated := 0
 	for platform, count := range platformMap {
-		// Match the platform row and replace the Gemeinderäte column (3rd column)
-		// Pattern: | Platform | Status | OLD_NUMBER | Account |
-		pattern := regexp.MustCompile(fmt.Sprintf(`(\| %s\s+\| [^|]+ \|) \d+(\s+\|)`, regexp.QuoteMeta(platform)))
-		readme = pattern.ReplaceAllString(readme, fmt.Sprintf("${1} %d${2}", count))
+		// Pattern: | Platform     | Status (with emoji) | NUMBER | Account |
+		pattern := regexp.MustCompile(fmt.Sprintf(`(\|\s*%s\s*\|[^|]+\|)\s*\d+\s*(\|)`, regexp.QuoteMeta(platform)))
+		newReadme := pattern.ReplaceAllString(readme, fmt.Sprintf("${1} %d ${2}", count))
+		if newReadme != readme {
+			platformsUpdated++
+			readme = newReadme
+		}
 	}
 
 	// Update the total contacts count in the footer
@@ -137,26 +142,14 @@ func updateREADME(stats map[string]int, totalContacts int) {
 	// Write back to README.md
 	err = os.WriteFile("README.md", []byte(readme), 0644)
 	if err != nil {
-		log.Printf("Warning: Could not write README.md: %v", err)
+		fmt.Fprintf(os.Stderr, "Warning: Could not write README.md: %v\n", err)
 		return
 	}
 
-	// Sort platforms by count for the output message
-	type platformCount struct {
-		name  string
-		count int
-	}
-	var sorted []platformCount
-	for name, count := range platformMap {
-		sorted = append(sorted, platformCount{name, count})
-	}
-	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i].count > sorted[j].count
-	})
-
-	fmt.Fprintf(os.Stderr, "\n✓ Updated README.md with platform statistics:\n")
-	for _, p := range sorted {
-		fmt.Fprintf(os.Stderr, "  %s: %d\n", p.name, p.count)
+	// Report what was updated
+	fmt.Fprintf(os.Stderr, "\n✓ Updated README.md with platform statistics (%d platforms updated)\n", platformsUpdated)
+	for platform, count := range platformMap {
+		fmt.Fprintf(os.Stderr, "  %s: %d\n", platform, count)
 	}
 	fmt.Fprintf(os.Stderr, "  Total contacts: %d\n\n", totalContacts)
 }

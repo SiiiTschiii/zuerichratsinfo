@@ -19,9 +19,9 @@
 - [x] Add a thank you section in the README to acknowledge contributors and supporters.
 - [x] Group Abstimmungen with the same date and Gschäft into one single post
 - [x] Based on the contacts.yaml, decide which social media platforms to expand to next (Instagram, Facebook, LinkedIn, TikTok, Bluesky)
-  - Created `cmd/platform_stats` to analyze and visualize platform presence
-  - Statistics available in [PLATFORM_STATS.md](PLATFORM_STATS.md)
-- [ ] Automate platform statistics
+  - Created `cmd/platform_stats` to analyze platform presence
+  - Statistics displayed in README.md "Supported Platforms" table
+  - GitHub Action automatically updates README on contacts.yaml changes
 - [ ] Generate visual posts (images)
   - Create simple image posts with text on colored backgrounds (varying colors per post, add shadows)
   - This would enable expansion to visual-first platforms like Instagram and TikTok

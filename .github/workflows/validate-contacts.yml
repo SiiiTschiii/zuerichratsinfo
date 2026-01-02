@@ -6,18 +6,24 @@ on:
     paths:
       - "data/contacts.yaml"
       - "cmd/validate_contacts/**"
+      - "cmd/platform_stats/**"
+      - "README.md"
       - ".github/workflows/validate-contacts.yml"
   pull_request:
     branches: [main]
     paths:
       - "data/contacts.yaml"
       - "cmd/validate_contacts/**"
+      - "cmd/platform_stats/**"
+      - "README.md"
       - ".github/workflows/validate-contacts.yml"
   workflow_dispatch:
 
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -33,3 +39,15 @@ jobs:
 
       - name: Validate contacts.yaml
         run: go run cmd/validate_contacts/main.go data/contacts.yaml
+
+      - name: Update platform statistics
+        run: go run cmd/platform_stats/main.go
+
+      - name: Commit updated README
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md
+          git diff --staged --quiet || git commit -m "Update platform statistics in README [skip ci]"
+          git push
