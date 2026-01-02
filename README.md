@@ -25,10 +25,10 @@ A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Z
 
 | Platform    | Status     | Gemeinderäte | Account                                           |
 | ----------- | ---------- | ------------ | ------------------------------------------------- |
-| LinkedIn    | ❌ Planned | 86 | -                                                 |
-| Facebook    | ❌ Planned | 77 | -                                                 |
-| Instagram   | ❌ Planned | 71 | -                                                 |
-| X (Twitter) | ✅ Active  | 63 | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
+| LinkedIn    | ❌ Planned | 89 | -                                                 |
+| Facebook    | ❌ Planned | 79 | -                                                 |
+| Instagram   | ❌ Planned | 72 | -                                                 |
+| X (Twitter) | ✅ Active  | 65 | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
 | Bluesky     | ❌ Planned | 25 | -                                                 |
 | TikTok      | ❌ Planned | 13 | -                                                 |
 
