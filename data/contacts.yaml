@@ -725,6 +725,8 @@ contacts:
     x:
       - https://x.com/SofiaKarakostas
   - name: Sophie Blaser
+    x:
+      - https://x.com/SophieBlaser1
   - name: Spielman Jehuda
     facebook:
       - https://www.facebook.com/JehudaSpielman/
@@ -735,11 +737,25 @@ contacts:
     x:
       - https://x.com/JehudaSpielman
   - name: Späth Dominique
+    facebook:
+      - https://www.facebook.com/dominique.spaeth.50
     instagram:
       - https://www.instagram.com/dominiquespaeth/
+    x:
+      - https://x.com/DominiqueSpaeth
   - name: Stefan Reusser
+    linkedin:
+      - https://www.linkedin.com/in/stefan-reusser-681567359/
   - name: Stefan Urech
+    instagram:
+      - https://www.instagram.com/urechstefan/
+    linkedin:
+      - https://www.linkedin.com/in/stefan-urech-3511b586/
   - name: Stephan Iten
+    facebook:
+      - https://www.facebook.com/stephan.iten79
+    linkedin:
+      - https://www.linkedin.com/in/stephan-iten-403166142/
   - name: Stählin Patrick
     bluesky:
       - https://bsky.app/profile/patrickstaehlin.ch
