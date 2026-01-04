@@ -44,6 +44,15 @@ contacts:
       - https://www.instagram.com/glpstadtzrh/
     x:
       - https://x.com/glpstadtzuerich
+  - name: AL Stadt Zürich
+    bluesky:
+      - https://bsky.app/profile/alternativeliste.bsky.social
+    facebook:
+      - https://www.facebook.com/ALzuerich/
+    instagram:
+      - https://www.instagram.com/alternativelistezh/
+    x:
+      - https://x.com/al_zuerich
   - name: Amstad Micha
     bluesky:
       - https://web-cdn.bsky.app/profile/michaamstad.bsky.social
@@ -765,9 +774,16 @@ contacts:
       - https://www.instagram.com/patrick.staehlin/
     linkedin:
       - https://www.linkedin.com/in/patrickstaehlin
+    x:
+      - https://x.com/thepacki
   - name: Stéphane Braune
-  - name: Susan Wiget
+    facebook:
+      - https://www.facebook.com/profile.php?id=100013530281101
+    instagram:
+      - https://www.instagram.com/stephanebraune/
   - name: Tamara Bosshardt
+    linkedin:
+      - https://www.linkedin.com/in/tamarabosshardt/
   - name: Tanja Maag
   - name: Tobler Marcel
     instagram:

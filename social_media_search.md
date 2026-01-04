@@ -4,50 +4,6 @@
 
 **Note:** Instagram doesn't support direct search links from external browsers. Search for names directly within the Instagram app or website.
 
-## Stählin Patrick
-
-**AI Search Prompt:** please find all social media accounts TikTok, X of Swiss Politician and Zürcher Gemeinderat Stählin Patrick
-
-- Google: https://www.google.com/search?q=St%C3%A4hlin+Patrick+Gemeinderat+Z%C3%BCrich+social+media
-- TikTok: https://www.tiktok.com/search?q=St%C3%A4hlin+Patrick
-- X/Twitter: https://x.com/search?q=St%C3%A4hlin+Patrick&src=typed_query&f=user
-
-## Stéphane Braune
-
-**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Stéphane Braune
-
-- Bluesky: https://bsky.app/search?q=St%C3%A9phane+Braune
-- Facebook: https://www.facebook.com/search/top?q=St%C3%A9phane+Braune+Z%C3%BCrich
-- Google: https://www.google.com/search?q=St%C3%A9phane+Braune+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=St%C3%A9phane+Braune
-- TikTok: https://www.tiktok.com/search?q=St%C3%A9phane+Braune
-- X/Twitter: https://x.com/search?q=St%C3%A9phane+Braune&src=typed_query&f=user
-
-## Susan Wiget
-
-**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Susan Wiget
-
-- Bluesky: https://bsky.app/search?q=Susan+Wiget
-- Facebook: https://www.facebook.com/search/top?q=Susan+Wiget+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Susan+Wiget+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Susan+Wiget
-- TikTok: https://www.tiktok.com/search?q=Susan+Wiget
-- X/Twitter: https://x.com/search?q=Susan+Wiget&src=typed_query&f=user
-
-## Tamara Bosshardt
-
-**AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Tamara Bosshardt
-
-- Bluesky: https://bsky.app/search?q=Tamara+Bosshardt
-- Facebook: https://www.facebook.com/search/top?q=Tamara+Bosshardt+Z%C3%BCrich
-- Google: https://www.google.com/search?q=Tamara+Bosshardt+Gemeinderat+Z%C3%BCrich+social+media
-- Instagram: https://www.instagram.com/
-- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=Tamara+Bosshardt
-- TikTok: https://www.tiktok.com/search?q=Tamara+Bosshardt
-- X/Twitter: https://x.com/search?q=Tamara+Bosshardt&src=typed_query&f=user
-
 ## Tanja Maag
 
 **AI Search Prompt:** please find all social media accounts Bluesky, Facebook, Instagram, LinkedIn, TikTok, X of Swiss Politician and Zürcher Gemeinderat Tanja Maag
