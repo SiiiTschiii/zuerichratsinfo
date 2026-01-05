@@ -785,12 +785,28 @@ contacts:
     linkedin:
       - https://www.linkedin.com/in/tamarabosshardt/
   - name: Tanja Maag
+    bluesky:
+      - https://bsky.app/profile/tnjmaag.bsky.social
+    facebook:
+      - https://www.facebook.com/tanja.maag.1
+    instagram:
+      - https://www.instagram.com/maag.tanja/
+    linkedin:
+      - https://www.linkedin.com/in/tanja-maag-b6976066/
+    x:
+      - https://x.com/MaagTanja_al
   - name: Tobler Marcel
+    bluesky:
+      - https://bsky.app/profile/marceltoblerzrh.bsky.social
+    facebook:
+      - https://www.facebook.com/marcel.tobler2
     instagram:
       - https://www.instagram.com/marceltobler/
     linkedin:
       - https://www.linkedin.com/in/marceltoblerzrh/
   - name: Tom Cassee
+    facebook:
+      - https://www.facebook.com/thomas.cassee
   - name: Tschannen Emanuel
     facebook:
       - https://www.facebook.com/emanuel.tschannen
@@ -798,8 +814,26 @@ contacts:
       - https://www.instagram.com/emanuel_tschannen
     linkedin:
       - https://www.linkedin.com/in/emanueltschannen
+    x:
+      - https://x.com/Emanuel_Georg
   - name: Urs Riklin
+    bluesky:
+      - https://bsky.app/profile/ursriklin.bsky.social
+    facebook:
+      - https://www.facebook.com/ours.riklin
+    instagram:
+      - https://www.instagram.com/ursriklin/
+    linkedin:
+      - https://www.linkedin.com/in/ursriklin/
   - name: Ursina Merkler
+    bluesky:
+      - https://bsky.app/profile/urme.bsky.social
+    facebook:
+      - https://www.facebook.com/ursina.merkler
+    instagram:
+      - https://www.instagram.com/ursinamerkler/
+    linkedin:
+      - https://www.linkedin.com/in/ursina-merkler-479251144/
   - name: Verbali Marita
     facebook:
       - https://www.facebook.com/maritaverbaliFDP/
@@ -808,11 +842,17 @@ contacts:
       - https://www.instagram.com/marita_verbali/
     linkedin:
       - https://www.linkedin.com/in/marita-verbali-86087478/?originalSubdomain=ch
+    x:
+      - https://x.com/MaritaVerbali
   - name: Voellmy Xenia
     linkedin:
       - https://www.linkedin.com/in/xenia-voellmy
   - name: Walter Anken
+    facebook:
+      - https://www.facebook.com/walter.anken
   - name: Waser Dominik
+    bluesky:
+      - https://bsky.app/profile/dominikwaser.bsky.social
     facebook:
       - https://www.facebook.com/dominik.waser.503/
     instagram:
@@ -829,4 +869,16 @@ contacts:
     x:
       - https://x.com/bawizu
   - name: Yasmine Bourgeois
+    facebook:
+      - https://www.facebook.com/yasmine.c.bourgeois
+    instagram:
+      - https://www.instagram.com/bourgeoisstrasser/
+    linkedin:
+      - https://www.linkedin.com/in/yasmine-bourgeois-strasser-bb241111b/
+    tiktok:
+      - https://www.tiktok.com/@yasminebourgeoiss
+    x:
+      - https://x.com/YasiBourgeois
   - name: Yves Peier
+    linkedin:
+      - https://www.linkedin.com/in/yves-peier-a71851110/
