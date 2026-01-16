@@ -97,11 +97,17 @@ func main() {
 		if err != nil {
 			log.Fatalf("Failed to create output file: %v", err)
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: failed to close output file: %v\n", err)
+			}
+		}()
 		output = f
 	}
 
-	generateEmails(output, contactsWithEmails, *platform)
+	if err := generateEmails(output, contactsWithEmails, *platform); err != nil {
+		log.Fatalf("Failed to generate emails: %v", err)
+	}
 }
 
 func getContactsForPlatform(mapper *contacts.Mapper, platform string) []contacts.Contact {
@@ -198,7 +204,7 @@ func findEmailForContact(name string, apiKontakte []zurichapi.Kontakt) (string, 
 	return "", ""
 }
 
-func generateEmails(output *os.File, contactsWithEmails []ContactInfo, platform string) {
+func generateEmails(output *os.File, contactsWithEmails []ContactInfo, platform string) error {
 	platformNames := map[string]string{
 		"x":         "X (Twitter)",
 		"instagram": "Instagram",
@@ -210,12 +216,18 @@ func generateEmails(output *os.File, contactsWithEmails []ContactInfo, platform 
 
 	platformName := platformNames[platform]
 
-	fmt.Fprintf(output, "Transparenz im Gemeinderat: zuerichratsinfo auf Social Media\n")
-	fmt.Fprintf(output, "\n")
-	fmt.Fprintf(output, "Platform: %s\n", platformName)
-	fmt.Fprintf(output, "\n")
-	fmt.Fprintf(output, "---\n")
-	fmt.Fprintf(output, "\n")
+	w := func(format string, args ...interface{}) {
+		if _, err := fmt.Fprintf(output, format, args...); err != nil {
+			log.Fatalf("Failed to write output: %v", err)
+		}
+	}
+
+	w("Transparenz im Gemeinderat: zuerichratsinfo auf Social Media\n")
+	w("\n")
+	w("Platform: %s\n", platformName)
+	w("\n")
+	w("---\n")
+	w("\n")
 
 	for i, contact := range contactsWithEmails {
 		var roleGreeting, anrede string
@@ -236,34 +248,35 @@ func generateEmails(output *os.File, contactsWithEmails []ContactInfo, platform 
 			}
 		}
 
-		fmt.Fprintf(output, "## %d. %s\n", i+1, contact.Name)
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "**An:** %s\n", contact.Email)
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "%s\n", roleGreeting)
-		fmt.Fprintf(output, "%s %s\n", anrede, contact.Name)
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "In Vorbereitung auf den kommenden Gemeinderatswahlkampf hat mich interessiert, wie die Arbeit im Gemeinderat konkret abläuft und insbesondere, was tatsächlich entschieden wird.\n")
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "Daraus ist das Projekt zuerichratsinfo entstanden:\n")
-		fmt.Fprintf(output, "👉 https://x.com/zuerichratsinfo\n")
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "Der Account publiziert die Abstimmungsresultate aus dem Gemeinderat auf X (Twitter) und markiert jeweils die Politikerinnen und Politiker, welche die entsprechenden Vorstösse etc. eingereicht haben (wie dich: %s). Ziel ist es, politische Arbeit transparenter und für die Öffentlichkeit besser nachvollziehbar zu machen. Mein Ziel ist, @zuerichratsinfo auf weitere Social Media Plattformen zu erweitern wie zum Beispiel Facebook, TikTok, Bluesky oder Instagram – überall wo die Gemeinderätinnen und Gemeinderäte und ihre Wählerinnen und Wähler unterwegs sind.\n", contact.PlatformURL)
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "Ich würde mich freuen, wenn du dem Account folgst und mir Feedback gibst, ob du darin einen Mehrwert für dich und deine Wählerinnen und Wähler siehst, insbesondere im Hinblick auf den Wahlkampf.\n")
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "Weitere Informationen zum Projekt und eine Übersicht, wo alle deine Kolleginnen und Kollegen im Gemeinderat auf Social Media zu finden sind:\n")
-		fmt.Fprintf(output, "https://github.com/SiiiTschiii/zuerichratsinfo\n")
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "Ich wünsche dir einen erfolgreichen Wahlkampf!\n")
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "Vielen Dank und liebe Grüsse\n")
-		fmt.Fprintf(output, "Christof\n")
-		fmt.Fprintf(output, "https://www.linkedin.com/in/christof-gerber/\n")
-		fmt.Fprintf(output, "\n")
-		fmt.Fprintf(output, "---\n")
-		fmt.Fprintf(output, "\n")
+		w("## %d. %s\n", i+1, contact.Name)
+		w("\n")
+		w("**An:** %s\n", contact.Email)
+		w("\n")
+		w("%s\n", roleGreeting)
+		w("%s %s\n", anrede, contact.Name)
+		w("\n")
+		w("In Vorbereitung auf den kommenden Gemeinderatswahlkampf hat mich interessiert, wie die Arbeit im Gemeinderat konkret abläuft und insbesondere, was tatsächlich entschieden wird.\n")
+		w("\n")
+		w("Daraus ist das Projekt zuerichratsinfo entstanden:\n")
+		w("👉 https://x.com/zuerichratsinfo\n")
+		w("\n")
+		w("Der Account publiziert die Abstimmungsresultate aus dem Gemeinderat auf X (Twitter) und markiert jeweils die Politikerinnen und Politiker, welche die entsprechenden Vorstösse etc. eingereicht haben (wie dich: %s). Ziel ist es, politische Arbeit transparenter und für die Öffentlichkeit besser nachvollziehbar zu machen. Mein Ziel ist, @zuerichratsinfo auf weitere Social Media Plattformen zu erweitern wie zum Beispiel Facebook, TikTok, Bluesky oder Instagram – überall wo die Gemeinderätinnen und Gemeinderäte und ihre Wählerinnen und Wähler unterwegs sind.\n", contact.PlatformURL)
+		w("\n")
+		w("Ich würde mich freuen, wenn du dem Account folgst und mir Feedback gibst, ob du darin einen Mehrwert für dich und deine Wählerinnen und Wähler siehst, insbesondere im Hinblick auf den Wahlkampf.\n")
+		w("\n")
+		w("Weitere Informationen zum Projekt und eine Übersicht, wo alle deine Kolleginnen und Kollegen im Gemeinderat auf Social Media zu finden sind:\n")
+		w("https://github.com/SiiiTschiii/zuerichratsinfo\n")
+		w("\n")
+		w("Ich wünsche dir einen erfolgreichen Wahlkampf!\n")
+		w("\n")
+		w("Vielen Dank und liebe Grüsse\n")
+		w("Christof\n")
+		w("https://www.linkedin.com/in/christof-gerber/\n")
+		w("\n")
+		w("---\n")
+		w("\n")
 	}
 
-	fmt.Fprintf(output, "Total: %d personalized emails generated\n", len(contactsWithEmails))
+	w("\nTotal: %d personalized emails generated\n", len(contactsWithEmails))
+	return nil
 }
