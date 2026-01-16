@@ -16,6 +16,7 @@ type Contact struct {
 	Instagram []string `yaml:"instagram,omitempty,flow"` // Full URLs
 	LinkedIn  []string `yaml:"linkedin,omitempty,flow"`  // Full URLs
 	Bluesky   []string `yaml:"bluesky,omitempty,flow"`   // Full URLs
+	TikTok    []string `yaml:"tiktok,omitempty,flow"`    // Full URLs
 }
 
 // ContactMapping contains the full mapping structure
@@ -27,6 +28,7 @@ type ContactMapping struct {
 // Mapper provides name-to-contact lookups
 type Mapper struct {
 	contacts map[string]Contact
+	allContacts []Contact
 }
 
 // LoadContacts loads the contact mapping from a YAML file
@@ -52,7 +54,10 @@ func LoadContacts(filepath string) (*Mapper, error) {
 		contactMap[normalized] = contact
 	}
 
-	return &Mapper{contacts: contactMap}, nil
+	return &Mapper{
+		contacts: contactMap,
+		allContacts: mapping.Contacts,
+	}, nil
 }
 
 // GetContact looks up a contact by name (case-insensitive)
@@ -113,6 +118,8 @@ func (m *Mapper) GetPlatformURLs(name, platform string) []string {
 		return contact.LinkedIn
 	case "bluesky":
 		return contact.Bluesky
+	case "tiktok":
+		return contact.TikTok
 	default:
 		return nil
 	}
@@ -121,4 +128,9 @@ func (m *Mapper) GetPlatformURLs(name, platform string) []string {
 // HasPlatform checks if a contact has a specific platform configured
 func (m *Mapper) HasPlatform(name, platform string) bool {
 	return len(m.GetPlatformURLs(name, platform)) > 0
+}
+
+// GetAllContacts returns all contacts without duplicates
+func (m *Mapper) GetAllContacts() []Contact {
+	return m.allContacts
 }
