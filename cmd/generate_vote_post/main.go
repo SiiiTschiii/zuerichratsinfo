@@ -9,6 +9,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -50,8 +51,19 @@ func main() {
 	// Create X platform (for formatting only, no posting)
 	xPlatform := x.NewXPlatform("", "", "", "", contactMapper, numVotes)
 
+	fmt.Println("━━━ X/Twitter ━━━")
 	// Dry run - just print, don't post
 	_, err = voteposting.PostToPlatform(groups, xPlatform, emptyLog, true)
+	if err != nil {
+		log.Fatalf("Error: %v", err)
+	}
+
+	// Create Bluesky platform (for formatting only, no posting)
+	bskyPlatform := bluesky.NewBlueskyPlatform("", "", numVotes)
+
+	fmt.Println("\n━━━ Bluesky ━━━")
+	bskyLog := votelog.NewEmpty(votelog.PlatformBluesky)
+	_, err = voteposting.PostToPlatform(groups, bskyPlatform, bskyLog, true)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
