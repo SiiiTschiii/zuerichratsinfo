@@ -305,9 +305,8 @@ func TestFormatVoteThread_AllPostsWithinLimit(t *testing.T) {
 }
 
 func TestFormatVoteThread_WithMentions(t *testing.T) {
-	// Create a mapper with contacts that have Bluesky accounts
-	mapper := &contacts.Mapper{}
-	mapper = mustLoadTestMapper(t)
+	// Load real contacts for mention matching
+	mapper := mustLoadTestMapper(t)
 
 	votes := []zurichapi.Abstimmung{
 		{
