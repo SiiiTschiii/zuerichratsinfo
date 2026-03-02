@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/urlshorten"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
@@ -15,8 +16,9 @@ const maxGraphemes = 300
 
 // BlueskyPost holds the formatted text and rich text facets for a Bluesky post
 type BlueskyPost struct {
-	Text   string
-	Facets []bskyapi.Facet
+	Text     string
+	Facets   []bskyapi.Facet
+	Mentions []contacts.BlueskyMention // unresolved mentions (handle + byte offsets)
 }
 
 // FormatVoteThread creates a Bluesky thread for a group of related votes.
@@ -24,7 +26,7 @@ type BlueskyPost struct {
 //
 // Root post contains: header, title, result (single vote), thread hint
 // Replies contain: vote details (counts per vote), link
-func FormatVoteThread(votes []zurichapi.Abstimmung) []*BlueskyPost {
+func FormatVoteThread(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) []*BlueskyPost {
 	if len(votes) == 0 {
 		return nil
 	}
@@ -56,6 +58,14 @@ func FormatVoteThread(votes []zurichapi.Abstimmung) []*BlueskyPost {
 	thread := make([]*BlueskyPost, 0, 1+len(replies))
 	thread = append(thread, root)
 	thread = append(thread, replies...)
+
+	// Scan all posts for politician mentions with Bluesky accounts
+	if contactMapper != nil {
+		for _, post := range thread {
+			post.Mentions = contactMapper.FindBlueskyMentions(post.Text)
+		}
+	}
+
 	return thread
 }
 

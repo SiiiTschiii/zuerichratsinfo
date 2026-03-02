@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
@@ -35,12 +36,12 @@ func sampleVote(title, result string, ja, nein, enth, abw int) zurichapi.Abstimm
 // --- Tests ---
 
 func TestFormatVoteThread_EmptyVotes(t *testing.T) {
-	result := FormatVoteThread(nil)
+	result := FormatVoteThread(nil, nil)
 	if result != nil {
 		t.Errorf("expected nil for empty votes, got %d posts", len(result))
 	}
 
-	result = FormatVoteThread([]zurichapi.Abstimmung{})
+	result = FormatVoteThread([]zurichapi.Abstimmung{}, nil)
 	if result != nil {
 		t.Errorf("expected nil for empty slice, got %d posts", len(result))
 	}
@@ -50,7 +51,7 @@ func TestFormatVoteThread_SingleVote(t *testing.T) {
 	votes := []zurichapi.Abstimmung{
 		sampleVote("Postulat von Reto Brüesch (SVP): Anpassung der Mindestfläche", "angenommen", 90, 30, 0, 5),
 	}
-	thread := FormatVoteThread(votes)
+	thread := FormatVoteThread(votes, nil)
 
 	if len(thread) < 2 {
 		t.Fatalf("expected at least 2 posts (root + reply), got %d", len(thread))
@@ -100,7 +101,7 @@ func TestFormatVoteThread_RejectedVote(t *testing.T) {
 	votes := []zurichapi.Abstimmung{
 		sampleVote("Antrag: Festsetzung der Selnaustrasse", "abgelehnt", 20, 95, 5, 5),
 	}
-	thread := FormatVoteThread(votes)
+	thread := FormatVoteThread(votes, nil)
 
 	if len(thread) < 2 {
 		t.Fatalf("expected at least 2 posts, got %d", len(thread))
@@ -125,7 +126,7 @@ func TestFormatVoteThread_VeryLongTitle(t *testing.T) {
 	votes := []zurichapi.Abstimmung{
 		sampleVote(longTitle, "angenommen", 80, 30, 5, 10),
 	}
-	thread := FormatVoteThread(votes)
+	thread := FormatVoteThread(votes, nil)
 
 	if len(thread) < 2 {
 		t.Fatalf("expected at least 2 posts, got %d", len(thread))
@@ -188,7 +189,7 @@ func TestFormatVoteThread_MultipleVotes(t *testing.T) {
 		},
 	}
 
-	thread := FormatVoteThread(votes)
+	thread := FormatVoteThread(votes, nil)
 	if len(thread) < 2 {
 		t.Fatalf("expected at least 2 posts, got %d", len(thread))
 	}
@@ -230,7 +231,7 @@ func TestFormatVoteThread_LinkFacetOnLastReply(t *testing.T) {
 	votes := []zurichapi.Abstimmung{
 		sampleVote("Budget 2026", "angenommen", 100, 15, 5, 5),
 	}
-	thread := FormatVoteThread(votes)
+	thread := FormatVoteThread(votes, nil)
 	lastReply := thread[len(thread)-1]
 	if len(lastReply.Facets) == 0 {
 		t.Errorf("last reply should have a link facet\nText: %s", lastReply.Text)
@@ -256,7 +257,7 @@ func TestFormatVoteThread_GenericAntragUsesGeschaeftTitle(t *testing.T) {
 		},
 	}
 
-	thread := FormatVoteThread(votes)
+	thread := FormatVoteThread(votes, nil)
 	root := thread[0]
 	if !strings.Contains(root.Text, "Bessere Veloinfrastruktur") {
 		t.Errorf("expected GeschaeftTitel to be used for generic Antrag title\nFull root:\n%s", root.Text)
@@ -285,7 +286,7 @@ func TestFormatVoteThread_AllPostsWithinLimit(t *testing.T) {
 		})
 	}
 
-	thread := FormatVoteThread(votes)
+	thread := FormatVoteThread(votes, nil)
 	if len(thread) < 3 {
 		t.Errorf("expected at least 3 posts for 10 votes, got %d", len(thread))
 	}
@@ -301,4 +302,83 @@ func TestFormatVoteThread_AllPostsWithinLimit(t *testing.T) {
 	if !strings.Contains(lastReply.Text, "🔗") {
 		t.Errorf("last reply missing link\n%s", lastReply.Text)
 	}
+}
+
+func TestFormatVoteThread_WithMentions(t *testing.T) {
+	// Create a mapper with contacts that have Bluesky accounts
+	mapper := &contacts.Mapper{}
+	mapper = mustLoadTestMapper(t)
+
+	votes := []zurichapi.Abstimmung{
+		{
+			OBJGUID:          "mention-test",
+			SitzungGuid:      "sitzung-1",
+			TraktandumGuid:   "trakt-1",
+			GeschaeftGuid:    "geschaeft-1",
+			SitzungDatum:     "2025-06-15",
+			TraktandumTitel:  "Postulat von Anna Graff (SP): Bessere Sicherheit",
+			GeschaeftTitel:   "Bessere Sicherheit",
+			GeschaeftGrNr:    "2025/100",
+			Schlussresultat:  "angenommen",
+			AnzahlJa:         intPtr(80),
+			AnzahlNein:       intPtr(30),
+			AnzahlEnthaltung: intPtr(5),
+			AnzahlAbwesend:   intPtr(10),
+		},
+	}
+
+	thread := FormatVoteThread(votes, mapper)
+	if len(thread) < 2 {
+		t.Fatalf("expected at least 2 posts, got %d", len(thread))
+	}
+
+	root := thread[0]
+
+	// Root text should still contain the name (NOT replaced with @handle)
+	if !strings.Contains(root.Text, "Anna Graff") {
+		t.Errorf("root should contain politician name\nFull root:\n%s", root.Text)
+	}
+
+	// Root should have mention(s) with correct handle
+	if len(root.Mentions) == 0 {
+		t.Fatalf("root should have mentions, got 0")
+	}
+
+	found := false
+	for _, m := range root.Mentions {
+		if m.Handle == "annagraff.bsky.social" {
+			found = true
+			// Verify byte offsets point to "Anna Graff" in the text
+			extracted := root.Text[m.ByteStart:m.ByteEnd]
+			if extracted != "Anna Graff" {
+				t.Errorf("mention byte range extracts %q, want %q", extracted, "Anna Graff")
+			}
+		}
+	}
+	if !found {
+		t.Errorf("expected mention for annagraff.bsky.social, got: %v", root.Mentions)
+	}
+}
+
+func TestFormatVoteThread_NilMapper(t *testing.T) {
+	votes := []zurichapi.Abstimmung{
+		sampleVote("Postulat von Anna Graff (SP): Test", "angenommen", 80, 30, 5, 10),
+	}
+	thread := FormatVoteThread(votes, nil)
+
+	root := thread[0]
+	if len(root.Mentions) != 0 {
+		t.Errorf("nil mapper should produce no mentions, got %d", len(root.Mentions))
+	}
+}
+
+// mustLoadTestMapper creates a contacts mapper with a few test contacts
+func mustLoadTestMapper(t *testing.T) *contacts.Mapper {
+	t.Helper()
+	// Use the real contacts file if available, otherwise build a minimal one
+	mapper, err := contacts.LoadContacts("../../../../data/contacts.yaml")
+	if err != nil {
+		t.Skipf("contacts.yaml not available: %v", err)
+	}
+	return mapper
 }

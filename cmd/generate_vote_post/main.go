@@ -30,16 +30,12 @@ func main() {
 	// Create API client
 	client := zurichapi.NewClient()
 
-	// Load contacts for X handle tagging
-	var contactMapper *contacts.Mapper
-	if showX {
-		contactsPath := filepath.Join("data", "contacts.yaml")
-		var err error
-		contactMapper, err = contacts.LoadContacts(contactsPath)
-		if err != nil {
-			log.Printf("Warning: Could not load contacts for tagging: %v", err)
-			contactMapper = nil
-		}
+	// Load contacts for tagging (used by both X and Bluesky)
+	contactsPath := filepath.Join("data", "contacts.yaml")
+	contactMapper, err := contacts.LoadContacts(contactsPath)
+	if err != nil {
+		log.Printf("Warning: Could not load contacts for tagging: %v", err)
+		contactMapper = nil
 	}
 
 	// Use empty vote log (show all votes, not just unposted)
@@ -65,7 +61,7 @@ func main() {
 	}
 
 	if showBluesky {
-		bskyPlatform := bluesky.NewBlueskyPlatform("", "", *numVotes)
+		bskyPlatform := bluesky.NewBlueskyPlatform("", "", *numVotes, contactMapper)
 		if showX {
 			fmt.Println()
 		}

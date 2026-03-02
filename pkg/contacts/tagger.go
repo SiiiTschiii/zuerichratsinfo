@@ -12,6 +12,14 @@ type XHandleTag struct {
 	Handle string
 }
 
+// BlueskyMention represents a detected mention of a politician who has a Bluesky account.
+// ByteStart/ByteEnd are byte offsets into the original text (for Bluesky facets).
+type BlueskyMention struct {
+	Handle    string // Bluesky handle (e.g. "perparimzh.bsky.social")
+	ByteStart int    // byte offset of name start in text
+	ByteEnd   int    // byte offset of name end in text
+}
+
 // ExtractXHandleFromURL extracts the @handle from an X/Twitter URL
 // Examples:
 //   - "https://x.com/MoritzBoegli" -> "@MoritzBoegli"
@@ -172,4 +180,132 @@ func (m *Mapper) getAllContacts() []Contact {
 	}
 
 	return contacts
+}
+
+// ExtractBlueskyHandleFromURL extracts the handle from a Bluesky profile URL.
+// Examples:
+//
+//   - "https://bsky.app/profile/perparimzh.bsky.social" -> "perparimzh.bsky.social"
+//   - "https://bsky.app/profile/spzuerich.ch" -> "spzuerich.ch"
+//   - "https://bsky.app/profile/did:plc:xxx" -> "did:plc:xxx"
+//   - "https://web-cdn.bsky.app/profile/handle" -> "handle"
+func ExtractBlueskyHandleFromURL(url string) string {
+	// Remove scheme
+	url = strings.TrimPrefix(url, "https://")
+	url = strings.TrimPrefix(url, "http://")
+
+	// Match bsky.app/profile/ or web-cdn.bsky.app/profile/ etc.
+	const profilePath = "/profile/"
+	idx := strings.Index(url, profilePath)
+	if idx < 0 {
+		return ""
+	}
+
+	// Verify it's a bsky.app domain
+	domain := url[:idx]
+	if !strings.HasSuffix(domain, "bsky.app") {
+		return ""
+	}
+
+	handle := url[idx+len(profilePath):]
+	handle = strings.TrimSpace(handle)
+	handle = strings.TrimRight(handle, "/")
+	if handle == "" {
+		return ""
+	}
+	return handle
+}
+
+// FindBlueskyMentions scans text for politician names that have Bluesky accounts
+// and returns their byte positions and handles for creating mention facets.
+// Unlike TagXHandlesInText, this does NOT modify the text — it only returns
+// the positions of names and their corresponding Bluesky handles.
+func (m *Mapper) FindBlueskyMentions(text string) []BlueskyMention {
+	// Collect all contacts with Bluesky accounts and their handles
+	type blueskyTag struct {
+		name   string
+		handle string
+	}
+	var taggable []blueskyTag
+
+	for _, contact := range m.getAllContacts() {
+		if len(contact.Bluesky) == 0 {
+			continue
+		}
+
+		handle := ExtractBlueskyHandleFromURL(contact.Bluesky[0])
+		if handle == "" {
+			continue
+		}
+
+		// Generate name variants for flexible matching
+		variants := generateNameVariants(contact.Name)
+		for _, variant := range variants {
+			taggable = append(taggable, blueskyTag{
+				name:   variant,
+				handle: handle,
+			})
+		}
+	}
+
+	// Sort by name length (descending) to match longer names first
+	for i := 0; i < len(taggable); i++ {
+		for j := i + 1; j < len(taggable); j++ {
+			if len(taggable[i].name) < len(taggable[j].name) {
+				taggable[i], taggable[j] = taggable[j], taggable[i]
+			}
+		}
+	}
+
+	// Find all matches with positions
+	type nameMatch struct {
+		start  int
+		end    int
+		handle string
+	}
+	var allMatches []nameMatch
+
+	for _, tag := range taggable {
+		pattern := fmt.Sprintf(`\b%s\b`, regexp.QuoteMeta(tag.name))
+		re := regexp.MustCompile(pattern)
+
+		indices := re.FindAllStringIndex(text, -1)
+		for _, idx := range indices {
+			allMatches = append(allMatches, nameMatch{
+				start:  idx[0],
+				end:    idx[1],
+				handle: tag.handle,
+			})
+		}
+	}
+
+	// Remove overlapping matches (keep longest/first)
+	var filtered []nameMatch
+	for _, m1 := range allMatches {
+		overlaps := false
+		for _, m2 := range filtered {
+			if (m1.start >= m2.start && m1.start < m2.end) ||
+				(m1.end > m2.start && m1.end <= m2.end) ||
+				(m1.start <= m2.start && m1.end >= m2.end) {
+				overlaps = true
+				break
+			}
+		}
+		if !overlaps {
+			filtered = append(filtered, m1)
+		}
+	}
+
+	// Convert to BlueskyMention (byte offsets are already correct since
+	// FindAllStringIndex returns byte positions for UTF-8 strings in Go)
+	var mentions []BlueskyMention
+	for _, match := range filtered {
+		mentions = append(mentions, BlueskyMention{
+			Handle:    match.handle,
+			ByteStart: match.start,
+			ByteEnd:   match.end,
+		})
+	}
+
+	return mentions
 }

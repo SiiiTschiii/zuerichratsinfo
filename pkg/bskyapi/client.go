@@ -207,3 +207,49 @@ func LinkFacet(byteStart, byteEnd int, uri string) Facet {
 		},
 	}
 }
+
+// MentionFacet creates a facet for a mention in the post text.
+// byteStart and byteEnd are the byte offsets of the mention text in the UTF-8 encoded post.
+// did is the DID of the mentioned user (e.g. "did:plc:p3wcrhc5fj3hfkhoujdsyasy").
+func MentionFacet(byteStart, byteEnd int, did string) Facet {
+	return Facet{
+		Index: FacetIndex{
+			ByteStart: byteStart,
+			ByteEnd:   byteEnd,
+		},
+		Features: []FacetFeature{
+			{
+				Type: "app.bsky.richtext.facet#mention",
+				DID:  did,
+			},
+		},
+	}
+}
+
+// ResolveHandle resolves a Bluesky handle to a DID using the public API.
+// No authentication required.
+func ResolveHandle(handle string) (string, error) {
+	url := defaultPDSHost + "/xrpc/com.atproto.identity.resolveHandle?handle=" + handle
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(url)
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve handle %q: %w", handle, err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, _ := io.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("resolveHandle for %q returned status %d: %s", handle, resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		DID string `json:"did"`
+	}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return "", fmt.Errorf("failed to parse resolveHandle response: %w", err)
+	}
+
+	return result.DID, nil
+}

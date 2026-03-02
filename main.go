@@ -117,6 +117,7 @@ func main() {
 			bskyPlatform := bluesky.NewBlueskyPlatform(
 				bskyHandle, bskyPassword,
 				maxBskyPostsPerRun,
+				contactMapper,
 			)
 
 			posted, err := voteposting.PostToPlatform(groups, bskyPlatform, voteLog, false)
