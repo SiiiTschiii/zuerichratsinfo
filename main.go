@@ -34,6 +34,13 @@ func main() {
 		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky.")
 	}
 
+	if !xEnabled {
+		log.Println("⚠️  X/Twitter not configured (missing X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET)")
+	}
+	if !bskyEnabled {
+		log.Println("⚠️  Bluesky not configured (missing BLUESKY_HANDLE/BLUESKY_PASSWORD)")
+	}
+
 	// Load rate limit configuration from environment
 	maxVotesToCheck := getEnvInt("MAX_VOTES_TO_CHECK", 50)
 	maxXPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
