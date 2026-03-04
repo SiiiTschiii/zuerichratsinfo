@@ -162,6 +162,21 @@ func TestIsGenericAntragTitle(t *testing.T) {
 			expected: true,
 		},
 		{
+			name:     "Antrag without dot (API variant)",
+			input:    "Antrag 1",
+			expected: true,
+		},
+		{
+			name:     "Antrag without dot with GR number",
+			input:    "2024/31 Antrag 1",
+			expected: true,
+		},
+		{
+			name:     "Anträge range without dots",
+			input:    "2025/391 Anträge 44 bis 46",
+			expected: true,
+		},
+		{
 			name:     "Descriptive title (not generic)",
 			input:    "2025/391 Weisung vom 10.09.2025: Finanzverwaltung, Budgetvorlage 2026",
 			expected: false,
@@ -210,6 +225,12 @@ func TestSelectBestTitle(t *testing.T) {
 			traktandumTitel: "2025/391 Antrag 007.",
 			geschaeftTitel:  "Finanzverwaltung, Budgetvorlage 2026 (Detailbudgets und Globalbudgets)",
 			expected:        "Finanzverwaltung, Budgetvorlage 2026 (Detailbudgets und Globalbudgets)",
+		},
+		{
+			name:            "Generic Antrag without dot - should use Geschäft title",
+			traktandumTitel: "2024/31 Antrag 1",
+			geschaeftTitel:  "Amt für Städtebau, BZO-Teilrevision «Hochhäuser»",
+			expected:        "Amt für Städtebau, BZO-Teilrevision «Hochhäuser»",
 		},
 		{
 			name:            "Generic Anträge range - should use Geschäft title",

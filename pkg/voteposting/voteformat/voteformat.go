@@ -11,7 +11,8 @@ var geschaeftNumberUnderscoreRegex = regexp.MustCompile(`^\d+_\d+\s+`)
 
 // antragOnlyRegex matches titles that are just "Antrag XXX" or "Anträge XXX bis YYY"
 // These generic titles should be replaced with the GeschaeftTitel
-var antragOnlyRegex = regexp.MustCompile(`^(\d+/\d+\s+)?Antr(a|ä)ge?\s+\d+\.(\s+(bis|–|-)\s+\d+\.)?$`)
+// The dot after the number is optional because the API sometimes omits it (e.g. "Antrag 1" vs "Antrag 007.")
+var antragOnlyRegex = regexp.MustCompile(`^(\d+/\d+\s+)?Antr(a|ä)ge?\s+\d+\.?(\s+(bis|–|-)\s+\d+\.?)?$`)
 
 
 // FormatVoteDate formats the date from ISO format to DD.MM.YYYY
