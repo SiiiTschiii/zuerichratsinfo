@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/urlshorten"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -107,7 +106,6 @@ func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.M
 		// For single votes, link to the individual vote
 		link = voteformat.GenerateVoteLink(firstVote.OBJGUID)
 	}
-	link = urlshorten.ShortenURL(link)
 	linkLine := fmt.Sprintf("🔗 %s", link)
 	sb.WriteString(linkLine)
 

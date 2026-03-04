@@ -6,7 +6,6 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/urlshorten"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -47,7 +46,6 @@ func FormatVoteThread(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapp
 	} else {
 		link = voteformat.GenerateVoteLink(firstVote.OBJGUID)
 	}
-	link = urlshorten.ShortenURL(link)
 
 	// --- Build root post ---
 	root, titleContinuation := buildRootPost(votes, date, title)
@@ -195,10 +193,18 @@ func buildReplyPosts(votes []zurichapi.Abstimmung, link string, titleContinuatio
 		currentLen += entryLen
 	}
 
-	// Flush remaining entries with the link
+	// Flush remaining entries with the link.
+	// If the link doesn't fit together with the remaining entries, put it
+	// in its own reply so the URL is never truncated.
 	if len(currentEntries) > 0 {
-		replyText := strings.Join(currentEntries, "\n\n") + linkLine
-		replies = append(replies, makePost(replyText, link))
+		body := strings.Join(currentEntries, "\n\n")
+		if graphemeLen(body+linkLine) <= maxGraphemes {
+			replies = append(replies, makePost(body+linkLine, link))
+		} else {
+			replies = append(replies, makePost(body, ""))
+			linkOnly := fmt.Sprintf("🔗 %s", link)
+			replies = append(replies, makePost(linkOnly, link))
+		}
 	}
 
 	return replies
