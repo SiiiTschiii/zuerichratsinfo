@@ -77,6 +77,11 @@ func (p *XPlatform) Post(content platforms.Content) (bool, error) {
 	return shouldContinue, nil
 }
 
+// MaxPostsPerRun returns the configured per-run posting limit.
+func (p *XPlatform) MaxPostsPerRun() int {
+	return p.maxPostsPerRun
+}
+
 // Name returns the platform name
 func (p *XPlatform) Name() string {
 	return "X"

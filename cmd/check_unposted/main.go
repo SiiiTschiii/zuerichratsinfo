@@ -1,89 +1,122 @@
+// check_unposted is a dry-run mirror of main.go for local debugging.
+// It reads the actual vote logs, respects MAX_VOTES_TO_CHECK and MAX_POSTS_PER_RUN,
+// and prints what would be posted without making any API calls.
+//
+// Usage:
+//
+//	go run ./cmd/check_unposted [-platform x|bluesky] [-n N] [-max-posts M]
+//
+// Flags override the corresponding environment variables.
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
-	"strconv"
+	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"os"
+	"strconv"
 )
 
 func main() {
-	// Get number of votes to check from command line argument, or environment, or default
-	maxVotesToCheck := 150
-	if len(os.Args) > 1 {
-		// Command line argument takes priority
-		if n, err := strconv.Atoi(os.Args[1]); err == nil && n > 0 {
-			maxVotesToCheck = n
-		} else {
-			log.Fatalf("Invalid argument: please provide a positive number")
-		}
-	} else {
-		// Fall back to environment variable
-		maxVotesToCheck = getEnvInt("MAX_VOTES_TO_CHECK", 50)
+	platformFlag := flag.String("platform", "", "platform to check: x, bluesky (default: all)")
+	nFlag := flag.Int("n", 0, "override MAX_VOTES_TO_CHECK")
+	maxPostsFlag := flag.Int("max-posts", 0, "override MAX_POSTS_PER_RUN for the chosen platform")
+	flag.Parse()
+
+	showX := *platformFlag == "" || strings.EqualFold(*platformFlag, "x")
+	showBluesky := *platformFlag == "" || strings.EqualFold(*platformFlag, "bluesky") || strings.EqualFold(*platformFlag, "bsky")
+	if !showX && !showBluesky {
+		log.Fatalf("Unknown platform %q. Use: x, bluesky", *platformFlag)
 	}
 
-	fmt.Printf("Configuration: Check last %d votes\n\n", maxVotesToCheck)
+	maxVotesToCheck := getEnvInt("MAX_VOTES_TO_CHECK", 50)
+	if *nFlag > 0 {
+		maxVotesToCheck = *nFlag
+	}
 
-	// Load contacts for X handle tagging
+	maxXPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
+	maxBskyPostsPerRun := getEnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10)
+	if *maxPostsFlag > 0 {
+		maxXPostsPerRun = *maxPostsFlag
+		maxBskyPostsPerRun = *maxPostsFlag
+	}
+
+	fmt.Printf("Configuration: check last %d votes", maxVotesToCheck)
+	if *platformFlag != "" {
+		fmt.Printf(", platform: %s", *platformFlag)
+	}
+	fmt.Println()
+
 	contactsPath := filepath.Join("data", "contacts.yaml")
 	contactMapper, err := contacts.LoadContacts(contactsPath)
 	if err != nil {
 		log.Printf("Warning: Could not load contacts for tagging: %v", err)
-		contactMapper = nil // Continue without tagging
+		contactMapper = nil
 	}
 
-	// Load the vote log for X platform
-	voteLog, err := votelog.Load(votelog.PlatformX)
-	if err != nil {
-		log.Fatalf("Error loading vote log: %v", err)
-	}
-	fmt.Printf("Loaded vote log: %d votes already posted\n", voteLog.Count())
-
-	// Create API client
 	client := zurichapi.NewClient()
 
-	// Prepare votes for posting using the same logic as main.go
-	groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
-	if err != nil {
-		log.Fatalf("Error preparing votes: %v", err)
-	}
-
-	if len(groups) == 0 {
-		fmt.Println("\n✨ No new votes to post!")
-		return
-	}
-
-	fmt.Printf("Found %d group(s) to post\n\n", len(groups))
-
-	fmt.Printf("🚀 Would post these %d groups:\n\n", len(groups))
-
-	for i, group := range groups {
-		message := x.FormatVoteGroupPost(group, contactMapper)
-		fmt.Printf("─────────────────────────────────────────────────────────────────\n")
-		fmt.Printf("[%d/%d] Group with %d vote(s)\n", i+1, len(groups), len(group))
-		fmt.Printf("Business: %s\n", group[0].GeschaeftGrNr)
-		fmt.Printf("Date: %s\n", group[0].SitzungDatum[:10])
-		fmt.Printf("Vote IDs: ")
-		for j, vote := range group {
-			if j > 0 {
-				fmt.Printf(", ")
-			}
-			fmt.Printf("%s", vote.OBJGUID[:8]+"...")
+	if showX {
+		fmt.Println("\n━━━ X/Twitter ━━━")
+		voteLog, err := votelog.Load(votelog.PlatformX)
+		if err != nil {
+			log.Fatalf("Error loading X vote log: %v", err)
 		}
-		fmt.Printf("\n\n%s\n", message)
-		fmt.Printf("\nCharacter count: %d\n", len(message))
+		fmt.Printf("Loaded X vote log: %d votes already posted\n", voteLog.Count())
+
+		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
+		if err != nil {
+			log.Fatalf("Error preparing votes for X: %v", err)
+		}
+		if len(groups) == 0 {
+			fmt.Println("✨ No new votes to post on X!")
+		} else {
+			fmt.Printf("Found %d group(s) — would post up to %d per run\n\n", len(groups), maxXPostsPerRun)
+			xPlatform := x.NewXPlatform("", "", "", "", contactMapper, maxXPostsPerRun)
+			_, err = voteposting.PostToPlatform(groups, xPlatform, voteLog, true)
+			if err != nil {
+				log.Printf("Error: %v", err)
+			}
+		}
 	}
-	fmt.Printf("─────────────────────────────────────────────────────────────────\n")
+
+	if showBluesky {
+		if showX {
+			fmt.Println()
+		}
+		fmt.Println("━━━ Bluesky ━━━")
+		voteLog, err := votelog.Load(votelog.PlatformBluesky)
+		if err != nil {
+			log.Fatalf("Error loading Bluesky vote log: %v", err)
+		}
+		fmt.Printf("Loaded Bluesky vote log: %d votes already posted\n", voteLog.Count())
+
+		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
+		if err != nil {
+			log.Fatalf("Error preparing votes for Bluesky: %v", err)
+		}
+		if len(groups) == 0 {
+			fmt.Println("✨ No new votes to post on Bluesky!")
+		} else {
+			fmt.Printf("Found %d group(s) — would post up to %d per run\n\n", len(groups), maxBskyPostsPerRun)
+			bskyPlatform := bluesky.NewBlueskyPlatform("", "", maxBskyPostsPerRun, contactMapper)
+			_, err = voteposting.PostToPlatform(groups, bskyPlatform, voteLog, true)
+			if err != nil {
+				log.Printf("Error: %v", err)
+			}
+		}
+	}
 }
 
-// getEnvInt gets an integer from environment variable with a default value
 func getEnvInt(key string, defaultValue int) int {
 	if val := os.Getenv(key); val != "" {
 		if intVal, err := strconv.Atoi(val); err == nil {

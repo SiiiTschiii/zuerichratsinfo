@@ -75,7 +75,7 @@ func PostToPlatform(
 
 	var firstUnsupportedErr error
 
-	for i, group := range groups {
+	for _, group := range groups {
 		// Validate vote counts before formatting; skip groups with unknown formats
 		if err := validateGroupCounts(group); err != nil {
 			log.Printf("⚠️  Skipping group (unsupported vote type): %v", err)
@@ -91,14 +91,28 @@ func PostToPlatform(
 			return posted, err
 		}
 
+		// Log which group is being posted (helps trace which Bluesky URIs map to which votes)
+		fmt.Printf("📋 %s (%s) — %d vote(s):\n",
+			group[0].GeschaeftGrNr,
+			group[0].SitzungDatum[:10],
+			len(group),
+		)
+		for _, v := range group {
+			fmt.Printf("   https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=%s\n", v.OBJGUID)
+		}
+
 		if dryRun {
-			// Dry run: just print
-			if i > 0 {
+			// Dry run: print and respect the same per-run limit as real posting
+			if posted > 0 {
 				fmt.Println()
 				fmt.Println("────────────────────────────────────────────────────────────────────────────────")
 				fmt.Println()
 			}
 			fmt.Println(content.String())
+			posted++
+			if posted >= platform.MaxPostsPerRun() {
+				break
+			}
 		} else {
 			// Real posting
 			shouldContinue, err := platform.Post(content)

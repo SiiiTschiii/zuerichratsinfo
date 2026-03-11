@@ -104,6 +104,8 @@ func (p *BlueskyPlatform) Post(content platforms.Content) (bool, error) {
 		return false, fmt.Errorf("failed to post root: %w", err)
 	}
 	fmt.Printf("✅ Root post created (uri: %s)\n", rootRef.URI)
+	uriParts := strings.Split(rootRef.URI, "/")
+	fmt.Printf("   🔗 https://bsky.app/profile/%s/post/%s\n", p.handle, uriParts[len(uriParts)-1])
 
 	// Post replies as a chain
 	parentRef := rootRef
@@ -126,6 +128,11 @@ func (p *BlueskyPlatform) Post(content platforms.Content) (bool, error) {
 	shouldContinue := p.postsThisRun < p.maxPostsPerRun
 
 	return shouldContinue, nil
+}
+
+// MaxPostsPerRun returns the configured per-run posting limit.
+func (p *BlueskyPlatform) MaxPostsPerRun() int {
+	return p.maxPostsPerRun
 }
 
 // Name returns the platform name

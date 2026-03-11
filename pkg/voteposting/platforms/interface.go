@@ -17,6 +17,10 @@ type Platform interface {
 	// Returns shouldContinue=false if posting limit is reached
 	Post(content Content) (shouldContinue bool, err error)
 
+	// MaxPostsPerRun returns the maximum number of root posts per run.
+	// Used by dry-run mode to simulate the same limit as real posting.
+	MaxPostsPerRun() int
+
 	// Name returns the platform identifier (e.g., "X", "Instagram")
 	Name() string
 }
