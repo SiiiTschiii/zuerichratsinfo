@@ -92,7 +92,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "❌ Failed to sort and write file: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("✅ Platforms sorted alphabetically and file updated.")
+		fmt.Println("✅ Contacts and platforms sorted alphabetically and file updated.")
 		os.Exit(0)
 	}
 
@@ -146,6 +146,20 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 			Message: "No contacts found in file",
 		})
 		return errors
+	}
+
+	// Check contacts are sorted alphabetically by name
+	if !skipOrderCheck {
+		for i := 1; i < len(mapping.Contacts); i++ {
+			prev := mapping.Contacts[i-1].Name
+			curr := mapping.Contacts[i].Name
+			if strings.ToLower(curr) < strings.ToLower(prev) {
+				errors = append(errors, ValidationError{
+					ContactName: curr,
+					Message:     fmt.Sprintf("Contact is out of alphabetical order (comes after '%s'). Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/contacts.yaml", prev),
+				})
+			}
+		}
 	}
 
 	// Validate each contact
@@ -393,8 +407,10 @@ func sortAndWriteContacts(filepath string) error {
 		return fmt.Errorf("failed to parse YAML: %v", err)
 	}
 
-	// No need to sort - struct fields are already in alphabetical order
-	// The YAML marshaler will output them in struct field order
+	// Sort contacts alphabetically by name (case-insensitive)
+	sort.Slice(mapping.Contacts, func(i, j int) bool {
+		return strings.ToLower(mapping.Contacts[i].Name) < strings.ToLower(mapping.Contacts[j].Name)
+	})
 
 	// Marshal back to YAML
 	output, err := yaml.Marshal(&mapping)

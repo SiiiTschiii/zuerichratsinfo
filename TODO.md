@@ -14,6 +14,7 @@
 - [x] post all new abstimmungen. how to avoid duplicates? keep track of a published abstimmuneng log. In the repo with the github action that commits to it after it run?
 - [x] Tag relevant X accounts. Enhance the bot to tag relevant Gemeinderat X accounts in posts, based on author/submitter.
 - [x] Curate the contacts.yaml with social media accounts.
+- [ ] Only consider active Gemeinderäte / Stadträte in contacts.yaml (remove former members)
 - [x] Contact politicians on x.com and some news orgs to follow and share the account.
 - [x] Add a way to suppport the project (e.g., GitHub Sponsors, Buy Me a Coffee, etc.). The x.com premium accounts / paid API features.
 - [x] Add a thank you section in the README to acknowledge contributors and supporters.
