@@ -64,6 +64,10 @@ func (p *MockPlatform) Post(content platforms.Content) (bool, error) {
 	return shouldContinue, nil
 }
 
+func (p *MockPlatform) MaxPostsPerRun() int {
+	return p.maxPosts
+}
+
 func (p *MockPlatform) Name() string {
 	return "Mock"
 }
@@ -117,9 +121,9 @@ func TestPostToPlatform_DryRun(t *testing.T) {
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
-	// In dry run, nothing should be posted
-	if posted != 0 {
-		t.Errorf("Expected 0 posted in dry run, got %d", posted)
+	// In dry run, posted counts groups printed (not real API calls)
+	if posted != 2 {
+		t.Errorf("Expected 2 printed in dry run, got %d", posted)
 	}
 
 	// Format should be called for each group

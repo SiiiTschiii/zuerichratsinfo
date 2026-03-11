@@ -29,7 +29,7 @@ A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Z
 | Facebook    | ❌ Planned | 88 | -                                                 |
 | Instagram   | ❌ Planned | 78 | -                                                 |
 | X (Twitter) | ✅ Active  | 71 | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
-| Bluesky     | ❌ Planned | 31 | -                                                 |
+| Bluesky     | ✅ Active  | 31 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
 | TikTok      | ❌ Planned | 14 | -                                                 |
 
 _Platforms are sorted by coverage. Out of 126 total contacts in [data/contacts.yaml](data/contacts.yaml)._
@@ -50,6 +50,7 @@ Found an error or want to add a politician's social media account? Please [open 
 - Go
 - Zurich Council PARIS API, see [pkg/zurichapi/README.md](pkg/zurichapi/README.md)
 - X API v2 with OAuth 1.0a, see [pkg/xapi/README.md](pkg/xapi/README.md)
+- Bluesky AT Protocol (app.bsky), see [pkg/voteposting/platforms/bluesky](pkg/voteposting/platforms/bluesky)
 
 ## Setup
 
