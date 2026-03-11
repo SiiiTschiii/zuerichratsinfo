@@ -28,17 +28,19 @@
   - This would enable expansion to visual-first platforms like Instagram and TikTok
   - Start simple: uni-colored background + large text + basic shadow effects
 
+## Post Format Improvements
+
+- [ ] X: use reply threads for large vote groups (currently capped to a single post per group)
+- [ ] X + Bluesky: add a reply with per-Fraktion vote breakdown (e.g. SP 32 Ja / 0 Nein, FDP 18 Ja / 5 Nein, …)
+
 ## Platform Integrations
 
 ### Bluesky (Priority 1 — lowest effort, closest to X format)
 
-- [ ] Implement Bluesky client using AT Protocol (`com.atproto.repo.createRecord`)
-  - Auth via username/password session, no app review needed
-  - Docs: https://docs.bsky.app/docs/get-started
-- [ ] Implement Bluesky post formatter (300 char limit, link facets, optional image embed)
-  - Adapt X format: emoji header, result, vote counts, shortened link
-  - Docs: https://docs.bsky.app/docs/advanced-guides/posts
-- [ ] Add Bluesky platform to posting pipeline and track posted votes separately
+- [x] Implement Bluesky client using AT Protocol (`com.atproto.repo.createRecord`)
+- [x] Implement Bluesky post formatter (300 char limit, link facets, optional image embed)
+- [x] Add Bluesky platform to posting pipeline and track posted votes separately
+- [x] Tag Bluesky accounts for politicians (using contacts.yaml `bluesky` field)
 
 ### LinkedIn (Priority 2 — professional audience, text posts work)
 
