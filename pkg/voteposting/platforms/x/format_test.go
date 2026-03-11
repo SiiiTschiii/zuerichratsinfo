@@ -72,6 +72,83 @@ func TestFormatVoteGroupPost_PreservesPostulatMotion(t *testing.T) {
 	}
 }
 
+func TestFormatVoteGroupPost_AuswahlVote(t *testing.T) {
+	tests := []struct {
+		name           string
+		votes          []zurichapi.Abstimmung
+		shouldContain  []string
+		shouldNotContain []string
+	}{
+		{
+			name: "Single Auswahl vote — no result prefix",
+			votes: []zurichapi.Abstimmung{
+				{
+					OBJGUID:         "auswahl-guid-1",
+					TraktandumTitel: "Weisung: Jugendwohnkredit 2025",
+					SitzungDatum:    "2026-03-04",
+					Schlussresultat: "Auswahl A",
+					AnzahlAbwesend:  intPtr(10),
+					AnzahlA:         intPtr(74),
+					AnzahlB:         intPtr(28),
+					AnzahlC:         intPtr(13),
+				},
+			},
+			shouldContain:    []string{"📊 A: 74 | B: 28 | C: 13 | Abwesend 10", "Jugendwohnkredit"},
+			shouldNotContain: []string{"✅", "❌", "Angenommen", "Abgelehnt"},
+		},
+		{
+			name: "Multi vote with Auswahl entry — no emoji before subtitle",
+			votes: []zurichapi.Abstimmung{
+				{
+					OBJGUID:          "guid-ja-nein",
+					TraktandumTitel:  "Weisung: BZO",
+					Abstimmungstitel: "Änderungsantrag 9",
+					SitzungDatum:     "2026-02-25",
+					Schlussresultat:  "angenommen",
+					AnzahlJa:         intPtr(62),
+					AnzahlNein:       intPtr(51),
+					AnzahlEnthaltung: intPtr(0),
+					AnzahlAbwesend:   intPtr(12),
+				},
+				{
+					OBJGUID:          "guid-auswahl",
+					TraktandumTitel:  "Weisung: BZO",
+					Abstimmungstitel: "Änderungsantrag 17, 1. Abstimmung",
+					SitzungDatum:     "2026-02-25",
+					Schlussresultat:  "Auswahl A",
+					AnzahlAbwesend:   intPtr(11),
+					AnzahlA:          intPtr(50),
+					AnzahlB:          intPtr(24),
+					AnzahlC:          intPtr(40),
+				},
+			},
+			shouldContain: []string{
+				"✅ Änderungsantrag 9",
+				"Änderungsantrag 17, 1. Abstimmung",
+				"📊 A: 50 | B: 24 | C: 40 | Abwesend 11",
+			},
+			shouldNotContain: []string{"❌ Änderungsantrag 17", "✅ Änderungsantrag 17"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := FormatVoteGroupPost(tt.votes, nil)
+			t.Logf("Full output:\n%s", result)
+			for _, part := range tt.shouldContain {
+				if !strings.Contains(result, part) {
+					t.Errorf("Expected output to contain %q", part)
+				}
+			}
+			for _, part := range tt.shouldNotContain {
+				if strings.Contains(result, part) {
+					t.Errorf("Expected output NOT to contain %q", part)
+				}
+			}
+		})
+	}
+}
+
 // Helper function for tests
 func intPtr(i int) *int {
 	return &i

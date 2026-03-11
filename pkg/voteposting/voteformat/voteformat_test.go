@@ -197,6 +197,21 @@ func TestIsGenericAntragTitle(t *testing.T) {
 			expected: false,
 		},
 		{
+			name:     "Antrag N zu Dispositivziffer X (generic)",
+			input:    "Antrag 1 zu Dispositivziffer 1",
+			expected: true,
+		},
+		{
+			name:     "Antrag N zu Dispositivziffer Xa (generic)",
+			input:    "2025/391 Antrag 3 zu Dispositivziffer 1a",
+			expected: true,
+		},
+		{
+			name:     "Anträge range zu Dispositivziffer (generic)",
+			input:    "Anträge 3-4 zu Dispositivziffer 1b",
+			expected: true,
+		},
+		{
 			name:     "Empty string",
 			input:    "",
 			expected: false,
@@ -269,5 +284,169 @@ func TestGenerateGeschaeftLink(t *testing.T) {
 	result := GenerateGeschaeftLink(guid)
 	if result != expected {
 		t.Errorf("GenerateGeschaeftLink() failed\nexpected: %q\ngot:      %q", expected, result)
+	}
+}
+
+func ptr(n int) *int { return &n }
+
+func TestIsAuswahlVote(t *testing.T) {
+	tests := []struct {
+		name     string
+		counts   VoteCounts
+		expected bool
+	}{
+		{
+			name:     "standard Ja/Nein vote",
+			counts:   VoteCounts{Ja: ptr(86), Nein: ptr(13), Enthaltung: ptr(12), Abwesend: ptr(14)},
+			expected: false,
+		},
+		{
+			name:     "Auswahl A/B/C vote",
+			counts:   VoteCounts{Ja: ptr(0), Nein: ptr(0), Enthaltung: ptr(0), Abwesend: ptr(11), A: ptr(50), B: ptr(24), C: ptr(40)},
+			expected: true,
+		},
+		{
+			name:     "Auswahl A/B only",
+			counts:   VoteCounts{Abwesend: ptr(10), A: ptr(75), B: ptr(40)},
+			expected: true,
+		},
+		{
+			name:     "all nil (unsupported, but not Auswahl)",
+			counts:   VoteCounts{},
+			expected: false,
+		},
+		{
+			name:     "all zero (unsupported, but not Auswahl)",
+			counts:   VoteCounts{A: ptr(0), B: ptr(0)},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := IsAuswahlVote(tt.counts)
+			if got != tt.expected {
+				t.Errorf("IsAuswahlVote() = %v, want %v", got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestIsUnsupportedVoteType(t *testing.T) {
+	tests := []struct {
+		name     string
+		counts   VoteCounts
+		expected bool
+	}{
+		{
+			name:     "standard vote with results",
+			counts:   VoteCounts{Ja: ptr(107), Nein: ptr(8), Enthaltung: ptr(0), Abwesend: ptr(10)},
+			expected: false,
+		},
+		{
+			name:     "auswahl vote with A/B/C",
+			counts:   VoteCounts{Ja: ptr(0), Nein: ptr(0), Enthaltung: ptr(0), Abwesend: ptr(11), A: ptr(50), B: ptr(24), C: ptr(40)},
+			expected: false,
+		},
+		{
+			name:     "all nil (no fields parsed)",
+			counts:   VoteCounts{},
+			expected: true,
+		},
+		{
+			name:     "all zeros (unknown format)",
+			counts:   VoteCounts{Ja: ptr(0), Nein: ptr(0), Enthaltung: ptr(0), Abwesend: ptr(11)},
+			expected: true,
+		},
+		{
+			name:     "only Abwesend non-zero does not make it supported",
+			counts:   VoteCounts{Abwesend: ptr(15)},
+			expected: true,
+		},
+		{
+			name:     "single Ja vote is enough",
+			counts:   VoteCounts{Ja: ptr(1)},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := IsUnsupportedVoteType(tt.counts)
+			if got != tt.expected {
+				t.Errorf("IsUnsupportedVoteType() = %v, want %v", got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestFormatVoteCounts(t *testing.T) {
+	tests := []struct {
+		name     string
+		counts   VoteCounts
+		expected string
+	}{
+		{
+			name:     "standard vote short labels",
+			counts:   VoteCounts{Ja: ptr(80), Nein: ptr(30), Enthaltung: ptr(5), Abwesend: ptr(10)},
+			expected: "📊 80 Ja | 30 Nein | 5 Enth. | 10 Abw.",
+		},
+		{
+			name:     "standard vote nil counts treated as zero",
+			counts:   VoteCounts{Ja: ptr(99), Nein: ptr(12), Enthaltung: nil, Abwesend: nil},
+			expected: "📊 99 Ja | 12 Nein | 0 Enth. | 0 Abw.",
+		},
+		{
+			name:     "auswahl vote with A/B/C (example 7c90673c)",
+			counts:   VoteCounts{Ja: ptr(0), Nein: ptr(0), Enthaltung: ptr(0), Abwesend: ptr(11), A: ptr(50), B: ptr(24), C: ptr(40)},
+			expected: "📊 A: 50 | B: 24 | C: 40 | Abw. 11",
+		},
+		{
+			name:     "auswahl vote — only D and E used",
+			counts:   VoteCounts{Abwesend: ptr(5), D: ptr(60), E: ptr(55)},
+			expected: "📊 D: 60 | E: 55 | Abw. 5",
+		},
+		{
+			name:     "all zero (unsupported) falls back to standard format",
+			counts:   VoteCounts{Ja: ptr(0), Nein: ptr(0), Enthaltung: ptr(0), Abwesend: ptr(0)},
+			expected: "📊 0 Ja | 0 Nein | 0 Enth. | 0 Abw.",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := FormatVoteCounts(tt.counts)
+			if got != tt.expected {
+				t.Errorf("FormatVoteCounts()\nexpected: %q\ngot:      %q", tt.expected, got)
+			}
+		})
+	}
+}
+
+func TestFormatVoteCountsLong(t *testing.T) {
+	tests := []struct {
+		name     string
+		counts   VoteCounts
+		expected string
+	}{
+		{
+			name:     "standard vote long labels",
+			counts:   VoteCounts{Ja: ptr(107), Nein: ptr(8), Enthaltung: ptr(0), Abwesend: ptr(10)},
+			expected: "📊 107 Ja | 8 Nein | 0 Enthaltung | 10 Abwesend",
+		},
+		{
+			name:     "auswahl vote long labels",
+			counts:   VoteCounts{Abwesend: ptr(11), A: ptr(50), B: ptr(24), C: ptr(40)},
+			expected: "📊 A: 50 | B: 24 | C: 40 | Abwesend 11",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := FormatVoteCountsLong(tt.counts)
+			if got != tt.expected {
+				t.Errorf("FormatVoteCountsLong()\nexpected: %q\ngot:      %q", tt.expected, got)
+			}
+		})
 	}
 }

@@ -105,6 +105,11 @@ type Abstimmung struct {
 	AnzahlNein                 *int   `xml:"Anzahl_Nein"`
 	AnzahlEnthaltung           *int   `xml:"Anzahl_Enthaltung"`
 	AnzahlAbwesend             *int   `xml:"Anzahl_Abwesend"`
+	AnzahlA                    *int   `xml:"Anzahl_A"`
+	AnzahlB                    *int   `xml:"Anzahl_B"`
+	AnzahlC                    *int   `xml:"Anzahl_C"`
+	AnzahlD                    *int   `xml:"Anzahl_D"`
+	AnzahlE                    *int   `xml:"Anzahl_E"`
 	Schlussresultat            string `xml:"Schlussresultat"`
 	Stimmabgaben               struct {
 		Stimmabgabe []Stimmabgabe `xml:"Stimmabgabe"`

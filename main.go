@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -59,6 +60,11 @@ func main() {
 	// Create API client
 	client := zurichapi.NewClient()
 
+	// hasUnsupportedVotes is set when any group is skipped due to an unknown vote
+	// format. The run continues (other groups / platforms are still processed) but
+	// exits non-zero at the end so CI / GitHub Actions flags the issue.
+	hasUnsupportedVotes := false
+
 	// --- X Platform ---
 	if xEnabled {
 		fmt.Println("\n━━━ X/Twitter ━━━")
@@ -87,7 +93,14 @@ func main() {
 
 			posted, err := voteposting.PostToPlatform(groups, xPlatform, voteLog, false)
 			if err != nil {
-				log.Printf("Error posting to X: %v", err)
+				if errors.Is(err, voteposting.ErrUnsupportedVoteType) {
+					hasUnsupportedVotes = true
+					if posted > 0 {
+						fmt.Printf("Posted %d group(s) to X (some skipped — see warnings above)\n", posted)
+					}
+				} else {
+					log.Printf("Error posting to X: %v", err)
+				}
 			} else {
 				fmt.Printf("🎉 Posted %d new group(s) to X!\n", posted)
 			}
@@ -122,11 +135,23 @@ func main() {
 
 			posted, err := voteposting.PostToPlatform(groups, bskyPlatform, voteLog, false)
 			if err != nil {
-				log.Printf("Error posting to Bluesky: %v", err)
+				if errors.Is(err, voteposting.ErrUnsupportedVoteType) {
+					hasUnsupportedVotes = true
+					if posted > 0 {
+						fmt.Printf("Posted %d group(s) to Bluesky (some skipped — see warnings above)\n", posted)
+					}
+				} else {
+					log.Printf("Error posting to Bluesky: %v", err)
+				}
 			} else {
 				fmt.Printf("🎉 Posted %d new group(s) to Bluesky!\n", posted)
 			}
 		}
+	}
+
+	if hasUnsupportedVotes {
+		log.Println("❌ Action failed: one or more votes have an unrecognised format. Check warnings above.")
+		os.Exit(1)
 	}
 }
 

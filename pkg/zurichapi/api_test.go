@@ -395,9 +395,9 @@ func TestEnsureCompleteGroupLogic(t *testing.T) {
 			}
 
 			// In the real implementation, ensureAllGroupsComplete:
-			// 1. Collects all unique TraktandumGuids (not just the last vote's)
-			// 2. Calls FetchAbstimmungenForTraktandum for each one
-			// 3. Merges any missing votes into the result
+			// 1. Collects all unique SitzungGuids from the input votes
+			// 2. Calls FetchAbstimmungenForSitzung for each one
+			// 3. Merges any missing votes whose GeschaeftGrNr is already known
 			// This test just validates the logic would have the right inputs
 		})
 	}
@@ -405,16 +405,17 @@ func TestEnsureCompleteGroupLogic(t *testing.T) {
 
 // TestGroupAbstimmungenByGeschaeft_AllGroupsComplete is a regression test for
 // a bug where only the last (oldest) group's Traktandum was checked for
-// completeness. With the fix (ensureAllGroupsComplete), all groups' Traktandums
-// are checked.
+// completeness. With the fix (ensureAllGroupsComplete), all Geschäfte are
+// completed at the session level: for each unique SitzungGuid, all votes for
+// that session are fetched and those whose GeschaeftGrNr is already known are merged in.
 //
 // Real-world scenario that triggered the bug: a large group (e.g. 22 Änderungsanträge)
 // whose earliest votes had rotated outside the MAX_VOTES_TO_CHECK window was in the
 // middle of the unposted list. The old code only repaired the group that happened to be
-// last (oldest). The new code repairs ALL groups.
+// last (oldest). The new code repairs ALL groups by fetching at the session level.
 //
-// Fake TraktandumGuids are used so the API returns no results — the test verifies
-// that all groups are correctly formed and preserved, not just the last one.
+// Fake SitzungGuids (empty string) are used so the API returns no results — the test
+// verifies that all groups are correctly formed and preserved, not just the last one.
 func TestGroupAbstimmungenByGeschaeft_AllGroupsComplete(t *testing.T) {
 	client := NewClient()
 
@@ -450,7 +451,7 @@ func TestGroupAbstimmungenByGeschaeft_AllGroupsComplete(t *testing.T) {
 		t.Errorf("Expected third group to be 2025/300 (newest), got %s", groups[2][0].GeschaeftGrNr)
 	}
 
-	// No duplicates should have been introduced (fake TraktandumGuids return nothing from API)
+	// No duplicates should have been introduced (fake SitzungGuids return nothing from API)
 	totalVotes := 0
 	for _, g := range groups {
 		totalVotes += len(g)
@@ -471,7 +472,7 @@ func TestGroupAbstimmungenByGeschaeft_DateSorting(t *testing.T) {
 		createTestVoteWithSEQ("vote3", "2025/391", "5267700", "2025-12-10 10:00:00", "Dec 10 vote"),
 	}
 
-	// Set different TraktandumGuids to avoid triggering ensureAllGroupsComplete for real data
+	// Set different SitzungGuids to avoid triggering ensureAllGroupsComplete for real data
 	votes[0].TraktandumGuid = "trak-1"
 	votes[1].TraktandumGuid = "trak-2"
 	votes[2].TraktandumGuid = "trak-3"

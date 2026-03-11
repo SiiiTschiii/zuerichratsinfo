@@ -83,13 +83,12 @@ func (c *Client) FetchRecentAbstimmungen(limit int) ([]Abstimmung, error) {
 	return abstimmungen, nil
 }
 
-// FetchAbstimmungenForTraktandum fetches all votes for a specific Traktandum by its GUID
-func (c *Client) FetchAbstimmungenForTraktandum(traktandumGuid string) ([]Abstimmung, error) {
-	// Query the Abstimmung API for this specific TraktandumGuid
-	// Using "traktandumguid any" syntax (text fields require "any" relation)
-	url := fmt.Sprintf("%s/searchdetails?q=traktandumguid%%20any%%20%%22%s%%22&l=de-CH",
+// FetchAbstimmungenForSitzung fetches all votes for a specific session (Sitzung) by its GUID.
+// The abstimmung API supports sitzungguid as a search field.
+func (c *Client) FetchAbstimmungenForSitzung(sitzungGuid string) ([]Abstimmung, error) {
+	url := fmt.Sprintf("%s/searchdetails?q=sitzungguid%%20any%%20%%22%s%%22&l=de-CH",
 		AbstimmungBaseURL,
-		traktandumGuid)
+		sitzungGuid)
 
 	body, err := c.makeRequest(url)
 	if err != nil {
@@ -101,7 +100,6 @@ func (c *Client) FetchAbstimmungenForTraktandum(traktandumGuid string) ([]Abstim
 		return nil, fmt.Errorf("failed to parse XML response: %w", err)
 	}
 
-	// Extract all Abstimmungen from hits
 	var abstimmungen []Abstimmung
 	for _, hit := range resp.Hits {
 		abstimmungen = append(abstimmungen, hit.Abstimmung)
@@ -249,22 +247,28 @@ func (c *Client) GroupAbstimmungenByGeschaeft(votes []Abstimmung) ([][]Abstimmun
 	return groups, nil
 }
 
-// ensureAllGroupsComplete fetches any missing votes for every Traktandum
-// present in the input list. This handles cases where earlier votes in a
-// Traktandum have rotated outside the MAX_VOTES_TO_CHECK fetch window.
+// ensureAllGroupsComplete fetches the complete vote history for every Geschäft
+// present in the input list. This ensures that votes from earlier Traktanda of
+// the same Geschäft are included even when they fall outside the fetch window.
+// For each unique SitzungGuid seen in the input, all votes for that session are
+// fetched, and those whose GeschaeftGrNr is already represented are merged in.
 // Already-fetched votes are de-duplicated by OBJGUID.
 func (c *Client) ensureAllGroupsComplete(votes []Abstimmung) ([]Abstimmung, error) {
 	if len(votes) == 0 {
 		return votes, nil
 	}
 
-	// Collect unique TraktandumGuids
-	seen := make(map[string]bool)
-	var traktandumGuids []string
+	// Collect unique SitzungGuids and the set of GeschaeftGrNr already seen
+	seenSitzung := make(map[string]bool)
+	var sitzungGuids []string
+	knownGeschaeft := make(map[string]bool)
 	for _, v := range votes {
-		if !seen[v.TraktandumGuid] {
-			seen[v.TraktandumGuid] = true
-			traktandumGuids = append(traktandumGuids, v.TraktandumGuid)
+		if v.SitzungGuid != "" && !seenSitzung[v.SitzungGuid] {
+			seenSitzung[v.SitzungGuid] = true
+			sitzungGuids = append(sitzungGuids, v.SitzungGuid)
+		}
+		if v.GeschaeftGrNr != "" {
+			knownGeschaeft[v.GeschaeftGrNr] = true
 		}
 	}
 
@@ -274,15 +278,16 @@ func (c *Client) ensureAllGroupsComplete(votes []Abstimmung) ([]Abstimmung, erro
 		existingIDs[v.OBJGUID] = true
 	}
 
-	// For each Traktandum, fetch all votes and append any missing ones
-	for _, guid := range traktandumGuids {
-		allVotes, err := c.FetchAbstimmungenForTraktandum(guid)
+	// For each session, fetch all votes and append any missing ones that belong
+	// to a Geschäft already represented in our initial window.
+	for _, guid := range sitzungGuids {
+		allVotes, err := c.FetchAbstimmungenForSitzung(guid)
 		if err != nil {
 			// Non-fatal: continue with what we have
 			continue
 		}
 		for _, v := range allVotes {
-			if !existingIDs[v.OBJGUID] {
+			if !existingIDs[v.OBJGUID] && knownGeschaeft[v.GeschaeftGrNr] {
 				existingIDs[v.OBJGUID] = true
 				votes = append(votes, v)
 			}

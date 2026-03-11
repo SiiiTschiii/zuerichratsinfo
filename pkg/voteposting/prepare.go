@@ -1,12 +1,19 @@
 package voteposting
 
 import (
+	"errors"
 	"fmt"
+	"log"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
+
+// ErrUnsupportedVoteType is returned when a group contains a vote with an
+// unrecognised count format. The group is skipped (not posted, not logged).
+var ErrUnsupportedVoteType = errors.New("unsupported vote type")
 
 // PrepareVoteGroups prepares vote groups for posting
 // It fetches recent votes, filters out already posted ones, and groups them by Geschäft
@@ -66,7 +73,18 @@ func PostToPlatform(
 ) (int, error) {
 	posted := 0
 
+	var firstUnsupportedErr error
+
 	for i, group := range groups {
+		// Validate vote counts before formatting; skip groups with unknown formats
+		if err := validateGroupCounts(group); err != nil {
+			log.Printf("⚠️  Skipping group (unsupported vote type): %v", err)
+			if firstUnsupportedErr == nil {
+				firstUnsupportedErr = err
+			}
+			continue
+		}
+
 		// Format the content
 		content, err := platform.Format(group)
 		if err != nil {
@@ -107,5 +125,26 @@ func PostToPlatform(
 		}
 	}
 
+	if firstUnsupportedErr != nil {
+		return posted, firstUnsupportedErr
+	}
 	return posted, nil
+}
+
+// validateGroupCounts checks that every vote in a group has a recognisable
+// count format (standard Ja/Nein or Auswahl A-E). Returns ErrUnsupportedVoteType
+// with details if any vote is unrecognisable.
+func validateGroupCounts(group []zurichapi.Abstimmung) error {
+	for _, vote := range group {
+		c := voteformat.VoteCounts{
+			Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
+			Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
+			A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
+		}
+		if voteformat.IsUnsupportedVoteType(c) {
+			return fmt.Errorf("%w: vote %s (%q, Abstimmungstyp=%q) has all-zero counts",
+				ErrUnsupportedVoteType, vote.OBJGUID, vote.Abstimmungstitel, vote.Abstimmungstyp)
+		}
+	}
+	return nil
 }

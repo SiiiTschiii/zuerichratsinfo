@@ -68,12 +68,15 @@ func (p *MockPlatform) Name() string {
 	return "Mock"
 }
 
-// Test helper to create test votes
+// Test helper to create test votes with a non-zero Ja count so they pass
+// validateGroupCounts (all-zero counts are treated as unsupported vote types).
 func createVote(guid, geschaeft, date string) zurichapi.Abstimmung {
+	ja := 100
 	return zurichapi.Abstimmung{
 		OBJGUID:       guid,
 		GeschaeftGrNr: geschaeft,
 		SitzungDatum:  date,
+		AnzahlJa:      &ja,
 	}
 }
 

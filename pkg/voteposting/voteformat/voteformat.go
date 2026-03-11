@@ -9,10 +9,11 @@ import (
 var geschaeftNumberRegex = regexp.MustCompile(`^\d+/\d+\s+`)
 var geschaeftNumberUnderscoreRegex = regexp.MustCompile(`^\d+_\d+\s+`)
 
-// antragOnlyRegex matches titles that are just "Antrag XXX" or "Anträge XXX bis YYY"
-// These generic titles should be replaced with the GeschaeftTitel
+// antragOnlyRegex matches titles that are just "Antrag XXX" or "Anträge XXX bis YYY",
+// optionally followed by "zu Dispositivziffer X" (e.g. "Antrag 1 zu Dispositivziffer 1a").
+// These generic titles should be replaced with the GeschaeftTitel.
 // The dot after the number is optional because the API sometimes omits it (e.g. "Antrag 1" vs "Antrag 007.")
-var antragOnlyRegex = regexp.MustCompile(`^(\d+/\d+\s+)?Antr(a|ä)ge?\s+\d+\.?(\s+(bis|–|-)\s+\d+\.?)?$`)
+var antragOnlyRegex = regexp.MustCompile(`^(\d+/\d+\s+)?Antr(a|ä)ge?\s+\d+\.?(\s*(bis|–|-)\s*\d+\.?)?(\s+zu\s+Dispositivziffer\s+\S+)?$`)
 
 
 // FormatVoteDate formats the date from ISO format to DD.MM.YYYY
@@ -113,6 +114,94 @@ func FormatVoteCount(count *int) string {
 		return "0"
 	}
 	return fmt.Sprintf("%d", *count)
+}
+
+// VoteCounts holds all possible vote count fields from the API.
+// Standard Ja/Nein votes use Ja/Nein/Enthaltung/Abwesend.
+// "Gleichgerichtete Anträge mit N Optionen" votes use A/B/C/D/E.
+type VoteCounts struct {
+	Ja         *int
+	Nein       *int
+	Enthaltung *int
+	Abwesend   *int
+	A, B, C, D, E *int
+}
+
+// IsAuswahlVote returns true when the vote used the A/B/C/D/E option format
+// ("Gleichgerichtete Anträge mit N Optionen") rather than the standard Ja/Nein format.
+// In this case result emojis (✅/❌) should be omitted because the outcome is
+// "Auswahl A/B/…", not accepted/rejected.
+func IsAuswahlVote(c VoteCounts) bool {
+	for _, f := range []*int{c.A, c.B, c.C, c.D, c.E} {
+		if f != nil && *f > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// IsUnsupportedVoteType returns true when all active voter count fields are nil or zero.
+// This indicates a vote format we don't know how to render (neither standard Ja/Nein
+// nor Auswahl A/B/C/D). Callers should log a warning and skip posting such votes.
+func IsUnsupportedVoteType(c VoteCounts) bool {
+	fields := []*int{c.Ja, c.Nein, c.Enthaltung, c.A, c.B, c.C, c.D, c.E}
+	for _, f := range fields {
+		if f != nil && *f > 0 {
+			return false
+		}
+	}
+	return true
+}
+
+// FormatVoteCounts returns the 📊 summary line for a vote.
+// Detects Auswahl A/B/C/D votes vs standard Ja/Nein automatically.
+// Call IsUnsupportedVoteType first if you need to guard against unknown formats.
+func FormatVoteCounts(c VoteCounts) string {
+	abwesend := FormatVoteCount(c.Abwesend)
+
+	// Check if any Auswahl option has votes
+	auswahlPtrs := []*int{c.A, c.B, c.C, c.D, c.E}
+	letters := []string{"A", "B", "C", "D", "E"}
+	var auswahlParts []string
+	for i, f := range auswahlPtrs {
+		if f != nil && *f > 0 {
+			auswahlParts = append(auswahlParts, fmt.Sprintf("%s: %d", letters[i], *f))
+		}
+	}
+	if len(auswahlParts) > 0 {
+		return fmt.Sprintf("📊 %s | Abw. %s", strings.Join(auswahlParts, " | "), abwesend)
+	}
+
+	// Standard Ja/Nein vote (short labels for space-constrained platforms)
+	return fmt.Sprintf("📊 %s Ja | %s Nein | %s Enth. | %s Abw.",
+		FormatVoteCount(c.Ja),
+		FormatVoteCount(c.Nein),
+		FormatVoteCount(c.Enthaltung),
+		abwesend)
+}
+
+// FormatVoteCountsLong is like FormatVoteCounts but uses full German label names
+// ("Enthaltung", "Abwesend") suited for platforms without a tight character limit.
+func FormatVoteCountsLong(c VoteCounts) string {
+	abwesend := FormatVoteCount(c.Abwesend)
+
+	auswahlPtrs := []*int{c.A, c.B, c.C, c.D, c.E}
+	letters := []string{"A", "B", "C", "D", "E"}
+	var auswahlParts []string
+	for i, f := range auswahlPtrs {
+		if f != nil && *f > 0 {
+			auswahlParts = append(auswahlParts, fmt.Sprintf("%s: %d", letters[i], *f))
+		}
+	}
+	if len(auswahlParts) > 0 {
+		return fmt.Sprintf("📊 %s | Abwesend %s", strings.Join(auswahlParts, " | "), abwesend)
+	}
+
+	return fmt.Sprintf("📊 %s Ja | %s Nein | %s Enthaltung | %s Abwesend",
+		FormatVoteCount(c.Ja),
+		FormatVoteCount(c.Nein),
+		FormatVoteCount(c.Enthaltung),
+		abwesend)
 }
 
 // GenerateVoteLink creates the link to the vote detail page

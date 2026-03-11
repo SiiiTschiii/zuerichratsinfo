@@ -46,19 +46,22 @@ func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.M
 	// For single vote, use original format
 	if len(votes) == 1 {
 		vote := votes[0]
-		resultEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
-		result := voteformat.GetVoteResultText(vote.Schlussresultat)
-		resultPrefix := fmt.Sprintf("%s %s: ", resultEmoji, result)
+		counts := voteformat.VoteCounts{
+			Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
+			Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
+			A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
+		}
+		voteCounts := voteformat.FormatVoteCountsLong(counts) + "\n\n"
 
-		ja := voteformat.FormatVoteCount(vote.AnzahlJa)
-		nein := voteformat.FormatVoteCount(vote.AnzahlNein)
-		enthaltung := voteformat.FormatVoteCount(vote.AnzahlEnthaltung)
-		abwesend := voteformat.FormatVoteCount(vote.AnzahlAbwesend)
-		voteCounts := fmt.Sprintf("📊 %s Ja | %s Nein | %s Enthaltung | %s Abwesend\n\n",
-			ja, nein, enthaltung, abwesend)
-
-		sb.WriteString(resultPrefix)
-		sb.WriteString(title)
+		if voteformat.IsAuswahlVote(counts) {
+			// Auswahl votes have no accepted/rejected outcome — omit result prefix
+			sb.WriteString(title)
+		} else {
+			resultEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
+			result := voteformat.GetVoteResultText(vote.Schlussresultat)
+			sb.WriteString(fmt.Sprintf("%s %s: ", resultEmoji, result))
+			sb.WriteString(title)
+		}
 		sb.WriteString("\n\n")
 		sb.WriteString(voteCounts)
 	} else {
@@ -69,21 +72,29 @@ func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.M
 
 		// List each vote with its details
 		for i, vote := range votes {
-			ja := voteformat.FormatVoteCount(vote.AnzahlJa)
-			nein := voteformat.FormatVoteCount(vote.AnzahlNein)
-			enthaltung := voteformat.FormatVoteCount(vote.AnzahlEnthaltung)
-			abwesend := voteformat.FormatVoteCount(vote.AnzahlAbwesend)
-
-			voteEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
 			voteTitle := voteformat.CleanVoteSubtitle(vote.Abstimmungstitel)
-
-			if voteTitle != "" {
-				sb.WriteString(fmt.Sprintf("%s %s\n", voteEmoji, voteTitle))
-			} else {
-				sb.WriteString(fmt.Sprintf("%s Abstimmung %d\n", voteEmoji, i+1))
+			counts := voteformat.VoteCounts{
+				Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
+				Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
+				A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
 			}
-			sb.WriteString(fmt.Sprintf("📊 %s Ja | %s Nein | %s Enthaltung | %s Abwesend\n",
-				ja, nein, enthaltung, abwesend))
+
+			if voteformat.IsAuswahlVote(counts) {
+				// Auswahl: no ✅/❌ prefix — outcome is "Auswahl A/B/…", not accepted/rejected
+				if voteTitle != "" {
+					sb.WriteString(fmt.Sprintf("%s\n", voteTitle))
+				} else {
+					sb.WriteString(fmt.Sprintf("Abstimmung %d\n", i+1))
+				}
+			} else {
+				voteEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
+				if voteTitle != "" {
+					sb.WriteString(fmt.Sprintf("%s %s\n", voteEmoji, voteTitle))
+				} else {
+					sb.WriteString(fmt.Sprintf("%s Abstimmung %d\n", voteEmoji, i+1))
+				}
+			}
+			sb.WriteString(voteformat.FormatVoteCountsLong(counts) + "\n")
 
 			if i < len(votes)-1 {
 				sb.WriteString("\n")
