@@ -394,12 +394,69 @@ func TestEnsureCompleteGroupLogic(t *testing.T) {
 				t.Error("Last vote should have TraktandumGuid set")
 			}
 
-			// In the real implementation, ensureCompleteGroupIfNeeded would:
-			// 1. Take lastVote.TraktandumGuid
-			// 2. Call FetchAbstimmungenForTraktandum(lastVote.TraktandumGuid)
-			// 3. Merge any missing votes into the result
+			// In the real implementation, ensureAllGroupsComplete:
+			// 1. Collects all unique TraktandumGuids (not just the last vote's)
+			// 2. Calls FetchAbstimmungenForTraktandum for each one
+			// 3. Merges any missing votes into the result
 			// This test just validates the logic would have the right inputs
 		})
+	}
+}
+
+// TestGroupAbstimmungenByGeschaeft_AllGroupsComplete is a regression test for
+// a bug where only the last (oldest) group's Traktandum was checked for
+// completeness. With the fix (ensureAllGroupsComplete), all groups' Traktandums
+// are checked.
+//
+// Real-world scenario that triggered the bug: a large group (e.g. 22 Änderungsanträge)
+// whose earliest votes had rotated outside the MAX_VOTES_TO_CHECK window was in the
+// middle of the unposted list. The old code only repaired the group that happened to be
+// last (oldest). The new code repairs ALL groups.
+//
+// Fake TraktandumGuids are used so the API returns no results — the test verifies
+// that all groups are correctly formed and preserved, not just the last one.
+func TestGroupAbstimmungenByGeschaeft_AllGroupsComplete(t *testing.T) {
+	client := NewClient()
+
+	// Three groups: C (oldest, SEQ 100), B (middle, SEQ 200), A (newest, SEQ 300-301).
+	// Old code only ran completion on C (the last in the list).
+	// New code runs completion on A, B, and C.
+	votes := []Abstimmung{
+		{OBJGUID: "a1", GeschaeftGrNr: "2025/300", TraktandumGuid: "nonexistent-trak-a", SitzungDatum: "2025-12-03", SEQ: "300"},
+		{OBJGUID: "a2", GeschaeftGrNr: "2025/300", TraktandumGuid: "nonexistent-trak-a", SitzungDatum: "2025-12-03", SEQ: "301"},
+		{OBJGUID: "b1", GeschaeftGrNr: "2025/200", TraktandumGuid: "nonexistent-trak-b", SitzungDatum: "2025-12-03", SEQ: "200"},
+		{OBJGUID: "c1", GeschaeftGrNr: "2025/100", TraktandumGuid: "nonexistent-trak-c", SitzungDatum: "2025-12-03", SEQ: "100"},
+	}
+
+	groups, err := client.GroupAbstimmungenByGeschaeft(votes)
+	if err != nil {
+		t.Fatalf("GroupAbstimmungenByGeschaeft failed: %v", err)
+	}
+
+	// All 3 groups must be present — the non-last groups must not be dropped
+	if len(groups) != 3 {
+		t.Fatalf("Expected 3 groups (including non-last ones), got %d", len(groups))
+	}
+
+	// Groups should be ordered oldest first (ascending max SEQ):
+	// C (max SEQ 100) → B (max SEQ 200) → A (max SEQ 301)
+	if groups[0][0].GeschaeftGrNr != "2025/100" {
+		t.Errorf("Expected first group to be 2025/100 (oldest), got %s", groups[0][0].GeschaeftGrNr)
+	}
+	if groups[1][0].GeschaeftGrNr != "2025/200" {
+		t.Errorf("Expected second group to be 2025/200, got %s", groups[1][0].GeschaeftGrNr)
+	}
+	if groups[2][0].GeschaeftGrNr != "2025/300" {
+		t.Errorf("Expected third group to be 2025/300 (newest), got %s", groups[2][0].GeschaeftGrNr)
+	}
+
+	// No duplicates should have been introduced (fake TraktandumGuids return nothing from API)
+	totalVotes := 0
+	for _, g := range groups {
+		totalVotes += len(g)
+	}
+	if totalVotes != 4 {
+		t.Errorf("Expected 4 total votes (no duplicates), got %d", totalVotes)
 	}
 }
 
@@ -414,7 +471,7 @@ func TestGroupAbstimmungenByGeschaeft_DateSorting(t *testing.T) {
 		createTestVoteWithSEQ("vote3", "2025/391", "5267700", "2025-12-10 10:00:00", "Dec 10 vote"),
 	}
 
-	// Set different TraktandumGuids to avoid triggering ensureCompleteGroupIfNeeded
+	// Set different TraktandumGuids to avoid triggering ensureAllGroupsComplete for real data
 	votes[0].TraktandumGuid = "trak-1"
 	votes[1].TraktandumGuid = "trak-2"
 	votes[2].TraktandumGuid = "trak-3"

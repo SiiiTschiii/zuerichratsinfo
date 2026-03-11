@@ -167,15 +167,15 @@ func (c *Client) FetchActiveGemeinderatMandates() ([]Behoerdenmandat, error) {
 
 // GroupAbstimmungenByGeschaeft groups abstimmungen by their business matter (GeschaeftGrNr)
 // and voting session date (SitzungDatum). Returns a slice of vote groups.
-// This method also ensures that if the last vote belongs to a multi-vote Geschäft,
-// all votes from that Geschäft are fetched and included in the group.
+// This method also ensures that any Traktandum group is complete by fetching
+// missing earlier votes that may have fallen outside the fetch window.
 func (c *Client) GroupAbstimmungenByGeschaeft(votes []Abstimmung) ([][]Abstimmung, error) {
 	if len(votes) == 0 {
 		return nil, nil
 	}
 
-	// First, ensure the last vote's group is complete if needed
-	completeVotes, err := c.ensureCompleteGroupIfNeeded(votes)
+	// Ensure every Traktandum group is complete (not just the last one)
+	completeVotes, err := c.ensureAllGroupsComplete(votes)
 	if err != nil {
 		return nil, err
 	}
@@ -249,32 +249,43 @@ func (c *Client) GroupAbstimmungenByGeschaeft(votes []Abstimmung) ([][]Abstimmun
 	return groups, nil
 }
 
-// ensureCompleteGroupIfNeeded checks if the last vote belongs to a multi-vote Geschäft
-// and fetches any missing votes from that Geschäft/date if needed
-func (c *Client) ensureCompleteGroupIfNeeded(votes []Abstimmung) ([]Abstimmung, error) {
+// ensureAllGroupsComplete fetches any missing votes for every Traktandum
+// present in the input list. This handles cases where earlier votes in a
+// Traktandum have rotated outside the MAX_VOTES_TO_CHECK fetch window.
+// Already-fetched votes are de-duplicated by OBJGUID.
+func (c *Client) ensureAllGroupsComplete(votes []Abstimmung) ([]Abstimmung, error) {
 	if len(votes) == 0 {
 		return votes, nil
 	}
 
-	lastVote := votes[len(votes)-1]
-
-	// Fetch all votes for this Traktandum using the TraktandumGuid
-	allVotesForTraktandum, err := c.FetchAbstimmungenForTraktandum(lastVote.TraktandumGuid)
-	if err != nil {
-		// If we can't fetch, just return what we have
-		return votes, nil
+	// Collect unique TraktandumGuids
+	seen := make(map[string]bool)
+	var traktandumGuids []string
+	for _, v := range votes {
+		if !seen[v.TraktandumGuid] {
+			seen[v.TraktandumGuid] = true
+			traktandumGuids = append(traktandumGuids, v.TraktandumGuid)
+		}
 	}
 
-	// Count how many votes we already have for this Traktandum
+	// Build set of already-known vote IDs
 	existingIDs := make(map[string]bool)
 	for _, v := range votes {
 		existingIDs[v.OBJGUID] = true
 	}
 
-	// Append missing votes from the same Traktandum
-	for _, v := range allVotesForTraktandum {
-		if !existingIDs[v.OBJGUID] {
-			votes = append(votes, v)
+	// For each Traktandum, fetch all votes and append any missing ones
+	for _, guid := range traktandumGuids {
+		allVotes, err := c.FetchAbstimmungenForTraktandum(guid)
+		if err != nil {
+			// Non-fatal: continue with what we have
+			continue
+		}
+		for _, v := range allVotes {
+			if !existingIDs[v.OBJGUID] {
+				existingIDs[v.OBJGUID] = true
+				votes = append(votes, v)
+			}
 		}
 	}
 
