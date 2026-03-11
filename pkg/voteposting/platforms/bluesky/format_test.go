@@ -146,10 +146,13 @@ func TestFormatVoteThread_VeryLongTitle(t *testing.T) {
 		t.Errorf("root missing thread hint\n%s", root.Text)
 	}
 
-	// First reply should contain the FULL untruncated title
+	// First reply should go straight to vote counts (no title repetition)
 	firstReply := thread[1]
-	if !strings.Contains(firstReply.Text, "urbane Planung") {
-		t.Errorf("first reply should contain the full untruncated title\nFull reply:\n%s", firstReply.Text)
+	if !strings.Contains(firstReply.Text, "📊") {
+		t.Errorf("first reply should contain vote counts, not a title repeat\nFull reply:\n%s", firstReply.Text)
+	}
+	if strings.Contains(firstReply.Text, "Schlussabstimmung über") {
+		t.Errorf("first reply must not repeat the title\nFull reply:\n%s", firstReply.Text)
 	}
 }
 

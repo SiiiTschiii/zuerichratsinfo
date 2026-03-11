@@ -48,10 +48,10 @@ func FormatVoteThread(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapp
 	}
 
 	// --- Build root post ---
-	root, titleContinuation := buildRootPost(votes, date, title)
+	root := buildRootPost(votes, date, title)
 
 	// --- Build reply posts ---
-	replies := buildReplyPosts(votes, link, titleContinuation)
+	replies := buildReplyPosts(votes, link)
 
 	thread := make([]*BlueskyPost, 0, 1+len(replies))
 	thread = append(thread, root)
@@ -68,13 +68,12 @@ func FormatVoteThread(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapp
 }
 
 // buildRootPost creates the root post with header, title, result, and thread hint.
-// Returns the post and a title continuation string (non-empty when title was truncated).
-func buildRootPost(votes []zurichapi.Abstimmung, date, title string) (*BlueskyPost, string) {
+// If the title is too long, it is truncated with "…"; replies go straight to vote details.
+func buildRootPost(votes []zurichapi.Abstimmung, date, title string) *BlueskyPost {
 	header := fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date)
 	threadHint := "\n\n👇 Details im Thread"
 
 	var body string
-	var fullBody string // untruncated body for continuation
 	if len(votes) == 1 {
 		// Single vote: include result in root (unless it's an Auswahl A/B/C vote)
 		vote := votes[0]
@@ -94,12 +93,10 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string) (*BlueskyPo
 		// Multi-vote: just the title
 		body = title
 	}
-	fullBody = body
 
 	fullText := header + body + threadHint
 
 	// Truncate title if root exceeds limit (rare, only for very long titles)
-	var titleContinuation string
 	if graphemeLen(fullText) > maxGraphemes {
 		overhead := graphemeLen(header) + graphemeLen(threadHint) + 1 // 1 for "…"
 		available := maxGraphemes - overhead
@@ -128,27 +125,20 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string) (*BlueskyPo
 			body = truncateText(title, available)
 		}
 		fullText = header + body + threadHint
-		titleContinuation = fullBody // pass full untruncated body to replies
 	}
 
-	return &BlueskyPost{Text: fullText}, titleContinuation
+	return &BlueskyPost{Text: fullText}
 }
 
 // buildReplyPosts creates reply posts with vote details and link.
 // Packs as many vote entries as fit into each reply (≤300 graphemes).
 // The link is appended to the last reply.
-// If titleContinuation is non-empty, it is prepended as the first entry
-// (used when the root post had to truncate the title).
-func buildReplyPosts(votes []zurichapi.Abstimmung, link string, titleContinuation string) []*BlueskyPost {
+func buildReplyPosts(votes []zurichapi.Abstimmung, link string) []*BlueskyPost {
 	linkLine := fmt.Sprintf("\n\n🔗 %s", link)
 
 	// Build individual vote entry strings
 	var entries []string
 
-	// If the title was truncated in the root, start with the full title
-	if titleContinuation != "" {
-		entries = append(entries, titleContinuation)
-	}
 	for i, vote := range votes {
 		var entry strings.Builder
 
