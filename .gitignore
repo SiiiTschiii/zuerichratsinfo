@@ -6,3 +6,5 @@ zurichratsinfo
 
 # macOS
 .DS_Store
+
+data/email_overrides.yaml
