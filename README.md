@@ -25,14 +25,14 @@ A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Z
 
 | Platform    | Status     | Gemeinderäte & Stadträte | Account                                           |
 | ----------- | ---------- | ------------------------ | ------------------------------------------------- |
-| LinkedIn    | ❌ Planned | 119 | -                                                 |
-| Facebook    | ❌ Planned | 99 | -                                                 |
-| Instagram   | ❌ Planned | 96 | -                                                 |
-| X (Twitter) | ✅ Active  | 72 | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
-| Bluesky     | ✅ Active  | 34 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
-| TikTok      | ❌ Planned | 20 | -                                                 |
+| LinkedIn    | ❌ Planned | 121 | -                                                 |
+| Facebook    | ❌ Planned | 102 | -                                                 |
+| Instagram   | ❌ Planned | 99 | -                                                 |
+| X (Twitter) | ✅ Active  | 74 | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
+| Bluesky     | ✅ Active  | 36 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
+| TikTok      | ❌ Planned | 21 | -                                                 |
 
-_Platforms are sorted by coverage. Counts include both Gemeinderäte and Stadträte (9 Stadtrat members). Out of 151 total contacts in [data/contacts.yaml](data/contacts.yaml)._
+_Platforms are sorted by coverage. Counts include both Gemeinderäte and Stadträte (9 Stadtrat members). Out of 154 total contacts in [data/contacts.yaml](data/contacts.yaml)._
 
 ## What It Does
 
