@@ -244,7 +244,7 @@ Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit St
 
 Ich würde mich freuen, wenn du dem Account folgst.
 
-Weitere Informationen zum Projekt und eine Übersicht, wo alle deine Kolleginnen und Kollegen im Gemeinderat auf Social Media zu finden sind:
+Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
 https://github.com/SiiiTschiii/zuerichratsinfo
 
 Vielen Dank und liebe Grüsse
@@ -291,13 +291,13 @@ func generateEmailBody(r Recipient) string {
 	return fmt.Sprintf(`zuerichratsinfo ist jetzt auch auf Bluesky verfügbar:
 👉 https://bsky.app/profile/zuerichratsinfo.bsky.social
 
-Der Account publiziert die Abstimmungsresultate aus dem Gemeinderat auf X (https://x.com/zuerichratsinfo) und neu auch auf Bluesky, und markiert jeweils die Politikerinnen und Politiker, welche die entsprechenden Vorstösse etc. eingereicht haben (wie dich: %s). Ziel ist es, politische Arbeit transparenter und für die Öffentlichkeit besser nachvollziehbar zu machen.
+Der Account publiziert die Abstimmungsresultate aus dem Gemeinderat auf X (https://x.com/zuerichratsinfo) und neu auch auf Bluesky, und markiert jeweils die Politikernnen und Politiker, welche die entsprechenden Vorstösse etc. eingereicht haben (wie dich: %s). Ziel ist es, politische Arbeit transparenter und für die Öffentlichkeit besser nachvollziehbar zu machen.
 
 Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit Statistiken, wie die einzelnen Fraktionen abgestimmt haben. Falls du Ideen oder Feedback hast, würde ich mich sehr darüber freuen!
 
 Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
-
-Weitere Informationen zum Projekt und eine Übersicht, wo alle deine Kolleginnen und Kollegen im Gemeinderat auf Social Media zu finden sind:
+ 
+Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
 https://github.com/SiiiTschiii/zuerichratsinfo
 
 Vielen Dank und liebe Grüsse
