@@ -241,11 +241,11 @@ Update existing tests and add new tests for the thread format.
 
 #### Automated Verification:
 
-- [ ] `go test ./pkg/voteposting/platforms/x/...` — all tests pass
-- [ ] `go test ./...` — no regressions across the project
-- [ ] `go vet ./...` — no issues
-- [ ] `go build ./...` — compiles cleanly
-- [ ] `act -W .github/workflows/go-ci.yml` passes all tests
+- [x] `go test ./pkg/voteposting/platforms/x/...` — all tests pass
+- [x] `go test ./...` — no regressions across the project
+- [x] `go vet ./...` — no issues
+- [x] `go build ./...` — compiles cleanly
+- [x] `act -W .github/workflows/go-ci.yml` passes all tests
 
 #### Manual Verification:
 
