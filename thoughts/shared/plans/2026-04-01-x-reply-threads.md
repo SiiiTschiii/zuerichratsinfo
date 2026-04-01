@@ -150,17 +150,17 @@ Bluesky's `buildReplyPosts()` at [pkg/voteposting/platforms/bluesky/format.go:14
 
 #### Automated Verification:
 
-- [ ] `go build ./pkg/voteposting/platforms/x/...` — compiles
-- [ ] `go vet ./...` — no issues
-- [ ] `act -W .github/workflows/go-ci.yml` passes all tests
+- [x] `go build ./pkg/voteposting/platforms/x/...` — compiles
+- [x] `go vet ./...` — no issues
+- [x] `act -W .github/workflows/go-ci.yml` passes all tests
 
 #### Manual Verification:
 
-- [ ] `FormatVoteThread()` returns `[0]` = root, `[1:]` = replies
-- [ ] Root post contains header, title, thread hint
-- [ ] Reply posts contain vote details bin-packed within `maxChars`
-- [ ] Link appears on last reply
-- [ ] Single-vote and multi-vote groups both produce correct threads
+- [x] `FormatVoteThread()` returns `[0]` = root, `[1:]` = replies
+- [x] Root post contains header, title, thread hint
+- [x] Reply posts contain vote details bin-packed within `maxChars`
+- [x] Link appears on last reply
+- [x] Single-vote and multi-vote groups both produce correct threads
 
 **Implementation Note**: Pause for manual verification before proceeding.
 
