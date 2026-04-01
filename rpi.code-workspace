@@ -1,0 +1,14 @@
+{
+  "folders": [{ "name": "zuerichratsinfo", "path": "." }],
+  "settings": {
+    "chat.instructionsFilesLocations": {
+      "zuerichratsinfo/.github/instructions": true,
+    },
+    "chat.promptFilesLocations": {
+      "zuerichratsinfo/.github/prompts": true,
+    },
+    "chat.agentFilesLocations": {
+      "zuerichratsinfo/.github/agents": true,
+    },
+  },
+}
