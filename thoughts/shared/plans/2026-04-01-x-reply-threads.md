@@ -193,9 +193,9 @@ Update `XContent` and `XPlatform.Post()` to post threads as root + reply chain.
 
 #### Automated Verification:
 
-- [ ] `go build ./...` — compiles cleanly
-- [ ] `go vet ./...` — no issues
-- [ ] `act -W .github/workflows/go-ci.yml` passes all tests
+- [x] `go build ./...` — compiles cleanly
+- [x] `go vet ./...` — no issues
+- [x] `act -W .github/workflows/go-ci.yml` passes all tests
 
 #### Manual Verification:
 
