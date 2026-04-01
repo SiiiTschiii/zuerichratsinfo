@@ -16,8 +16,17 @@ import (
 	"time"
 )
 
-// PostTweet posts a tweet using X API v2 with OAuth 1.0a User Context
-func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message string) error {
+// tweetResponse represents the X API v2 response for tweet creation
+type tweetResponse struct {
+	Data struct {
+		ID string `json:"id"`
+	} `json:"data"`
+}
+
+// PostTweet posts a tweet using X API v2 with OAuth 1.0a User Context.
+// If inReplyToTweetID is non-empty, the tweet is posted as a reply.
+// Returns the created tweet's ID.
+func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message, inReplyToTweetID string) (string, error) {
 	// X API v2 endpoint for creating tweets
 	apiURL := "https://api.x.com/2/tweets"
 
@@ -25,15 +34,20 @@ func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message string) err
 	payload := map[string]interface{}{
 		"text": message,
 	}
+	if inReplyToTweetID != "" {
+		payload["reply"] = map[string]interface{}{
+			"in_reply_to_tweet_id": inReplyToTweetID,
+		}
+	}
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
-		return fmt.Errorf("failed to marshal tweet payload: %w", err)
+		return "", fmt.Errorf("failed to marshal tweet payload: %w", err)
 	}
 
 	// Create HTTP request
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonPayload))
 	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
+		return "", fmt.Errorf("failed to create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -46,18 +60,23 @@ func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message string) err
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to post tweet: %w", err)
+		return "", fmt.Errorf("failed to post tweet: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	body, _ := io.ReadAll(resp.Body)
 
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("x API returned status %d: %s", resp.StatusCode, string(body))
+		return "", fmt.Errorf("x API returned status %d: %s", resp.StatusCode, string(body))
 	}
 
-	fmt.Printf("✅ Tweet posted successfully!\nResponse: %s\n", string(body))
-	return nil
+	var tweetResp tweetResponse
+	if err := json.Unmarshal(body, &tweetResp); err != nil {
+		return "", fmt.Errorf("failed to parse tweet response: %w", err)
+	}
+
+	fmt.Printf("✅ Tweet posted successfully! (ID: %s)\n", tweetResp.Data.ID)
+	return tweetResp.Data.ID, nil
 }
 
 // generateOAuthHeader generates the OAuth 1.0a authorization header

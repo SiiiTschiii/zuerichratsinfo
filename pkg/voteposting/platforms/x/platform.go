@@ -59,12 +59,13 @@ func (p *XPlatform) Post(content platforms.Content) (bool, error) {
 		return false, nil
 	}
 
-	err := xapi.PostTweet(
+	_, err := xapi.PostTweet(
 		p.apiKey,
 		p.apiSecret,
 		p.accessToken,
 		p.accessSecret,
 		xContent.message,
+		"",
 	)
 
 	if err != nil {
