@@ -17,6 +17,7 @@ import (
 
 func main() {
 	numVotes := flag.Int("n", 1, "number of vote groups to preview")
+	fetchLimit := flag.Int("fetch", 35, "number of individual votes to fetch from API")
 	platform := flag.String("platform", "", "platform to preview: x, bluesky (default: all)")
 	flag.Parse()
 
@@ -42,7 +43,7 @@ func main() {
 	emptyLog := votelog.NewEmpty(votelog.PlatformX)
 
 	// Prepare votes (same logic as main.go)
-	groups, err := voteposting.PrepareVoteGroups(client, emptyLog, *numVotes)
+	groups, err := voteposting.PrepareVoteGroups(client, emptyLog, *fetchLimit)
 	if err != nil {
 		log.Fatalf("Error preparing votes: %v", err)
 	}
