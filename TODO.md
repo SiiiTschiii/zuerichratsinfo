@@ -43,7 +43,32 @@
 - [x] Add Bluesky platform to posting pipeline and track posted votes separately
 - [x] Tag Bluesky accounts for politicians (using contacts.yaml `bluesky` field)
 
-### LinkedIn (Priority 2 — professional audience, text posts work)
+### Instagram (Priority 2 — visual-first, shares Meta infra with Facebook)
+
+- [ ] Implement vote result image generator (infographic: title, bar chart, result)
+  - Prerequisite: "Generate visual posts" TODO above
+- [ ] Set up public image hosting for generated visuals
+  - Instagram API requires a publicly accessible URL to fetch the image during container creation
+  - Open question: does the URL only need to be available at publish time, or for the lifetime of the post?
+- [ ] Implement Instagram client using Content Publishing API (image + caption)
+  - Two-step flow: create media container → publish container
+  - Requires professional IG account + Facebook Page + Meta Developer App
+  - Permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`
+  - 100 posts/24h limit
+  - Docs: https://developers.facebook.com/docs/instagram-platform/instagram-api-with-facebook-login/content-publishing
+  - API research documented in `pkg/igapi/README.md`
+- [ ] Add Instagram platform to posting pipeline and track posted votes separately
+
+### Facebook (Priority 3 — nearly free once Instagram/Meta app is set up)
+
+- [ ] Implement Facebook client using Pages API (`POST /{page-id}/feed`)
+  - Text + link posts; Facebook auto-generates link preview cards
+  - Same Meta Developer App, Facebook Page, and access token as Instagram
+  - Requires `pages_manage_posts` permission (add to existing app review)
+  - Docs: https://developers.facebook.com/docs/pages-api/posts/
+- [ ] Implement Facebook post formatter and add to posting pipeline
+
+### LinkedIn (Priority 4 — professional audience, text posts work)
 
 - [ ] Implement LinkedIn client using Share on LinkedIn (Consumer API, `POST /v2/ugcPosts`)
   - OAuth 2.0 with `w_member_social` scope, add "Share on LinkedIn" product in Dev Portal
@@ -51,23 +76,6 @@
 - [ ] Implement LinkedIn post formatter (3,000 char limit, article/URL shares with link preview)
   - Longer format: full title, vote counts, hashtags (#GemeinderatZürich #Abstimmung)
 - [ ] Add LinkedIn platform to posting pipeline and track posted votes separately
-
-### Facebook (Priority 3 — wide reach, requires Meta App Review)
-
-- [ ] Register Facebook App, create Page, and go through App Review for `pages_manage_posts`
-  - Docs: https://developers.facebook.com/docs/pages-api/posts/
-- [ ] Implement Facebook client using Pages API (`POST /{page-id}/feed`)
-  - Text + link posts; Facebook auto-generates link preview cards
-- [ ] Implement Facebook post formatter and add to posting pipeline
-
-### Instagram (Priority 4 — visual-first, requires image generation)
-
-- [ ] Implement vote result image generator (infographic: title, bar chart, result)
-  - Prerequisite: "Generate visual posts" TODO above
-  - Docs: https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/content-publishing
-- [ ] Implement Instagram client using Content Publishing API (image + caption)
-  - Requires professional IG account + Facebook Page + App Review; 100 posts/24h limit
-- [ ] Add Instagram platform to posting pipeline and track posted votes separately
 
 ### TikTok (Priority 5 — highest effort, video/photo required, audit needed)
 
