@@ -91,30 +91,35 @@ func PostToPlatform(
 			return posted, err
 		}
 
-		// Log which group is being posted (helps trace which Bluesky URIs map to which votes)
-		fmt.Printf("📋 %s (%s) — %d vote(s):\n",
-			group[0].GeschaeftGrNr,
-			group[0].SitzungDatum[:10],
-			len(group),
-		)
-		for _, v := range group {
-			fmt.Printf("   https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=%s\n", v.OBJGUID)
-		}
-
 		if dryRun {
 			// Dry run: print and respect the same per-run limit as real posting
 			if posted > 0 {
 				fmt.Println()
-				fmt.Println("────────────────────────────────────────────────────────────────────────────────")
-				fmt.Println()
 			}
+			fmt.Println("────────────────────────────────────────────────────────────────────────────────")
+			fmt.Printf("  📋 %s (%s) — %d vote(s) [not visible in post]\n",
+				group[0].GeschaeftGrNr,
+				group[0].SitzungDatum[:10],
+				len(group),
+			)
+			fmt.Println("────────────────────────────────────────────────────────────────────────────────")
+			fmt.Println()
 			fmt.Println(content.String())
 			posted++
 			if posted >= platform.MaxPostsPerRun() {
 				break
 			}
 		} else {
-			// Real posting
+			// Real posting — log which group for tracing
+			fmt.Printf("📋 %s (%s) — %d vote(s):\n",
+				group[0].GeschaeftGrNr,
+				group[0].SitzungDatum[:10],
+				len(group),
+			)
+			for _, v := range group {
+				fmt.Printf("   https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=%s\n", v.OBJGUID)
+			}
+
 			shouldContinue, err := platform.Post(content)
 			if err != nil {
 				return posted, err

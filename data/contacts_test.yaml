@@ -1,0 +1,28 @@
+# Test contacts for e2e fixture posting.
+# Maps politician names used in test fixtures to fake/test handles
+# so real accounts are never tagged during testing.
+#
+# Replace the handles below with your actual test account handles
+# to verify that tagging works end-to-end.
+version: "1.0"
+contacts:
+  - name: Anna Graff
+    bluesky:
+      - https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+    x:
+      - https://x.com/Z7f3a94241
+  - name: Reto Brüesch
+    bluesky:
+      - https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+    x:
+      - https://x.com/Z7f3a94241
+  - name: Max Müller
+    bluesky:
+      - https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+    x:
+      - https://x.com/Z7f3a94241
+  - name: Liv Mahrer
+    bluesky:
+      - https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+    x:
+      - https://x.com/Z7f3a94241

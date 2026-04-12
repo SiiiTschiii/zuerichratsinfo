@@ -16,8 +16,17 @@ import (
 	"time"
 )
 
-// PostTweet posts a tweet using X API v2 with OAuth 1.0a User Context
-func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message string) error {
+// tweetResponse represents the X API v2 response for tweet creation
+type tweetResponse struct {
+	Data struct {
+		ID string `json:"id"`
+	} `json:"data"`
+}
+
+// PostTweet posts a tweet using X API v2 with OAuth 1.0a User Context.
+// If inReplyToTweetID is non-empty, the tweet is posted as a reply.
+// Returns the created tweet's ID.
+func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message, inReplyToTweetID string) (string, error) {
 	// X API v2 endpoint for creating tweets
 	apiURL := "https://api.x.com/2/tweets"
 
@@ -25,15 +34,20 @@ func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message string) err
 	payload := map[string]interface{}{
 		"text": message,
 	}
+	if inReplyToTweetID != "" {
+		payload["reply"] = map[string]interface{}{
+			"in_reply_to_tweet_id": inReplyToTweetID,
+		}
+	}
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
-		return fmt.Errorf("failed to marshal tweet payload: %w", err)
+		return "", fmt.Errorf("failed to marshal tweet payload: %w", err)
 	}
 
 	// Create HTTP request
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonPayload))
 	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
+		return "", fmt.Errorf("failed to create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -46,22 +60,136 @@ func PostTweet(apiKey, apiSecret, accessToken, accessSecret, message string) err
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to post tweet: %w", err)
+		return "", fmt.Errorf("failed to post tweet: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	body, _ := io.ReadAll(resp.Body)
 
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("x API returned status %d: %s", resp.StatusCode, string(body))
+		return "", fmt.Errorf("x API returned status %d: %s", resp.StatusCode, string(body))
 	}
 
-	fmt.Printf("✅ Tweet posted successfully!\nResponse: %s\n", string(body))
+	var tweetResp tweetResponse
+	if err := json.Unmarshal(body, &tweetResp); err != nil {
+		return "", fmt.Errorf("failed to parse tweet response: %w", err)
+	}
+
+	fmt.Printf("✅ Tweet posted successfully! (ID: %s)\n", tweetResp.Data.ID)
+	return tweetResp.Data.ID, nil
+}
+
+// GetAuthenticatedUserID returns the user ID of the authenticated user.
+func GetAuthenticatedUserID(apiKey, apiSecret, accessToken, accessSecret string) (string, error) {
+	apiURL := "https://api.x.com/2/users/me"
+
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+
+	authHeader := generateOAuthHeader(apiURL, "GET", apiKey, apiSecret, accessToken, accessSecret)
+	req.Header.Set("Authorization", authHeader)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to get user: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("x API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Data struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return "", fmt.Errorf("failed to parse user response: %w", err)
+	}
+	return result.Data.ID, nil
+}
+
+// GetUserTweets returns tweet IDs for a given user (most recent first, up to 100).
+func GetUserTweets(apiKey, apiSecret, accessToken, accessSecret, userID string) ([]string, error) {
+	apiURL := "https://api.x.com/2/users/" + userID + "/tweets"
+	fullURL := apiURL + "?max_results=100"
+
+	req, err := http.NewRequest("GET", fullURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	// OAuth signature must be computed on base URL; query params added separately
+	authHeader := generateOAuthHeaderWithParams(apiURL, "GET", apiKey, apiSecret, accessToken, accessSecret, map[string]string{"max_results": "100"})
+	req.Header.Set("Authorization", authHeader)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tweets: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("x API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Data []struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse tweets response: %w", err)
+	}
+
+	ids := make([]string, len(result.Data))
+	for i, t := range result.Data {
+		ids[i] = t.ID
+	}
+	return ids, nil
+}
+
+// DeleteTweet deletes a tweet by ID.
+func DeleteTweet(apiKey, apiSecret, accessToken, accessSecret, tweetID string) error {
+	apiURL := "https://api.x.com/2/tweets/" + tweetID
+
+	req, err := http.NewRequest("DELETE", apiURL, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	authHeader := generateOAuthHeader(apiURL, "DELETE", apiKey, apiSecret, accessToken, accessSecret)
+	req.Header.Set("Authorization", authHeader)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to delete tweet: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("x API returned status %d: %s", resp.StatusCode, string(body))
+	}
 	return nil
 }
 
 // generateOAuthHeader generates the OAuth 1.0a authorization header
 func generateOAuthHeader(apiURL, method, apiKey, apiSecret, accessToken, accessSecret string) string {
+	return generateOAuthHeaderWithParams(apiURL, method, apiKey, apiSecret, accessToken, accessSecret, nil)
+}
+
+// generateOAuthHeaderWithParams generates the OAuth 1.0a authorization header,
+// including additional query parameters in the signature base string.
+func generateOAuthHeaderWithParams(apiURL, method, apiKey, apiSecret, accessToken, accessSecret string, queryParams map[string]string) string {
 	// OAuth parameters
 	params := map[string]string{
 		"oauth_consumer_key":     apiKey,
@@ -72,11 +200,20 @@ func generateOAuthHeader(apiURL, method, apiKey, apiSecret, accessToken, accessS
 		"oauth_version":          "1.0",
 	}
 
-	// Generate signature
-	signature := generateSignature(method, apiURL, params, apiSecret, accessSecret)
+	// Include query params in signature computation
+	allParams := make(map[string]string)
+	for k, v := range params {
+		allParams[k] = v
+	}
+	for k, v := range queryParams {
+		allParams[k] = v
+	}
+
+	// Generate signature using all params
+	signature := generateSignature(method, apiURL, allParams, apiSecret, accessSecret)
 	params["oauth_signature"] = signature
 
-	// Build authorization header
+	// Build authorization header (only OAuth params, not query params)
 	var authParts []string
 	for key, value := range params {
 		authParts = append(authParts, fmt.Sprintf(`%s="%s"`, key, percentEncode(value)))

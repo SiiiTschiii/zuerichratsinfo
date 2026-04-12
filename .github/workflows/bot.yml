@@ -39,8 +39,9 @@ jobs:
           BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
           MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
           X_MAX_POSTS_PER_RUN: ${{ vars.X_MAX_POSTS_PER_RUN }}
+          X_MAX_CHARS: ${{ vars.X_MAX_CHARS }}
           BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.BLUESKY_MAX_POSTS_PER_RUN }}
-        run: go run .
+        run: go run main.go
 
       - name: Commit updated vote log
         run: |

@@ -29,6 +29,7 @@ type VoteLog struct {
 	Votes    []VoteEntry          `json:"votes"`
 	filepath string               // not exported, internal use
 	index    map[string]VoteEntry // for fast lookup
+	noOp     bool                 // when true, all votes are treated as unposted
 }
 
 // Load loads a vote log for the specified platform
@@ -70,12 +71,19 @@ func Load(platform Platform) (*VoteLog, error) {
 
 // IsPosted checks if a vote has been posted
 func (l *VoteLog) IsPosted(voteID string) bool {
+	if l.noOp {
+		return false
+	}
 	_, exists := l.index[voteID]
 	return exists
 }
 
 // MarkAsPosted marks a vote as posted
 func (l *VoteLog) MarkAsPosted(voteID string) {
+	if l.noOp {
+		return
+	}
+
 	// Don't add duplicates
 	if l.IsPosted(voteID) {
 		return
@@ -92,6 +100,10 @@ func (l *VoteLog) MarkAsPosted(voteID string) {
 
 // Save writes the log to disk
 func (l *VoteLog) Save() error {
+	if l.noOp {
+		return nil
+	}
+
 	// Ensure directory exists
 	dir := filepath.Dir(l.filepath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
@@ -124,6 +136,17 @@ func NewEmpty(platform Platform) *VoteLog {
 		Votes:    []VoteEntry{},
 		filepath: getLogFilePath(platform),
 		index:    make(map[string]VoteEntry),
+	}
+}
+
+// NewNoOp creates a no-op vote log that treats all votes as unposted
+// and discards all mark/save operations. Used for manual e2e testing.
+func NewNoOp(platform Platform) *VoteLog {
+	return &VoteLog{
+		Platform: platform,
+		Votes:    []VoteEntry{},
+		index:    make(map[string]VoteEntry),
+		noOp:     true,
 	}
 }
 

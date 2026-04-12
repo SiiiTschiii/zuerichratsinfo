@@ -60,32 +60,6 @@ go run cmd/generate_vote_post/main.go
 go run cmd/generate_vote_post/main.go 5
 ```
 
-## 5. Post to X
-
-When you're ready to post the latest vote to X:
-
-```bash
-./run.sh
-```
-
-## What It Does
-
-The bot automatically:
-
-1. Fetches the latest council vote (Abstimmung) from Zurich's PARIS API
-2. Formats it into a post with:
-   - Vote date and result (accepted/rejected)
-   - Vote description
-   - Vote statistics (yes, no, abstentions, absent)
-   - Shortened link to the official vote details
-3. Posts it to X as @zuerichratsinfo
-
-## Troubleshooting
-
-- **"Missing X API credentials" error**: Make sure your `.env` file exists and contains all four credentials
-- **Post too long**: The bot automatically shortens URLs using is.gd to save characters
-- **API rate limits**: X API has rate limits. If you hit them, wait and try again later
-
 ## Development
 
 ### Testing
@@ -93,6 +67,50 @@ The bot automatically:
 ```bash
 go test ./...
 ```
+
+### E2E Testing with Test Accounts
+
+E2E tests post real content to test accounts on X and Bluesky. They verify the full `Format → Post → API call` chain.
+
+**Setup (one-time):**
+
+1. Create test accounts on X and Bluesky (use obscure names, set to private/protected)
+2. Fill in `.env.test` with the test account credentials
+3. Edit `data/contacts_test.yaml` — replace placeholder handles with your test account handles
+
+**Post fixtures to test accounts:**
+
+```bash
+source .env.test
+
+# Post a single fixture to one platform
+go run cmd/post_fixture/main.go --fixture=single-vote-angenommen --platform=x
+go run cmd/post_fixture/main.go --fixture=multi-vote-group --platform=bluesky
+
+# Post all fixtures to all platforms
+go run cmd/post_fixture/main.go --fixture=all
+
+# Use real contacts (tags real accounts — use with care)
+go run cmd/post_fixture/main.go --contacts=data/contacts.yaml --fixture=vote-with-mentions
+
+# Cleanup all test posts (will delete all posts made by the test accounts)
+go run cmd/cleanup_posts/main.go
+go run cmd/cleanup_posts/main.go --platform=x
+go run cmd/cleanup_posts/main.go --platform=bluesky
+```
+
+**Test with live votes (fetches recent votes from the Zurich API):**
+
+```bash
+source .env.test
+SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go
+```
+
+**Regression workflow** (after formatting or posting changes):
+
+1. `go test ./...` — automated unit tests
+2. `source .env.test && go run cmd/post_fixture/main.go --fixture=all` — manual fixture verification
+3. `source .env.test && SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go` — manual live vote verification
 
 ### Linting
 

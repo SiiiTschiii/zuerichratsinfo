@@ -46,6 +46,7 @@ func main() {
 	maxVotesToCheck := getEnvInt("MAX_VOTES_TO_CHECK", 50)
 	maxXPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
 	maxBskyPostsPerRun := getEnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10)
+	xMaxChars := getEnvInt("X_MAX_CHARS", x.DefaultMaxChars)
 
 	fmt.Printf("Configuration: Check last %d votes\n", maxVotesToCheck)
 
@@ -65,15 +66,24 @@ func main() {
 	// exits non-zero at the end so CI / GitHub Actions flags the issue.
 	hasUnsupportedVotes := false
 
+	skipVoteLog := os.Getenv("SKIP_VOTE_LOG") == "true"
+
 	// --- X Platform ---
 	if xEnabled {
 		fmt.Println("\n━━━ X/Twitter ━━━")
 
-		voteLog, err := votelog.Load(votelog.PlatformX)
-		if err != nil {
-			log.Fatalf("Error loading X vote log: %v", err)
+		var voteLog *votelog.VoteLog
+		if skipVoteLog {
+			voteLog = votelog.NewNoOp(votelog.PlatformX)
+			fmt.Println("⚠️  SKIP_VOTE_LOG=true — treating all votes as unposted, not saving vote log")
+		} else {
+			var err error
+			voteLog, err = votelog.Load(votelog.PlatformX)
+			if err != nil {
+				log.Fatalf("Error loading X vote log: %v", err)
+			}
+			fmt.Printf("Loaded X vote log: %d votes already posted\n", voteLog.Count())
 		}
-		fmt.Printf("Loaded X vote log: %d votes already posted\n", voteLog.Count())
 
 		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
 		if err != nil {
@@ -90,6 +100,7 @@ func main() {
 				contactMapper,
 				maxXPostsPerRun,
 			)
+			xPlatform.SetMaxChars(xMaxChars)
 
 			posted, err := voteposting.PostToPlatform(groups, xPlatform, voteLog, false)
 			if err != nil {
@@ -111,11 +122,18 @@ func main() {
 	if bskyEnabled {
 		fmt.Println("\n━━━ Bluesky ━━━")
 
-		voteLog, err := votelog.Load(votelog.PlatformBluesky)
-		if err != nil {
-			log.Fatalf("Error loading Bluesky vote log: %v", err)
+		var voteLog *votelog.VoteLog
+		if skipVoteLog {
+			voteLog = votelog.NewNoOp(votelog.PlatformBluesky)
+			fmt.Println("⚠️  SKIP_VOTE_LOG=true — treating all votes as unposted, not saving vote log")
+		} else {
+			var err error
+			voteLog, err = votelog.Load(votelog.PlatformBluesky)
+			if err != nil {
+				log.Fatalf("Error loading Bluesky vote log: %v", err)
+			}
+			fmt.Printf("Loaded Bluesky vote log: %d votes already posted\n", voteLog.Count())
 		}
-		fmt.Printf("Loaded Bluesky vote log: %d votes already posted\n", voteLog.Count())
 
 		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
 		if err != nil {

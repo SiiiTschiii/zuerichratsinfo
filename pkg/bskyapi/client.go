@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -118,7 +120,7 @@ type PostRef struct {
 
 // ReplyRef contains the root and parent references for a reply post
 type ReplyRef struct {
-	Root PostRef `json:"root"`
+	Root   PostRef `json:"root"`
 	Parent PostRef `json:"parent"`
 }
 
@@ -252,4 +254,88 @@ func ResolveHandle(handle string) (string, error) {
 	}
 
 	return result.DID, nil
+}
+
+// ListRecords returns record URIs for the given collection (e.g. "app.bsky.feed.post")
+// from the authenticated user's repo. Returns up to 100 records.
+func ListRecords(session *Session, collection string) ([]string, error) {
+	reqURL := session.ServiceEndpoint + "/xrpc/com.atproto.repo.listRecords?repo=" +
+		url.QueryEscape(session.DID) + "&collection=" + url.QueryEscape(collection) + "&limit=100"
+
+	req, err := http.NewRequest("GET", reqURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create listRecords request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+session.AccessJwt)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list records: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("bluesky listRecords returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Records []struct {
+			URI string `json:"uri"`
+		} `json:"records"`
+	}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse listRecords response: %w", err)
+	}
+
+	uris := make([]string, len(result.Records))
+	for i, r := range result.Records {
+		uris[i] = r.URI
+	}
+	return uris, nil
+}
+
+// DeleteRecord deletes a record by its AT URI.
+// The URI format is: at://did:plc:.../collection/rkey
+func DeleteRecord(session *Session, uri string) error {
+	// Parse rkey from URI: at://did/collection/rkey
+	parts := strings.SplitN(uri, "/", 5)
+	if len(parts) < 5 {
+		return fmt.Errorf("invalid AT URI: %s", uri)
+	}
+	collection := parts[3]
+	rkey := parts[4]
+
+	reqURL := session.ServiceEndpoint + "/xrpc/com.atproto.repo.deleteRecord"
+
+	payload := map[string]string{
+		"repo":       session.DID,
+		"collection": collection,
+		"rkey":       rkey,
+	}
+	jsonPayload, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("failed to marshal deleteRecord payload: %w", err)
+	}
+
+	req, err := http.NewRequest("POST", reqURL, bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		return fmt.Errorf("failed to create deleteRecord request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+session.AccessJwt)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to delete record: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bluesky deleteRecord returned status %d: %s", resp.StatusCode, string(body))
+	}
+	return nil
 }

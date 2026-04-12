@@ -34,26 +34,41 @@ func (c *BlueskyContent) String() string {
 	return sb.String()
 }
 
+// CreateRecordFunc is the signature for creating a Bluesky post. Defaults to bskyapi.CreateRecord.
+type CreateRecordFunc func(session *bskyapi.Session, text string, facets []bskyapi.Facet, replyTo *bskyapi.ReplyRef) (*bskyapi.PostRef, error)
+
+// CreateSessionFunc is the signature for creating a Bluesky session. Defaults to bskyapi.CreateSession.
+type CreateSessionFunc func(handle, password string) (*bskyapi.Session, error)
+
+// ResolveHandleFunc is the signature for resolving a Bluesky handle to DID. Defaults to bskyapi.ResolveHandle.
+type ResolveHandleFunc func(handle string) (string, error)
+
 // BlueskyPlatform implements the platforms.Platform interface for Bluesky
 type BlueskyPlatform struct {
-	handle         string
-	password       string
-	session        *bskyapi.Session
-	contactMapper  *contacts.Mapper
-	postsThisRun   int
-	maxPostsPerRun int
-	didCache       map[string]string // cache handle -> DID resolutions
+	handle            string
+	password          string
+	session           *bskyapi.Session
+	contactMapper     *contacts.Mapper
+	postsThisRun      int
+	maxPostsPerRun    int
+	didCache          map[string]string // cache handle -> DID resolutions
+	createRecordFunc  CreateRecordFunc  // injectable for testing
+	createSessionFunc CreateSessionFunc // injectable for testing
+	resolveHandleFunc ResolveHandleFunc // injectable for testing
 }
 
 // NewBlueskyPlatform creates a new Bluesky platform poster
 func NewBlueskyPlatform(handle, password string, maxPostsPerRun int, contactMapper *contacts.Mapper) *BlueskyPlatform {
 	return &BlueskyPlatform{
-		handle:         handle,
-		password:       password,
-		maxPostsPerRun: maxPostsPerRun,
-		contactMapper:  contactMapper,
-		postsThisRun:   0,
-		didCache:       make(map[string]string),
+		handle:            handle,
+		password:          password,
+		maxPostsPerRun:    maxPostsPerRun,
+		contactMapper:     contactMapper,
+		postsThisRun:      0,
+		didCache:          make(map[string]string),
+		createRecordFunc:  bskyapi.CreateRecord,
+		createSessionFunc: bskyapi.CreateSession,
+		resolveHandleFunc: bskyapi.ResolveHandle,
 	}
 }
 
@@ -63,7 +78,7 @@ func (p *BlueskyPlatform) ensureSession() error {
 		return nil
 	}
 
-	session, err := bskyapi.CreateSession(p.handle, p.password)
+	session, err := p.createSessionFunc(p.handle, p.password)
 	if err != nil {
 		return fmt.Errorf("failed to authenticate with Bluesky: %w", err)
 	}
@@ -99,7 +114,7 @@ func (p *BlueskyPlatform) Post(content platforms.Content) (bool, error) {
 	// Post the root
 	root := bskyContent.thread[0]
 	p.resolveMentionFacets(root)
-	rootRef, err := bskyapi.CreateRecord(p.session, root.Text, root.Facets, nil)
+	rootRef, err := p.createRecordFunc(p.session, root.Text, root.Facets, nil)
 	if err != nil {
 		return false, fmt.Errorf("failed to post root: %w", err)
 	}
@@ -116,7 +131,7 @@ func (p *BlueskyPlatform) Post(content platforms.Content) (bool, error) {
 			Parent: *parentRef,
 		}
 
-		ref, err := bskyapi.CreateRecord(p.session, reply.Text, reply.Facets, replyRef)
+		ref, err := p.createRecordFunc(p.session, reply.Text, reply.Facets, replyRef)
 		if err != nil {
 			return false, fmt.Errorf("failed to post reply %d: %w", i+1, err)
 		}
@@ -159,7 +174,7 @@ func (p *BlueskyPlatform) resolveHandleCached(handle string) (string, error) {
 		return did, nil
 	}
 
-	did, err := bskyapi.ResolveHandle(handle)
+	did, err := p.resolveHandleFunc(handle)
 	if err != nil {
 		return "", err
 	}

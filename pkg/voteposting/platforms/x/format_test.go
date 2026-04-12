@@ -7,11 +7,20 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
-func TestFormatVoteGroupPost_PreservesPostulatMotion(t *testing.T) {
+// allThreadText joins all post texts in a thread for simple Contains assertions.
+func allThreadText(thread []*XPost) string {
+	var parts []string
+	for _, p := range thread {
+		parts = append(parts, p.Text)
+	}
+	return strings.Join(parts, "\n\n")
+}
+
+func TestFormatVoteThread_PreservesPostulatMotion(t *testing.T) {
 	tests := []struct {
 		name          string
 		votes         []zurichapi.Abstimmung
-		expectedParts []string // Parts that should appear in the output
+		expectedParts []string
 	}{
 		{
 			name: "Single vote with Postulat in title",
@@ -59,24 +68,24 @@ func TestFormatVoteGroupPost_PreservesPostulatMotion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := FormatVoteGroupPost(tt.votes, nil)
-
-			t.Logf("Full output:\n%s", result)
+			thread := FormatVoteThread(tt.votes, nil, DefaultMaxChars)
+			full := allThreadText(thread)
+			t.Logf("Full output:\n%s", full)
 
 			for _, part := range tt.expectedParts {
-				if !strings.Contains(result, part) {
-					t.Errorf("Expected output to contain %q, but it didn't.\nFull output:\n%s", part, result)
+				if !strings.Contains(full, part) {
+					t.Errorf("Expected thread to contain %q, but it didn't.\nFull output:\n%s", part, full)
 				}
 			}
 		})
 	}
 }
 
-func TestFormatVoteGroupPost_AuswahlVote(t *testing.T) {
+func TestFormatVoteThread_AuswahlVote(t *testing.T) {
 	tests := []struct {
-		name           string
-		votes          []zurichapi.Abstimmung
-		shouldContain  []string
+		name             string
+		votes            []zurichapi.Abstimmung
+		shouldContain    []string
 		shouldNotContain []string
 	}{
 		{
@@ -133,19 +142,172 @@ func TestFormatVoteGroupPost_AuswahlVote(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := FormatVoteGroupPost(tt.votes, nil)
-			t.Logf("Full output:\n%s", result)
+			thread := FormatVoteThread(tt.votes, nil, DefaultMaxChars)
+			full := allThreadText(thread)
+			t.Logf("Full output:\n%s", full)
 			for _, part := range tt.shouldContain {
-				if !strings.Contains(result, part) {
-					t.Errorf("Expected output to contain %q", part)
+				if !strings.Contains(full, part) {
+					t.Errorf("Expected thread to contain %q", part)
 				}
 			}
 			for _, part := range tt.shouldNotContain {
-				if strings.Contains(result, part) {
-					t.Errorf("Expected output NOT to contain %q", part)
+				if strings.Contains(full, part) {
+					t.Errorf("Expected thread NOT to contain %q", part)
 				}
 			}
 		})
+	}
+}
+
+func TestFormatVoteThread_SingleVoteStructure(t *testing.T) {
+	votes := []zurichapi.Abstimmung{
+		{
+			OBJGUID:          "struct-guid-1",
+			TraktandumTitel:  "Weisung: Testvorlage",
+			SitzungDatum:     "2026-01-15",
+			Schlussresultat:  "angenommen",
+			AnzahlJa:         intPtr(80),
+			AnzahlNein:       intPtr(30),
+			AnzahlEnthaltung: intPtr(5),
+			AnzahlAbwesend:   intPtr(10),
+		},
+	}
+
+	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+
+	if len(thread) < 2 {
+		t.Fatalf("expected root + at least 1 reply, got %d posts", len(thread))
+	}
+
+	// Root contains header, title, thread hint
+	root := thread[0].Text
+	if !strings.Contains(root, "Gemeinderat") {
+		t.Error("root should contain header")
+	}
+	if !strings.Contains(root, "Testvorlage") {
+		t.Error("root should contain title")
+	}
+	if !strings.Contains(root, "👇 Details im Thread") {
+		t.Error("root should contain thread hint")
+	}
+
+	// Last reply contains link
+	lastReply := thread[len(thread)-1].Text
+	if !strings.Contains(lastReply, "🔗") {
+		t.Error("last reply should contain link")
+	}
+}
+
+func TestFormatVoteThread_MultiVoteStructure(t *testing.T) {
+	votes := []zurichapi.Abstimmung{
+		{
+			OBJGUID:          "multi-guid-1",
+			TraktandumTitel:  "Weisung: Grosses Projekt",
+			Abstimmungstitel: "Antrag 1",
+			SitzungDatum:     "2026-01-15",
+			Schlussresultat:  "angenommen",
+			AnzahlJa:         intPtr(60),
+			AnzahlNein:       intPtr(40),
+			AnzahlEnthaltung: intPtr(10),
+			AnzahlAbwesend:   intPtr(15),
+		},
+		{
+			OBJGUID:          "multi-guid-2",
+			TraktandumTitel:  "Weisung: Grosses Projekt",
+			Abstimmungstitel: "Antrag 2",
+			SitzungDatum:     "2026-01-15",
+			Schlussresultat:  "abgelehnt",
+			AnzahlJa:         intPtr(30),
+			AnzahlNein:       intPtr(70),
+			AnzahlEnthaltung: intPtr(5),
+			AnzahlAbwesend:   intPtr(20),
+		},
+	}
+
+	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+
+	if len(thread) < 2 {
+		t.Fatalf("expected root + at least 1 reply, got %d posts", len(thread))
+	}
+
+	root := thread[0].Text
+	if !strings.Contains(root, "Grosses Projekt") {
+		t.Error("root should contain title")
+	}
+
+	full := allThreadText(thread)
+	if !strings.Contains(full, "Antrag 1") {
+		t.Error("thread should contain first vote subtitle")
+	}
+	if !strings.Contains(full, "Antrag 2") {
+		t.Error("thread should contain second vote subtitle")
+	}
+
+	lastReply := thread[len(thread)-1].Text
+	if !strings.Contains(lastReply, "🔗") {
+		t.Error("last reply should contain link")
+	}
+}
+
+func TestFormatVoteThread_LinkPlacement(t *testing.T) {
+	votes := []zurichapi.Abstimmung{
+		{
+			OBJGUID:          "link-guid-1",
+			TraktandumTitel:  "Weisung: Linktest",
+			SitzungDatum:     "2026-01-15",
+			Schlussresultat:  "angenommen",
+			AnzahlJa:         intPtr(80),
+			AnzahlNein:       intPtr(30),
+			AnzahlEnthaltung: intPtr(5),
+			AnzahlAbwesend:   intPtr(10),
+		},
+	}
+
+	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+
+	// Link must NOT be in root
+	if strings.Contains(thread[0].Text, "🔗") {
+		t.Error("root should not contain link — link belongs in replies")
+	}
+
+	// Link must be in last reply
+	lastReply := thread[len(thread)-1].Text
+	if !strings.Contains(lastReply, "🔗") {
+		t.Errorf("last reply should contain link, got: %s", lastReply)
+	}
+}
+
+func TestFormatVoteThread_RootTruncation(t *testing.T) {
+	// Create a vote with a very long title that exceeds DefaultMaxChars
+	longTitle := strings.Repeat("A", DefaultMaxChars+500)
+	votes := []zurichapi.Abstimmung{
+		{
+			OBJGUID:          "trunc-guid-1",
+			TraktandumTitel:  longTitle,
+			SitzungDatum:     "2026-01-15",
+			Schlussresultat:  "angenommen",
+			AnzahlJa:         intPtr(80),
+			AnzahlNein:       intPtr(30),
+			AnzahlEnthaltung: intPtr(5),
+			AnzahlAbwesend:   intPtr(10),
+		},
+	}
+
+	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+
+	root := thread[0].Text
+	if len(root) > DefaultMaxChars {
+		t.Errorf("root post exceeds DefaultMaxChars: %d > %d", len(root), DefaultMaxChars)
+	}
+	if !strings.Contains(root, "…") {
+		t.Error("truncated root should contain '…'")
+	}
+}
+
+func TestFormatVoteThread_EmptyVotes(t *testing.T) {
+	thread := FormatVoteThread(nil, nil, DefaultMaxChars)
+	if thread != nil {
+		t.Errorf("expected nil for empty votes, got %d posts", len(thread))
 	}
 }
 

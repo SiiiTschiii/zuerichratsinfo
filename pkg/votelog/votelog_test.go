@@ -212,3 +212,23 @@ func TestPersistenceAcrossMultipleSaves(t *testing.T) {
 		}
 	}
 }
+
+func TestNewNoOp(t *testing.T) {
+	log := NewNoOp(PlatformX)
+
+	// IsPosted always returns false
+	log.MarkAsPosted("vote1") // should be a no-op
+	if log.IsPosted("vote1") {
+		t.Error("NewNoOp: IsPosted should always return false")
+	}
+
+	// Votes slice should remain empty (MarkAsPosted is a no-op)
+	if len(log.Votes) != 0 {
+		t.Errorf("NewNoOp: expected 0 votes, got %d", len(log.Votes))
+	}
+
+	// Save should be a no-op (no error, no file written)
+	if err := log.Save(); err != nil {
+		t.Errorf("NewNoOp: Save should return nil, got %v", err)
+	}
+}
