@@ -23,20 +23,20 @@ A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Z
 
 ## Supported Platforms
 
-| Platform    | Status     | Gemeinderäte & Stadträte | Account                                           |
-| ----------- | ---------- | ------------------------ | ------------------------------------------------- |
-| LinkedIn    | ❌ Planned | 121 | -                                                 |
-| Facebook    | ❌ Planned | 102 | -                                                 |
-| Instagram   | ❌ Planned | 99 | -                                                 |
-| X (Twitter) | ✅ Active  | 74 | [@zuerichratsinfo](https://x.com/zuerichratsinfo) |
-| Bluesky     | ✅ Active  | 36 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
-| TikTok      | ❌ Planned | 21 | -                                                 |
+| Platform    | Status     | Gemeinderäte & Stadträte | Account                                                                              |
+| ----------- | ---------- | ------------------------ | ------------------------------------------------------------------------------------ |
+| LinkedIn    | ❌ Planned | 121                      | -                                                                                    |
+| Facebook    | ❌ Planned | 102                      | -                                                                                    |
+| Instagram   | ❌ Planned | 99                       | -                                                                                    |
+| X (Twitter) | ✅ Active  | 74                       | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| Bluesky     | ✅ Active  | 36                       | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
+| TikTok      | ❌ Planned | 21                       | -                                                                                    |
 
 _Platforms are sorted by coverage. Counts include both Gemeinderäte and Stadträte (9 Stadtrat members). Out of 154 total contacts in [data/contacts.yaml](data/contacts.yaml)._
 
 ## What It Does
 
-- **Automated Vote Posts**: Shares council vote results (Abstimmungen) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) on social media platforms
+- **Automated Vote Posts**: Shares council vote results (Abstimmungen) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) on social media platforms. Posting timing depends on when results are published in the [PARIS API](pkg/zurichapi/README.md) by the City of Zurich (typically 5–7 days after the vote) — the same data source as [gemeinderat-zuerich.ch](https://www.gemeinderat-zuerich.ch/sitzungen/termine/?navid=968842968842).
 - **Politician Tagging**: Automatically tags mentioned politicians using their social media accounts when available in our mapping
   - _Example: "Postulat von Ivo Bieri @ivo_bieri (SP) und Liv Mahrer @LivMahrer (SP)..."_
 - **Social Media Mapping**: Curates an extensive mapping of Zurich politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok) - see [data/contacts.yaml](data/contacts.yaml)
