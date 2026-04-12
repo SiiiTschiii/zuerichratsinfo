@@ -31,8 +31,8 @@
 
 ## Post Format Improvements
 
-- [ ] X: use reply threads for large vote groups (currently capped to a single post per group)
-- [ ] X + Bluesky: add a reply with per-Fraktion vote breakdown (e.g. SP 32 Ja / 0 Nein, FDP 18 Ja / 5 Nein, …)
+- [x] X: use reply threads for large vote groups (currently capped to a single post per group)
+- [x] X + Bluesky: add a reply with per-Fraktion vote breakdown (e.g. SP 32 Ja / 0 Nein, FDP 18 Ja / 5 Nein, …)
 
 ## Platform Integrations
 

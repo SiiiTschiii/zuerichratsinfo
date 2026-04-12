@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
@@ -244,19 +245,19 @@ func TestFormatVoteThread_LinkFacetOnLastReply(t *testing.T) {
 func TestFormatVoteThread_GenericAntragUsesGeschaeftTitle(t *testing.T) {
 	votes := []zurichapi.Abstimmung{
 		{
-			OBJGUID:         "vote-1",
-			SitzungGuid:     "sitzung-1",
-			TraktandumGuid:  "trakt-1",
-			GeschaeftGuid:   "geschaeft-1",
-			SitzungDatum:    "2025-06-15",
-			TraktandumTitel: "Antrag 1.",
-			GeschaeftTitel:  "Postulat von Max Müller (FDP): Bessere Veloinfrastruktur",
-			GeschaeftGrNr:   "2025/200",
-			Schlussresultat: "angenommen",
-			AnzahlJa:        intPtr(80),
-			AnzahlNein:      intPtr(35),
+			OBJGUID:          "vote-1",
+			SitzungGuid:      "sitzung-1",
+			TraktandumGuid:   "trakt-1",
+			GeschaeftGuid:    "geschaeft-1",
+			SitzungDatum:     "2025-06-15",
+			TraktandumTitel:  "Antrag 1.",
+			GeschaeftTitel:   "Postulat von Max Müller (FDP): Bessere Veloinfrastruktur",
+			GeschaeftGrNr:    "2025/200",
+			Schlussresultat:  "angenommen",
+			AnzahlJa:         intPtr(80),
+			AnzahlNein:       intPtr(35),
 			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:  intPtr(5),
+			AnzahlAbwesend:   intPtr(5),
 		},
 	}
 
@@ -383,4 +384,102 @@ func mustLoadTestMapper(t *testing.T) *contacts.Mapper {
 		t.Skipf("contacts.yaml not available: %v", err)
 	}
 	return mapper
+}
+
+// allThreadText joins all post texts in a thread for simple Contains assertions.
+func allThreadText(thread []*BlueskyPost) string {
+	var parts []string
+	for _, p := range thread {
+		parts = append(parts, p.Text)
+	}
+	return strings.Join(parts, "\n\n")
+}
+
+func TestFormatVoteThread_SingleVoteWithFraktion(t *testing.T) {
+	votes := testfixtures.SingleVoteAngenommen()
+	thread := FormatVoteThread(votes, nil)
+
+	full := allThreadText(thread)
+	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
+
+	if len(thread) < 2 {
+		t.Fatalf("expected at least 2 posts (root + replies), got %d", len(thread))
+	}
+
+	// Fraktion breakdown must appear somewhere in the thread
+	if !strings.Contains(full, "🏛️ Fraktionen") {
+		t.Error("thread should contain Fraktion breakdown header")
+	}
+
+	// All 7 factions must be present
+	for _, faction := range []string{"SP", "SVP", "FDP", "GLP", "AL", "Die Mitte", "Grüne"} {
+		if !strings.Contains(full, faction) {
+			t.Errorf("thread should contain faction %q", faction)
+		}
+	}
+
+	// Header should be Ja/Nein format
+	if !strings.Contains(full, "(Ja/Nein/Enth/Abw)") {
+		t.Error("header should be (Ja/Nein/Enth/Abw)")
+	}
+
+	// Verify each post is within grapheme limit
+	for i, post := range thread {
+		if graphemeLen(post.Text) > maxGraphemes {
+			t.Errorf("post %d exceeds %d graphemes: %d\n%s", i, maxGraphemes, graphemeLen(post.Text), post.Text)
+		}
+	}
+}
+
+func TestFormatVoteThread_MultiVoteWithFraktion(t *testing.T) {
+	votes := testfixtures.MultiVoteGroup()
+	thread := FormatVoteThread(votes, nil)
+
+	full := allThreadText(thread)
+	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
+
+	// Each of the 2 votes should have its own Fraktion entry
+	count := strings.Count(full, "🏛️ Fraktionen")
+	if count != 2 {
+		t.Errorf("expected 2 Fraktion breakdown entries, got %d", count)
+	}
+
+	// Verify each post is within grapheme limit
+	for i, post := range thread {
+		if graphemeLen(post.Text) > maxGraphemes {
+			t.Errorf("post %d exceeds %d graphemes: %d\n%s", i, maxGraphemes, graphemeLen(post.Text), post.Text)
+		}
+	}
+}
+
+func TestFormatVoteThread_NoStimmabgaben(t *testing.T) {
+	votes := testfixtures.SingleVoteAbgelehnt() // no Stimmabgaben
+	thread := FormatVoteThread(votes, nil)
+
+	full := allThreadText(thread)
+	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
+
+	if strings.Contains(full, "🏛️ Fraktionen") {
+		t.Error("thread should NOT contain Fraktion breakdown when Stimmabgaben is empty")
+	}
+}
+
+func TestFormatVoteThread_AuswahlWithFraktion(t *testing.T) {
+	votes := testfixtures.AuswahlVote()
+	thread := FormatVoteThread(votes, nil)
+
+	full := allThreadText(thread)
+	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
+
+	if !strings.Contains(full, "🏛️ Fraktionen") {
+		t.Error("thread should contain Fraktion breakdown")
+	}
+
+	// Auswahl vote should have A/B/C/Abw header, NOT Ja/Nein
+	if !strings.Contains(full, "(A/B/C/Abw)") {
+		t.Error("Auswahl vote header should be (A/B/C/Abw)")
+	}
+	if strings.Contains(full, "(Ja/Nein/Enth/Abw)") {
+		t.Error("Auswahl vote header should NOT be (Ja/Nein/Enth/Abw)")
+	}
 }

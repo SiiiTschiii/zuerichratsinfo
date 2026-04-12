@@ -162,6 +162,14 @@ func buildReplyPosts(votes []zurichapi.Abstimmung, link string, charLimit int) [
 		}
 
 		entries = append(entries, entry.String())
+
+		// Add Fraktion breakdown as separate entry
+		if stimmabgaben := vote.Stimmabgaben.Stimmabgabe; len(stimmabgaben) > 0 {
+			fraktionCounts := voteformat.AggregateFraktionCounts(stimmabgaben)
+			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
+				entries = append(entries, breakdown)
+			}
+		}
 	}
 
 	// Pack entries into replies, respecting the character limit.

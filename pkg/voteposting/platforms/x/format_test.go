@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
@@ -314,4 +315,93 @@ func TestFormatVoteThread_EmptyVotes(t *testing.T) {
 // Helper function for tests
 func intPtr(i int) *int {
 	return &i
+}
+
+func TestFormatVoteThread_SingleVoteWithFraktion(t *testing.T) {
+	votes := testfixtures.SingleVoteAngenommen()
+	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+
+	full := allThreadText(thread)
+	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
+
+	if len(thread) < 2 {
+		t.Fatalf("expected at least 2 posts (root + replies), got %d", len(thread))
+	}
+
+	// Fraktion breakdown must appear somewhere in the thread
+	if !strings.Contains(full, "🏛️ Fraktionen") {
+		t.Error("thread should contain Fraktion breakdown header")
+	}
+
+	// All 7 factions must be present
+	for _, faction := range []string{"SP", "SVP", "FDP", "GLP", "AL", "Die Mitte", "Grüne"} {
+		if !strings.Contains(full, faction) {
+			t.Errorf("thread should contain faction %q", faction)
+		}
+	}
+
+	// Header should be Ja/Nein format
+	if !strings.Contains(full, "(Ja/Nein/Enth/Abw)") {
+		t.Error("header should be (Ja/Nein/Enth/Abw)")
+	}
+
+	// Verify each post is within char limit
+	for i, post := range thread {
+		if len(post.Text) > DefaultMaxChars {
+			t.Errorf("post %d exceeds %d chars: %d\n%s", i, DefaultMaxChars, len(post.Text), post.Text)
+		}
+	}
+}
+
+func TestFormatVoteThread_MultiVoteWithFraktion(t *testing.T) {
+	votes := testfixtures.MultiVoteGroup()
+	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+
+	full := allThreadText(thread)
+	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
+
+	// Each of the 2 votes should have its own Fraktion entry
+	count := strings.Count(full, "🏛️ Fraktionen")
+	if count != 2 {
+		t.Errorf("expected 2 Fraktion breakdown entries, got %d", count)
+	}
+
+	// Verify each post is within char limit
+	for i, post := range thread {
+		if len(post.Text) > DefaultMaxChars {
+			t.Errorf("post %d exceeds %d chars: %d\n%s", i, DefaultMaxChars, len(post.Text), post.Text)
+		}
+	}
+}
+
+func TestFormatVoteThread_NoStimmabgaben(t *testing.T) {
+	votes := testfixtures.SingleVoteAbgelehnt() // no Stimmabgaben
+	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+
+	full := allThreadText(thread)
+	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
+
+	if strings.Contains(full, "🏛️ Fraktionen") {
+		t.Error("thread should NOT contain Fraktion breakdown when Stimmabgaben is empty")
+	}
+}
+
+func TestFormatVoteThread_AuswahlWithFraktion(t *testing.T) {
+	votes := testfixtures.AuswahlVote()
+	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+
+	full := allThreadText(thread)
+	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
+
+	if !strings.Contains(full, "🏛️ Fraktionen") {
+		t.Error("thread should contain Fraktion breakdown")
+	}
+
+	// Auswahl vote should have A/B/C/Abw header, NOT Ja/Nein
+	if !strings.Contains(full, "(A/B/C/Abw)") {
+		t.Error("Auswahl vote header should be (A/B/C/Abw)")
+	}
+	if strings.Contains(full, "(Ja/Nein/Enth/Abw)") {
+		t.Error("Auswahl vote header should NOT be (Ja/Nein/Enth/Abw)")
+	}
 }

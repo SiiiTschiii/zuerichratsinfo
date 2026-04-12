@@ -10,6 +10,61 @@ func intPtr(i int) *int {
 	return &i
 }
 
+// stimmabgabe creates a single Stimmabgabe with the given faction and vote behavior.
+func stimmabgabe(fraktion, verhalten string) zurichapi.Stimmabgabe {
+	return zurichapi.Stimmabgabe{
+		Fraktion:             fraktion,
+		Abstimmungsverhalten: verhalten,
+	}
+}
+
+// makeStimmabgaben creates a Stimmabgaben slice from faction vote distributions.
+// Each entry is (fraktion, ja, nein, enthaltung, abwesend) for Ja/Nein votes.
+func makeStimmabgaben(factions []struct {
+	Name                string
+	Ja, Nein, Enth, Abw int
+}) []zurichapi.Stimmabgabe {
+	var result []zurichapi.Stimmabgabe
+	for _, f := range factions {
+		for i := 0; i < f.Ja; i++ {
+			result = append(result, stimmabgabe(f.Name, "Ja"))
+		}
+		for i := 0; i < f.Nein; i++ {
+			result = append(result, stimmabgabe(f.Name, "Nein"))
+		}
+		for i := 0; i < f.Enth; i++ {
+			result = append(result, stimmabgabe(f.Name, "Enthaltung"))
+		}
+		for i := 0; i < f.Abw; i++ {
+			result = append(result, stimmabgabe(f.Name, "Abwesend"))
+		}
+	}
+	return result
+}
+
+// makeAuswahlStimmabgaben creates Stimmabgaben for Auswahl votes (A/B/C + Abwesend).
+func makeAuswahlStimmabgaben(factions []struct {
+	Name         string
+	A, B, C, Abw int
+}) []zurichapi.Stimmabgabe {
+	var result []zurichapi.Stimmabgabe
+	for _, f := range factions {
+		for i := 0; i < f.A; i++ {
+			result = append(result, stimmabgabe(f.Name, "A"))
+		}
+		for i := 0; i < f.B; i++ {
+			result = append(result, stimmabgabe(f.Name, "B"))
+		}
+		for i := 0; i < f.C; i++ {
+			result = append(result, stimmabgabe(f.Name, "C"))
+		}
+		for i := 0; i < f.Abw; i++ {
+			result = append(result, stimmabgabe(f.Name, "Abwesend"))
+		}
+	}
+	return result
+}
+
 // vote creates an Abstimmung with standard Ja/Nein fields and unique GUID values.
 func vote(guid, title, grNr, result string, ja, nein, enth, abw int) zurichapi.Abstimmung {
 	return zurichapi.Abstimmung{
@@ -31,9 +86,20 @@ func vote(guid, title, grNr, result string, ja, nein, enth, abw int) zurichapi.A
 
 // SingleVoteAngenommen returns a single accepted Postulat (90/30/0/5).
 func SingleVoteAngenommen() []zurichapi.Abstimmung {
-	return []zurichapi.Abstimmung{
-		vote("angenommen-1", "Postulat von Reto Brüesch (SVP): Anpassung der Mindestfläche", "2025/100", "angenommen", 90, 30, 0, 5),
-	}
+	v := vote("angenommen-1", "Postulat von Reto Brüesch (SVP): Anpassung der Mindestfläche", "2025/100", "angenommen", 90, 30, 0, 5)
+	v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 0, 30, 0, 1},
+		{"SVP", 22, 0, 0, 0},
+		{"FDP", 20, 0, 0, 1},
+		{"Grüne", 0, 0, 0, 2},
+		{"GLP", 18, 0, 0, 0},
+		{"Die Mitte", 15, 0, 0, 0},
+		{"AL", 15, 0, 0, 1},
+	})
+	return []zurichapi.Abstimmung{v}
 }
 
 // SingleVoteAbgelehnt returns a single rejected Antrag (20/95/5/5).
@@ -57,40 +123,63 @@ func LongTitleTruncation() []zurichapi.Abstimmung {
 
 // MultiVoteGroup returns 2 votes from the same Geschäft: Einleitungsartikel + Schlussabstimmung.
 func MultiVoteGroup() []zurichapi.Abstimmung {
-	return []zurichapi.Abstimmung{
-		{
-			OBJGUID:          "objguid-multi-1",
-			SitzungGuid:      "sitzung-multi",
-			TraktandumGuid:   "trakt-multi",
-			GeschaeftGuid:    "geschaeft-multi",
-			SitzungDatum:     "2025-06-15",
-			TraktandumTitel:  "Gesamtrevision der Gemeindeordnung",
-			GeschaeftTitel:   "Gesamtrevision der Gemeindeordnung",
-			GeschaeftGrNr:    "2025/103",
-			Abstimmungstitel: "Einleitungsartikel",
-			Schlussresultat:  "angenommen",
-			AnzahlJa:         intPtr(90),
-			AnzahlNein:       intPtr(20),
-			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:   intPtr(10),
-		},
-		{
-			OBJGUID:          "objguid-multi-2",
-			SitzungGuid:      "sitzung-multi",
-			TraktandumGuid:   "trakt-multi",
-			GeschaeftGuid:    "geschaeft-multi",
-			SitzungDatum:     "2025-06-15",
-			TraktandumTitel:  "Gesamtrevision der Gemeindeordnung",
-			GeschaeftTitel:   "Gesamtrevision der Gemeindeordnung",
-			GeschaeftGrNr:    "2025/103",
-			Abstimmungstitel: "Schlussabstimmung",
-			Schlussresultat:  "abgelehnt",
-			AnzahlJa:         intPtr(40),
-			AnzahlNein:       intPtr(70),
-			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:   intPtr(10),
-		},
+	vote1 := zurichapi.Abstimmung{
+		OBJGUID:          "objguid-multi-1",
+		SitzungGuid:      "sitzung-multi",
+		TraktandumGuid:   "trakt-multi",
+		GeschaeftGuid:    "geschaeft-multi",
+		SitzungDatum:     "2025-06-15",
+		TraktandumTitel:  "Gesamtrevision der Gemeindeordnung",
+		GeschaeftTitel:   "Gesamtrevision der Gemeindeordnung",
+		GeschaeftGrNr:    "2025/103",
+		Abstimmungstitel: "Einleitungsartikel",
+		Schlussresultat:  "angenommen",
+		AnzahlJa:         intPtr(90),
+		AnzahlNein:       intPtr(20),
+		AnzahlEnthaltung: intPtr(5),
+		AnzahlAbwesend:   intPtr(10),
 	}
+	vote1.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 32, 0, 0, 2},
+		{"SVP", 0, 18, 0, 1},
+		{"FDP", 20, 0, 0, 2},
+		{"Grüne", 12, 0, 5, 1},
+		{"GLP", 14, 0, 0, 2},
+		{"Die Mitte", 12, 0, 0, 1},
+		{"AL", 0, 2, 0, 1},
+	})
+	vote2 := zurichapi.Abstimmung{
+		OBJGUID:          "objguid-multi-2",
+		SitzungGuid:      "sitzung-multi",
+		TraktandumGuid:   "trakt-multi",
+		GeschaeftGuid:    "geschaeft-multi",
+		SitzungDatum:     "2025-06-15",
+		TraktandumTitel:  "Gesamtrevision der Gemeindeordnung",
+		GeschaeftTitel:   "Gesamtrevision der Gemeindeordnung",
+		GeschaeftGrNr:    "2025/103",
+		Abstimmungstitel: "Schlussabstimmung",
+		Schlussresultat:  "abgelehnt",
+		AnzahlJa:         intPtr(40),
+		AnzahlNein:       intPtr(70),
+		AnzahlEnthaltung: intPtr(5),
+		AnzahlAbwesend:   intPtr(10),
+	}
+	vote2.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 0, 30, 2, 2},
+		{"SVP", 18, 0, 0, 1},
+		{"FDP", 0, 20, 0, 2},
+		{"Grüne", 10, 0, 3, 1},
+		{"GLP", 12, 0, 0, 2},
+		{"Die Mitte", 0, 12, 0, 1},
+		{"AL", 0, 8, 0, 1},
+	})
+	return []zurichapi.Abstimmung{vote1, vote2}
 }
 
 // GenericAntragFallback returns a vote where TraktandumTitel is "Antrag 1."
@@ -162,23 +251,34 @@ func VoteWithMentions() []zurichapi.Abstimmung {
 
 // AuswahlVote returns a single Auswahl vote with A/B/C counts (no ✅/❌ prefix).
 func AuswahlVote() []zurichapi.Abstimmung {
-	return []zurichapi.Abstimmung{
-		{
-			OBJGUID:         "objguid-auswahl-1",
-			SitzungGuid:     "sitzung-auswahl",
-			TraktandumGuid:  "trakt-auswahl",
-			GeschaeftGuid:   "geschaeft-auswahl",
-			SitzungDatum:    "2026-03-04",
-			TraktandumTitel: "Weisung: Jugendwohnkredit 2025",
-			GeschaeftTitel:  "Weisung: Jugendwohnkredit 2025",
-			GeschaeftGrNr:   "2025/106",
-			Schlussresultat: "Auswahl A",
-			AnzahlAbwesend:  intPtr(10),
-			AnzahlA:         intPtr(74),
-			AnzahlB:         intPtr(28),
-			AnzahlC:         intPtr(13),
-		},
+	v := zurichapi.Abstimmung{
+		OBJGUID:         "objguid-auswahl-1",
+		SitzungGuid:     "sitzung-auswahl",
+		TraktandumGuid:  "trakt-auswahl",
+		GeschaeftGuid:   "geschaeft-auswahl",
+		SitzungDatum:    "2026-03-04",
+		TraktandumTitel: "Weisung: Jugendwohnkredit 2025",
+		GeschaeftTitel:  "Weisung: Jugendwohnkredit 2025",
+		GeschaeftGrNr:   "2025/106",
+		Schlussresultat: "Auswahl A",
+		AnzahlAbwesend:  intPtr(10),
+		AnzahlA:         intPtr(74),
+		AnzahlB:         intPtr(28),
+		AnzahlC:         intPtr(13),
 	}
+	v.Stimmabgaben.Stimmabgabe = makeAuswahlStimmabgaben([]struct {
+		Name         string
+		A, B, C, Abw int
+	}{
+		{"SP", 30, 0, 0, 2},
+		{"FDP", 18, 2, 0, 2},
+		{"SVP", 0, 18, 0, 2},
+		{"GLP", 14, 0, 0, 1},
+		{"Grüne", 0, 0, 13, 1},
+		{"Die Mitte", 12, 0, 0, 1},
+		{"AL", 0, 8, 0, 1},
+	})
+	return []zurichapi.Abstimmung{v}
 }
 
 // MixedMultiVote returns one Ja/Nein vote + one Auswahl vote in the same group.
