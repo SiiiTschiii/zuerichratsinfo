@@ -44,6 +44,7 @@ func main() {
 
 	// Load rate limit configuration from environment
 	maxVotesToCheck := getEnvInt("MAX_VOTES_TO_CHECK", 50)
+	maxVoteAgeDays := getEnvInt("MAX_VOTE_AGE_DAYS", 90)
 	maxXPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
 	maxBskyPostsPerRun := getEnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10)
 	xMaxChars := getEnvInt("X_MAX_CHARS", x.DefaultMaxChars)
@@ -85,7 +86,7 @@ func main() {
 			fmt.Printf("Loaded X vote log: %d votes already posted\n", voteLog.Count())
 		}
 
-		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
+		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck, maxVoteAgeDays)
 		if err != nil {
 			log.Fatalf("Error preparing votes for X: %v", err)
 		}
@@ -135,7 +136,7 @@ func main() {
 			fmt.Printf("Loaded Bluesky vote log: %d votes already posted\n", voteLog.Count())
 		}
 
-		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
+		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck, maxVoteAgeDays)
 		if err != nil {
 			log.Fatalf("Error preparing votes for Bluesky: %v", err)
 		}

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
@@ -18,10 +19,12 @@ var ErrUnsupportedVoteType = errors.New("unsupported vote type")
 // PrepareVoteGroups prepares vote groups for posting
 // It fetches recent votes, filters out already posted ones, and groups them by Geschäft
 // This is platform-agnostic - the same preparation for all platforms
+// maxAgeDays limits how old a vote's SitzungDatum can be (0 = no limit).
 func PrepareVoteGroups(
 	client *zurichapi.Client,
 	voteLog *votelog.VoteLog,
 	maxVotesToFetch int,
+	maxAgeDays int,
 ) ([][]zurichapi.Abstimmung, error) {
 	// Fetch recent votes
 	votes, err := client.FetchRecentAbstimmungen(maxVotesToFetch)
@@ -36,6 +39,32 @@ func PrepareVoteGroups(
 	// Filter out already posted votes BEFORE grouping
 	// This is more efficient than grouping first
 	unpostedVotes := filterUnpostedVotes(votes, voteLog)
+
+	// Filter out votes with a SitzungDatum older than maxAgeDays to prevent
+	// accidentally posting old votes that get re-indexed by the API.
+	if maxAgeDays > 0 {
+		cutoff := time.Now().AddDate(0, 0, -maxAgeDays)
+		var recent []zurichapi.Abstimmung
+		for _, v := range unpostedVotes {
+			dt, err := time.Parse("2006-01-02 15:04:05", v.SitzungDatum)
+			if err != nil {
+				// If we can't parse the date, try date-only
+				dt, err = time.Parse("2006-01-02", v.SitzungDatum[:10])
+			}
+			if err != nil {
+				// If still unparseable, keep the vote to be safe
+				recent = append(recent, v)
+				continue
+			}
+			if dt.Before(cutoff) {
+				log.Printf("⚠️  Skipping old vote %s (SitzungDatum %s, older than %d days)",
+					v.OBJGUID, v.SitzungDatum[:10], maxAgeDays)
+				continue
+			}
+			recent = append(recent, v)
+		}
+		unpostedVotes = recent
+	}
 
 	if len(unpostedVotes) == 0 {
 		return nil, nil

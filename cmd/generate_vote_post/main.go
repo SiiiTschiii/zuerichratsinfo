@@ -43,7 +43,7 @@ func main() {
 	emptyLog := votelog.NewEmpty(votelog.PlatformX)
 
 	// Prepare votes (same logic as main.go)
-	groups, err := voteposting.PrepareVoteGroups(client, emptyLog, *fetchLimit)
+	groups, err := voteposting.PrepareVoteGroups(client, emptyLog, *fetchLimit, 0)
 	if err != nil {
 		log.Fatalf("Error preparing votes: %v", err)
 	}

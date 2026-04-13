@@ -16,14 +16,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	"os"
+	"strconv"
+
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
-	"os"
-	"strconv"
 )
 
 func main() {
@@ -73,7 +74,7 @@ func main() {
 		}
 		fmt.Printf("Loaded X vote log: %d votes already posted\n", voteLog.Count())
 
-		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
+		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck, 0)
 		if err != nil {
 			log.Fatalf("Error preparing votes for X: %v", err)
 		}
@@ -100,7 +101,7 @@ func main() {
 		}
 		fmt.Printf("Loaded Bluesky vote log: %d votes already posted\n", voteLog.Count())
 
-		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck)
+		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck, 0)
 		if err != nil {
 			log.Fatalf("Error preparing votes for Bluesky: %v", err)
 		}
