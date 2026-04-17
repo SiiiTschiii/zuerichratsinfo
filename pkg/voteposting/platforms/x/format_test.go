@@ -375,7 +375,24 @@ func TestFormatVoteThread_MultiVoteWithFraktion(t *testing.T) {
 }
 
 func TestFormatVoteThread_NoStimmabgaben(t *testing.T) {
-	votes := testfixtures.SingleVoteAbgelehnt() // no Stimmabgaben
+	// Use a vote with no Stimmabgaben to test the no-Fraktion path
+	votes := []zurichapi.Abstimmung{
+		{
+			OBJGUID:          "objguid-nostimm",
+			SitzungGuid:      "sitzung-nostimm",
+			TraktandumGuid:   "trakt-nostimm",
+			GeschaeftGuid:    "geschaeft-nostimm",
+			SitzungDatum:     "2025-06-15",
+			TraktandumTitel:  "Test ohne Stimmabgaben",
+			GeschaeftTitel:   "Test ohne Stimmabgaben",
+			GeschaeftGrNr:    "2025/999",
+			Schlussresultat:  "abgelehnt",
+			AnzahlJa:         intPtr(20),
+			AnzahlNein:       intPtr(95),
+			AnzahlEnthaltung: intPtr(5),
+			AnzahlAbwesend:   intPtr(5),
+		},
+	}
 	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
 
 	full := allThreadText(thread)

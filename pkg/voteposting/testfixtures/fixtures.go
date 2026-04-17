@@ -104,9 +104,20 @@ func SingleVoteAngenommen() []zurichapi.Abstimmung {
 
 // SingleVoteAbgelehnt returns a single rejected Antrag (20/95/5/5).
 func SingleVoteAbgelehnt() []zurichapi.Abstimmung {
-	return []zurichapi.Abstimmung{
-		vote("abgelehnt-1", "Antrag: Festsetzung der Selnaustrasse", "2025/101", "abgelehnt", 20, 95, 5, 5),
-	}
+	v := vote("abgelehnt-1", "Antrag: Festsetzung der Selnaustrasse", "2025/101", "abgelehnt", 20, 95, 5, 5)
+	v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 0, 30, 2, 1},
+		{"SVP", 0, 18, 0, 1},
+		{"FDP", 0, 20, 0, 1},
+		{"Grüne", 0, 15, 3, 0},
+		{"GLP", 8, 7, 0, 1},
+		{"Die Mitte", 12, 0, 0, 1},
+		{"AL", 0, 5, 0, 0},
+	})
+	return []zurichapi.Abstimmung{v}
 }
 
 // LongTitleTruncation returns a vote with a ~300-char title that triggers truncation.
@@ -116,9 +127,20 @@ func LongTitleTruncation() []zurichapi.Abstimmung {
 		"und Neugestaltung des Hauptbahnhofs Zürich mit unterirdischer Durchmesserlinie " +
 		"und ergänzenden Massnahmen zur Verbesserung der Verkehrsinfrastruktur im Grossraum Zürich " +
 		"inklusive der notwendigen Anpassungen an die bestehende urbane Planung"
-	return []zurichapi.Abstimmung{
-		vote("longtrunc-1", longTitle, "2025/102", "angenommen", 80, 30, 5, 10),
-	}
+	v := vote("longtrunc-1", longTitle, "2025/102", "angenommen", 80, 30, 5, 10)
+	v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 30, 0, 2, 2},
+		{"SVP", 0, 18, 0, 1},
+		{"FDP", 18, 0, 0, 2},
+		{"Grüne", 14, 0, 3, 1},
+		{"GLP", 10, 5, 0, 2},
+		{"Die Mitte", 8, 5, 0, 1},
+		{"AL", 0, 2, 0, 1},
+	})
+	return []zurichapi.Abstimmung{v}
 }
 
 // MultiVoteGroup returns 2 votes from the same Geschäft: Einleitungsartikel + Schlussabstimmung.
@@ -185,30 +207,41 @@ func MultiVoteGroup() []zurichapi.Abstimmung {
 // GenericAntragFallback returns a vote where TraktandumTitel is "Antrag 1."
 // which should trigger fallback to GeschaeftTitel.
 func GenericAntragFallback() []zurichapi.Abstimmung {
-	return []zurichapi.Abstimmung{
-		{
-			OBJGUID:          "objguid-antrag-1",
-			SitzungGuid:      "sitzung-antrag",
-			TraktandumGuid:   "trakt-antrag",
-			GeschaeftGuid:    "geschaeft-antrag",
-			SitzungDatum:     "2025-06-15",
-			TraktandumTitel:  "Antrag 1.",
-			GeschaeftTitel:   "Postulat von Max Müller (FDP): Bessere Veloinfrastruktur",
-			GeschaeftGrNr:    "2025/200",
-			Schlussresultat:  "angenommen",
-			AnzahlJa:         intPtr(80),
-			AnzahlNein:       intPtr(35),
-			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:   intPtr(5),
-		},
+	v := zurichapi.Abstimmung{
+		OBJGUID:          "objguid-antrag-1",
+		SitzungGuid:      "sitzung-antrag",
+		TraktandumGuid:   "trakt-antrag",
+		GeschaeftGuid:    "geschaeft-antrag",
+		SitzungDatum:     "2025-06-15",
+		TraktandumTitel:  "Antrag 1.",
+		GeschaeftTitel:   "Postulat von Max Müller (FDP): Bessere Veloinfrastruktur",
+		GeschaeftGrNr:    "2025/200",
+		Schlussresultat:  "angenommen",
+		AnzahlJa:         intPtr(80),
+		AnzahlNein:       intPtr(35),
+		AnzahlEnthaltung: intPtr(5),
+		AnzahlAbwesend:   intPtr(5),
 	}
+	v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 28, 0, 2, 1},
+		{"SVP", 0, 20, 0, 0},
+		{"FDP", 20, 0, 0, 1},
+		{"Grüne", 12, 5, 3, 0},
+		{"GLP", 12, 3, 0, 1},
+		{"Die Mitte", 8, 5, 0, 1},
+		{"AL", 0, 2, 0, 1},
+	})
+	return []zurichapi.Abstimmung{v}
 }
 
 // TenVoteStressTest returns 10 votes forcing multiple reply posts.
 func TenVoteStressTest() []zurichapi.Abstimmung {
 	var votes []zurichapi.Abstimmung
 	for i := 0; i < 10; i++ {
-		votes = append(votes, zurichapi.Abstimmung{
+		v := zurichapi.Abstimmung{
 			OBJGUID:          fmt.Sprintf("objguid-stress-%d", i),
 			SitzungGuid:      "sitzung-stress",
 			TraktandumGuid:   "trakt-stress",
@@ -223,30 +256,54 @@ func TenVoteStressTest() []zurichapi.Abstimmung {
 			AnzahlNein:       intPtr(30 - i),
 			AnzahlEnthaltung: intPtr(5),
 			AnzahlAbwesend:   intPtr(10),
+		}
+		v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+			Name                string
+			Ja, Nein, Enth, Abw int
+		}{
+			{"SP", 25 + i, 0, 2, 2},
+			{"SVP", 0, 15 - i, 0, 1},
+			{"FDP", 18, 2, 0, 2},
+			{"Grüne", 15, 0, 3, 1},
+			{"GLP", 12 + i, 5 - i, 0, 2},
+			{"Die Mitte", 10, 5, 0, 1},
+			{"AL", 0, 3, 0, 1},
 		})
+		votes = append(votes, v)
 	}
 	return votes
 }
 
 // VoteWithMentions returns a vote with a politician name that triggers @mention matching.
 func VoteWithMentions() []zurichapi.Abstimmung {
-	return []zurichapi.Abstimmung{
-		{
-			OBJGUID:          "objguid-mention-1",
-			SitzungGuid:      "sitzung-mention",
-			TraktandumGuid:   "trakt-mention",
-			GeschaeftGuid:    "geschaeft-mention",
-			SitzungDatum:     "2025-06-15",
-			TraktandumTitel:  "Postulat von Anna Graff (SP): Bessere Sicherheit",
-			GeschaeftTitel:   "Bessere Sicherheit",
-			GeschaeftGrNr:    "2025/105",
-			Schlussresultat:  "angenommen",
-			AnzahlJa:         intPtr(80),
-			AnzahlNein:       intPtr(30),
-			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:   intPtr(10),
-		},
+	v := zurichapi.Abstimmung{
+		OBJGUID:          "objguid-mention-1",
+		SitzungGuid:      "sitzung-mention",
+		TraktandumGuid:   "trakt-mention",
+		GeschaeftGuid:    "geschaeft-mention",
+		SitzungDatum:     "2025-06-15",
+		TraktandumTitel:  "Postulat von Anna Graff (SP): Bessere Sicherheit",
+		GeschaeftTitel:   "Bessere Sicherheit",
+		GeschaeftGrNr:    "2025/105",
+		Schlussresultat:  "angenommen",
+		AnzahlJa:         intPtr(80),
+		AnzahlNein:       intPtr(30),
+		AnzahlEnthaltung: intPtr(5),
+		AnzahlAbwesend:   intPtr(10),
 	}
+	v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 32, 0, 0, 2},
+		{"SVP", 0, 18, 0, 1},
+		{"FDP", 15, 5, 0, 2},
+		{"Grüne", 16, 0, 2, 1},
+		{"GLP", 10, 4, 3, 2},
+		{"Die Mitte", 7, 3, 0, 1},
+		{"AL", 0, 0, 0, 1},
+	})
+	return []zurichapi.Abstimmung{v}
 }
 
 // AuswahlVote returns a single Auswahl vote with A/B/C counts (no ✅/❌ prefix).
@@ -283,62 +340,110 @@ func AuswahlVote() []zurichapi.Abstimmung {
 
 // MixedMultiVote returns one Ja/Nein vote + one Auswahl vote in the same group.
 func MixedMultiVote() []zurichapi.Abstimmung {
-	return []zurichapi.Abstimmung{
-		{
-			OBJGUID:          "objguid-mixed-1",
-			SitzungGuid:      "sitzung-mixed",
-			TraktandumGuid:   "trakt-mixed",
-			GeschaeftGuid:    "geschaeft-mixed",
-			SitzungDatum:     "2026-02-25",
-			TraktandumTitel:  "Weisung: BZO",
-			GeschaeftTitel:   "Weisung: BZO",
-			GeschaeftGrNr:    "2025/107",
-			Abstimmungstitel: "Änderungsantrag 9",
-			Schlussresultat:  "angenommen",
-			AnzahlJa:         intPtr(62),
-			AnzahlNein:       intPtr(51),
-			AnzahlEnthaltung: intPtr(0),
-			AnzahlAbwesend:   intPtr(12),
-		},
-		{
-			OBJGUID:          "objguid-mixed-2",
-			SitzungGuid:      "sitzung-mixed",
-			TraktandumGuid:   "trakt-mixed",
-			GeschaeftGuid:    "geschaeft-mixed",
-			SitzungDatum:     "2026-02-25",
-			TraktandumTitel:  "Weisung: BZO",
-			GeschaeftTitel:   "Weisung: BZO",
-			GeschaeftGrNr:    "2025/107",
-			Abstimmungstitel: "Änderungsantrag 17, 1. Abstimmung",
-			Schlussresultat:  "Auswahl A",
-			AnzahlAbwesend:   intPtr(11),
-			AnzahlA:          intPtr(50),
-			AnzahlB:          intPtr(24),
-			AnzahlC:          intPtr(40),
-		},
+	v1 := zurichapi.Abstimmung{
+		OBJGUID:          "objguid-mixed-1",
+		SitzungGuid:      "sitzung-mixed",
+		TraktandumGuid:   "trakt-mixed",
+		GeschaeftGuid:    "geschaeft-mixed",
+		SitzungDatum:     "2026-02-25",
+		TraktandumTitel:  "Weisung: BZO",
+		GeschaeftTitel:   "Weisung: BZO",
+		GeschaeftGrNr:    "2025/107",
+		Abstimmungstitel: "Änderungsantrag 9",
+		Schlussresultat:  "angenommen",
+		AnzahlJa:         intPtr(62),
+		AnzahlNein:       intPtr(51),
+		AnzahlEnthaltung: intPtr(0),
+		AnzahlAbwesend:   intPtr(12),
 	}
+	v1.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 30, 0, 0, 2},
+		{"SVP", 0, 18, 0, 2},
+		{"FDP", 0, 20, 0, 2},
+		{"Grüne", 14, 0, 0, 1},
+		{"GLP", 10, 5, 0, 2},
+		{"Die Mitte", 8, 5, 0, 2},
+		{"AL", 0, 3, 0, 1},
+	})
+	v2 := zurichapi.Abstimmung{
+		OBJGUID:          "objguid-mixed-2",
+		SitzungGuid:      "sitzung-mixed",
+		TraktandumGuid:   "trakt-mixed",
+		GeschaeftGuid:    "geschaeft-mixed",
+		SitzungDatum:     "2026-02-25",
+		TraktandumTitel:  "Weisung: BZO",
+		GeschaeftTitel:   "Weisung: BZO",
+		GeschaeftGrNr:    "2025/107",
+		Abstimmungstitel: "Änderungsantrag 17, 1. Abstimmung",
+		Schlussresultat:  "Auswahl A",
+		AnzahlAbwesend:   intPtr(11),
+		AnzahlA:          intPtr(50),
+		AnzahlB:          intPtr(24),
+		AnzahlC:          intPtr(40),
+	}
+	v2.Stimmabgaben.Stimmabgabe = makeAuswahlStimmabgaben([]struct {
+		Name         string
+		A, B, C, Abw int
+	}{
+		{"SP", 28, 0, 0, 2},
+		{"SVP", 0, 0, 20, 2},
+		{"FDP", 0, 18, 0, 2},
+		{"Grüne", 10, 0, 5, 1},
+		{"GLP", 8, 6, 0, 2},
+		{"Die Mitte", 4, 0, 10, 1},
+		{"AL", 0, 0, 5, 1},
+	})
+	return []zurichapi.Abstimmung{v1, v2}
 }
 
 // PostulatWithGrNrPrefix returns a Postulat where the title starts with "2025/100 Postulat von ..."
 // which tests GrNr stripping logic.
 func PostulatWithGrNrPrefix() []zurichapi.Abstimmung {
-	return []zurichapi.Abstimmung{
-		{
-			OBJGUID:          "objguid-grnr-1",
-			SitzungGuid:      "sitzung-grnr",
-			TraktandumGuid:   "trakt-grnr",
-			GeschaeftGuid:    "geschaeft-grnr",
-			SitzungDatum:     "2025-11-26",
-			TraktandumTitel:  "2025/100 Postulat von Reto Brüesch (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche",
-			GeschaeftTitel:   "Anpassung der Mindest- und Höchstarealfläche",
-			GeschaeftGrNr:    "2025/100",
-			Schlussresultat:  "abgelehnt",
-			AnzahlJa:         intPtr(21),
-			AnzahlNein:       intPtr(38),
-			AnzahlEnthaltung: intPtr(56),
-			AnzahlAbwesend:   intPtr(10),
-		},
+	v := zurichapi.Abstimmung{
+		OBJGUID:          "objguid-grnr-1",
+		SitzungGuid:      "sitzung-grnr",
+		TraktandumGuid:   "trakt-grnr",
+		GeschaeftGuid:    "geschaeft-grnr",
+		SitzungDatum:     "2025-11-26",
+		TraktandumTitel:  "2025/100 Postulat von Reto Brüesch (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche",
+		GeschaeftTitel:   "Anpassung der Mindest- und Höchstarealfläche",
+		GeschaeftGrNr:    "2025/100",
+		Schlussresultat:  "abgelehnt",
+		AnzahlJa:         intPtr(21),
+		AnzahlNein:       intPtr(38),
+		AnzahlEnthaltung: intPtr(56),
+		AnzahlAbwesend:   intPtr(10),
 	}
+	v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 0, 0, 30, 2},
+		{"SVP", 18, 0, 0, 1},
+		{"FDP", 0, 20, 0, 2},
+		{"Grüne", 0, 0, 15, 1},
+		{"GLP", 3, 10, 5, 2},
+		{"Die Mitte", 0, 8, 6, 1},
+		{"AL", 0, 0, 0, 1},
+	})
+	return []zurichapi.Abstimmung{v}
+}
+
+// FixtureNames returns fixture names in definition order.
+var FixtureNames = []string{
+	"single-vote-angenommen",
+	"single-vote-abgelehnt",
+	"long-title-truncation",
+	"multi-vote-group",
+	"generic-antrag-fallback",
+	"ten-vote-stress-test",
+	"vote-with-mentions",
+	"auswahl-vote",
+	"mixed-multi-vote",
+	"postulat-with-grnr-prefix",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
