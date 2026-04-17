@@ -86,7 +86,7 @@ func vote(guid, title, grNr, result string, ja, nein, enth, abw int) zurichapi.A
 
 // SingleVoteAngenommen returns a single accepted Postulat (90/30/0/5).
 func SingleVoteAngenommen() []zurichapi.Abstimmung {
-	v := vote("angenommen-1", "Postulat von Reto Brüesch (SVP): Anpassung der Mindestfläche", "2025/100", "angenommen", 90, 30, 0, 5)
+	v := vote("angenommen-1", "Postulat von Reto Brüesch (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung", "2025/100", "angenommen", 90, 30, 0, 5)
 	v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
 		Name                string
 		Ja, Nein, Enth, Abw int
@@ -104,7 +104,7 @@ func SingleVoteAngenommen() []zurichapi.Abstimmung {
 
 // SingleVoteAbgelehnt returns a single rejected Antrag (20/95/5/5).
 func SingleVoteAbgelehnt() []zurichapi.Abstimmung {
-	v := vote("abgelehnt-1", "Antrag: Festsetzung der Selnaustrasse", "2025/101", "abgelehnt", 20, 95, 5, 5)
+	v := vote("abgelehnt-1", "Motion von Liv Mahrer (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs", "2025/101", "abgelehnt", 20, 95, 5, 5)
 	v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
 		Name                string
 		Ja, Nein, Enth, Abw int
@@ -151,8 +151,8 @@ func MultiVoteGroup() []zurichapi.Abstimmung {
 		TraktandumGuid:   "trakt-multi",
 		GeschaeftGuid:    "geschaeft-multi",
 		SitzungDatum:     "2025-06-15",
-		TraktandumTitel:  "Gesamtrevision der Gemeindeordnung",
-		GeschaeftTitel:   "Gesamtrevision der Gemeindeordnung",
+		TraktandumTitel:  "Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung",
+		GeschaeftTitel:   "Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung",
 		GeschaeftGrNr:    "2025/103",
 		Abstimmungstitel: "Einleitungsartikel",
 		Schlussresultat:  "angenommen",
@@ -179,8 +179,8 @@ func MultiVoteGroup() []zurichapi.Abstimmung {
 		TraktandumGuid:   "trakt-multi",
 		GeschaeftGuid:    "geschaeft-multi",
 		SitzungDatum:     "2025-06-15",
-		TraktandumTitel:  "Gesamtrevision der Gemeindeordnung",
-		GeschaeftTitel:   "Gesamtrevision der Gemeindeordnung",
+		TraktandumTitel:  "Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung",
+		GeschaeftTitel:   "Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung",
 		GeschaeftGrNr:    "2025/103",
 		Abstimmungstitel: "Schlussabstimmung",
 		Schlussresultat:  "abgelehnt",
@@ -214,7 +214,7 @@ func GenericAntragFallback() []zurichapi.Abstimmung {
 		GeschaeftGuid:    "geschaeft-antrag",
 		SitzungDatum:     "2025-06-15",
 		TraktandumTitel:  "Antrag 1.",
-		GeschaeftTitel:   "Postulat von Max Müller (FDP): Bessere Veloinfrastruktur",
+		GeschaeftTitel:   "Postulat von Max Müller (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere",
 		GeschaeftGrNr:    "2025/200",
 		Schlussresultat:  "angenommen",
 		AnzahlJa:         intPtr(80),
@@ -247,8 +247,8 @@ func TenVoteStressTest() []zurichapi.Abstimmung {
 			TraktandumGuid:   "trakt-stress",
 			GeschaeftGuid:    "geschaeft-stress",
 			SitzungDatum:     "2025-06-15",
-			TraktandumTitel:  "Totalrevision der Bau- und Zonenordnung",
-			GeschaeftTitel:   "Totalrevision der Bau- und Zonenordnung",
+		TraktandumTitel:  "Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht",
+		GeschaeftTitel:   "Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht",
 			GeschaeftGrNr:    "2025/104",
 			Abstimmungstitel: fmt.Sprintf("Ziffer %c", 'A'+i),
 			Schlussresultat:  "angenommen",
@@ -282,8 +282,8 @@ func VoteWithMentions() []zurichapi.Abstimmung {
 		TraktandumGuid:   "trakt-mention",
 		GeschaeftGuid:    "geschaeft-mention",
 		SitzungDatum:     "2025-06-15",
-		TraktandumTitel:  "Postulat von Anna Graff (SP): Bessere Sicherheit",
-		GeschaeftTitel:   "Bessere Sicherheit",
+		TraktandumTitel:  "Postulat von Anna Graff (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof",
+		GeschaeftTitel:   "Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof",
 		GeschaeftGrNr:    "2025/105",
 		Schlussresultat:  "angenommen",
 		AnzahlJa:         intPtr(80),
@@ -314,8 +314,8 @@ func AuswahlVote() []zurichapi.Abstimmung {
 		TraktandumGuid:  "trakt-auswahl",
 		GeschaeftGuid:   "geschaeft-auswahl",
 		SitzungDatum:    "2026-03-04",
-		TraktandumTitel: "Weisung: Jugendwohnkredit 2025",
-		GeschaeftTitel:  "Weisung: Jugendwohnkredit 2025",
+		TraktandumTitel: "Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots",
+		GeschaeftTitel:  "Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots",
 		GeschaeftGrNr:   "2025/106",
 		Schlussresultat: "Auswahl A",
 		AnzahlAbwesend:  intPtr(10),
@@ -346,8 +346,8 @@ func MixedMultiVote() []zurichapi.Abstimmung {
 		TraktandumGuid:   "trakt-mixed",
 		GeschaeftGuid:    "geschaeft-mixed",
 		SitzungDatum:     "2026-02-25",
-		TraktandumTitel:  "Weisung: BZO",
-		GeschaeftTitel:   "Weisung: BZO",
+		TraktandumTitel:  "Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen",
+		GeschaeftTitel:   "Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen",
 		GeschaeftGrNr:    "2025/107",
 		Abstimmungstitel: "Änderungsantrag 9",
 		Schlussresultat:  "angenommen",
@@ -374,8 +374,8 @@ func MixedMultiVote() []zurichapi.Abstimmung {
 		TraktandumGuid:   "trakt-mixed",
 		GeschaeftGuid:    "geschaeft-mixed",
 		SitzungDatum:     "2026-02-25",
-		TraktandumTitel:  "Weisung: BZO",
-		GeschaeftTitel:   "Weisung: BZO",
+		TraktandumTitel:  "Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen",
+		GeschaeftTitel:   "Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen",
 		GeschaeftGrNr:    "2025/107",
 		Abstimmungstitel: "Änderungsantrag 17, 1. Abstimmung",
 		Schlussresultat:  "Auswahl A",
