@@ -2,7 +2,6 @@ name: Validate Contacts
 
 on:
   push:
-    branches: [main]
     paths:
       - "data/contacts.yaml"
       - "cmd/validate_contacts/**"
@@ -10,7 +9,6 @@ on:
       - "README.md"
       - ".github/workflows/validate-contacts.yml"
   pull_request:
-    branches: [main]
     paths:
       - "data/contacts.yaml"
       - "cmd/validate_contacts/**"

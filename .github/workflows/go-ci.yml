@@ -2,7 +2,6 @@ name: Go CI
 
 on:
   push:
-    branches: [main]
     paths:
       - "**.go"
       - "go.mod"
@@ -10,7 +9,6 @@ on:
       - ".golangci.yml"
       - ".github/workflows/go-ci.yml"
   pull_request:
-    branches: [main]
     paths:
       - "**.go"
       - "go.mod"
