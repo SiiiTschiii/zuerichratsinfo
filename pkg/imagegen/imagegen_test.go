@@ -35,8 +35,8 @@ func TestGenerateCarousel_ValidJPEG(t *testing.T) {
 					t.Errorf("image %d: not valid JPEG: %v", i, err)
 					continue
 				}
-				if cfg.Width != 1080 || cfg.Height != 1080 {
-					t.Errorf("image %d: expected 1080x1080, got %dx%d", i, cfg.Width, cfg.Height)
+				if cfg.Width != 1080 || cfg.Height != 1350 {
+					t.Errorf("image %d: expected 1080x1350, got %dx%d", i, cfg.Width, cfg.Height)
 				}
 				// Check file size < 500KB
 				if len(imgData) > 500*1024 {
