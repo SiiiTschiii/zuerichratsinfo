@@ -30,7 +30,7 @@ A `pkg/imagegen/` package that generates carousel JPEG images from vote data, in
 
 ---
 
-## Phase 1: Image Generation Exploration (local)
+## ✅ Phase 1: Image Generation Exploration (local)
 
 ### Overview
 
@@ -100,27 +100,27 @@ Add to `go.mod`:
    go run cmd/generate_vote_image/main.go -fixture single-angenommen -out out/images
    ```
 2. **Open generated JPEGs** — verify:
-   - [ ] Title card: header, date, result emoji, wrapped title text, colored background
-   - [ ] Result card: vote counts displayed clearly, Fraktion breakdown below
-   - [ ] All images in a group share the same background color
-   - [ ] Different fixtures get different colors
-   - [ ] Text is readable at 1080×1080 (not too small, not clipped)
-   - [ ] Shadow/outline effect looks good
+   - [x] Title card: header, date, result emoji, wrapped title text, colored background
+   - [x] Result card: vote counts displayed clearly, Fraktion breakdown below
+   - [x] All images in a group share the same background color
+   - [x] Different fixtures get different colors
+   - [x] Text is readable at 1080×1080 (not too small, not clipped)
+   - [x] Shadow/outline effect looks good
 3. **Test all fixture types:**
 
    ```bash
    go run cmd/generate_vote_image/main.go -fixture all -out out/images
    ```
 
-   - [ ] Single vote angenommen
-   - [ ] Single vote abgelehnt
-   - [ ] Long title (truncation/wrapping works)
-   - [ ] Multi-vote group (multiple result images)
-   - [ ] Auswahl vote (A/B/C layout)
+   - [x] Single vote angenommen
+   - [x] Single vote abgelehnt
+   - [x] Long title (truncation/wrapping works)
+   - [x] Multi-vote group (multiple result images)
+   - [x] Auswahl vote (A/B/C layout)
 
 4. **Verify JPEG compliance:**
-   - [ ] Files open in Preview/browser without errors
-   - [ ] File size reasonable (< 500 KB per image at quality 90)
+   - [x] Files open in Preview/browser without errors
+   - [x] File size reasonable (< 500 KB per image at quality 90)
 
 ### Automated Verification
 
@@ -132,7 +132,7 @@ Add to `go.mod`:
 
 ---
 
-## Phase 2: Integrate imagegen into Instagram Platform (GitHub Issue)
+## ✅ Phase 2: Integrate imagegen into Instagram Platform (GitHub Issue)
 
 > **GitHub Issue Title**: Implement Instagram platform with image carousel formatting
 >
@@ -175,10 +175,10 @@ Create `pkg/voteposting/platforms/instagram/` implementing the `Platform` interf
    go run cmd/generate_vote_image/main.go -fixture single-angenommen -platform instagram
    ```
 
-   - [ ] Caption text includes full vote details + link
-   - [ ] Caption text does not exceed Instagram's 2,200 character limit
-   - [ ] Number of images matches expected carousel structure (title + result/Fraktion per vote)
-   - [ ] Multi-vote fixture respects 10-image carousel cap
+   - [x] Caption text includes full vote details + link
+   - [x] Caption text does not exceed Instagram's 2,200 character limit
+   - [x] Number of images matches expected carousel structure (title + result/Fraktion per vote)
+   - [x] Multi-vote fixture respects 10-image carousel cap
 
 2. **Dry-run via existing pipeline:**
 
@@ -186,14 +186,14 @@ Create `pkg/voteposting/platforms/instagram/` implementing the `Platform` interf
    go run cmd/post_fixture/main.go -fixture single-angenommen -platform instagram
    ```
 
-   - [ ] Preview output shows caption + "would post N images"
-   - [ ] No errors, no real API calls
+   - [x] Preview output shows caption + "would post N images"
+   - [x] No errors, no real API calls
 
 ### Automated Verification
 
-- [ ] `go test ./pkg/voteposting/platforms/instagram/...` — format tests: correct image count, caption content, character limits
-- [ ] `go test ./...` — all existing tests still pass
-- [ ] `go vet ./...` passes
+- [x] `go test ./pkg/voteposting/platforms/instagram/...` — format tests: correct image count, caption content, character limits
+- [x] `go test ./...` — all existing tests still pass
+- [x] `go vet ./...` passes
 
 ---
 
