@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -15,6 +16,7 @@ import (
 func main() {
 	fixture := flag.String("fixture", "all", "fixture name from AllFixtures() keys, or 'all'")
 	outDir := flag.String("out", "out/images", "output directory for generated JPEGs")
+	platform := flag.String("platform", "", "optional: 'instagram' to preview formatted caption alongside images")
 	flag.Parse()
 
 	allFixtures := testfixtures.AllFixtures()
@@ -58,6 +60,18 @@ func main() {
 				continue
 			}
 			fmt.Printf("Wrote %s (%d bytes)\n", path, len(imgData))
+		}
+
+		// If Instagram platform is requested, also show formatted caption
+		if *platform == "instagram" {
+			content, err := instagram.FormatCarousel(votes)
+			if err != nil {
+				log.Printf("Error formatting Instagram content for %s: %v", name, err)
+				continue
+			}
+			fmt.Printf("\n━━━ Instagram preview: %s ━━━\n", name)
+			fmt.Printf("📸 %d image(s), caption (%d chars):\n", len(content.Images), len([]rune(content.Caption)))
+			fmt.Printf("%s\n\n", content.Caption)
 		}
 	}
 }

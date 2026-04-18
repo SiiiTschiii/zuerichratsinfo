@@ -283,11 +283,6 @@ func (c *layoutCursor) gap(face font.Face, fraction float64) {
 	c.y += int(float64(lineHeight(face)) * fraction)
 }
 
-// gapPx adds an explicit pixel gap (for separators, padding).
-func (c *layoutCursor) gapPx(px int) {
-	c.y += px
-}
-
 // fontSet holds all preloaded font faces needed for image generation.
 type fontSet struct {
 	verdict     font.Face // gobold 64
@@ -361,7 +356,7 @@ func loadFontSet() (*fontSet, error) {
 func renderCombinedCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) ([]byte, error) {
 	// Dry run to measure content height
 	dry := newCursor(0, imgHeight)
-	titleFace, titleLines, err := layoutCombinedCard(nil, dry, v, bg, fonts)
+	_, _, err := layoutCombinedCard(nil, dry, v, bg, fonts)
 	if err != nil {
 		return nil, err
 	}
@@ -374,9 +369,7 @@ func renderCombinedCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) 
 	img := newImage(bg)
 
 	cur := newCursor(startY, imgHeight)
-	titleFace, titleLines, err = layoutCombinedCard(img, cur, v, bg, fonts)
-	_ = titleFace
-	_ = titleLines
+	_, _, err = layoutCombinedCard(img, cur, v, bg, fonts)
 	if err != nil {
 		return nil, err
 	}
