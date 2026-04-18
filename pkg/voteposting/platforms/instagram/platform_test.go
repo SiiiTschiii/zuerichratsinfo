@@ -1,8 +1,11 @@
 package instagram
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 )
@@ -81,3 +84,205 @@ func TestPlatform_PostWrongContentType(t *testing.T) {
 type mockContent struct{}
 
 func (m mockContent) String() string { return "mock" }
+
+func TestPlatform_StubMode(t *testing.T) {
+	p := NewInstagramPlatform(5)
+	if !p.stubMode {
+		t.Error("expected stub mode when created without credentials")
+	}
+}
+
+func TestPlatform_RealPostFlow(t *testing.T) {
+	// Create a platform with injected mock functions to test the full posting flow
+	p := NewInstagramPlatform(5)
+	p.stubMode = false
+	p.sleepFunc = func(_ time.Duration) {} // no-op sleep for testing
+
+	var uploadedNames []string
+	var cleanedUpNames []string
+	containerCount := 0
+
+	p.uploadImagesFunc = func(images [][]byte, names []string) ([]string, error) {
+		uploadedNames = names
+		urls := make([]string, len(images))
+		for i := range images {
+			urls[i] = "https://example.github.io/repo/ig-images/" + names[i]
+		}
+		return urls, nil
+	}
+
+	p.createMediaContainerFunc = func(_ string) (string, error) {
+		containerCount++
+		return "child_container", nil
+	}
+
+	p.createCarouselContainerFunc = func(childIDs []string, _ string) (string, error) {
+		if len(childIDs) == 0 {
+			t.Error("expected child IDs in carousel container")
+		}
+		return "carousel_container", nil
+	}
+
+	p.publishContainerFunc = func(_ string) (string, error) {
+		return "media_123", nil
+	}
+
+	p.pollContainerStatusFunc = func(_ string) (string, error) {
+		return igapi.StatusPublished, nil
+	}
+
+	p.cleanupImagesFunc = func(names []string) error {
+		cleanedUpNames = names
+		return nil
+	}
+
+	// Format and post
+	votes := testfixtures.SingleVoteAngenommen()
+	content, err := p.Format(votes)
+	if err != nil {
+		t.Fatalf("Format error: %v", err)
+	}
+
+	shouldContinue, err := p.Post(content)
+	if err != nil {
+		t.Fatalf("Post error: %v", err)
+	}
+	if !shouldContinue {
+		t.Error("expected shouldContinue=true with limit=5")
+	}
+
+	// Verify the full flow was executed
+	if len(uploadedNames) == 0 {
+		t.Error("expected images to be uploaded")
+	}
+	if containerCount == 0 {
+		t.Error("expected media containers to be created")
+	}
+	if len(cleanedUpNames) == 0 {
+		t.Error("expected images to be cleaned up")
+	}
+	// Upload and cleanup should use same names
+	if len(uploadedNames) != len(cleanedUpNames) {
+		t.Errorf("upload names (%d) != cleanup names (%d)", len(uploadedNames), len(cleanedUpNames))
+	}
+}
+
+func TestPlatform_RealPostFlow_UploadError(t *testing.T) {
+	p := NewInstagramPlatform(5)
+	p.stubMode = false
+	p.sleepFunc = func(_ time.Duration) {}
+
+	p.uploadImagesFunc = func(_ [][]byte, _ []string) ([]string, error) {
+		return nil, errTest
+	}
+
+	votes := testfixtures.SingleVoteAngenommen()
+	content, err := p.Format(votes)
+	if err != nil {
+		t.Fatalf("Format error: %v", err)
+	}
+
+	_, err = p.Post(content)
+	if err == nil {
+		t.Fatal("expected error when upload fails")
+	}
+}
+
+func TestPlatform_RealPostFlow_ContainerError(t *testing.T) {
+	p := NewInstagramPlatform(5)
+	p.stubMode = false
+	p.sleepFunc = func(_ time.Duration) {}
+
+	p.uploadImagesFunc = func(images [][]byte, names []string) ([]string, error) {
+		urls := make([]string, len(images))
+		for i := range images {
+			urls[i] = "https://example.com/" + names[i]
+		}
+		return urls, nil
+	}
+
+	p.createMediaContainerFunc = func(_ string) (string, error) {
+		return "", errTest
+	}
+
+	votes := testfixtures.SingleVoteAngenommen()
+	content, err := p.Format(votes)
+	if err != nil {
+		t.Fatalf("Format error: %v", err)
+	}
+
+	_, err = p.Post(content)
+	if err == nil {
+		t.Fatal("expected error when container creation fails")
+	}
+}
+
+func TestPlatform_PollUntilPublished_ImmediateSuccess(t *testing.T) {
+	p := NewInstagramPlatform(5)
+	p.sleepFunc = func(_ time.Duration) {}
+	p.pollContainerStatusFunc = func(_ string) (string, error) {
+		return igapi.StatusPublished, nil
+	}
+
+	err := p.pollUntilPublished("container_1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestPlatform_PollUntilPublished_ErrorStatus(t *testing.T) {
+	p := NewInstagramPlatform(5)
+	p.sleepFunc = func(_ time.Duration) {}
+	p.pollContainerStatusFunc = func(_ string) (string, error) {
+		return igapi.StatusError, nil
+	}
+
+	err := p.pollUntilPublished("container_1")
+	if err == nil {
+		t.Fatal("expected error for ERROR status")
+	}
+}
+
+func TestPlatform_PollUntilPublished_ExpiredStatus(t *testing.T) {
+	p := NewInstagramPlatform(5)
+	p.sleepFunc = func(_ time.Duration) {}
+	p.pollContainerStatusFunc = func(_ string) (string, error) {
+		return igapi.StatusExpired, nil
+	}
+
+	err := p.pollUntilPublished("container_1")
+	if err == nil {
+		t.Fatal("expected error for EXPIRED status")
+	}
+}
+
+func TestPlatform_PollUntilPublished_FinishedStatus(t *testing.T) {
+	p := NewInstagramPlatform(5)
+	p.sleepFunc = func(_ time.Duration) {}
+	p.pollContainerStatusFunc = func(_ string) (string, error) {
+		return igapi.StatusFinished, nil
+	}
+
+	err := p.pollUntilPublished("container_1")
+	if err != nil {
+		t.Fatalf("unexpected error for FINISHED status: %v", err)
+	}
+}
+
+func TestPlatform_NewWithCredentials(t *testing.T) {
+	p := NewInstagramPlatformWithCredentials("ig_user", "token", "gh_token", "owner", "repo", 10)
+	if p.stubMode {
+		t.Error("expected real mode when created with credentials")
+	}
+	if p.MaxPostsPerRun() != 10 {
+		t.Errorf("expected MaxPostsPerRun=10, got %d", p.MaxPostsPerRun())
+	}
+	if p.igClient == nil {
+		t.Error("expected igClient to be set")
+	}
+	if p.imageHoster == nil {
+		t.Error("expected imageHoster to be set")
+	}
+}
+
+var errTest = fmt.Errorf("test error")
