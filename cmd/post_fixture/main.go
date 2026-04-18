@@ -11,6 +11,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
@@ -35,7 +36,11 @@ func main() {
 	bskyEnabled := bskyHandle != "" && bskyPassword != ""
 
 	if !xEnabled && !bskyEnabled {
-		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky.")
+		// Instagram doesn't require credentials (stub mode), so only error if no other platform is enabled
+		// and instagram is not the selected platform
+		if *platform != "instagram" {
+			log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky. For Instagram (stub), use -platform instagram.")
+		}
 	}
 
 	// Filter platforms based on flag
@@ -45,8 +50,8 @@ func main() {
 	if *platform == "bluesky" && !bskyEnabled {
 		log.Fatal("Bluesky credentials required but not set")
 	}
-	if *platform != "all" && *platform != "x" && *platform != "bluesky" {
-		log.Fatalf("Unknown platform %q — use x, bluesky, or all", *platform)
+	if *platform != "all" && *platform != "x" && *platform != "bluesky" && *platform != "instagram" {
+		log.Fatalf("Unknown platform %q — use x, bluesky, instagram, or all", *platform)
 	}
 
 	// Load contacts for tagging
@@ -94,6 +99,12 @@ func main() {
 		plats = append(plats, namedPlatform{
 			name: "Bluesky",
 			plat: bluesky.NewBlueskyPlatform(bskyHandle, bskyPassword, 100, contactMapper),
+		})
+	}
+	if *platform == "all" || *platform == "instagram" {
+		plats = append(plats, namedPlatform{
+			name: "Instagram",
+			plat: instagram.NewInstagramPlatform(100),
 		})
 	}
 
