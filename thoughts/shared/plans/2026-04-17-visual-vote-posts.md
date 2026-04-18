@@ -384,6 +384,12 @@ The hourly GitHub Actions workflow posts new votes to Instagram automatically al
 - Visual inspection of generated images at each phase
 - Real Instagram posts via `post_fixture` before enabling in production pipeline
 
+## Future Improvements
+
+### Instagram Carousel Cap Indicator
+
+The ten-vote-stress-test fixture generates 11 images (1 title + 10 results), which gets capped at 10 by the Instagram carousel limit. The images themselves don't currently indicate there are more votes beyond what's shown. A follow-up enhancement in `pkg/imagegen/` (Phase 1 scope) could add a "see caption for more" indicator on the last card, so viewers know the carousel is truncated.
+
 ## References
 
 - Research: `thoughts/shared/research/2026-04-17-visual-vote-posts.md`
