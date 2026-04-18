@@ -17,42 +17,19 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
+type namedPlatform struct {
+	name string
+	plat platforms.Platform
+}
+
 func main() {
 	fixture := flag.String("fixture", "all", "fixture name from AllFixtures() keys, or 'all'")
-	platform := flag.String("platform", "all", "platform to post to: x, bluesky, or all")
+	platform := flag.String("platform", "all", "platform to post to: x, bluesky, instagram, or all")
 	contactsFile := flag.String("contacts", filepath.Join("data", "contacts_test.yaml"), "contacts YAML file (default: test contacts with fake handles)")
 	maxChars := flag.Int("x-max-chars", x.DefaultMaxChars, "per-post character limit for X (280 for free accounts, 2000 for Premium)")
 	flag.Parse()
 
-	// Load credentials from env
-	apiKey := os.Getenv("X_API_KEY")
-	apiSecret := os.Getenv("X_API_SECRET")
-	accessToken := os.Getenv("X_ACCESS_TOKEN")
-	accessSecret := os.Getenv("X_ACCESS_SECRET")
-	xEnabled := apiKey != "" && apiSecret != "" && accessToken != "" && accessSecret != ""
-
-	bskyHandle := os.Getenv("BLUESKY_HANDLE")
-	bskyPassword := os.Getenv("BLUESKY_PASSWORD")
-	bskyEnabled := bskyHandle != "" && bskyPassword != ""
-
-	if !xEnabled && !bskyEnabled {
-		// Instagram doesn't require credentials (stub mode), so only error if no other platform is enabled
-		// and instagram is not the selected platform
-		if *platform != "instagram" {
-			log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky. Instagram (stub mode, no credentials needed) is available via -platform instagram.")
-		}
-	}
-
-	// Filter platforms based on flag
-	if *platform == "x" && !xEnabled {
-		log.Fatal("X credentials required but not set")
-	}
-	if *platform == "bluesky" && !bskyEnabled {
-		log.Fatal("Bluesky credentials required but not set")
-	}
-	if *platform != "all" && *platform != "x" && *platform != "bluesky" && *platform != "instagram" {
-		log.Fatalf("Unknown platform %q — use x, bluesky, instagram, or all", *platform)
-	}
+	xEnabled, bskyEnabled := checkCredentials(*platform)
 
 	// Load contacts for tagging
 	contactMapper, err := contacts.LoadContacts(*contactsFile)
@@ -61,52 +38,8 @@ func main() {
 		contactMapper = nil
 	}
 
-	// Resolve fixtures
-	allFixtures := testfixtures.AllFixtures()
-	var fixtures map[string][]zurichapi.Abstimmung
-
-	if *fixture == "all" {
-		fixtures = allFixtures
-	} else {
-		votes, ok := allFixtures[*fixture]
-		if !ok {
-			var names []string
-			for k := range allFixtures {
-				names = append(names, k)
-			}
-			sort.Strings(names)
-			log.Fatalf("Unknown fixture %q. Available: %v", *fixture, names)
-		}
-		fixtures = map[string][]zurichapi.Abstimmung{*fixture: votes}
-	}
-
-	// Build platform list
-	type namedPlatform struct {
-		name string
-		plat platforms.Platform
-	}
-	var plats []namedPlatform
-
-	if (*platform == "all" || *platform == "x") && xEnabled {
-		xPlat := x.NewXPlatform(apiKey, apiSecret, accessToken, accessSecret, contactMapper, 100)
-		xPlat.SetMaxChars(*maxChars)
-		plats = append(plats, namedPlatform{
-			name: "X",
-			plat: xPlat,
-		})
-	}
-	if (*platform == "all" || *platform == "bluesky") && bskyEnabled {
-		plats = append(plats, namedPlatform{
-			name: "Bluesky",
-			plat: bluesky.NewBlueskyPlatform(bskyHandle, bskyPassword, 100, contactMapper),
-		})
-	}
-	if *platform == "all" || *platform == "instagram" {
-		plats = append(plats, namedPlatform{
-			name: "Instagram",
-			plat: instagram.NewInstagramPlatform(100),
-		})
-	}
+	fixtures := resolveFixtures(*fixture)
+	plats := buildPlatforms(*platform, xEnabled, bskyEnabled, contactMapper, *maxChars)
 
 	// Post each fixture to each platform
 	fixtureNames := make([]string, 0, len(fixtures))
@@ -137,4 +70,82 @@ func main() {
 			fmt.Printf("Posted %s / %s successfully\n", p.name, name)
 		}
 	}
+}
+
+// checkCredentials validates that the selected platform has credentials configured.
+// Returns whether X and Bluesky are enabled.
+func checkCredentials(platform string) (xEnabled, bskyEnabled bool) {
+	apiKey := os.Getenv("X_API_KEY")
+	apiSecret := os.Getenv("X_API_SECRET")
+	accessToken := os.Getenv("X_ACCESS_TOKEN")
+	accessSecret := os.Getenv("X_ACCESS_SECRET")
+	xEnabled = apiKey != "" && apiSecret != "" && accessToken != "" && accessSecret != ""
+
+	bskyHandle := os.Getenv("BLUESKY_HANDLE")
+	bskyPassword := os.Getenv("BLUESKY_PASSWORD")
+	bskyEnabled = bskyHandle != "" && bskyPassword != ""
+
+	if !xEnabled && !bskyEnabled && platform != "instagram" {
+		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky. Instagram (stub mode, no credentials needed) is available via -platform instagram.")
+	}
+
+	if platform == "x" && !xEnabled {
+		log.Fatal("X credentials required but not set")
+	}
+	if platform == "bluesky" && !bskyEnabled {
+		log.Fatal("Bluesky credentials required but not set")
+	}
+	if platform != "all" && platform != "x" && platform != "bluesky" && platform != "instagram" {
+		log.Fatalf("Unknown platform %q — use x, bluesky, instagram, or all", platform)
+	}
+
+	return xEnabled, bskyEnabled
+}
+
+// resolveFixtures loads the requested fixture(s) from the test fixture map.
+func resolveFixtures(fixture string) map[string][]zurichapi.Abstimmung {
+	allFixtures := testfixtures.AllFixtures()
+
+	if fixture == "all" {
+		return allFixtures
+	}
+
+	votes, ok := allFixtures[fixture]
+	if !ok {
+		var names []string
+		for k := range allFixtures {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		log.Fatalf("Unknown fixture %q. Available: %v", fixture, names)
+	}
+	return map[string][]zurichapi.Abstimmung{fixture: votes}
+}
+
+// buildPlatforms constructs the list of platforms to post to based on flags and credentials.
+func buildPlatforms(platform string, xEnabled, bskyEnabled bool, contactMapper *contacts.Mapper, maxChars int) []namedPlatform {
+	var plats []namedPlatform
+
+	if (platform == "all" || platform == "x") && xEnabled {
+		apiKey := os.Getenv("X_API_KEY")
+		apiSecret := os.Getenv("X_API_SECRET")
+		accessToken := os.Getenv("X_ACCESS_TOKEN")
+		accessSecret := os.Getenv("X_ACCESS_SECRET")
+		xPlat := x.NewXPlatform(apiKey, apiSecret, accessToken, accessSecret, contactMapper, 100)
+		xPlat.SetMaxChars(maxChars)
+		plats = append(plats, namedPlatform{name: "X", plat: xPlat})
+	}
+	if (platform == "all" || platform == "bluesky") && bskyEnabled {
+		bskyHandle := os.Getenv("BLUESKY_HANDLE")
+		bskyPassword := os.Getenv("BLUESKY_PASSWORD")
+		plats = append(plats, namedPlatform{
+			name: "Bluesky",
+			plat: bluesky.NewBlueskyPlatform(bskyHandle, bskyPassword, 100, contactMapper),
+		})
+	}
+	if platform == "all" || platform == "instagram" {
+		plats = append(plats, namedPlatform{name: "Instagram", plat: instagram.NewInstagramPlatform(100)})
+	}
+
+	return plats
 }

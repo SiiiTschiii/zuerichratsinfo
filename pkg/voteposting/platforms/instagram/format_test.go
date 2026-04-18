@@ -8,10 +8,6 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
-func intPtr(i int) *int {
-	return &i
-}
-
 func TestFormatCarousel_EmptyVotes(t *testing.T) {
 	_, err := FormatCarousel(nil)
 	if err == nil {
