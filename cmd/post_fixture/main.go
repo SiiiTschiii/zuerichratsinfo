@@ -39,7 +39,7 @@ func main() {
 		// Instagram doesn't require credentials (stub mode), so only error if no other platform is enabled
 		// and instagram is not the selected platform
 		if *platform != "instagram" {
-			log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky. For Instagram (stub), use -platform instagram.")
+			log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky. Instagram (stub mode, no credentials needed) is available via -platform instagram.")
 		}
 	}
 
