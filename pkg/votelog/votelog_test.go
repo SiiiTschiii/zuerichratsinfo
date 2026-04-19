@@ -232,3 +232,9 @@ func TestNewNoOp(t *testing.T) {
 		t.Errorf("NewNoOp: Save should return nil, got %v", err)
 	}
 }
+
+func TestGetLogFilePath_Instagram(t *testing.T) {
+	if got, want := getLogFilePath(PlatformInstagram), "data/posted_votes_instagram.json"; got != want {
+		t.Errorf("expected %q, got %q", want, got)
+	}
+}
