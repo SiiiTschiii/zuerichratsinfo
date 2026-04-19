@@ -14,7 +14,7 @@ This package implements a Go client for posting images to Instagram using the [I
 - A **Facebook Page** for ZueriRatsinfo
 - A **professional Instagram account** linked to the Facebook Page
 - A **Meta Developer App** with the Instagram use case configured using **API setup with Facebook Login**
-- Permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`
+- Permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`
 - A **GitHub repository** with a `gh-pages` branch for image hosting
 
 ### Getting IDs
@@ -40,13 +40,24 @@ User tokens are short-lived (~1 hour in the Explorer, ~60 days when exchanged fo
 
 ### Environment Variables
 
-| Variable | Description |
-|---|---|
-| `IG_USER_ID` | Instagram professional account ID |
-| `IG_ACCESS_TOKEN` | Long-lived Page access token |
-| `GITHUB_TOKEN` | GitHub token for pushing to gh-pages (available in Actions) |
-| `IG_REPO_OWNER` | GitHub repository owner (for image hosting) |
-| `IG_REPO_NAME` | GitHub repository name (for image hosting) |
+| Variable          | Description                                                  |
+| ----------------- | ------------------------------------------------------------ |
+| `IG_USER_ID`      | Instagram professional account ID                            |
+| `IG_ACCESS_TOKEN` | Long-lived Page access token                                 |
+| `GITHUB_TOKEN`    | GitHub token with Contents read/write permission (see below) |
+| `IG_REPO_OWNER`   | GitHub repository owner (for image hosting)                  |
+| `IG_REPO_NAME`    | GitHub repository name (for image hosting)                   |
+
+### GitHub Token
+
+The `GITHUB_TOKEN` needs **Contents read/write** permission on the repository to upload and clean up images on the `gh-pages` branch.
+
+- **GitHub Actions**: The automatic `GITHUB_TOKEN` works out of the box.
+- **Local testing**: Create a **fine-grained Personal Access Token** at https://github.com/settings/tokens:
+  1. Click **Generate new token** → **Fine-grained token**
+  2. Set **Repository access** to **Only select repositories** → select your repo
+  3. Under **Permissions → Repository permissions**, set **Contents** to **Read and write**
+  4. Generate and export as `GITHUB_TOKEN`
 
 ## API Flow
 
