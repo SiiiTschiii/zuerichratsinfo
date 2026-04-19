@@ -183,7 +183,7 @@ func TestRoundTrip_FullCarouselFlow(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		switch {
 		case step <= 3: // 3 CreateMediaContainer calls
-			_, _ = w.Write([]byte(fmt.Sprintf(`{"id":"child_%d"}`, step)))
+			_, _ = fmt.Fprintf(w, `{"id":"child_%d"}`, step)
 		case step == 4: // CreateCarouselContainer
 			_, _ = w.Write([]byte(`{"id":"carousel_99"}`))
 		case step == 5: // PublishContainer

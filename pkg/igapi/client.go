@@ -88,6 +88,36 @@ func (c *Client) CreateMediaContainer(imageURL string) (string, error) {
 	return result.ID, nil
 }
 
+// CreateSingleImageContainer creates a standalone image container with a caption.
+// Use this instead of a carousel when there is only one image (carousels require 2+ images).
+// Returns the container ID.
+func (c *Client) CreateSingleImageContainer(imageURL, caption string) (string, error) {
+	endpoint := fmt.Sprintf("%s/%s/media", c.apiBase, c.igUserID)
+
+	params := url.Values{}
+	params.Set("image_url", imageURL)
+	params.Set("caption", caption)
+	params.Set("access_token", c.accessToken)
+
+	resp, err := c.httpClient.PostForm(endpoint, params)
+	if err != nil {
+		return "", fmt.Errorf("creating single image container: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("create single image container returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result idResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return "", fmt.Errorf("parsing single image container response: %w", err)
+	}
+
+	return result.ID, nil
+}
+
 // CreateCarouselContainer creates a carousel container with child containers and a caption.
 // Returns the carousel container ID.
 func (c *Client) CreateCarouselContainer(childIDs []string, caption string) (string, error) {

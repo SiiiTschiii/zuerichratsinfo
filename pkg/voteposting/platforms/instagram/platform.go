@@ -3,6 +3,7 @@ package instagram
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
@@ -15,8 +16,10 @@ const (
 	pollInterval = 10 * time.Second
 	// pollTimeout is the maximum time to wait for a container to be published.
 	pollTimeout = 5 * time.Minute
-	// pagesDeploymentWait is the time to wait for GitHub Pages to deploy uploaded images.
-	pagesDeploymentWait = 30 * time.Second
+	// pagesDeploymentPollInterval is the time between GitHub Pages availability checks.
+	pagesDeploymentPollInterval = 10 * time.Second
+	// pagesDeploymentTimeout is the maximum time to wait for GitHub Pages deployment.
+	pagesDeploymentTimeout = 3 * time.Minute
 )
 
 // CreateMediaContainerFunc is the signature for creating an IG media container.
@@ -37,6 +40,9 @@ type UploadImagesFunc func(images [][]byte, names []string) ([]string, error)
 // CleanupImagesFunc is the signature for cleaning up hosted images.
 type CleanupImagesFunc func(names []string) error
 
+// CreateSingleImageContainerFunc is the signature for creating a standalone image container.
+type CreateSingleImageContainerFunc func(imageURL, caption string) (string, error)
+
 // InstagramPlatform implements the platforms.Platform interface for Instagram
 type InstagramPlatform struct {
 	postsThisRun   int
@@ -46,21 +52,24 @@ type InstagramPlatform struct {
 	stubMode       bool // true when no credentials are configured
 
 	// Injectable functions for testing
-	createMediaContainerFunc    CreateMediaContainerFunc
-	createCarouselContainerFunc CreateCarouselContainerFunc
-	publishContainerFunc        PublishContainerFunc
-	pollContainerStatusFunc     PollContainerStatusFunc
-	uploadImagesFunc            UploadImagesFunc
-	cleanupImagesFunc           CleanupImagesFunc
-	sleepFunc                   func(time.Duration)
+	createMediaContainerFunc       CreateMediaContainerFunc
+	createCarouselContainerFunc    CreateCarouselContainerFunc
+	createSingleImageContainerFunc CreateSingleImageContainerFunc
+	publishContainerFunc           PublishContainerFunc
+	pollContainerStatusFunc        PollContainerStatusFunc
+	uploadImagesFunc               UploadImagesFunc
+	cleanupImagesFunc              CleanupImagesFunc
+	waitForImagesFunc              func(urls []string) error
+	sleepFunc                      func(time.Duration)
 }
 
 // NewInstagramPlatform creates a new Instagram platform poster in stub mode (no real posting).
 func NewInstagramPlatform(maxPostsPerRun int) *InstagramPlatform {
 	return &InstagramPlatform{
-		maxPostsPerRun: maxPostsPerRun,
-		stubMode:       true,
-		sleepFunc:      time.Sleep,
+		maxPostsPerRun:    maxPostsPerRun,
+		stubMode:          true,
+		waitForImagesFunc: waitForImageURLs,
+		sleepFunc:         time.Sleep,
 	}
 }
 
@@ -80,10 +89,12 @@ func NewInstagramPlatformWithCredentials(igUserID, accessToken, githubToken, rep
 	// Wire real API functions
 	p.createMediaContainerFunc = igClient.CreateMediaContainer
 	p.createCarouselContainerFunc = igClient.CreateCarouselContainer
+	p.createSingleImageContainerFunc = igClient.CreateSingleImageContainer
 	p.publishContainerFunc = igClient.PublishContainer
 	p.pollContainerStatusFunc = igClient.PollContainerStatus
 	p.uploadImagesFunc = hoster.UploadImages
 	p.cleanupImagesFunc = hoster.CleanupImages
+	p.waitForImagesFunc = waitForImageURLs
 
 	return p
 }
@@ -150,43 +161,67 @@ func (p *InstagramPlatform) postReal(igContent *InstagramContent) (bool, error) 
 	}
 	fmt.Printf("   ✅ Images hosted at %d URL(s)\n", len(imageURLs))
 
-	// Step 2: Wait for GitHub Pages deployment (Pages can take a few seconds)
+	// Step 2: Wait for GitHub Pages deployment by polling image URLs
 	fmt.Print("⏳ Waiting for GitHub Pages deployment...\n")
-	p.sleepFunc(pagesDeploymentWait)
+	if err := p.waitForImagesFunc(imageURLs); err != nil {
+		logHostedImagesWarning(names)
+		return false, fmt.Errorf("waiting for GitHub Pages: %w", err)
+	}
+	fmt.Print("   ✅ Images accessible\n")
 
-	// Step 3: Create carousel item containers
-	fmt.Printf("📦 Creating %d media container(s)...\n", imageCount)
-	childIDs := make([]string, imageCount)
-	for i, imageURL := range imageURLs {
-		containerID, err := p.createMediaContainerFunc(imageURL)
+	var publishID string
+	if imageCount == 1 {
+		// Single image post (carousels require 2+ images)
+		fmt.Print("📦 Creating single image container...\n")
+		containerID, err := p.createSingleImageContainerFunc(imageURLs[0], igContent.Caption)
 		if err != nil {
 			logHostedImagesWarning(names)
-			return false, fmt.Errorf("creating media container %d: %w", i, err)
+			return false, fmt.Errorf("creating single image container: %w", err)
 		}
-		childIDs[i] = containerID
-		fmt.Printf("   📦 Container %d: %s\n", i, containerID)
+		fmt.Printf("   📦 Container: %s\n", containerID)
+		publishID = containerID
+	} else {
+		// Carousel post (2+ images)
+		fmt.Printf("📦 Creating %d media container(s)...\n", imageCount)
+		childIDs := make([]string, imageCount)
+		for i, imageURL := range imageURLs {
+			containerID, err := p.createMediaContainerFunc(imageURL)
+			if err != nil {
+				logHostedImagesWarning(names)
+				return false, fmt.Errorf("creating media container %d: %w", i, err)
+			}
+			childIDs[i] = containerID
+			fmt.Printf("   📦 Container %d: %s\n", i, containerID)
+		}
+
+		fmt.Print("🎠 Creating carousel container...\n")
+		carouselID, err := p.createCarouselContainerFunc(childIDs, igContent.Caption)
+		if err != nil {
+			logHostedImagesWarning(names)
+			return false, fmt.Errorf("creating carousel container: %w", err)
+		}
+		fmt.Printf("   🎠 Carousel container: %s\n", carouselID)
+		publishID = carouselID
 	}
 
-	// Step 4: Create carousel container
-	fmt.Print("🎠 Creating carousel container...\n")
-	carouselID, err := p.createCarouselContainerFunc(childIDs, igContent.Caption)
-	if err != nil {
+	// Wait for container to be ready before publishing
+	fmt.Print("⏳ Waiting for container to be ready...\n")
+	if err := p.pollUntilReady(publishID); err != nil {
 		logHostedImagesWarning(names)
-		return false, fmt.Errorf("creating carousel container: %w", err)
+		return false, fmt.Errorf("waiting for container: %w", err)
 	}
-	fmt.Printf("   🎠 Carousel container: %s\n", carouselID)
 
-	// Step 5: Publish
-	fmt.Print("🚀 Publishing carousel...\n")
-	mediaID, err := p.publishContainerFunc(carouselID)
+	// Publish
+	fmt.Print("🚀 Publishing...\n")
+	mediaID, err := p.publishContainerFunc(publishID)
 	if err != nil {
 		logHostedImagesWarning(names)
-		return false, fmt.Errorf("publishing carousel: %w", err)
+		return false, fmt.Errorf("publishing: %w", err)
 	}
 	fmt.Printf("   ✅ Published! Media ID: %s\n", mediaID)
 
-	// Step 6: Poll for PUBLISHED status
-	if err := p.pollUntilPublished(carouselID); err != nil {
+	// Poll for PUBLISHED status
+	if err := p.pollUntilPublished(publishID); err != nil {
 		log.Printf("⚠️  Polling error (media may still be published): %v", err)
 		// Don't fail — the post may have succeeded
 	}
@@ -237,6 +272,37 @@ func (p *InstagramPlatform) pollUntilPublished(containerID string) error {
 	return fmt.Errorf("polling timed out after %v", pollTimeout)
 }
 
+// pollUntilReady polls the container status until it reaches FINISHED (ready to publish),
+// or returns an error on ERROR/EXPIRED/timeout.
+func (p *InstagramPlatform) pollUntilReady(containerID string) error {
+	deadline := time.Now().Add(pollTimeout)
+	for time.Now().Before(deadline) {
+		status, err := p.pollContainerStatusFunc(containerID)
+		if err != nil {
+			return fmt.Errorf("polling status: %w", err)
+		}
+
+		switch status {
+		case igapi.StatusFinished:
+			fmt.Printf("   ✅ Container ready: %s\n", status)
+			return nil
+		case igapi.StatusPublished:
+			fmt.Printf("   ✅ Container ready: %s\n", status)
+			return nil
+		case igapi.StatusError:
+			return fmt.Errorf("container status: ERROR")
+		case igapi.StatusExpired:
+			return fmt.Errorf("container status: EXPIRED")
+		default:
+			fmt.Printf("   ⏳ Container status: %s, waiting...\n", status)
+		}
+
+		p.sleepFunc(pollInterval)
+	}
+
+	return fmt.Errorf("container not ready after %v", pollTimeout)
+}
+
 // logHostedImagesWarning logs a warning that images are left hosted for manual debugging.
 func logHostedImagesWarning(names []string) {
 	log.Printf("⚠️  Images left hosted for debugging: %v", names)
@@ -250,4 +316,28 @@ func (p *InstagramPlatform) MaxPostsPerRun() int {
 // Name returns the platform name.
 func (p *InstagramPlatform) Name() string {
 	return "Instagram"
+}
+
+// waitForImageURLs polls the given URLs until they all return HTTP 200, or the timeout is reached.
+func waitForImageURLs(urls []string) error {
+	client := &http.Client{Timeout: 10 * time.Second}
+	deadline := time.Now().Add(pagesDeploymentTimeout)
+
+	for time.Now().Before(deadline) {
+		allOK := true
+		for _, u := range urls {
+			resp, err := client.Head(u)
+			if err != nil || resp.StatusCode != http.StatusOK {
+				allOK = false
+				break
+			}
+			_ = resp.Body.Close()
+		}
+		if allOK {
+			return nil
+		}
+		time.Sleep(pagesDeploymentPollInterval)
+	}
+
+	return fmt.Errorf("images not accessible after %v", pagesDeploymentTimeout)
 }

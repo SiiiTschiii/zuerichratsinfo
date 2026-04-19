@@ -15,7 +15,20 @@ This package implements a Go client for posting images to Instagram using the [I
 - A **professional Instagram account** linked to the Facebook Page
 - A **Meta Developer App** with the Instagram use case configured using **API setup with Facebook Login**
 - Permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`
-- A **GitHub repository** with a `gh-pages` branch for image hosting
+- A **GitHub repository** with a `gh-pages` branch and GitHub Pages enabled (see below)
+
+### GitHub Pages Setup
+
+Create an orphan `gh-pages` branch for image hosting:
+
+```bash
+git switch --orphan gh-pages
+git commit --allow-empty -m "initialize gh-pages branch"
+git push origin gh-pages
+git switch -
+```
+
+Then enable GitHub Pages in the repo: **Settings → Pages → Source: Deploy from a branch → Branch: `gh-pages` / `/ (root)`**.
 
 ### Getting IDs
 

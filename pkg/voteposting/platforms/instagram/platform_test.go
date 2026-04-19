@@ -97,10 +97,11 @@ func TestPlatform_RealPostFlow(t *testing.T) {
 	p := NewInstagramPlatform(5)
 	p.stubMode = false
 	p.sleepFunc = func(_ time.Duration) {} // no-op sleep for testing
+	p.waitForImagesFunc = func(_ []string) error { return nil }
 
 	var uploadedNames []string
 	var cleanedUpNames []string
-	containerCount := 0
+	singleImageCreated := false
 
 	p.uploadImagesFunc = func(images [][]byte, names []string) ([]string, error) {
 		uploadedNames = names
@@ -111,16 +112,19 @@ func TestPlatform_RealPostFlow(t *testing.T) {
 		return urls, nil
 	}
 
-	p.createMediaContainerFunc = func(_ string) (string, error) {
-		containerCount++
-		return "child_container", nil
+	p.createSingleImageContainerFunc = func(_ string, _ string) (string, error) {
+		singleImageCreated = true
+		return "single_container", nil
 	}
 
-	p.createCarouselContainerFunc = func(childIDs []string, _ string) (string, error) {
-		if len(childIDs) == 0 {
-			t.Error("expected child IDs in carousel container")
-		}
-		return "carousel_container", nil
+	p.createMediaContainerFunc = func(_ string) (string, error) {
+		t.Error("createMediaContainerFunc should not be called for single image")
+		return "", nil
+	}
+
+	p.createCarouselContainerFunc = func(_ []string, _ string) (string, error) {
+		t.Error("createCarouselContainerFunc should not be called for single image")
+		return "", nil
 	}
 
 	p.publishContainerFunc = func(_ string) (string, error) {
@@ -155,8 +159,8 @@ func TestPlatform_RealPostFlow(t *testing.T) {
 	if len(uploadedNames) == 0 {
 		t.Error("expected images to be uploaded")
 	}
-	if containerCount == 0 {
-		t.Error("expected media containers to be created")
+	if !singleImageCreated {
+		t.Error("expected single image container to be created")
 	}
 	if len(cleanedUpNames) == 0 {
 		t.Error("expected images to be cleaned up")
@@ -171,6 +175,7 @@ func TestPlatform_RealPostFlow_UploadError(t *testing.T) {
 	p := NewInstagramPlatform(5)
 	p.stubMode = false
 	p.sleepFunc = func(_ time.Duration) {}
+	p.waitForImagesFunc = func(_ []string) error { return nil }
 
 	p.uploadImagesFunc = func(_ [][]byte, _ []string) ([]string, error) {
 		return nil, errTest
@@ -192,6 +197,7 @@ func TestPlatform_RealPostFlow_ContainerError(t *testing.T) {
 	p := NewInstagramPlatform(5)
 	p.stubMode = false
 	p.sleepFunc = func(_ time.Duration) {}
+	p.waitForImagesFunc = func(_ []string) error { return nil }
 
 	p.uploadImagesFunc = func(images [][]byte, names []string) ([]string, error) {
 		urls := make([]string, len(images))
@@ -199,6 +205,10 @@ func TestPlatform_RealPostFlow_ContainerError(t *testing.T) {
 			urls[i] = "https://example.com/" + names[i]
 		}
 		return urls, nil
+	}
+
+	p.createSingleImageContainerFunc = func(_ string, _ string) (string, error) {
+		return "", errTest
 	}
 
 	p.createMediaContainerFunc = func(_ string) (string, error) {

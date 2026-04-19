@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -44,8 +45,9 @@ func (h *ImageHoster) SetAPIBase(base string) {
 }
 
 // PagesBaseURL returns the GitHub Pages base URL for this repository.
+// GitHub Pages domains are always lowercase.
 func (h *ImageHoster) PagesBaseURL() string {
-	return fmt.Sprintf("https://%s.github.io/%s", h.repoOwner, h.repoName)
+	return fmt.Sprintf("https://%s.github.io/%s", strings.ToLower(h.repoOwner), h.repoName)
 }
 
 // UploadImages commits JPEG images to the gh-pages branch and returns their public URLs.

@@ -108,6 +108,7 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 		if stimmabgaben := vote.Stimmabgaben.Stimmabgabe; len(stimmabgaben) > 0 {
 			fraktionCounts := voteformat.AggregateFraktionCounts(stimmabgaben)
 			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
+				sb.WriteString("\n")
 				sb.WriteString(breakdown)
 				sb.WriteString("\n")
 			}

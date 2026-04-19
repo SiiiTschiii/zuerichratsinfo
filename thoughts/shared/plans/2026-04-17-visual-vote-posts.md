@@ -197,7 +197,7 @@ Create `pkg/voteposting/platforms/instagram/` implementing the `Platform` interf
 
 ---
 
-## Phase 3: Instagram Client, Hosting & Publishing (GitHub Issue)
+## ✅ Phase 3: Instagram Client, Hosting & Publishing (GitHub Issue)
 
 > **GitHub Issue Title**: Implement Instagram API client with GitHub Pages image hosting
 >
@@ -277,22 +277,22 @@ Running `cmd/post_fixture/main.go -fixture single-angenommen -platform instagram
    go run cmd/post_fixture/main.go -fixture single-angenommen -platform instagram
    ```
 
-   - [ ] Images appear on GitHub Pages URL before Instagram fetch
-   - [ ] Instagram carousel published successfully (visible in app)
-   - [ ] All 3 images display correctly in carousel
-   - [ ] Caption text renders correctly with link
-   - [ ] Hosted images cleaned up from gh-pages after PUBLISHED status
+   - [x] Images appear on GitHub Pages URL before Instagram fetch
+   - [x] Instagram carousel published successfully (visible in app)
+   - [x] Single image and carousel (3 images) both work correctly
+   - [x] Caption text renders correctly with link
+   - [x] Hosted images cleaned up from gh-pages after PUBLISHED status
 
 2. **Error handling:**
-   - [ ] Invalid token → clear error message, no partial state
-   - [ ] Image hosting failure → error before any IG API calls
+   - [x] Invalid token → clear error message, no partial state
+   - [x] Image hosting failure → error before any IG API calls
 
 ### Automated Verification
 
-- [ ] `go test ./pkg/igapi/...` — client tests with mocked HTTP responses
-- [ ] `go test ./pkg/voteposting/platforms/instagram/...` — post tests with injected mock client
-- [ ] `go test ./...` — all tests pass
-- [ ] `go vet ./...` passes
+- [x] `go test ./pkg/igapi/...` — client tests with mocked HTTP responses
+- [x] `go test ./pkg/voteposting/platforms/instagram/...` — post tests with injected mock client
+- [x] `go test ./...` — all tests pass
+- [x] `go vet ./...` passes
 
 ---
 
@@ -311,6 +311,7 @@ Wire Instagram into `main.go` alongside X and Bluesky. Add `posted_votes_instagr
 #### 1. `main.go`
 
 - Add Instagram platform initialization (gated on `IG_USER_ID` + `IG_ACCESS_TOKEN` env vars)
+- Also requires `GITHUB_TOKEN`, `IG_REPO_OWNER`, `IG_REPO_NAME` for image hosting
 - Load `votelog.Load("instagram")`
 - Call `PostToPlatform(groups, instagramPlatform, igVoteLog, dryRun)`
 
@@ -320,9 +321,10 @@ Wire Instagram into `main.go` alongside X and Bluesky. Add `posted_votes_instagr
 
 #### 3. `.github/workflows/bot.yml`
 
-- Add `IG_USER_ID` and `IG_ACCESS_TOKEN` secrets
+- Add `IG_USER_ID`, `IG_ACCESS_TOKEN` secrets
+- Set `IG_REPO_OWNER` and `IG_REPO_NAME` env vars
 - Add `data/posted_votes_instagram.json` to git add/commit step
-- Ensure gh-pages push permissions if hosting is done within the same workflow
+- Ensure `GITHUB_TOKEN` has `contents: write` permission (needed for gh-pages image hosting)
 
 #### 4. `cmd/generate_vote_post/main.go`
 
