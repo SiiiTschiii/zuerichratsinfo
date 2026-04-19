@@ -33,6 +33,13 @@ type platformCredentials struct {
 	bskyHandle   string
 	bskyPassword string
 	bskyEnabled  bool
+
+	igUserID      string
+	igAccessToken string
+	githubToken   string
+	igRepoOwner   string
+	igRepoName    string
+	igEnabled     bool
 }
 
 func main() {
@@ -95,16 +102,22 @@ func loadCredentials() platformCredentials {
 		xAccessSecret: os.Getenv("X_ACCESS_SECRET"),
 		bskyHandle:    os.Getenv("BLUESKY_HANDLE"),
 		bskyPassword:  os.Getenv("BLUESKY_PASSWORD"),
+		igUserID:      os.Getenv("IG_USER_ID"),
+		igAccessToken: os.Getenv("IG_ACCESS_TOKEN"),
+		githubToken:   os.Getenv("GITHUB_TOKEN"),
+		igRepoOwner:   os.Getenv("IG_REPO_OWNER"),
+		igRepoName:    os.Getenv("IG_REPO_NAME"),
 	}
 	c.xEnabled = c.xAPIKey != "" && c.xAPISecret != "" && c.xAccessToken != "" && c.xAccessSecret != ""
 	c.bskyEnabled = c.bskyHandle != "" && c.bskyPassword != ""
+	c.igEnabled = c.igUserID != "" && c.igAccessToken != "" && c.githubToken != "" && c.igRepoOwner != "" && c.igRepoName != ""
 	return c
 }
 
 // validatePlatform checks that the selected platform has valid credentials configured.
 func validatePlatform(platform string, creds platformCredentials) {
 	if !creds.xEnabled && !creds.bskyEnabled && platform != "instagram" {
-		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky. Instagram (stub mode, no credentials needed) is available via -platform instagram.")
+		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky. Instagram (stub mode without IG_USER_ID/IG_ACCESS_TOKEN, or real mode with credentials) is available via -platform instagram.")
 	}
 
 	if platform == "x" && !creds.xEnabled {
@@ -154,7 +167,18 @@ func buildPlatforms(platform string, creds platformCredentials, contactMapper *c
 		})
 	}
 	if platform == "all" || platform == "instagram" {
-		plats = append(plats, namedPlatform{name: "Instagram", plat: instagram.NewInstagramPlatform(100)})
+		var igPlat *instagram.InstagramPlatform
+		if creds.igEnabled {
+			igPlat = instagram.NewInstagramPlatformWithCredentials(
+				creds.igUserID, creds.igAccessToken, creds.githubToken,
+				creds.igRepoOwner, creds.igRepoName, 100,
+			)
+			fmt.Println("📷 Instagram: real mode (credentials configured)")
+		} else {
+			igPlat = instagram.NewInstagramPlatform(100)
+			fmt.Println("📷 Instagram: stub mode (no credentials)")
+		}
+		plats = append(plats, namedPlatform{name: "Instagram", plat: igPlat})
 	}
 
 	return plats
