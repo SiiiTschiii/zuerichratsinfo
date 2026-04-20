@@ -1,4 +1,13 @@
 {
   "platform": "instagram",
-  "votes": []
+  "votes": [
+    {
+      "id": "e352141fc9c94b21b3e699ab820ecb97",
+      "posted_at": "2026-04-20T19:57:19.67147126Z"
+    },
+    {
+      "id": "98b3bcfb8e544055bc6a2e0ad5bf8e4a",
+      "posted_at": "2026-04-20T19:57:19.671473593Z"
+    }
+  ]
 }
