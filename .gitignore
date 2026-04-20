@@ -9,3 +9,5 @@ zurichratsinfo
 .DS_Store
 
 data/email_overrides.yaml
+
+out/

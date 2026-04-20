@@ -49,7 +49,7 @@
   - Prerequisite: "Generate visual posts" TODO above
 - [ ] Set up public image hosting for generated visuals
   - Instagram API requires a publicly accessible URL to fetch the image during container creation
-  - Open question: does the URL only need to be available at publish time, or for the lifetime of the post?
+  - Working assumption: host generated images temporarily (e.g. via GitHub Pages) and only delete them after the container status is `PUBLISHED`
 - [ ] Implement Instagram client using Content Publishing API (image + caption)
   - Two-step flow: create media container → publish container
   - Requires professional IG account + Facebook Page + Meta Developer App

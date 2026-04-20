@@ -11,7 +11,9 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -31,8 +33,16 @@ func main() {
 
 	bskyEnabled := bskyHandle != "" && bskyPassword != ""
 
-	if !xEnabled && !bskyEnabled {
-		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky.")
+	igUserID := os.Getenv("IG_USER_ID")
+	igAccessToken := os.Getenv("IG_ACCESS_TOKEN")
+	igGithubToken := os.Getenv("GITHUB_TOKEN")
+	igRepoOwner := os.Getenv("IG_REPO_OWNER")
+	igRepoName := os.Getenv("IG_REPO_NAME")
+
+	igEnabled := igUserID != "" && igAccessToken != "" && igGithubToken != "" && igRepoOwner != "" && igRepoName != ""
+
+	if !xEnabled && !bskyEnabled && !igEnabled {
+		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky, or IG_USER_ID/IG_ACCESS_TOKEN/GITHUB_TOKEN/IG_REPO_OWNER/IG_REPO_NAME for Instagram.")
 	}
 
 	if !xEnabled {
@@ -41,12 +51,16 @@ func main() {
 	if !bskyEnabled {
 		log.Println("⚠️  Bluesky not configured (missing BLUESKY_HANDLE/BLUESKY_PASSWORD)")
 	}
+	if !igEnabled {
+		log.Println("⚠️  Instagram not configured (missing IG_USER_ID/IG_ACCESS_TOKEN/GITHUB_TOKEN/IG_REPO_OWNER/IG_REPO_NAME)")
+	}
 
 	// Load rate limit configuration from environment
 	maxVotesToCheck := getEnvInt("MAX_VOTES_TO_CHECK", 50)
 	maxVoteAgeDays := getEnvInt("MAX_VOTE_AGE_DAYS", 90)
 	maxXPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
 	maxBskyPostsPerRun := getEnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10)
+	maxIGPostsPerRun := getEnvInt("IG_MAX_POSTS_PER_RUN", 5)
 	xMaxChars := getEnvInt("X_MAX_CHARS", x.DefaultMaxChars)
 
 	fmt.Printf("Configuration: Check last %d votes\n", maxVotesToCheck)
@@ -62,109 +76,44 @@ func main() {
 	// Create API client
 	client := zurichapi.NewClient()
 
-	// hasUnsupportedVotes is set when any group is skipped due to an unknown vote
-	// format. The run continues (other groups / platforms are still processed) but
-	// exits non-zero at the end so CI / GitHub Actions flags the issue.
-	hasUnsupportedVotes := false
-
 	skipVoteLog := os.Getenv("SKIP_VOTE_LOG") == "true"
+	hasUnsupportedVotes := false
 
 	// --- X Platform ---
 	if xEnabled {
-		fmt.Println("\n━━━ X/Twitter ━━━")
+		xPlatform := x.NewXPlatform(
+			apiKey, apiSecret, accessToken, accessSecret,
+			contactMapper,
+			maxXPostsPerRun,
+		)
+		xPlatform.SetMaxChars(xMaxChars)
 
-		var voteLog *votelog.VoteLog
-		if skipVoteLog {
-			voteLog = votelog.NewNoOp(votelog.PlatformX)
-			fmt.Println("⚠️  SKIP_VOTE_LOG=true — treating all votes as unposted, not saving vote log")
-		} else {
-			var err error
-			voteLog, err = votelog.Load(votelog.PlatformX)
-			if err != nil {
-				log.Fatalf("Error loading X vote log: %v", err)
-			}
-			fmt.Printf("Loaded X vote log: %d votes already posted\n", voteLog.Count())
-		}
-
-		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck, maxVoteAgeDays)
-		if err != nil {
-			log.Fatalf("Error preparing votes for X: %v", err)
-		}
-
-		if len(groups) == 0 {
-			fmt.Println("No new votes to post on X!")
-		} else {
-			fmt.Printf("Found %d group(s) to post on X\n", len(groups))
-
-			xPlatform := x.NewXPlatform(
-				apiKey, apiSecret, accessToken, accessSecret,
-				contactMapper,
-				maxXPostsPerRun,
-			)
-			xPlatform.SetMaxChars(xMaxChars)
-
-			posted, err := voteposting.PostToPlatform(groups, xPlatform, voteLog, false)
-			if err != nil {
-				if errors.Is(err, voteposting.ErrUnsupportedVoteType) {
-					hasUnsupportedVotes = true
-					if posted > 0 {
-						fmt.Printf("Posted %d group(s) to X (some skipped — see warnings above)\n", posted)
-					}
-				} else {
-					log.Printf("Error posting to X: %v", err)
-				}
-			} else {
-				fmt.Printf("🎉 Posted %d new group(s) to X!\n", posted)
-			}
+		if unsupported := runPlatform("X/Twitter", votelog.PlatformX, xPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays); unsupported {
+			hasUnsupportedVotes = true
 		}
 	}
 
 	// --- Bluesky Platform ---
 	if bskyEnabled {
-		fmt.Println("\n━━━ Bluesky ━━━")
+		bskyPlatform := bluesky.NewBlueskyPlatform(
+			bskyHandle, bskyPassword,
+			maxBskyPostsPerRun,
+			contactMapper,
+		)
 
-		var voteLog *votelog.VoteLog
-		if skipVoteLog {
-			voteLog = votelog.NewNoOp(votelog.PlatformBluesky)
-			fmt.Println("⚠️  SKIP_VOTE_LOG=true — treating all votes as unposted, not saving vote log")
-		} else {
-			var err error
-			voteLog, err = votelog.Load(votelog.PlatformBluesky)
-			if err != nil {
-				log.Fatalf("Error loading Bluesky vote log: %v", err)
-			}
-			fmt.Printf("Loaded Bluesky vote log: %d votes already posted\n", voteLog.Count())
+		if unsupported := runPlatform("Bluesky", votelog.PlatformBluesky, bskyPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays); unsupported {
+			hasUnsupportedVotes = true
 		}
+	}
 
-		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck, maxVoteAgeDays)
-		if err != nil {
-			log.Fatalf("Error preparing votes for Bluesky: %v", err)
-		}
+	// --- Instagram Platform ---
+	if igEnabled {
+		igPlatform := instagram.NewInstagramPlatformWithCredentials(
+			igUserID, igAccessToken, igGithubToken, igRepoOwner, igRepoName, maxIGPostsPerRun,
+		)
 
-		if len(groups) == 0 {
-			fmt.Println("No new votes to post on Bluesky!")
-		} else {
-			fmt.Printf("Found %d group(s) to post on Bluesky\n", len(groups))
-
-			bskyPlatform := bluesky.NewBlueskyPlatform(
-				bskyHandle, bskyPassword,
-				maxBskyPostsPerRun,
-				contactMapper,
-			)
-
-			posted, err := voteposting.PostToPlatform(groups, bskyPlatform, voteLog, false)
-			if err != nil {
-				if errors.Is(err, voteposting.ErrUnsupportedVoteType) {
-					hasUnsupportedVotes = true
-					if posted > 0 {
-						fmt.Printf("Posted %d group(s) to Bluesky (some skipped — see warnings above)\n", posted)
-					}
-				} else {
-					log.Printf("Error posting to Bluesky: %v", err)
-				}
-			} else {
-				fmt.Printf("🎉 Posted %d new group(s) to Bluesky!\n", posted)
-			}
+		if unsupported := runPlatform("Instagram", votelog.PlatformInstagram, igPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays); unsupported {
+			hasUnsupportedVotes = true
 		}
 	}
 
@@ -172,6 +121,60 @@ func main() {
 		log.Println("❌ Action failed: one or more votes have an unrecognised format. Check warnings above.")
 		os.Exit(1)
 	}
+}
+
+// runPlatform loads the vote log, prepares vote groups, and posts to the given
+// platform. It returns true if any votes were skipped due to an unsupported
+// format.
+func runPlatform(
+	displayName string,
+	platform votelog.Platform,
+	poster platforms.Platform,
+	client *zurichapi.Client,
+	skipVoteLog bool,
+	maxVotesToCheck, maxVoteAgeDays int,
+) bool {
+	fmt.Printf("\n━━━ %s ━━━\n", displayName)
+
+	var vl *votelog.VoteLog
+	if skipVoteLog {
+		vl = votelog.NewNoOp(platform)
+		fmt.Println("⚠️  SKIP_VOTE_LOG=true — treating all votes as unposted, not saving vote log")
+	} else {
+		var err error
+		vl, err = votelog.Load(platform)
+		if err != nil {
+			log.Fatalf("Error loading %s vote log: %v", displayName, err)
+		}
+		fmt.Printf("Loaded %s vote log: %d votes already posted\n", displayName, vl.Count())
+	}
+
+	groups, err := voteposting.PrepareVoteGroups(client, vl, maxVotesToCheck, maxVoteAgeDays)
+	if err != nil {
+		log.Fatalf("Error preparing votes for %s: %v", displayName, err)
+	}
+
+	if len(groups) == 0 {
+		fmt.Printf("No new votes to post on %s!\n", displayName)
+		return false
+	}
+
+	fmt.Printf("Found %d group(s) to post on %s\n", len(groups), displayName)
+
+	posted, err := voteposting.PostToPlatform(groups, poster, vl, false)
+	if err != nil {
+		if errors.Is(err, voteposting.ErrUnsupportedVoteType) {
+			if posted > 0 {
+				fmt.Printf("Posted %d group(s) to %s (some skipped — see warnings above)\n", posted, displayName)
+			}
+			return true
+		}
+		log.Printf("Error posting to %s: %v", displayName, err)
+		return false
+	}
+
+	fmt.Printf("🎉 Posted %d new group(s) to %s!\n", posted, displayName)
+	return false
 }
 
 // getEnvInt gets an integer from environment variable with a default value

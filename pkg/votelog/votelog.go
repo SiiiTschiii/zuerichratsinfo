@@ -12,9 +12,10 @@ import (
 type Platform string
 
 const (
-	PlatformX        Platform = "x"
-	PlatformBluesky  Platform = "bluesky"
-	PlatformMastodon Platform = "mastodon"
+	PlatformX         Platform = "x"
+	PlatformBluesky   Platform = "bluesky"
+	PlatformInstagram Platform = "instagram"
+	PlatformMastodon  Platform = "mastodon"
 )
 
 // VoteEntry represents a single posted vote
