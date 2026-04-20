@@ -296,7 +296,7 @@ Running `cmd/post_fixture/main.go -fixture single-angenommen -platform instagram
 
 ---
 
-## Phase 4: End-to-End Pipeline & GitHub Actions (GitHub Issue)
+## ✅ Phase 4: End-to-End Pipeline & GitHub Actions (GitHub Issue)
 
 > **GitHub Issue Title**: Add Instagram to automated vote posting pipeline
 >
@@ -342,7 +342,7 @@ The hourly GitHub Actions workflow posts new votes to Instagram automatically al
    go run cmd/generate_vote_post/main.go -platform instagram -n 1
    ```
 
-   - [ ] Preview shows caption + image count for real recent votes
+   - [x] Preview shows caption + image count for real recent votes
 
 2. **Full pipeline test (single run):**
 
@@ -351,9 +351,9 @@ The hourly GitHub Actions workflow posts new votes to Instagram automatically al
    go run main.go
    ```
 
-   - [ ] Instagram posts appear alongside X/Bluesky posts
-   - [ ] `data/posted_votes_instagram.json` updated with posted vote GUIDs
-   - [ ] Same vote not re-posted on second run
+   - [x] Instagram posts appear alongside X/Bluesky posts
+   - [x] `data/posted_votes_instagram.json` updated with posted vote GUIDs
+   - [x] Same vote not re-posted on second run
 
 3. **GitHub Actions:**
    - [ ] Trigger workflow manually via `workflow_dispatch`
@@ -362,8 +362,8 @@ The hourly GitHub Actions workflow posts new votes to Instagram automatically al
 
 ### Automated Verification
 
-- [ ] `go test ./...` — all tests pass
-- [ ] `go vet ./...` passes
+- [x] `go test ./...` — all tests pass
+- [x] `go vet ./...` passes
 - [ ] GitHub Actions workflow runs without errors
 
 ---
