@@ -27,7 +27,7 @@ A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Z
 | ----------- | ---------- | ------------------------ | ------------------------------------------------------------------------------------ |
 | LinkedIn    | ❌ Planned | 121 | -                                                                                    |
 | Facebook    | ❌ Planned | 102 | -                                                                                    |
-| Instagram   | ❌ Planned | 99 | -                                                                                    |
+| Instagram   | ✅ Active  | 99 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
 | X (Twitter) | ✅ Active  | 74 | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
 | Bluesky     | ✅ Active  | 36 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
 | TikTok      | ❌ Planned | 21 | -                                                                                    |
@@ -51,6 +51,8 @@ Found an error or want to add a politician's social media account? Please [open 
 - Zurich Council PARIS API, see [pkg/zurichapi/README.md](pkg/zurichapi/README.md)
 - X API v2 with OAuth 1.0a, see [pkg/xapi/README.md](pkg/xapi/README.md)
 - Bluesky AT Protocol (app.bsky), see [pkg/voteposting/platforms/bluesky](pkg/voteposting/platforms/bluesky)
+- Instagram Graph API with image carousel publishing, see [pkg/igapi/README.md](pkg/igapi/README.md)
+- Vote image generation (1080×1080 JPEG carousels), see [pkg/imagegen](pkg/imagegen)
 
 ## Setup
 
