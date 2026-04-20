@@ -392,6 +392,8 @@ The hourly GitHub Actions workflow posts new votes to Instagram automatically al
 
 The ten-vote-stress-test fixture generates 11 images (1 title + 10 results), which gets capped at 10 by the Instagram carousel limit. The images themselves don't currently indicate there are more votes beyond what's shown. A follow-up enhancement in `pkg/imagegen/` (Phase 1 scope) could add a "see caption for more" indicator on the last card, so viewers know the carousel is truncated.
 
+### Explore how contact tagging could work on Instagram.
+
 ## References
 
 - Research: `thoughts/shared/research/2026-04-17-visual-vote-posts.md`
