@@ -2,7 +2,6 @@ package imagegen
 
 import (
 	"bytes"
-	"crypto/sha256"
 	_ "embed"
 	"fmt"
 	"image"
@@ -45,9 +44,19 @@ var palette = []color.RGBA{
 }
 
 // SelectColor returns a deterministic color based on GeschaeftGrNr.
+// It extracts the trailing number (e.g. "2025/100" → 100) so consecutive
+// votes cycle through all palette colors instead of clustering.
 func SelectColor(geschaeftGrNr string) color.RGBA {
-	h := sha256.Sum256([]byte(geschaeftGrNr))
-	idx := int(h[0]) % len(palette)
+	// Find start of trailing digits
+	i := len(geschaeftGrNr)
+	for i > 0 && geschaeftGrNr[i-1] >= '0' && geschaeftGrNr[i-1] <= '9' {
+		i--
+	}
+	n := 0
+	for _, c := range geschaeftGrNr[i:] {
+		n = n*10 + int(c-'0')
+	}
+	idx := n % len(palette)
 	return palette[idx]
 }
 
@@ -421,17 +430,7 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimm
 		titleFontSize -= 2
 	}
 
-	for _, line := range titleLines {
-		if img != nil {
-			drawCenteredText(img, titleFace, nil, cur.baseline(titleFace), line, bg)
-		}
-		cur.advance(titleFace)
-		cur.gap(titleFace, 0.15)
-	}
-
-	cur.gap(titleFace, 0.75)
-
-	// Verdict: large centered emoji
+	// Verdict first: large centered emoji above the title
 	var verdictText string
 	if !isAuswahl {
 		verdictText = voteformat.GetVoteResultEmoji(v.Schlussresultat)
@@ -444,6 +443,17 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimm
 	cur.advance(fonts.verdict)
 
 	cur.gap(fonts.verdict, 0.75)
+
+	// Title: bold, wrapped, centered
+	for _, line := range titleLines {
+		if img != nil {
+			drawCenteredText(img, titleFace, nil, cur.baseline(titleFace), line, bg)
+		}
+		cur.advance(titleFace)
+		cur.gap(titleFace, 0.15)
+	}
+
+	cur.gap(titleFace, 0.75)
 
 	// Horizontal separator
 	if img != nil {

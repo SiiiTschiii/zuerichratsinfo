@@ -296,7 +296,7 @@ Running `cmd/post_fixture/main.go -fixture single-angenommen -platform instagram
 
 ---
 
-## Phase 4: End-to-End Pipeline & GitHub Actions (GitHub Issue)
+## ✅ Phase 4: End-to-End Pipeline & GitHub Actions (GitHub Issue)
 
 > **GitHub Issue Title**: Add Instagram to automated vote posting pipeline
 >
@@ -342,7 +342,7 @@ The hourly GitHub Actions workflow posts new votes to Instagram automatically al
    go run cmd/generate_vote_post/main.go -platform instagram -n 1
    ```
 
-   - [ ] Preview shows caption + image count for real recent votes
+   - [x] Preview shows caption + image count for real recent votes
 
 2. **Full pipeline test (single run):**
 
@@ -351,9 +351,9 @@ The hourly GitHub Actions workflow posts new votes to Instagram automatically al
    go run main.go
    ```
 
-   - [ ] Instagram posts appear alongside X/Bluesky posts
-   - [ ] `data/posted_votes_instagram.json` updated with posted vote GUIDs
-   - [ ] Same vote not re-posted on second run
+   - [x] Instagram posts appear alongside X/Bluesky posts
+   - [x] `data/posted_votes_instagram.json` updated with posted vote GUIDs
+   - [x] Same vote not re-posted on second run
 
 3. **GitHub Actions:**
    - [ ] Trigger workflow manually via `workflow_dispatch`
@@ -362,8 +362,8 @@ The hourly GitHub Actions workflow posts new votes to Instagram automatically al
 
 ### Automated Verification
 
-- [ ] `go test ./...` — all tests pass
-- [ ] `go vet ./...` passes
+- [x] `go test ./...` — all tests pass
+- [x] `go vet ./...` passes
 - [ ] GitHub Actions workflow runs without errors
 
 ---
@@ -391,6 +391,8 @@ The hourly GitHub Actions workflow posts new votes to Instagram automatically al
 ### Instagram Carousel Cap Indicator
 
 The ten-vote-stress-test fixture generates 11 images (1 title + 10 results), which gets capped at 10 by the Instagram carousel limit. The images themselves don't currently indicate there are more votes beyond what's shown. A follow-up enhancement in `pkg/imagegen/` (Phase 1 scope) could add a "see caption for more" indicator on the last card, so viewers know the carousel is truncated.
+
+### Explore how contact tagging could work on Instagram.
 
 ## References
 

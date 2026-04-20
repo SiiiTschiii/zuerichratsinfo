@@ -12,6 +12,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -31,8 +32,16 @@ func main() {
 
 	bskyEnabled := bskyHandle != "" && bskyPassword != ""
 
-	if !xEnabled && !bskyEnabled {
-		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky.")
+	igUserID := os.Getenv("IG_USER_ID")
+	igAccessToken := os.Getenv("IG_ACCESS_TOKEN")
+	igGithubToken := os.Getenv("GITHUB_TOKEN")
+	igRepoOwner := os.Getenv("IG_REPO_OWNER")
+	igRepoName := os.Getenv("IG_REPO_NAME")
+
+	igEnabled := igUserID != "" && igAccessToken != "" && igGithubToken != "" && igRepoOwner != "" && igRepoName != ""
+
+	if !xEnabled && !bskyEnabled && !igEnabled {
+		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky, or IG_USER_ID/IG_ACCESS_TOKEN/GITHUB_TOKEN/IG_REPO_OWNER/IG_REPO_NAME for Instagram.")
 	}
 
 	if !xEnabled {
@@ -41,12 +50,16 @@ func main() {
 	if !bskyEnabled {
 		log.Println("⚠️  Bluesky not configured (missing BLUESKY_HANDLE/BLUESKY_PASSWORD)")
 	}
+	if !igEnabled {
+		log.Println("⚠️  Instagram not configured (missing IG_USER_ID/IG_ACCESS_TOKEN/GITHUB_TOKEN/IG_REPO_OWNER/IG_REPO_NAME)")
+	}
 
 	// Load rate limit configuration from environment
 	maxVotesToCheck := getEnvInt("MAX_VOTES_TO_CHECK", 50)
 	maxVoteAgeDays := getEnvInt("MAX_VOTE_AGE_DAYS", 90)
 	maxXPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
 	maxBskyPostsPerRun := getEnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10)
+	maxIGPostsPerRun := getEnvInt("IG_MAX_POSTS_PER_RUN", 5)
 	xMaxChars := getEnvInt("X_MAX_CHARS", x.DefaultMaxChars)
 
 	fmt.Printf("Configuration: Check last %d votes\n", maxVotesToCheck)
@@ -164,6 +177,53 @@ func main() {
 				}
 			} else {
 				fmt.Printf("🎉 Posted %d new group(s) to Bluesky!\n", posted)
+			}
+		}
+	}
+
+	// --- Instagram Platform ---
+	if igEnabled {
+		fmt.Println("\n━━━ Instagram ━━━")
+
+		var voteLog *votelog.VoteLog
+		if skipVoteLog {
+			voteLog = votelog.NewNoOp(votelog.PlatformInstagram)
+			fmt.Println("⚠️  SKIP_VOTE_LOG=true — treating all votes as unposted, not saving vote log")
+		} else {
+			var err error
+			voteLog, err = votelog.Load(votelog.PlatformInstagram)
+			if err != nil {
+				log.Fatalf("Error loading Instagram vote log: %v", err)
+			}
+			fmt.Printf("Loaded Instagram vote log: %d votes already posted\n", voteLog.Count())
+		}
+
+		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck, maxVoteAgeDays)
+		if err != nil {
+			log.Fatalf("Error preparing votes for Instagram: %v", err)
+		}
+
+		if len(groups) == 0 {
+			fmt.Println("No new votes to post on Instagram!")
+		} else {
+			fmt.Printf("Found %d group(s) to post on Instagram\n", len(groups))
+
+			igPlatform := instagram.NewInstagramPlatformWithCredentials(
+				igUserID, igAccessToken, igGithubToken, igRepoOwner, igRepoName, maxIGPostsPerRun,
+			)
+
+			posted, err := voteposting.PostToPlatform(groups, igPlatform, voteLog, false)
+			if err != nil {
+				if errors.Is(err, voteposting.ErrUnsupportedVoteType) {
+					hasUnsupportedVotes = true
+					if posted > 0 {
+						fmt.Printf("Posted %d group(s) to Instagram (some skipped — see warnings above)\n", posted)
+					}
+				} else {
+					log.Printf("Error posting to Instagram: %v", err)
+				}
+			} else {
+				fmt.Printf("🎉 Posted %d new group(s) to Instagram!\n", posted)
 			}
 		}
 	}

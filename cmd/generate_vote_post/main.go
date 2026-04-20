@@ -11,6 +11,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -18,14 +19,15 @@ import (
 func main() {
 	numVotes := flag.Int("n", 1, "number of vote groups to preview")
 	fetchLimit := flag.Int("fetch", 35, "number of individual votes to fetch from API")
-	platform := flag.String("platform", "", "platform to preview: x, bluesky (default: all)")
+	platform := flag.String("platform", "", "platform to preview: x, bluesky, instagram (default: all)")
 	flag.Parse()
 
 	showX := *platform == "" || strings.EqualFold(*platform, "x")
 	showBluesky := *platform == "" || strings.EqualFold(*platform, "bluesky") || strings.EqualFold(*platform, "bsky")
+	showInstagram := *platform == "" || strings.EqualFold(*platform, "instagram") || strings.EqualFold(*platform, "ig")
 
-	if !showX && !showBluesky {
-		log.Fatalf("Unknown platform %q. Use: x, bluesky", *platform)
+	if !showX && !showBluesky && !showInstagram {
+		log.Fatalf("Unknown platform %q. Use: x, bluesky, instagram", *platform)
 	}
 
 	// Create API client
@@ -69,6 +71,19 @@ func main() {
 		fmt.Println("━━━ Bluesky ━━━")
 		bskyLog := votelog.NewEmpty(votelog.PlatformBluesky)
 		_, err = voteposting.PostToPlatform(groups, bskyPlatform, bskyLog, true)
+		if err != nil {
+			log.Fatalf("Error: %v", err)
+		}
+	}
+
+	if showInstagram {
+		igPlatform := instagram.NewInstagramPlatform(*numVotes)
+		if showX || showBluesky {
+			fmt.Println()
+		}
+		fmt.Println("━━━ Instagram ━━━")
+		igLog := votelog.NewEmpty(votelog.PlatformInstagram)
+		_, err = voteposting.PostToPlatform(groups, igPlatform, igLog, true)
 		if err != nil {
 			log.Fatalf("Error: %v", err)
 		}
