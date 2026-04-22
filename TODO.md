@@ -36,6 +36,8 @@
 
 ## Platform Integrations
 
+### Done
+
 ### Bluesky (Priority 1 — lowest effort, closest to X format)
 
 - [x] Implement Bluesky client using AT Protocol (`com.atproto.repo.createRecord`)
@@ -45,19 +47,21 @@
 
 ### Instagram (Priority 2 — visual-first, shares Meta infra with Facebook)
 
-- [ ] Implement vote result image generator (infographic: title, bar chart, result)
+- [x] Implement vote result image generator (infographic: title, bar chart, result)
   - Prerequisite: "Generate visual posts" TODO above
-- [ ] Set up public image hosting for generated visuals
+- [x] Set up public image hosting for generated visuals
   - Instagram API requires a publicly accessible URL to fetch the image during container creation
   - Working assumption: host generated images temporarily (e.g. via GitHub Pages) and only delete them after the container status is `PUBLISHED`
-- [ ] Implement Instagram client using Content Publishing API (image + caption)
+- [x] Implement Instagram client using Content Publishing API (image + caption)
   - Two-step flow: create media container → publish container
   - Requires professional IG account + Facebook Page + Meta Developer App
   - Permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`
   - 100 posts/24h limit
   - Docs: https://developers.facebook.com/docs/instagram-platform/instagram-api-with-facebook-login/content-publishing
   - API research documented in `pkg/igapi/README.md`
-- [ ] Add Instagram platform to posting pipeline and track posted votes separately
+- [x] Add Instagram platform to posting pipeline and track posted votes separately
+
+### Planned
 
 ### Facebook (Priority 3 — nearly free once Instagram/Meta app is set up)
 
