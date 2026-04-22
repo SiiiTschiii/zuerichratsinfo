@@ -15,6 +15,8 @@ const maxCaptionChars = 2200
 // maxCarouselImages is the maximum number of images in an Instagram carousel.
 const maxCarouselImages = 10
 
+const captionTruncatedNoticeLine = "ℹ️ Gekürzt – weitere Teilabstimmungen im Link."
+
 // InstagramContent implements platforms.Content for Instagram
 type InstagramContent struct {
 	Images  [][]byte // JPEG-encoded carousel images
@@ -135,13 +137,13 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 func buildCaptionWithPreservedLink(body, link string) string {
 	body = strings.TrimRight(body, "\n")
 	linkLine := fmt.Sprintf("🔗 %s", link)
-	fullLinkLine := "\n" + linkLine
-	caption := body + fullLinkLine
+	caption := body + "\n" + linkLine
 
 	// Truncate if over Instagram's character limit
 	if len([]rune(caption)) > maxCaptionChars {
-		availableBodyRunes := maxCaptionChars - len([]rune(fullLinkLine))
-		if availableBodyRunes <= 0 {
+		tailWithNotice := captionTruncatedNoticeLine + "\n" + linkLine
+
+		if len([]rune(tailWithNotice)) > maxCaptionChars {
 			linkRunes := []rune(linkLine)
 			if len(linkRunes) <= maxCaptionChars {
 				return linkLine
@@ -149,16 +151,28 @@ func buildCaptionWithPreservedLink(body, link string) string {
 			return string(linkRunes[:maxCaptionChars-1]) + "…"
 		}
 
-		bodyRunes := []rune(body)
-		if len(bodyRunes) > availableBodyRunes {
-			if availableBodyRunes == 1 {
-				body = "…"
-			} else {
-				body = string(bodyRunes[:availableBodyRunes-1]) + "…"
-			}
+		availableBodyRunes := maxCaptionChars - len([]rune("\n"+tailWithNotice))
+		if availableBodyRunes <= 0 {
+			return tailWithNotice
 		}
-		caption = body + fullLinkLine
+
+		body = truncateRunesWithEllipsis(body, availableBodyRunes)
+		caption = body + "\n" + tailWithNotice
 	}
 
 	return caption
+}
+
+func truncateRunesWithEllipsis(text string, maxRunes int) string {
+	if maxRunes <= 0 {
+		return ""
+	}
+	runes := []rune(text)
+	if len(runes) <= maxRunes {
+		return text
+	}
+	if maxRunes == 1 {
+		return "…"
+	}
+	return string(runes[:maxRunes-1]) + "…"
 }

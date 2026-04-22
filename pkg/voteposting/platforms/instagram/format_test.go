@@ -180,8 +180,24 @@ func TestFormatCarousel_LongMultiVoteCaptionPreservesLink(t *testing.T) {
 		t.Errorf("caption should contain full link line %q\n%s", expectedLinkLine, content.Caption)
 	}
 
+	if !strings.Contains(content.Caption, captionTruncatedNoticeLine) {
+		t.Errorf("caption should contain truncation notice %q\n%s", captionTruncatedNoticeLine, content.Caption)
+	}
+
 	if !strings.HasSuffix(content.Caption, expectedLinkLine) {
 		t.Errorf("caption should end with link line %q\n%s", expectedLinkLine, content.Caption)
+	}
+}
+
+func TestFormatCarousel_ShortCaptionHasNoTruncationNotice(t *testing.T) {
+	votes := testfixtures.MultiVoteGroup()
+	content, err := FormatCarousel(votes)
+	if err != nil {
+		t.Fatalf("FormatCarousel error: %v", err)
+	}
+
+	if strings.Contains(content.Caption, captionTruncatedNoticeLine) {
+		t.Errorf("short caption should not contain truncation notice\n%s", content.Caption)
 	}
 }
 
