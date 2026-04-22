@@ -30,6 +30,7 @@ const (
 	imgHeight = 1350
 	padding   = 60
 	shadowOff = 2
+	summarySubtitleMaxRunes = 52
 )
 
 var palette = []color.RGBA{
@@ -226,7 +227,7 @@ func GenerateCarousel(votes []zurichapi.Abstimmung) ([][]byte, error) {
 		images = append(images, titleImg)
 
 		for i := range votes {
-			resultImg, err := renderResultCard(&votes[i], bgColor, fonts)
+			resultImg, err := renderResultCard(&votes[i], bgColor, fonts, i+1, len(votes))
 			if err != nil {
 				return nil, fmt.Errorf("rendering result card %d: %w", i, err)
 			}
@@ -707,16 +708,21 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, votes []zurichapi.Absti
 		cur.gap(titleFace, 0.15)
 	}
 
-	// Summary: list each sub-vote with emoji + subtitle + result (no numbers)
+	// Summary: list each sub-vote with number + emoji + short subtitle.
 	cur.gap(fonts.regular, 0.75)
+	if img != nil {
+		header := fmt.Sprintf("Übersicht (%d Teilabstimmungen)", len(votes))
+		drawCenteredText(img, fonts.small, nil, cur.baseline(fonts.small), header, bg)
+	}
+	cur.advance(fonts.small)
+	cur.gap(fonts.small, 0.4)
+
 	var summaryLines []string
-	for _, sv := range votes {
-		if sv.Abstimmungstitel == "" {
-			continue
+	for i, sv := range votes {
+		line, ok := formatSummaryLine(i+1, sv)
+		if ok {
+			summaryLines = append(summaryLines, line)
 		}
-		sub := voteformat.CleanVoteSubtitle(sv.Abstimmungstitel)
-		emoji := voteformat.GetVoteResultEmoji(sv.Schlussresultat)
-		summaryLines = append(summaryLines, fmt.Sprintf("%s %s", emoji, sub))
 	}
 	// Find widest line and center the block, then left-align all lines within it
 	maxW := 0
@@ -735,10 +741,10 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, votes []zurichapi.Absti
 	}
 }
 
-func renderResultCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) ([]byte, error) {
+func renderResultCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet, idx, total int) ([]byte, error) {
 	// Dry run to measure content height
 	dry := newCursor(0, imgHeight)
-	layoutResultCard(nil, dry, v, bg, fonts)
+	layoutResultCard(nil, dry, v, bg, fonts, idx, total)
 
 	// Real run with centered offset
 	startY := (imgHeight - dry.contentHeight()) / 2
@@ -747,12 +753,22 @@ func renderResultCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) ([
 	}
 	img := newImage(bg)
 	cur := newCursor(startY, imgHeight)
-	layoutResultCard(img, cur, v, bg, fonts)
+	layoutResultCard(img, cur, v, bg, fonts, idx, total)
 
 	return encodeJPEG(img)
 }
 
-func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) {
+func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet, idx, total int) {
+	if img != nil {
+		badge := formatProgressBadge(idx, total)
+		if badge != "" {
+			badgeW := font.MeasureString(fonts.small, badge).Ceil()
+			badgeX := imgWidth - padding - badgeW
+			badgeY := padding + fonts.small.Metrics().Ascent.Ceil()
+			drawShadowedText(img, fonts.small, nil, badgeX, badgeY, badge, bg)
+		}
+	}
+
 	// Subtitle if present (for multi-vote groups)
 	if v.Abstimmungstitel != "" {
 		sub := voteformat.CleanVoteSubtitle(v.Abstimmungstitel)
@@ -808,4 +824,36 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmun
 	// Party breakdown table
 	fraktionCounts := voteformat.AggregateFraktionCounts(v.Stimmabgaben.Stimmabgabe)
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
+}
+
+func formatSummaryLine(index int, vote zurichapi.Abstimmung) (string, bool) {
+	if vote.Abstimmungstitel == "" {
+		return "", false
+	}
+
+	subtitle := voteformat.CleanVoteSubtitle(vote.Abstimmungstitel)
+	subtitle = truncateWithEllipsis(subtitle, summarySubtitleMaxRunes)
+	emoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
+	return fmt.Sprintf("%d. %s %s", index, emoji, subtitle), true
+}
+
+func formatProgressBadge(index, total int) string {
+	if total <= 1 || index <= 0 || index > total {
+		return ""
+	}
+	return fmt.Sprintf("%d/%d", index, total)
+}
+
+func truncateWithEllipsis(text string, maxRunes int) string {
+	if maxRunes <= 0 {
+		return ""
+	}
+	runes := []rune(text)
+	if len(runes) <= maxRunes {
+		return text
+	}
+	if maxRunes == 1 {
+		return "…"
+	}
+	return string(runes[:maxRunes-1]) + "…"
 }

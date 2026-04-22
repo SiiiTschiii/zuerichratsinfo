@@ -3,9 +3,11 @@ package imagegen
 import (
 	"bytes"
 	"image/jpeg"
+	"strings"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 func TestGenerateCarousel_ValidJPEG(t *testing.T) {
@@ -69,5 +71,35 @@ func TestSelectColor_DifferentInputs(t *testing.T) {
 	// This is probabilistic but with our palette it's very likely
 	if c1 == c2 {
 		t.Log("warning: different inputs produced same color (possible but unlikely)")
+	}
+}
+
+func TestFormatSummaryLine_NumberingAndTruncation(t *testing.T) {
+	vote := zurichapi.Abstimmung{
+		Abstimmungstitel: "Antrag SP sehr lange Beschreibung mit noch mehr Details für die Übersicht auf der Titelfolie",
+		Schlussresultat:  "angenommen",
+	}
+
+	line, ok := formatSummaryLine(2, vote)
+	if !ok {
+		t.Fatal("expected summary line to be generated")
+	}
+	if !strings.HasPrefix(line, "2. ✅ ") {
+		t.Fatalf("expected numbered line with emoji prefix, got %q", line)
+	}
+	if !strings.Contains(line, "…") {
+		t.Fatalf("expected truncated subtitle with ellipsis, got %q", line)
+	}
+}
+
+func TestFormatProgressBadge(t *testing.T) {
+	if got := formatProgressBadge(2, 3); got != "2/3" {
+		t.Fatalf("expected 2/3, got %q", got)
+	}
+	if got := formatProgressBadge(0, 3); got != "" {
+		t.Fatalf("expected empty badge for invalid index, got %q", got)
+	}
+	if got := formatProgressBadge(1, 1); got != "" {
+		t.Fatalf("expected empty badge for single vote, got %q", got)
 	}
 }
