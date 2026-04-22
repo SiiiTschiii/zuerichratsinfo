@@ -1,9 +1,12 @@
 package instagram
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -193,5 +196,35 @@ func TestContentString(t *testing.T) {
 	}
 	if !strings.Contains(s, "Test caption") {
 		t.Errorf("String() should include caption, got: %s", s)
+	}
+}
+
+func TestFormatCarouselWithContacts_TagsInstagramHandlesInTitle(t *testing.T) {
+	votes := testfixtures.SingleVoteAngenommen()
+	votes[0].TraktandumTitel = "Postulat von Anna Graff"
+
+	contactsFile := filepath.Join(t.TempDir(), "contacts.yaml")
+	err := os.WriteFile(contactsFile, []byte(`version: "1.0"
+contacts:
+  - name: Anna Graff
+    instagram:
+      - https://www.instagram.com/annagraff_/
+`), 0o600)
+	if err != nil {
+		t.Fatalf("write contacts file: %v", err)
+	}
+
+	mapper, err := contacts.LoadContacts(contactsFile)
+	if err != nil {
+		t.Fatalf("load contacts: %v", err)
+	}
+
+	content, err := FormatCarouselWithContacts(votes, mapper)
+	if err != nil {
+		t.Fatalf("FormatCarouselWithContacts error: %v", err)
+	}
+
+	if !strings.Contains(content.Caption, "Anna Graff @annagraff_") {
+		t.Errorf("expected caption to include tagged Instagram handle\n%s", content.Caption)
 	}
 }

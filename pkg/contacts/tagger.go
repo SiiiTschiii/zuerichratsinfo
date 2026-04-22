@@ -44,6 +44,43 @@ func ExtractXHandleFromURL(url string) string {
 	return ""
 }
 
+// ExtractInstagramHandleFromURL extracts the @username from an Instagram profile URL.
+// Examples:
+//   - "https://www.instagram.com/annagraff_/" -> "@annagraff_"
+//   - "instagram.com/alana.gerdes?hl=de" -> "@alana.gerdes"
+func ExtractInstagramHandleFromURL(url string) string {
+	url = strings.TrimSpace(url)
+	url = strings.TrimPrefix(url, "https://")
+	url = strings.TrimPrefix(url, "http://")
+	url = strings.TrimPrefix(url, "www.")
+	url = strings.TrimPrefix(url, "m.")
+
+	if !strings.HasPrefix(url, "instagram.com/") {
+		return ""
+	}
+
+	path := strings.TrimPrefix(url, "instagram.com/")
+	path = strings.SplitN(path, "?", 2)[0]
+	path = strings.SplitN(path, "#", 2)[0]
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return ""
+	}
+
+	username := strings.Split(path, "/")[0]
+	username = strings.TrimPrefix(username, "@")
+	if username == "" {
+		return ""
+	}
+
+	validHandle := regexp.MustCompile(`^[A-Za-z0-9._]+$`)
+	if !validHandle.MatchString(username) {
+		return ""
+	}
+
+	return "@" + username
+}
+
 // generateNameVariants creates name permutations for flexible matching
 // For "Bögli Moritz" -> ["Bögli Moritz", "Moritz Bögli"]
 // For "Garcia Nuñez David" -> ["Garcia Nuñez David", "David Garcia Nuñez"]
@@ -92,8 +129,38 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 		}
 	}
 
+	return tagHandlesInText(text, taggableContacts)
+}
+
+// TagInstagramHandlesInText finds all contacts with Instagram accounts in the text and adds their @handle.
+func (m *Mapper) TagInstagramHandlesInText(text string) string {
+	var taggableContacts []XHandleTag
+
+	for _, contact := range m.getAllContacts() {
+		if len(contact.Instagram) == 0 {
+			continue
+		}
+
+		handle := ExtractInstagramHandleFromURL(contact.Instagram[0])
+		if handle == "" {
+			continue
+		}
+
+		variants := generateNameVariants(contact.Name)
+		for _, variant := range variants {
+			taggableContacts = append(taggableContacts, XHandleTag{
+				Name:   variant,
+				Handle: handle,
+			})
+		}
+	}
+
+	return tagHandlesInText(text, taggableContacts)
+}
+
+// tagHandlesInText inserts social handles after matching contact names in text.
+func tagHandlesInText(text string, taggableContacts []XHandleTag) string {
 	// Sort by name length (descending) to match longer names first
-	// This prevents "David Garcia" from matching before "David Garcia Nuñez"
 	for i := 0; i < len(taggableContacts); i++ {
 		for j := i + 1; j < len(taggableContacts); j++ {
 			if len(taggableContacts[i].Name) < len(taggableContacts[j].Name) {
@@ -102,38 +169,31 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 		}
 	}
 
-	// Collect all matches first (position in original text, name, handle)
 	type match struct {
 		start  int
 		end    int
-		name   string
 		handle string
 	}
 	var matches []match
 
 	for _, tag := range taggableContacts {
-		// Create a regex that matches the name with word boundaries
 		pattern := fmt.Sprintf(`\b%s\b`, regexp.QuoteMeta(tag.Name))
 		re := regexp.MustCompile(pattern)
 
-		// Find all matches
 		indices := re.FindAllStringIndex(text, -1)
 		for _, idx := range indices {
 			matches = append(matches, match{
 				start:  idx[0],
 				end:    idx[1],
-				name:   tag.Name,
 				handle: tag.Handle,
 			})
 		}
 	}
 
-	// Remove overlapping matches (keep longest/first)
 	var filtered []match
 	for _, m1 := range matches {
 		overlaps := false
 		for _, m2 := range filtered {
-			// Check if m1 overlaps with m2
 			if (m1.start >= m2.start && m1.start < m2.end) ||
 				(m1.end > m2.start && m1.end <= m2.end) ||
 				(m1.start <= m2.start && m1.end >= m2.end) {
@@ -146,8 +206,6 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 		}
 	}
 
-	// Sort by position (descending) so we can work backwards
-	// Working backwards means indices stay valid as we insert
 	for i := 0; i < len(filtered); i++ {
 		for j := i + 1; j < len(filtered); j++ {
 			if filtered[i].start < filtered[j].start {
@@ -156,10 +214,8 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 		}
 	}
 
-	// Apply tags by working backwards through the text
 	result := text
 	for _, m := range filtered {
-		// Insert handle after the name
 		result = result[:m.end] + " " + m.handle + result[m.end:]
 	}
 

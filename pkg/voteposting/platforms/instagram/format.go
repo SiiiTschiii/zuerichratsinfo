@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
@@ -31,6 +32,12 @@ func (c *InstagramContent) String() string {
 
 // FormatCarousel generates carousel images and builds the caption text for an Instagram post.
 func FormatCarousel(votes []zurichapi.Abstimmung) (*InstagramContent, error) {
+	return FormatCarouselWithContacts(votes, nil)
+}
+
+// FormatCarouselWithContacts generates carousel images and builds the caption text for an Instagram post,
+// including mapped Instagram @mentions where supported by the title text.
+func FormatCarouselWithContacts(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) (*InstagramContent, error) {
 	if len(votes) == 0 {
 		return nil, fmt.Errorf("no votes provided")
 	}
@@ -47,7 +54,7 @@ func FormatCarousel(votes []zurichapi.Abstimmung) (*InstagramContent, error) {
 	}
 
 	// Build caption text
-	caption := buildCaption(votes)
+	caption := buildCaption(votes, contactMapper)
 
 	return &InstagramContent{
 		Images:  images,
@@ -57,13 +64,16 @@ func FormatCarousel(votes []zurichapi.Abstimmung) (*InstagramContent, error) {
 
 // buildCaption creates the caption text for an Instagram carousel post.
 // Includes vote details (similar to X/Bluesky thread text flattened) + vote page link.
-func buildCaption(votes []zurichapi.Abstimmung) string {
+func buildCaption(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) string {
 	firstVote := votes[0]
 
 	// Header
 	date := voteformat.FormatVoteDate(firstVote.SitzungDatum)
 	title := voteformat.SelectBestTitle(firstVote.TraktandumTitel, firstVote.GeschaeftTitel)
 	title = voteformat.CleanVoteTitle(title)
+	if contactMapper != nil {
+		title = contactMapper.TagInstagramHandlesInText(title)
+	}
 
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date))
