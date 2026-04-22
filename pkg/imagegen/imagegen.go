@@ -31,8 +31,8 @@ const (
 	padding   = 60
 	shadowOff = 2
 
-	fraktionNameColWidth  = 200
-	fraktionRowGapFactor  = 0.2
+	fraktionNameColWidth = 200
+	fraktionRowGapFactor = 0.2
 )
 
 var palette = []color.RGBA{
@@ -414,7 +414,7 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimm
 	partyLineHeight := lineHeight(fonts.partyNum)
 	partyHeight := partyLineHeight + numParties*partyLineHeight
 	if numParties > 1 {
-		partyHeight += int(float64((numParties - 1) * partyLineHeight) * fraktionRowGapFactor)
+		partyHeight += int(float64((numParties-1)*partyLineHeight) * fraktionRowGapFactor)
 	}
 	bottomReserved := verdictHeight + statsHeight + separatorHeight + partyHeight + padding
 	availableForTitle := imgHeight - cur.y - bottomReserved
@@ -625,6 +625,9 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 		allCols = append(allCols, "Abw.")
 		colKeys = append(colKeys, "Abwesend")
 	}
+	if len(allCols) == 0 {
+		return
+	}
 
 	// Layout
 	nameColWidth := fraktionNameColWidth
@@ -648,11 +651,11 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 		tableBottom = cur.imgHeight - padding
 	}
 	rowHeight := lineHeight(numFace)
+	if rowHeight <= 0 {
+		return
+	}
 	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
 	rowStride := rowHeight + rowGap
-	if rowStride <= 0 {
-		rowStride = rowHeight
-	}
 	maxRows := (tableBottom - cur.y) / rowStride
 	if maxRows > len(entries) {
 		maxRows = len(entries)

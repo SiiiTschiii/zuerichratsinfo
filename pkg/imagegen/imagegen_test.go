@@ -2,8 +2,8 @@ package imagegen
 
 import (
 	"bytes"
-	"image/jpeg"
 	"fmt"
+	"image/jpeg"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
@@ -86,12 +86,12 @@ func TestDrawFraktionTable_AddsRowSpacing(t *testing.T) {
 	}
 
 	startY := 100
-	cur := newCursor(startY, imgHeight)
+	cur := newCursor(startY, 600)
 	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("2025/100"), fonts.partyBold, fonts.partyNum)
 
 	rowHeight := lineHeight(fonts.partyNum)
 	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
-	expectedY := startY + rowHeight + 2*rowHeight + rowGap // header + 2 rows + 1 gap between rows
+	expectedY := startY + 3*rowHeight + rowGap // header + 2 rows + 1 gap between rows
 	if cur.y != expectedY {
 		t.Fatalf("expected y=%d, got %d", expectedY, cur.y)
 	}
@@ -115,7 +115,7 @@ func TestDrawFraktionTable_LimitsRowsWhenSpaceIsTight(t *testing.T) {
 	rowStride := rowHeight + rowGap
 	maxRows := 3
 
-	customImgHeight := padding + rowHeight + maxRows*rowStride + (rowStride - 1)
+	customImgHeight := padding + rowHeight + maxRows*rowStride
 	cur := newCursor(0, customImgHeight)
 	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("2025/100"), fonts.partyBold, fonts.partyNum)
 
