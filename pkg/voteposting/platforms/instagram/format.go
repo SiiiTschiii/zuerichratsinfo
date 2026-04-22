@@ -128,14 +128,35 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 	} else {
 		link = voteformat.GenerateVoteLink(firstVote.OBJGUID)
 	}
-	sb.WriteString(fmt.Sprintf("\n🔗 %s", link))
 
-	caption := sb.String()
+	return buildCaptionWithPreservedLink(sb.String(), link)
+}
+
+func buildCaptionWithPreservedLink(body, link string) string {
+	body = strings.TrimRight(body, "\n")
+	linkLine := fmt.Sprintf("🔗 %s", link)
+	caption := body + "\n" + linkLine
 
 	// Truncate if over Instagram's character limit
 	if len([]rune(caption)) > maxCaptionChars {
-		runes := []rune(caption)
-		caption = string(runes[:maxCaptionChars-1]) + "…"
+		availableBodyRunes := maxCaptionChars - len([]rune("\n"+linkLine))
+		if availableBodyRunes <= 0 {
+			linkRunes := []rune(linkLine)
+			if len(linkRunes) <= maxCaptionChars {
+				return linkLine
+			}
+			return string(linkRunes[:maxCaptionChars-1]) + "…"
+		}
+
+		bodyRunes := []rune(body)
+		if len(bodyRunes) > availableBodyRunes {
+			if availableBodyRunes == 1 {
+				body = "…"
+			} else {
+				body = string(bodyRunes[:availableBodyRunes-1]) + "…"
+			}
+		}
+		caption = body + "\n" + linkLine
 	}
 
 	return caption
