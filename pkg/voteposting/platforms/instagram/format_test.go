@@ -83,6 +83,11 @@ func TestFormatCarousel_MultiVoteLinkHasNoFragment(t *testing.T) {
 	if strings.Contains(content.Caption, "#"+votes[0].TraktandumGuid) {
 		t.Errorf("caption link should not include fragment\n%s", content.Caption)
 	}
+
+	expectedLink := "https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=" + votes[0].SitzungGuid
+	if !strings.Contains(content.Caption, expectedLink) {
+		t.Errorf("caption should contain fragment-free link %q\n%s", expectedLink, content.Caption)
+	}
 }
 
 func TestFormatCarousel_CaptionWithinLimit(t *testing.T) {

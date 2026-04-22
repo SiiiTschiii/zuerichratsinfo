@@ -2,7 +2,6 @@ package instagram
 
 import (
 	"fmt"
-	"net/url"
 	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
@@ -144,12 +143,9 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 }
 
 func stripURLFragment(rawURL string) string {
-	parsed, err := url.Parse(rawURL)
-	if err != nil {
-		withoutFragment, _, _ := strings.Cut(rawURL, "#")
-		return withoutFragment
+	withoutFragment, _, hasFragment := strings.Cut(rawURL, "#")
+	if !hasFragment {
+		return rawURL
 	}
-
-	parsed.Fragment = ""
-	return parsed.String()
+	return withoutFragment
 }
