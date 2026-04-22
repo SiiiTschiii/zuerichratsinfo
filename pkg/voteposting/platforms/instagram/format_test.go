@@ -73,6 +73,18 @@ func TestFormatCarousel_MultiVote(t *testing.T) {
 	}
 }
 
+func TestFormatCarousel_MultiVoteLinkHasNoFragment(t *testing.T) {
+	votes := testfixtures.MultiVoteGroup()
+	content, err := FormatCarousel(votes)
+	if err != nil {
+		t.Fatalf("FormatCarousel error: %v", err)
+	}
+
+	if strings.Contains(content.Caption, "#"+votes[0].TraktandumGuid) {
+		t.Errorf("caption link should not include fragment\n%s", content.Caption)
+	}
+}
+
 func TestFormatCarousel_CaptionWithinLimit(t *testing.T) {
 	// Test all fixtures to ensure no caption exceeds Instagram's 2200 char limit
 	for name, votes := range testfixtures.AllFixtures() {
@@ -193,5 +205,32 @@ func TestContentString(t *testing.T) {
 	}
 	if !strings.Contains(s, "Test caption") {
 		t.Errorf("String() should include caption, got: %s", s)
+	}
+}
+
+func TestStripURLFragment(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "url with fragment",
+			input:    "https://example.com/path?x=1#frag",
+			expected: "https://example.com/path?x=1",
+		},
+		{
+			name:     "url without fragment",
+			input:    "https://example.com/path?x=1",
+			expected: "https://example.com/path?x=1",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := stripURLFragment(tt.input); got != tt.expected {
+				t.Errorf("stripURLFragment(%q) = %q, expected %q", tt.input, got, tt.expected)
+			}
+		})
 	}
 }

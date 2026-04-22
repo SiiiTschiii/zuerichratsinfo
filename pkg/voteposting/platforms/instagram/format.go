@@ -2,6 +2,7 @@ package instagram
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
@@ -128,6 +129,7 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 	} else {
 		link = voteformat.GenerateVoteLink(firstVote.OBJGUID)
 	}
+	link = stripURLFragment(link)
 	sb.WriteString(fmt.Sprintf("\n🔗 %s", link))
 
 	caption := sb.String()
@@ -139,4 +141,15 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 	}
 
 	return caption
+}
+
+func stripURLFragment(rawURL string) string {
+	parsed, err := url.Parse(rawURL)
+	if err != nil {
+		withoutFragment, _, _ := strings.Cut(rawURL, "#")
+		return withoutFragment
+	}
+
+	parsed.Fragment = ""
+	return parsed.String()
 }
