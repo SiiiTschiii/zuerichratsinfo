@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// XHandleTag represents a name and its X handle for tagging
-type XHandleTag struct {
+// HandleTag represents a name and its social handle for tagging.
+type HandleTag struct {
 	Name   string
 	Handle string
 }
@@ -107,7 +107,7 @@ func generateNameVariants(name string) []string {
 // Uses greedy matching to prefer longer names (e.g., "David Garcia Nuñez" over "David Garcia")
 func (m *Mapper) TagXHandlesInText(text string) string {
 	// Collect all contacts with X accounts and their handles
-	var taggableContacts []XHandleTag
+	var taggableContacts []HandleTag
 
 	for _, contact := range m.getAllContacts() {
 		if len(contact.X) == 0 {
@@ -122,7 +122,7 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 		// Generate name variants for flexible matching
 		variants := generateNameVariants(contact.Name)
 		for _, variant := range variants {
-			taggableContacts = append(taggableContacts, XHandleTag{
+			taggableContacts = append(taggableContacts, HandleTag{
 				Name:   variant,
 				Handle: handle,
 			})
@@ -134,7 +134,7 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 
 // TagInstagramHandlesInText finds all contacts with Instagram accounts in the text and adds their @handle.
 func (m *Mapper) TagInstagramHandlesInText(text string) string {
-	var taggableContacts []XHandleTag
+	var taggableContacts []HandleTag
 
 	for _, contact := range m.getAllContacts() {
 		if len(contact.Instagram) == 0 {
@@ -148,7 +148,7 @@ func (m *Mapper) TagInstagramHandlesInText(text string) string {
 
 		variants := generateNameVariants(contact.Name)
 		for _, variant := range variants {
-			taggableContacts = append(taggableContacts, XHandleTag{
+			taggableContacts = append(taggableContacts, HandleTag{
 				Name:   variant,
 				Handle: handle,
 			})
@@ -159,7 +159,7 @@ func (m *Mapper) TagInstagramHandlesInText(text string) string {
 }
 
 // tagHandlesInText inserts social handles after matching contact names in text.
-func tagHandlesInText(text string, taggableContacts []XHandleTag) string {
+func tagHandlesInText(text string, taggableContacts []HandleTag) string {
 	// Sort by name length (descending) to match longer names first
 	for i := 0; i < len(taggableContacts); i++ {
 		for j := i + 1; j < len(taggableContacts); j++ {
