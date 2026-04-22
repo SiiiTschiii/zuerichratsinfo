@@ -19,6 +19,7 @@ import (
 var (
 	contactsPath  = flag.String("contacts", "data/contacts.yaml", "Path to contacts YAML file")
 	overridesPath = flag.String("overrides", "data/email_overrides.yaml", "Path to email overrides YAML file")
+	platform      = flag.String("platform", "", "Target platform (required): bluesky | instagram")
 	preview       = flag.Bool("preview", false, "Preview: render all emails")
 	outputFile    = flag.String("output", "", "Output file for preview (default: stdout)")
 	testAddr      = flag.String("test", "", "Test mode: send all emails to this address")
@@ -26,15 +27,73 @@ var (
 	delay         = flag.Int("delay", 2, "Seconds between sends")
 )
 
-const emailSubject = "zuerichratsinfo jetzt auch auf Bluesky"
+type platformConfig struct {
+	Key         string
+	DisplayName string
+	Subject     string
+	Body        func(platformURL string) string
+}
+
+var platformConfigs = map[string]platformConfig{
+	"bluesky":   blueskyConfig,
+	"instagram": instagramConfig,
+}
+
+var blueskyConfig = platformConfig{
+	Key:         "bluesky",
+	DisplayName: "Bluesky",
+	Subject:     "zuerichratsinfo jetzt auch auf Bluesky",
+	Body: func(url string) string {
+		return fmt.Sprintf(`zuerichratsinfo ist jetzt auch auf Bluesky verfügbar:
+👉 https://bsky.app/profile/zuerichratsinfo.bsky.social
+
+Der Account publiziert die Abstimmungsresultate aus dem Gemeinderat auf X (https://x.com/zuerichratsinfo) und neu auch auf Bluesky, und markiert jeweils die Politikernnen und Politiker, welche die entsprechenden Vorstösse etc. eingereicht haben (wie dich: %s). Ziel ist es, politische Arbeit transparenter und für die Öffentlichkeit besser nachvollziehbar zu machen.
+
+Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit Statistiken, wie die einzelnen Fraktionen abgestimmt haben. Falls du Ideen oder Feedback hast, würde ich mich sehr darüber freuen!
+
+Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
+ 
+Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
+https://github.com/SiiiTschiii/zuerichratsinfo
+
+Vielen Dank und liebe Grüsse
+Christof
+https://www.linkedin.com/in/christof-gerber/
+`, url)
+	},
+}
+
+var instagramConfig = platformConfig{
+	Key:         "instagram",
+	DisplayName: "Instagram",
+	Subject:     "zuerichratsinfo jetzt auch auf Instagram",
+	Body: func(url string) string {
+		return fmt.Sprintf(`zuerichratsinfo ist jetzt auch auf Instagram verfügbar:
+👉 https://www.instagram.com/zueriratsinfo
+
+Der Account publiziert die Abstimmungsresultate aus dem Gemeinderat auf X (https://x.com/zuerichratsinfo), Bluesky (https://bsky.app/profile/zuerichratsinfo.bsky.social) und neu auch auf Instagram, und markiert jeweils die Politikerinnen und Politiker, welche die entsprechenden Vorstösse etc. eingereicht haben (wie dich: %s). Ziel ist es, politische Arbeit transparenter und für die Öffentlichkeit besser nachvollziehbar zu machen.
+
+Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit Statistiken, wie die einzelnen Fraktionen abgestimmt haben. Falls du Ideen oder Feedback hast, würde ich mich sehr darüber freuen!
+
+Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
+
+Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
+https://github.com/SiiiTschiii/zuerichratsinfo
+
+Vielen Dank und liebe Grüsse
+Christof
+https://www.linkedin.com/in/christof-gerber/
+`, url)
+	},
+}
 
 type Recipient struct {
-	Name       string
-	Email      string
-	Gender     string
-	Salutation string
-	BlueskyURL string
-	Source     string
+	Name        string
+	Email       string
+	Gender      string
+	Salutation  string
+	PlatformURL string
+	Source      string
 }
 
 type Override struct {
@@ -54,34 +113,39 @@ func main() {
 		log.Fatal("Cannot use --send and --test at the same time")
 	}
 
-	recipients := buildRecipientList()
+	cfg, ok := platformConfigs[strings.ToLower(*platform)]
+	if !ok {
+		log.Fatalf("--platform is required; supported: bluesky, instagram")
+	}
+
+	recipients := buildRecipientList(cfg)
 
 	switch {
 	case *preview:
-		runPreview(recipients)
+		runPreview(cfg, recipients)
 	case *testAddr != "":
-		runSend(recipients, *testAddr)
+		runSend(cfg, recipients, *testAddr)
 	case *send:
-		runSend(recipients, "")
+		runSend(cfg, recipients, "")
 	default:
-		runVerify(recipients)
+		runVerify(cfg, recipients)
 	}
 }
 
-func buildRecipientList() []Recipient {
+func buildRecipientList(cfg platformConfig) []Recipient {
 	mapper, err := contacts.LoadContacts(*contactsPath)
 	if err != nil {
 		log.Fatalf("Failed to load contacts: %v", err)
 	}
 
 	allContacts := mapper.GetAllContacts()
-	var bskyContacts []contacts.Contact
+	var matchingContacts []contacts.Contact
 	for _, c := range allContacts {
-		if len(c.Bluesky) > 0 {
-			bskyContacts = append(bskyContacts, c)
+		if len(mapper.GetPlatformURLs(c.Name, cfg.Key)) > 0 {
+			matchingContacts = append(matchingContacts, c)
 		}
 	}
-	fmt.Fprintf(os.Stderr, "Found %d contacts with Bluesky accounts\n", len(bskyContacts))
+	fmt.Fprintf(os.Stderr, "Found %d contacts with %s accounts\n", len(matchingContacts), cfg.DisplayName)
 
 	fmt.Fprintf(os.Stderr, "Fetching contact data from API...\n")
 	client := zurichapi.NewClient()
@@ -99,18 +163,22 @@ func buildRecipientList() []Recipient {
 
 	var recipients []Recipient
 
-	for _, contact := range bskyContacts {
-		bskyURL := contact.Bluesky[0]
+	for _, contact := range matchingContacts {
+		urls := mapper.GetPlatformURLs(contact.Name, cfg.Key)
+		if len(urls) == 0 {
+			continue
+		}
+		platformURL := urls[0]
 		nameLower := strings.ToLower(contact.Name)
 
 		if o, ok := overrideMap[nameLower]; ok {
 			recipients = append(recipients, Recipient{
-				Name:       contact.Name,
-				Email:      o.Email,
-				Gender:     o.Gender,
-				Salutation: salutation(o.Gender),
-				BlueskyURL: bskyURL,
-				Source:     "override",
+				Name:        contact.Name,
+				Email:       o.Email,
+				Gender:      o.Gender,
+				Salutation:  salutation(o.Gender),
+				PlatformURL: platformURL,
+				Source:      "override",
 			})
 			continue
 		}
@@ -126,12 +194,12 @@ func buildRecipientList() []Recipient {
 		}
 
 		recipients = append(recipients, Recipient{
-			Name:       contact.Name,
-			Email:      email,
-			Gender:     gender,
-			Salutation: salutation(gender),
-			BlueskyURL: bskyURL,
-			Source:     "api",
+			Name:        contact.Name,
+			Email:       email,
+			Gender:      gender,
+			Salutation:  salutation(gender),
+			PlatformURL: platformURL,
+			Source:      "api",
 		})
 	}
 
@@ -215,13 +283,13 @@ func normalize(s string) string {
 
 // --- Verify mode ---
 
-func runVerify(recipients []Recipient) {
+func runVerify(cfg platformConfig, recipients []Recipient) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	_, _ = fmt.Fprintf(w, "#\tName\tEmail\tGender\tSalutation\tBluesky URL\tSource\n")
+	_, _ = fmt.Fprintf(w, "#\tName\tEmail\tGender\tSalutation\t%s URL\tSource\n", cfg.DisplayName)
 	_, _ = fmt.Fprintf(w, "-\t----\t-----\t------\t----------\t-----------\t------\n")
 	for i, r := range recipients {
 		_, _ = fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\n",
-			i+1, r.Name, r.Email, r.Gender, r.Salutation, r.BlueskyURL, r.Source)
+			i+1, r.Name, r.Email, r.Gender, r.Salutation, r.PlatformURL, r.Source)
 	}
 	if err := w.Flush(); err != nil {
 		log.Fatalf("Failed to flush table: %v", err)
@@ -229,33 +297,14 @@ func runVerify(recipients []Recipient) {
 
 	fmt.Printf("\nTotal: %d recipients\n", len(recipients))
 	fmt.Printf("\n--- Email Template ---\n\n")
-	fmt.Printf("Subject: %s\n\n", emailSubject)
+	fmt.Printf("Subject: %s\n\n", cfg.Subject)
 	fmt.Printf("{Salutation} {Name}\n\n")
-	fmt.Print(emailTemplatePreview())
-}
-
-func emailTemplatePreview() string {
-	return `zuerichratsinfo ist jetzt auch auf Bluesky verfügbar:
-👉 https://bsky.app/profile/zuerichratsinfo.bsky.social
-
-Der Account publiziert die Abstimmungsresultate aus dem Gemeinderat auf X (https://x.com/zuerichratsinfo) und neu auch auf Bluesky, und markiert jeweils die Politikerinnen und Politiker, welche die entsprechenden Vorstösse etc. eingereicht haben (wie dich: {BlueskyURL}). Ziel ist es, politische Arbeit transparenter und für die Öffentlichkeit besser nachvollziehbar zu machen.
-
-Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit Statistiken, wie die einzelnen Fraktionen abgestimmt haben. Falls du Ideen oder Feedback hast, würde ich mich sehr darüber freuen!
-
-Ich würde mich freuen, wenn du dem Account folgst.
-
-Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
-https://github.com/SiiiTschiii/zuerichratsinfo
-
-Vielen Dank und liebe Grüsse
-Christof
-https://www.linkedin.com/in/christof-gerber/
-`
+	fmt.Print(cfg.Body(fmt.Sprintf("{%sURL}", cfg.DisplayName)))
 }
 
 // --- Preview mode ---
 
-func runPreview(recipients []Recipient) {
+func runPreview(cfg platformConfig, recipients []Recipient) {
 	output := os.Stdout
 	if *outputFile != "" {
 		f, err := os.Create(*outputFile)
@@ -270,13 +319,13 @@ func runPreview(recipients []Recipient) {
 		output = f
 	}
 
-	_, _ = fmt.Fprintf(output, "# %s\n\n---\n\n", emailSubject)
+	_, _ = fmt.Fprintf(output, "# %s\n\n---\n\n", cfg.Subject)
 
 	for i, r := range recipients {
 		_, _ = fmt.Fprintf(output, "## %d. %s\n\n", i+1, r.Name)
 		_, _ = fmt.Fprintf(output, "**An:** %s\n\n", r.Email)
 		_, _ = fmt.Fprintf(output, "%s %s\n\n", r.Salutation, r.Name)
-		_, _ = fmt.Fprintf(output, "%s", generateEmailBody(r))
+		_, _ = fmt.Fprintf(output, "%s", cfg.Body(r.PlatformURL))
 		_, _ = fmt.Fprintf(output, "\n---\n\n")
 	}
 
@@ -287,32 +336,9 @@ func runPreview(recipients []Recipient) {
 	}
 }
 
-func generateEmailBody(r Recipient) string {
-	return fmt.Sprintf(`zuerichratsinfo ist jetzt auch auf Bluesky verfügbar:
-👉 https://bsky.app/profile/zuerichratsinfo.bsky.social
-
-Der Account publiziert die Abstimmungsresultate aus dem Gemeinderat auf X (https://x.com/zuerichratsinfo) und neu auch auf Bluesky, und markiert jeweils die Politikernnen und Politiker, welche die entsprechenden Vorstösse etc. eingereicht haben (wie dich: %s). Ziel ist es, politische Arbeit transparenter und für die Öffentlichkeit besser nachvollziehbar zu machen.
-
-Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit Statistiken, wie die einzelnen Fraktionen abgestimmt haben. Falls du Ideen oder Feedback hast, würde ich mich sehr darüber freuen!
-
-Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
- 
-Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
-https://github.com/SiiiTschiii/zuerichratsinfo
-
-Vielen Dank und liebe Grüsse
-Christof
-https://www.linkedin.com/in/christof-gerber/
-`, r.BlueskyURL)
-}
-
-func generateFullEmail(r Recipient) string {
-	return fmt.Sprintf("%s %s\n\n%s", r.Salutation, r.Name, generateEmailBody(r))
-}
-
 // --- Send mode ---
 
-func runSend(recipients []Recipient, testOverride string) {
+func runSend(cfg platformConfig, recipients []Recipient, testOverride string) {
 	gmailAddr := os.Getenv("GMAIL_ADDRESS")
 	gmailPass := os.Getenv("GMAIL_APP_PASSWORD")
 	if gmailAddr == "" || gmailPass == "" {
@@ -334,8 +360,8 @@ func runSend(recipients []Recipient, testOverride string) {
 			toAddr = testOverride
 		}
 
-		body := generateFullEmail(r)
-		msg := buildMIMEMessage(gmailAddr, toAddr, emailSubject, body)
+		body := fmt.Sprintf("%s %s\n\n%s", r.Salutation, r.Name, cfg.Body(r.PlatformURL))
+		msg := buildMIMEMessage(gmailAddr, toAddr, cfg.Subject, body)
 
 		err := sendEmail(gmailAddr, gmailPass, toAddr, msg)
 
