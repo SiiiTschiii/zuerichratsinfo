@@ -2,7 +2,9 @@ package imagegen
 
 import (
 	"bytes"
+	"image/color"
 	"image/jpeg"
+	"math"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
@@ -65,9 +67,59 @@ func TestSelectColor_Deterministic(t *testing.T) {
 func TestSelectColor_DifferentInputs(t *testing.T) {
 	c1 := SelectColor("2025/100")
 	c2 := SelectColor("2025/101")
-	// Different inputs should (usually) produce different colors
-	// This is probabilistic but with our palette it's very likely
 	if c1 == c2 {
-		t.Log("warning: different inputs produced same color (possible but unlikely)")
+		t.Fatal("consecutive business numbers should rotate to different colors")
 	}
+}
+
+func TestPalette_BrandAlignedAndContrast(t *testing.T) {
+	if len(palette) < 3 || len(palette) > 5 {
+		t.Fatalf("expected palette size between 3 and 5, got %d", len(palette))
+	}
+
+	brandBlue := colorHex(0x00, 0x69, 0xC7)
+	if colorHex(palette[0].R, palette[0].G, palette[0].B) != brandBlue {
+		t.Fatalf("expected first palette color to be brand blue %s", brandBlue)
+	}
+
+	for i, c := range palette {
+		if contrastRatioWithWhite(c) < 4.5 {
+			t.Fatalf("palette color %d (%s) has insufficient contrast with white text", i, colorHex(c.R, c.G, c.B))
+		}
+	}
+}
+
+func colorHex(r, g, b uint8) string {
+	return string([]byte{
+		'#',
+		hexNibble(r >> 4), hexNibble(r & 0x0F),
+		hexNibble(g >> 4), hexNibble(g & 0x0F),
+		hexNibble(b >> 4), hexNibble(b & 0x0F),
+	})
+}
+
+func hexNibble(v uint8) byte {
+	if v < 10 {
+		return '0' + v
+	}
+	return 'A' + (v - 10)
+}
+
+func contrastRatioWithWhite(c color.RGBA) float64 {
+	l := relativeLuminance(c)
+	return (1.0 + 0.05) / (l + 0.05)
+}
+
+func relativeLuminance(c color.RGBA) float64 {
+	r := linearized(float64(c.R) / 255.0)
+	g := linearized(float64(c.G) / 255.0)
+	b := linearized(float64(c.B) / 255.0)
+	return 0.2126*r + 0.7152*g + 0.0722*b
+}
+
+func linearized(v float64) float64 {
+	if v <= 0.03928 {
+		return v / 12.92
+	}
+	return math.Pow((v+0.055)/1.055, 2.4)
 }
