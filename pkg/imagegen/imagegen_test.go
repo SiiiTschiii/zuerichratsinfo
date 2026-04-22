@@ -54,6 +54,32 @@ func TestGenerateCarousel_Empty(t *testing.T) {
 	}
 }
 
+func TestLayoutResultCard_WrapsLongSubtitle(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	votes := testfixtures.MultiVoteGroup()
+	shortVote := votes[0]
+	shortVote.Abstimmungstitel = "Kurz"
+
+	longVote := votes[0]
+	longVote.Abstimmungstitel = "Änderungsantrag zur Teilrevision der Gemeindeordnung mit zusätzlichen Bestimmungen zur Stadtentwicklung und Raumplanung"
+
+	bg := SelectColor(shortVote.GeschaeftGrNr)
+
+	shortCur := newCursor(0, imgHeight)
+	layoutResultCard(nil, shortCur, &shortVote, bg, fonts)
+
+	longCur := newCursor(0, imgHeight)
+	layoutResultCard(nil, longCur, &longVote, bg, fonts)
+
+	if longCur.contentHeight() <= shortCur.contentHeight() {
+		t.Fatalf("expected wrapped long subtitle to use more vertical space (short=%d, long=%d)", shortCur.contentHeight(), longCur.contentHeight())
+	}
+}
+
 func TestSelectColor_Deterministic(t *testing.T) {
 	c1 := SelectColor("2025/100")
 	c2 := SelectColor("2025/100")
