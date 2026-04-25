@@ -15,6 +15,8 @@ const maxCaptionChars = 2200
 // maxCarouselImages is the maximum number of images in an Instagram carousel.
 const maxCarouselImages = 10
 
+const truncatedCaptionNotice = "ℹ️ Gekürzt – weitere Teilabstimmungen im Link."
+
 // InstagramContent implements platforms.Content for Instagram
 type InstagramContent struct {
 	Images  [][]byte // JPEG-encoded carousel images
@@ -65,10 +67,10 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 	title := voteformat.SelectBestTitle(firstVote.TraktandumTitel, firstVote.GeschaeftTitel)
 	title = voteformat.CleanVoteTitle(title)
 
-	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date))
-	sb.WriteString(title)
-	sb.WriteString("\n\n")
+	var body strings.Builder
+	body.WriteString(fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date))
+	body.WriteString(title)
+	body.WriteString("\n\n")
 
 	// Vote details for each vote
 	for i, vote := range votes {
@@ -85,37 +87,37 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 				voteTitle = fmt.Sprintf("Abstimmung %d", i+1)
 			}
 			if voteformat.IsAuswahlVote(counts) {
-				sb.WriteString(voteTitle)
+				body.WriteString(voteTitle)
 			} else {
 				emoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
 				result := voteformat.GetVoteResultText(vote.Schlussresultat)
-				sb.WriteString(fmt.Sprintf("%s %s: %s", emoji, result, voteTitle))
+				body.WriteString(fmt.Sprintf("%s %s: %s", emoji, result, voteTitle))
 			}
-			sb.WriteString("\n")
+			body.WriteString("\n")
 		} else {
 			// Single vote: result line
 			if !voteformat.IsAuswahlVote(counts) {
 				emoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
 				result := voteformat.GetVoteResultText(vote.Schlussresultat)
-				sb.WriteString(fmt.Sprintf("%s %s\n", emoji, result))
+				body.WriteString(fmt.Sprintf("%s %s\n", emoji, result))
 			}
 		}
 
-		sb.WriteString(voteformat.FormatVoteCountsLong(counts))
-		sb.WriteString("\n")
+		body.WriteString(voteformat.FormatVoteCountsLong(counts))
+		body.WriteString("\n")
 
 		// Fraktion breakdown
 		if stimmabgaben := vote.Stimmabgaben.Stimmabgabe; len(stimmabgaben) > 0 {
 			fraktionCounts := voteformat.AggregateFraktionCounts(stimmabgaben)
 			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
-				sb.WriteString("\n")
-				sb.WriteString(breakdown)
-				sb.WriteString("\n")
+				body.WriteString("\n")
+				body.WriteString(breakdown)
+				body.WriteString("\n")
 			}
 		}
 
 		if i < len(votes)-1 {
-			sb.WriteString("\n")
+			body.WriteString("\n")
 		}
 	}
 
@@ -129,17 +131,41 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 		link = voteformat.GenerateVoteLink(firstVote.OBJGUID)
 	}
 	link = stripURLFragment(link)
-	sb.WriteString(fmt.Sprintf("\n🔗 %s", link))
 
-	caption := sb.String()
+	bodyText := strings.TrimRight(body.String(), "\n")
+	linkLine := fmt.Sprintf("\n🔗 %s", link)
+	caption := bodyText + linkLine
 
 	// Truncate if over Instagram's character limit
 	if len([]rune(caption)) > maxCaptionChars {
-		runes := []rune(caption)
-		caption = string(runes[:maxCaptionChars-1]) + "…"
+		noticeLine := "\n\n" + truncatedCaptionNotice
+		spaceForBody := maxCaptionChars - runeLen(linkLine) - runeLen(noticeLine)
+		if spaceForBody > 0 {
+			caption = truncateWithEllipsis(bodyText, spaceForBody) + noticeLine + linkLine
+		} else {
+			caption = truncateWithEllipsis(bodyText, maxCaptionChars-runeLen(linkLine)) + linkLine
+		}
 	}
 
 	return caption
+}
+
+func runeLen(s string) int {
+	return len([]rune(s))
+}
+
+func truncateWithEllipsis(s string, maxRunes int) string {
+	if maxRunes <= 0 {
+		return ""
+	}
+	if runeLen(s) <= maxRunes {
+		return s
+	}
+	if maxRunes == 1 {
+		return "…"
+	}
+	runes := []rune(s)
+	return string(runes[:maxRunes-1]) + "…"
 }
 
 func stripURLFragment(rawURL string) string {

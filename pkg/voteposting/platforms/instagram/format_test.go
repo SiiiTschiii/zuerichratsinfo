@@ -107,6 +107,33 @@ func TestFormatCarousel_CaptionWithinLimit(t *testing.T) {
 	}
 }
 
+func TestFormatCarousel_TruncationKeepsFullLink(t *testing.T) {
+	votes := testfixtures.TenVoteStressTest()
+	for i := range votes {
+		votes[i].TraktandumTitel = strings.Repeat("Sehr langer Titel für die Geschäftsvorlage ", 20)
+		votes[i].GeschaeftTitel = votes[i].TraktandumTitel
+		votes[i].Abstimmungstitel = strings.Repeat("Änderungsantrag mit ausführlicher Begründung ", 12)
+	}
+
+	content, err := FormatCarousel(votes)
+	if err != nil {
+		t.Fatalf("FormatCarousel error: %v", err)
+	}
+
+	expectedLink := "https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=" + votes[0].SitzungGuid
+	if !strings.Contains(content.Caption, "\n🔗 "+expectedLink) {
+		t.Errorf("caption should contain full final link %q\n%s", expectedLink, content.Caption)
+	}
+
+	if !strings.Contains(content.Caption, truncatedCaptionNotice) {
+		t.Errorf("caption should include truncation notice when shortened\n%s", content.Caption)
+	}
+
+	if len([]rune(content.Caption)) > maxCaptionChars {
+		t.Errorf("caption exceeds %d chars: %d", maxCaptionChars, len([]rune(content.Caption)))
+	}
+}
+
 func TestFormatCarousel_CarouselImageCap(t *testing.T) {
 	// ten-vote-stress-test has 10 votes → would produce 11 images (1 title + 10 results)
 	// Instagram carousel cap is 10, so it should be trimmed
