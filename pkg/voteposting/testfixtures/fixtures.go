@@ -377,7 +377,7 @@ func MixedMultiVote() []zurichapi.Abstimmung {
 		TraktandumTitel:  "Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen",
 		GeschaeftTitel:   "Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen",
 		GeschaeftGrNr:    "2025/107",
-		Abstimmungstitel: "Änderungsantrag 17, 1. Abstimmung",
+		Abstimmungstitel: "Änderungsantrag 17, 1. Abstimmung Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung",
 		Schlussresultat:  "Auswahl A",
 		AnzahlAbwesend:   intPtr(11),
 		AnzahlA:          intPtr(50),
