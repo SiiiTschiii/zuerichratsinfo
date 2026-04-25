@@ -716,7 +716,8 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, votes []zurichapi.Absti
 		}
 		sub := voteformat.CleanVoteSubtitle(sv.Abstimmungstitel)
 		emoji := voteformat.GetVoteResultEmoji(sv.Schlussresultat)
-		summaryLines = append(summaryLines, fmt.Sprintf("%s %s", emoji, sub))
+		summaryLine := fmt.Sprintf("%s %s", emoji, sub)
+		summaryLines = append(summaryLines, wrapText(fonts.small, summaryLine, maxTextWidth)...)
 	}
 	// Find widest line and center the block, then left-align all lines within it
 	maxW := 0
@@ -756,10 +757,15 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmun
 	// Subtitle if present (for multi-vote groups)
 	if v.Abstimmungstitel != "" {
 		sub := voteformat.CleanVoteSubtitle(v.Abstimmungstitel)
-		if img != nil {
-			drawCenteredText(img, fonts.boldHeading, fonts.emojiLarge, cur.baseline(fonts.boldHeading), sub, bg)
+		maxTextWidth := imgWidth - 2*padding
+		subLines := wrapText(fonts.boldHeading, sub, maxTextWidth)
+		for _, line := range subLines {
+			if img != nil {
+				drawCenteredText(img, fonts.boldHeading, fonts.emojiLarge, cur.baseline(fonts.boldHeading), line, bg)
+			}
+			cur.advance(fonts.boldHeading)
+			cur.gap(fonts.boldHeading, 0.15)
 		}
-		cur.advance(fonts.boldHeading)
 		cur.gap(fonts.boldHeading, 0.5)
 	}
 
