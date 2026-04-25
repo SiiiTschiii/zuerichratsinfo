@@ -716,7 +716,8 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, votes []zurichapi.Absti
 		}
 		sub := voteformat.CleanVoteSubtitle(sv.Abstimmungstitel)
 		emoji := voteformat.GetVoteResultEmoji(sv.Schlussresultat)
-		summaryLines = append(summaryLines, fmt.Sprintf("%s %s", emoji, sub))
+		summaryLine := fmt.Sprintf("%s %s", emoji, sub)
+		summaryLines = append(summaryLines, wrapText(fonts.small, summaryLine, maxTextWidth)...)
 	}
 	// Find widest line and center the block, then left-align all lines within it
 	maxW := 0

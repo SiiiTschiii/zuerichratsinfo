@@ -80,6 +80,33 @@ func TestLayoutResultCard_WrapsLongSubtitle(t *testing.T) {
 	}
 }
 
+func TestLayoutTitleCard_WrapsLongSummaryLine(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	shortVotes := testfixtures.MultiVoteGroup()
+	shortVotes[0].Abstimmungstitel = "Einleitung"
+	shortVotes[1].Abstimmungstitel = "Schluss"
+
+	longVotes := testfixtures.MultiVoteGroup()
+	longVotes[0].Abstimmungstitel = "Einleitung"
+	longVotes[1].Abstimmungstitel = "Schlussabstimmung mit zusätzlichen Bestimmungen zur Neuordnung der Kompetenzen im Bereich Stadtentwicklung und Raumplanung"
+
+	bg := SelectColor(shortVotes[0].GeschaeftGrNr)
+
+	shortCur := newCursor(0, imgHeight)
+	layoutTitleCard(nil, shortCur, shortVotes, bg, fonts)
+
+	longCur := newCursor(0, imgHeight)
+	layoutTitleCard(nil, longCur, longVotes, bg, fonts)
+
+	if longCur.contentHeight() <= shortCur.contentHeight() {
+		t.Fatalf("expected wrapped long summary line to use more vertical space (short=%d, long=%d)", shortCur.contentHeight(), longCur.contentHeight())
+	}
+}
+
 func TestSelectColor_Deterministic(t *testing.T) {
 	c1 := SelectColor("2025/100")
 	c2 := SelectColor("2025/100")
