@@ -52,7 +52,7 @@ Found an error or want to add a politician's social media account? Please [open 
 - X API v2 with OAuth 1.0a, see [pkg/xapi/README.md](pkg/xapi/README.md)
 - Bluesky AT Protocol (app.bsky), see [pkg/voteposting/platforms/bluesky](pkg/voteposting/platforms/bluesky)
 - Instagram Graph API with image carousel publishing, see [pkg/igapi/README.md](pkg/igapi/README.md)
-- Vote image generation (1080×1080 JPEG carousels), see [pkg/imagegen](pkg/imagegen)
+- Vote image generation (1080×1350 JPEG carousels), see [pkg/imagegen](pkg/imagegen)
 
 ## Setup
 

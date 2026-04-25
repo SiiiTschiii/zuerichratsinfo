@@ -30,6 +30,11 @@ const (
 	imgHeight = 1350
 	padding   = 60
 	shadowOff = 2
+	summarySubtitleMaxRunes = 90
+
+	fraktionNameColWidth  = 200
+	fraktionRowGapFactor  = 0.2
+	fraktionColWidthScale = 0.6
 )
 
 var palette = []color.RGBA{
@@ -226,7 +231,7 @@ func GenerateCarousel(votes []zurichapi.Abstimmung) ([][]byte, error) {
 		images = append(images, titleImg)
 
 		for i := range votes {
-			resultImg, err := renderResultCard(&votes[i], bgColor, fonts)
+			resultImg, err := renderResultCard(&votes[i], bgColor, fonts, i+1, len(votes))
 			if err != nil {
 				return nil, fmt.Errorf("rendering result card %d: %w", i, err)
 			}
@@ -298,8 +303,8 @@ type fontSet struct {
 	verdictSm   font.Face // gobold 56 (result card)
 	statNum     font.Face // gobold 48
 	statLabel   font.Face // goregular 26
-	partyBold   font.Face // gobold 26
-	partyNum    font.Face // goregular 26
+	partyBold   font.Face // gobold 30
+	partyNum    font.Face // goregular 30
 	regular     font.Face // goregular 36
 	small       font.Face // goregular 28
 	boldHeading font.Face // gobold 48 (= statNum, shared)
@@ -330,10 +335,10 @@ func loadFontSet() (*fontSet, error) {
 	if fs.statLabel, err = load(goregular.TTF, 26); err != nil {
 		return nil, fmt.Errorf("statLabel font: %w", err)
 	}
-	if fs.partyBold, err = load(gobold.TTF, 26); err != nil {
+	if fs.partyBold, err = load(gobold.TTF, 30); err != nil {
 		return nil, fmt.Errorf("partyBold font: %w", err)
 	}
-	if fs.partyNum, err = load(goregular.TTF, 26); err != nil {
+	if fs.partyNum, err = load(goregular.TTF, 30); err != nil {
 		return nil, fmt.Errorf("partyNum font: %w", err)
 	}
 	if fs.regular, err = load(goregular.TTF, 36); err != nil {
@@ -408,7 +413,11 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimm
 	verdictHeight := lineHeight(fonts.verdict)
 	statsHeight := lineHeight(fonts.statNum) + lineHeight(fonts.statLabel)
 	separatorHeight := lineHeight(fonts.statLabel) + lineHeight(fonts.statNum)
-	partyHeight := lineHeight(fonts.partyNum) + numParties*lineHeight(fonts.partyNum)
+	partyLineHeight := lineHeight(fonts.partyNum)
+	partyHeight := partyLineHeight + numParties*partyLineHeight
+	if numParties > 1 {
+		partyHeight += int(float64((numParties-1)*partyLineHeight) * fraktionRowGapFactor)
+	}
 	bottomReserved := verdictHeight + statsHeight + separatorHeight + partyHeight + padding
 	availableForTitle := imgHeight - cur.y - bottomReserved
 
@@ -618,10 +627,17 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 		allCols = append(allCols, "Abw.")
 		colKeys = append(colKeys, "Abwesend")
 	}
+	if len(allCols) == 0 {
+		return
+	}
 
 	// Layout
-	nameColWidth := 200
-	numColWidth := (imgWidth - 2*padding - nameColWidth) / len(allCols) / 2
+	nameColWidth := fraktionNameColWidth
+	maxNumColsWidth := imgWidth - 2*padding - nameColWidth
+	numColWidth := int(float64(maxNumColsWidth) / float64(len(allCols)) * fraktionColWidthScale)
+	if numColWidth <= 0 {
+		return
+	}
 	totalTableWidth := nameColWidth + numColWidth*len(allCols)
 	tableStartX := (imgWidth - totalTableWidth) / 2
 	numStartX := tableStartX + nameColWidth
@@ -635,12 +651,29 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 		}
 	}
 	cur.advance(numFace)
+	cur.gap(numFace, fraktionRowGapFactor)
+
+	tableBottom := imgHeight - padding
+	if cur.imgHeight > 0 {
+		tableBottom = cur.imgHeight - padding
+	}
+	rowHeight := lineHeight(numFace)
+	if rowHeight <= 0 {
+		return
+	}
+	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
+	rowStride := rowHeight + rowGap
+	maxRows := (tableBottom - cur.y) / rowStride
+	if maxRows > len(entries) {
+		maxRows = len(entries)
+	}
+	if maxRows < 0 {
+		maxRows = 0
+	}
 
 	// Draw party rows
-	for _, e := range entries {
-		if cur.y > imgHeight-padding {
-			break
-		}
+	for i := range maxRows {
+		e := entries[i]
 		if img != nil {
 			// Bold party name
 			drawShadowedText(img, nameFace, nil, tableStartX, cur.baseline(numFace), e.name, bg)
@@ -653,6 +686,9 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 			}
 		}
 		cur.advance(numFace)
+		if i < maxRows-1 {
+			cur.gap(numFace, fraktionRowGapFactor)
+		}
 	}
 }
 
@@ -707,16 +743,21 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, votes []zurichapi.Absti
 		cur.gap(titleFace, 0.15)
 	}
 
-	// Summary: list each sub-vote with emoji + subtitle + result (no numbers)
+	// Summary: list each sub-vote with number + emoji + short subtitle.
 	cur.gap(fonts.regular, 0.75)
+	if img != nil {
+		header := fmt.Sprintf("Übersicht (%d Teilabstimmungen)", len(votes))
+		drawCenteredText(img, fonts.small, nil, cur.baseline(fonts.small), header, bg)
+	}
+	cur.advance(fonts.small)
+	cur.gap(fonts.small, 0.4)
+
 	var summaryLines []string
-	for _, sv := range votes {
-		if sv.Abstimmungstitel == "" {
-			continue
+	for i, sv := range votes {
+		line, ok := formatSummaryLine(i+1, sv)
+		if ok {
+			summaryLines = append(summaryLines, wrapText(fonts.small, line, maxTextWidth)...)
 		}
-		sub := voteformat.CleanVoteSubtitle(sv.Abstimmungstitel)
-		emoji := voteformat.GetVoteResultEmoji(sv.Schlussresultat)
-		summaryLines = append(summaryLines, fmt.Sprintf("%s %s", emoji, sub))
 	}
 	// Find widest line and center the block, then left-align all lines within it
 	maxW := 0
@@ -735,10 +776,10 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, votes []zurichapi.Absti
 	}
 }
 
-func renderResultCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) ([]byte, error) {
+func renderResultCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet, idx, total int) ([]byte, error) {
 	// Dry run to measure content height
 	dry := newCursor(0, imgHeight)
-	layoutResultCard(nil, dry, v, bg, fonts)
+	layoutResultCard(nil, dry, v, bg, fonts, idx, total)
 
 	// Real run with centered offset
 	startY := (imgHeight - dry.contentHeight()) / 2
@@ -747,19 +788,34 @@ func renderResultCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) ([
 	}
 	img := newImage(bg)
 	cur := newCursor(startY, imgHeight)
-	layoutResultCard(img, cur, v, bg, fonts)
+	layoutResultCard(img, cur, v, bg, fonts, idx, total)
 
 	return encodeJPEG(img)
 }
 
-func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) {
+func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet, idx, total int) {
+	if img != nil {
+		badge := formatProgressBadge(idx, total)
+		if badge != "" {
+			badgeW := font.MeasureString(fonts.small, badge).Ceil()
+			badgeX := imgWidth - padding - badgeW
+			badgeY := padding + fonts.small.Metrics().Ascent.Ceil()
+			drawShadowedText(img, fonts.small, nil, badgeX, badgeY, badge, bg)
+		}
+	}
+
 	// Subtitle if present (for multi-vote groups)
 	if v.Abstimmungstitel != "" {
 		sub := voteformat.CleanVoteSubtitle(v.Abstimmungstitel)
-		if img != nil {
-			drawCenteredText(img, fonts.boldHeading, fonts.emojiLarge, cur.baseline(fonts.boldHeading), sub, bg)
+		maxTextWidth := imgWidth - 2*padding
+		subLines := wrapText(fonts.boldHeading, sub, maxTextWidth)
+		for _, line := range subLines {
+			if img != nil {
+				drawCenteredText(img, fonts.boldHeading, fonts.emojiLarge, cur.baseline(fonts.boldHeading), line, bg)
+			}
+			cur.advance(fonts.boldHeading)
+			cur.gap(fonts.boldHeading, 0.15)
 		}
-		cur.advance(fonts.boldHeading)
 		cur.gap(fonts.boldHeading, 0.5)
 	}
 
@@ -808,4 +864,36 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmun
 	// Party breakdown table
 	fraktionCounts := voteformat.AggregateFraktionCounts(v.Stimmabgaben.Stimmabgabe)
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
+}
+
+func formatSummaryLine(index int, vote zurichapi.Abstimmung) (string, bool) {
+	if vote.Abstimmungstitel == "" {
+		return "", false
+	}
+
+	subtitle := voteformat.CleanVoteSubtitle(vote.Abstimmungstitel)
+	subtitle = truncateWithEllipsis(subtitle, summarySubtitleMaxRunes)
+	emoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
+	return fmt.Sprintf("%d. %s %s", index, emoji, subtitle), true
+}
+
+func formatProgressBadge(index, total int) string {
+	if total <= 1 || index <= 0 || index > total {
+		return ""
+	}
+	return fmt.Sprintf("%d/%d", index, total)
+}
+
+func truncateWithEllipsis(text string, maxRunes int) string {
+	if maxRunes <= 0 {
+		return ""
+	}
+	runes := []rune(text)
+	if len(runes) <= maxRunes {
+		return text
+	}
+	if maxRunes == 1 {
+		return "…"
+	}
+	return string(runes[:maxRunes-1]) + "…"
 }

@@ -2,6 +2,7 @@ package testfixtures
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -247,8 +248,8 @@ func TenVoteStressTest() []zurichapi.Abstimmung {
 			TraktandumGuid:   "trakt-stress",
 			GeschaeftGuid:    "geschaeft-stress",
 			SitzungDatum:     "2025-06-15",
-		TraktandumTitel:  "Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht",
-		GeschaeftTitel:   "Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht",
+			TraktandumTitel:  "Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht",
+			GeschaeftTitel:   "Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht",
 			GeschaeftGrNr:    "2025/104",
 			Abstimmungstitel: fmt.Sprintf("Ziffer %c", 'A'+i),
 			Schlussresultat:  "angenommen",
@@ -271,6 +272,22 @@ func TenVoteStressTest() []zurichapi.Abstimmung {
 		})
 		votes = append(votes, v)
 	}
+	return votes
+}
+
+// InstagramLongMultiVoteTruncation returns a long multi-vote fixture that forces Instagram caption truncation.
+func InstagramLongMultiVoteTruncation() []zurichapi.Abstimmung {
+	const (
+		longVoteTitleRepeatCount = 60
+		longMainTitleRepeatCount = 120
+	)
+
+	votes := TenVoteStressTest()
+	for i := range votes {
+		votes[i].Abstimmungstitel = strings.Repeat("Sehr langer Abstimmungstitel ", longVoteTitleRepeatCount)
+	}
+	votes[0].TraktandumTitel = strings.Repeat("Sehr langes Traktandum ", longMainTitleRepeatCount)
+	votes[0].GeschaeftTitel = votes[0].TraktandumTitel
 	return votes
 }
 
@@ -377,7 +394,7 @@ func MixedMultiVote() []zurichapi.Abstimmung {
 		TraktandumTitel:  "Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen",
 		GeschaeftTitel:   "Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen",
 		GeschaeftGrNr:    "2025/107",
-		Abstimmungstitel: "Änderungsantrag 17, 1. Abstimmung",
+		Abstimmungstitel: "Änderungsantrag 17, 1. Abstimmung Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung",
 		Schlussresultat:  "Auswahl A",
 		AnzahlAbwesend:   intPtr(11),
 		AnzahlA:          intPtr(50),

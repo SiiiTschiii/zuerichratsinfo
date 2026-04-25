@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
@@ -193,6 +194,46 @@ func TestFormatCarousel_CaptionContainsVoteLink(t *testing.T) {
 
 	if !strings.Contains(content.Caption, "gemeinderat-zuerich.ch") {
 		t.Errorf("caption should contain vote link\n%s", content.Caption)
+	}
+}
+
+func TestFormatCarousel_LongMultiVoteCaptionPreservesLink(t *testing.T) {
+	votes := testfixtures.InstagramLongMultiVoteTruncation()
+
+	content, err := FormatCarousel(votes)
+	if err != nil {
+		t.Fatalf("FormatCarousel error: %v", err)
+	}
+
+	expectedLink := voteformat.GenerateTraktandumLink(votes[0].SitzungGuid, votes[0].TraktandumGuid)
+	expectedLinkLine := "🔗 " + expectedLink
+
+	if len([]rune(content.Caption)) > maxCaptionChars {
+		t.Errorf("caption exceeds %d chars: %d", maxCaptionChars, len([]rune(content.Caption)))
+	}
+
+	if !strings.Contains(content.Caption, expectedLinkLine) {
+		t.Errorf("caption should contain full link line %q\n%s", expectedLinkLine, content.Caption)
+	}
+
+	if !strings.Contains(content.Caption, captionTruncatedNoticeLine) {
+		t.Errorf("caption should contain truncation notice %q\n%s", captionTruncatedNoticeLine, content.Caption)
+	}
+
+	if !strings.HasSuffix(content.Caption, expectedLinkLine) {
+		t.Errorf("caption should end with link line %q\n%s", expectedLinkLine, content.Caption)
+	}
+}
+
+func TestFormatCarousel_ShortCaptionHasNoTruncationNotice(t *testing.T) {
+	votes := testfixtures.MultiVoteGroup()
+	content, err := FormatCarousel(votes)
+	if err != nil {
+		t.Fatalf("FormatCarousel error: %v", err)
+	}
+
+	if strings.Contains(content.Caption, captionTruncatedNoticeLine) {
+		t.Errorf("short caption should not contain truncation notice\n%s", content.Caption)
 	}
 }
 
