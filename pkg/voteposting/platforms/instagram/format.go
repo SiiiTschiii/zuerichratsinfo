@@ -15,6 +15,9 @@ const maxCaptionChars = 2200
 // maxCarouselImages is the maximum number of images in an Instagram carousel.
 const maxCarouselImages = 10
 
+// Captions are intentionally German because post copy targets Zurich municipal council followers.
+const captionTruncatedNoticeLine = "ℹ️ Gekürzt – weitere Teilabstimmungen im Link."
+
 // InstagramContent implements platforms.Content for Instagram
 type InstagramContent struct {
 	Images  [][]byte // JPEG-encoded carousel images
@@ -128,15 +131,52 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 	} else {
 		link = voteformat.GenerateVoteLink(firstVote.OBJGUID)
 	}
-	sb.WriteString(fmt.Sprintf("\n🔗 %s", link))
 
-	caption := sb.String()
+	return buildCaptionWithPreservedLink(sb.String(), link)
+}
+
+func buildCaptionWithPreservedLink(body, link string) string {
+	body = strings.TrimRight(body, "\n")
+	linkLine := fmt.Sprintf("🔗 %s", link)
+	caption := body + "\n" + linkLine
 
 	// Truncate if over Instagram's character limit
 	if len([]rune(caption)) > maxCaptionChars {
-		runes := []rune(caption)
-		caption = string(runes[:maxCaptionChars-1]) + "…"
+		tailWithNotice := captionTruncatedNoticeLine + "\n" + linkLine
+		tailWithNoticeWithSeparator := "\n" + tailWithNotice
+
+		if len([]rune(tailWithNotice)) > maxCaptionChars {
+			// Extremely defensive fallback: keep at least the link if notice+link ever exceed the platform limit.
+			linkRunes := []rune(linkLine)
+			if len(linkRunes) <= maxCaptionChars {
+				return linkLine
+			}
+			return string(linkRunes[:maxCaptionChars-1]) + "…"
+		}
+
+		availableBodyRunes := maxCaptionChars - len([]rune(tailWithNoticeWithSeparator))
+		if availableBodyRunes <= 0 {
+			// No room left for body text; publish only truncation notice + link.
+			return tailWithNotice
+		}
+
+		body = truncateRunesWithEllipsis(body, availableBodyRunes)
+		caption = body + tailWithNoticeWithSeparator
 	}
 
 	return caption
+}
+
+func truncateRunesWithEllipsis(text string, maxRunes int) string {
+	if maxRunes <= 0 {
+		return ""
+	}
+	runes := []rune(text)
+	if len(runes) <= maxRunes {
+		return text
+	}
+	if maxRunes == 1 {
+		return "…"
+	}
+	return string(runes[:maxRunes-1]) + "…"
 }

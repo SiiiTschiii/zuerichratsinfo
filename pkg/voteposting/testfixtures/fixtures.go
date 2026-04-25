@@ -2,6 +2,7 @@ package testfixtures
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -271,6 +272,22 @@ func TenVoteStressTest() []zurichapi.Abstimmung {
 		})
 		votes = append(votes, v)
 	}
+	return votes
+}
+
+// InstagramLongMultiVoteTruncation returns a long multi-vote fixture that forces Instagram caption truncation.
+func InstagramLongMultiVoteTruncation() []zurichapi.Abstimmung {
+	const (
+		longVoteTitleRepeatCount = 60
+		longMainTitleRepeatCount = 120
+	)
+
+	votes := TenVoteStressTest()
+	for i := range votes {
+		votes[i].Abstimmungstitel = strings.Repeat("Sehr langer Abstimmungstitel ", longVoteTitleRepeatCount)
+	}
+	votes[0].TraktandumTitel = strings.Repeat("Sehr langes Traktandum ", longMainTitleRepeatCount)
+	votes[0].GeschaeftTitel = votes[0].TraktandumTitel
 	return votes
 }
 
