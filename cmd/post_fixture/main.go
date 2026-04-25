@@ -24,11 +24,11 @@ type namedPlatform struct {
 
 // platformCredentials holds all platform credentials loaded from env.
 type platformCredentials struct {
-	xAPIKey      string
-	xAPISecret   string
-	xAccessToken string
+	xAPIKey       string
+	xAPISecret    string
+	xAccessToken  string
 	xAccessSecret string
-	xEnabled     bool
+	xEnabled      bool
 
 	bskyHandle   string
 	bskyPassword string
@@ -133,6 +133,12 @@ func validatePlatform(platform string, creds platformCredentials) {
 
 // resolveFixtures loads the requested fixture(s) from the test fixture map.
 func resolveFixtures(fixture string) map[string][]zurichapi.Abstimmung {
+	if fixture == "instagram-long-multi-vote-truncation" {
+		return map[string][]zurichapi.Abstimmung{
+			fixture: testfixtures.InstagramLongMultiVoteTruncation(),
+		}
+	}
+
 	allFixtures := testfixtures.AllFixtures()
 
 	if fixture == "all" {
@@ -145,6 +151,7 @@ func resolveFixtures(fixture string) map[string][]zurichapi.Abstimmung {
 		for k := range allFixtures {
 			names = append(names, k)
 		}
+		names = append(names, "instagram-long-multi-vote-truncation")
 		sort.Strings(names)
 		log.Fatalf("Unknown fixture %q. Available: %v", fixture, names)
 	}

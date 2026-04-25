@@ -153,16 +153,7 @@ func TestFormatCarousel_CaptionContainsVoteLink(t *testing.T) {
 }
 
 func TestFormatCarousel_LongMultiVoteCaptionPreservesLink(t *testing.T) {
-	const (
-		longVoteTitleRepeatCount = 60  // force long per-vote sections
-		longMainTitleRepeatCount = 120 // force overall caption truncation
-	)
-
-	votes := testfixtures.TenVoteStressTest()
-	for i := range votes {
-		votes[i].Abstimmungstitel = strings.Repeat("Sehr langer Abstimmungstitel ", longVoteTitleRepeatCount)
-	}
-	votes[0].TraktandumTitel = strings.Repeat("Sehr langes Traktandum ", longMainTitleRepeatCount)
+	votes := testfixtures.InstagramLongMultiVoteTruncation()
 
 	content, err := FormatCarousel(votes)
 	if err != nil {
