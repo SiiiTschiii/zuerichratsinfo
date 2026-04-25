@@ -33,6 +33,7 @@ const (
 
 	fraktionNameColWidth = 200
 	fraktionRowGapFactor = 0.2
+	fraktionColWidthScale = 0.85
 )
 
 var palette = []color.RGBA{
@@ -631,7 +632,11 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 
 	// Layout
 	nameColWidth := fraktionNameColWidth
-	numColWidth := (imgWidth - 2*padding - nameColWidth) / len(allCols)
+	maxNumColsWidth := imgWidth - 2*padding - nameColWidth
+	numColWidth := int(float64(maxNumColsWidth)/float64(len(allCols)) * fraktionColWidthScale)
+	if numColWidth <= 0 {
+		return
+	}
 	totalTableWidth := nameColWidth + numColWidth*len(allCols)
 	tableStartX := (imgWidth - totalTableWidth) / 2
 	numStartX := tableStartX + nameColWidth
