@@ -30,6 +30,10 @@ const (
 	imgHeight = 1350
 	padding   = 60
 	shadowOff = 2
+
+	fraktionNameColWidth  = 200
+	fraktionRowGapFactor  = 0.2
+	fraktionColWidthScale = 0.6
 )
 
 var palette = []color.RGBA{
@@ -298,8 +302,8 @@ type fontSet struct {
 	verdictSm   font.Face // gobold 56 (result card)
 	statNum     font.Face // gobold 48
 	statLabel   font.Face // goregular 26
-	partyBold   font.Face // gobold 26
-	partyNum    font.Face // goregular 26
+	partyBold   font.Face // gobold 30
+	partyNum    font.Face // goregular 30
 	regular     font.Face // goregular 36
 	small       font.Face // goregular 28
 	boldHeading font.Face // gobold 48 (= statNum, shared)
@@ -330,10 +334,10 @@ func loadFontSet() (*fontSet, error) {
 	if fs.statLabel, err = load(goregular.TTF, 26); err != nil {
 		return nil, fmt.Errorf("statLabel font: %w", err)
 	}
-	if fs.partyBold, err = load(gobold.TTF, 26); err != nil {
+	if fs.partyBold, err = load(gobold.TTF, 30); err != nil {
 		return nil, fmt.Errorf("partyBold font: %w", err)
 	}
-	if fs.partyNum, err = load(goregular.TTF, 26); err != nil {
+	if fs.partyNum, err = load(goregular.TTF, 30); err != nil {
 		return nil, fmt.Errorf("partyNum font: %w", err)
 	}
 	if fs.regular, err = load(goregular.TTF, 36); err != nil {
@@ -408,7 +412,11 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimm
 	verdictHeight := lineHeight(fonts.verdict)
 	statsHeight := lineHeight(fonts.statNum) + lineHeight(fonts.statLabel)
 	separatorHeight := lineHeight(fonts.statLabel) + lineHeight(fonts.statNum)
-	partyHeight := lineHeight(fonts.partyNum) + numParties*lineHeight(fonts.partyNum)
+	partyLineHeight := lineHeight(fonts.partyNum)
+	partyHeight := partyLineHeight + numParties*partyLineHeight
+	if numParties > 1 {
+		partyHeight += int(float64((numParties-1)*partyLineHeight) * fraktionRowGapFactor)
+	}
 	bottomReserved := verdictHeight + statsHeight + separatorHeight + partyHeight + padding
 	availableForTitle := imgHeight - cur.y - bottomReserved
 
@@ -618,10 +626,17 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 		allCols = append(allCols, "Abw.")
 		colKeys = append(colKeys, "Abwesend")
 	}
+	if len(allCols) == 0 {
+		return
+	}
 
 	// Layout
-	nameColWidth := 200
-	numColWidth := (imgWidth - 2*padding - nameColWidth) / len(allCols) / 2
+	nameColWidth := fraktionNameColWidth
+	maxNumColsWidth := imgWidth - 2*padding - nameColWidth
+	numColWidth := int(float64(maxNumColsWidth) / float64(len(allCols)) * fraktionColWidthScale)
+	if numColWidth <= 0 {
+		return
+	}
 	totalTableWidth := nameColWidth + numColWidth*len(allCols)
 	tableStartX := (imgWidth - totalTableWidth) / 2
 	numStartX := tableStartX + nameColWidth
@@ -635,12 +650,29 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 		}
 	}
 	cur.advance(numFace)
+	cur.gap(numFace, fraktionRowGapFactor)
+
+	tableBottom := imgHeight - padding
+	if cur.imgHeight > 0 {
+		tableBottom = cur.imgHeight - padding
+	}
+	rowHeight := lineHeight(numFace)
+	if rowHeight <= 0 {
+		return
+	}
+	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
+	rowStride := rowHeight + rowGap
+	maxRows := (tableBottom - cur.y) / rowStride
+	if maxRows > len(entries) {
+		maxRows = len(entries)
+	}
+	if maxRows < 0 {
+		maxRows = 0
+	}
 
 	// Draw party rows
-	for _, e := range entries {
-		if cur.y > imgHeight-padding {
-			break
-		}
+	for i := range maxRows {
+		e := entries[i]
 		if img != nil {
 			// Bold party name
 			drawShadowedText(img, nameFace, nil, tableStartX, cur.baseline(numFace), e.name, bg)
@@ -653,6 +685,9 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 			}
 		}
 		cur.advance(numFace)
+		if i < maxRows-1 {
+			cur.gap(numFace, fraktionRowGapFactor)
+		}
 	}
 }
 
