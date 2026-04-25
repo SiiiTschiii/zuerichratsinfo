@@ -155,7 +155,7 @@ func MultiVoteGroup() []zurichapi.Abstimmung {
 		TraktandumTitel:  "Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung",
 		GeschaeftTitel:   "Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung",
 		GeschaeftGrNr:    "2025/103",
-		Abstimmungstitel: "Einleitungsartikel Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung",
+		Abstimmungstitel: "Einleitungsartikel",
 		Schlussresultat:  "angenommen",
 		AnzahlJa:         intPtr(90),
 		AnzahlNein:       intPtr(20),
