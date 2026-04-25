@@ -31,9 +31,9 @@ const (
 	padding   = 60
 	shadowOff = 2
 
-	fraktionNameColWidth = 200
-	fraktionRowGapFactor = 0.2
-	fraktionColWidthScale = 0.85
+	fraktionNameColWidth  = 200
+	fraktionRowGapFactor  = 0.2
+	fraktionColWidthScale = 0.6
 )
 
 var palette = []color.RGBA{
@@ -633,7 +633,7 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 	// Layout
 	nameColWidth := fraktionNameColWidth
 	maxNumColsWidth := imgWidth - 2*padding - nameColWidth
-	numColWidth := int(float64(maxNumColsWidth)/float64(len(allCols)) * fraktionColWidthScale)
+	numColWidth := int(float64(maxNumColsWidth) / float64(len(allCols)) * fraktionColWidthScale)
 	if numColWidth <= 0 {
 		return
 	}
@@ -650,6 +650,7 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 		}
 	}
 	cur.advance(numFace)
+	cur.gap(numFace, fraktionRowGapFactor)
 
 	tableBottom := imgHeight - padding
 	if cur.imgHeight > 0 {
