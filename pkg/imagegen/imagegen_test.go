@@ -91,7 +91,7 @@ func TestDrawFraktionTable_AddsRowSpacing(t *testing.T) {
 
 	rowHeight := lineHeight(fonts.partyNum)
 	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
-	expectedY := startY + 3*rowHeight + rowGap // header + 2 rows + 1 gap between rows
+	expectedY := startY + 3*rowHeight + 2*rowGap // header + header-gap + 2 rows + 1 gap between rows
 	if cur.y != expectedY {
 		t.Fatalf("expected y=%d, got %d", expectedY, cur.y)
 	}
@@ -115,11 +115,11 @@ func TestDrawFraktionTable_LimitsRowsWhenSpaceIsTight(t *testing.T) {
 	rowStride := rowHeight + rowGap
 	maxRows := 3
 
-	customImgHeight := padding + rowHeight + maxRows*rowStride
+	customImgHeight := padding + rowHeight + rowGap + maxRows*rowStride
 	cur := newCursor(0, customImgHeight)
 	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("2025/100"), fonts.partyBold, fonts.partyNum)
 
-	expectedY := rowHeight + maxRows*rowHeight + (maxRows-1)*rowGap
+	expectedY := rowHeight + rowGap + maxRows*rowHeight + (maxRows-1)*rowGap
 	if cur.y != expectedY {
 		t.Fatalf("expected y=%d with max %d rows, got %d", expectedY, maxRows, cur.y)
 	}
