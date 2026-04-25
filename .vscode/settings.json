@@ -10,5 +10,11 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": "explicit"
     }
+  },
+  "[plaintext]": {
+    "editor.formatOnSave": false
+  },
+  "files.associations": {
+    ".github/CODEOWNERS": "plaintext"
   }
 }

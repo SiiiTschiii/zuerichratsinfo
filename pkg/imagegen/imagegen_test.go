@@ -2,11 +2,13 @@ package imagegen
 
 import (
 	"bytes"
+	"fmt"
 	"image/jpeg"
 	"strings"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
@@ -56,6 +58,59 @@ func TestGenerateCarousel_Empty(t *testing.T) {
 	}
 }
 
+func TestLayoutResultCard_WrapsLongSubtitle(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	votes := testfixtures.MultiVoteGroup()
+	shortVote := votes[0]
+	shortVote.Abstimmungstitel = "Kurz"
+
+	longVote := votes[0]
+	longVote.Abstimmungstitel = "Änderungsantrag zur Teilrevision der Gemeindeordnung mit zusätzlichen Bestimmungen zur Stadtentwicklung und Raumplanung"
+
+	bg := SelectColor(shortVote.GeschaeftGrNr)
+
+	shortCur := newCursor(0, imgHeight)
+	layoutResultCard(nil, shortCur, &shortVote, bg, fonts, 1, 2)
+
+	longCur := newCursor(0, imgHeight)
+	layoutResultCard(nil, longCur, &longVote, bg, fonts, 2, 2)
+
+	if longCur.contentHeight() <= shortCur.contentHeight() {
+		t.Fatalf("expected wrapped long subtitle to use more vertical space (short=%d, long=%d)", shortCur.contentHeight(), longCur.contentHeight())
+	}
+}
+
+func TestLayoutTitleCard_WrapsLongSummaryLine(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	shortVotes := testfixtures.MultiVoteGroup()
+	shortVotes[0].Abstimmungstitel = "Einleitung"
+	shortVotes[1].Abstimmungstitel = "Schluss"
+
+	longVotes := testfixtures.MultiVoteGroup()
+	longVotes[0].Abstimmungstitel = "Einleitung"
+	longVotes[1].Abstimmungstitel = "Schlussabstimmung mit zusätzlichen Bestimmungen zur Neuordnung der Kompetenzen im Bereich Stadtentwicklung und Raumplanung"
+
+	bg := SelectColor(shortVotes[0].GeschaeftGrNr)
+
+	shortCur := newCursor(0, imgHeight)
+	layoutTitleCard(nil, shortCur, shortVotes, bg, fonts)
+
+	longCur := newCursor(0, imgHeight)
+	layoutTitleCard(nil, longCur, longVotes, bg, fonts)
+
+	if longCur.contentHeight() <= shortCur.contentHeight() {
+		t.Fatalf("expected wrapped long summary line to use more vertical space (short=%d, long=%d)", shortCur.contentHeight(), longCur.contentHeight())
+	}
+}
+
 func TestSelectColor_Deterministic(t *testing.T) {
 	c1 := SelectColor("2025/100")
 	c2 := SelectColor("2025/100")
@@ -76,7 +131,7 @@ func TestSelectColor_DifferentInputs(t *testing.T) {
 
 func TestFormatSummaryLine_NumberingAndTruncation(t *testing.T) {
 	vote := zurichapi.Abstimmung{
-		Abstimmungstitel: "Antrag SP sehr lange Beschreibung mit noch mehr Details für die Übersicht auf der Titelfolie",
+		Abstimmungstitel: "Antrag SP sehr lange Beschreibung mit noch mehr Details für die Übersicht auf der Titelfolie und weiteren Erläuterungen zur Kompetenzordnung im Bereich Stadtentwicklung und Raumplanung",
 		Schlussresultat:  "angenommen",
 	}
 
@@ -101,5 +156,56 @@ func TestFormatProgressBadge(t *testing.T) {
 	}
 	if got := formatProgressBadge(1, 1); got != "" {
 		t.Fatalf("expected empty badge for single vote, got %q", got)
+	}
+}
+
+func TestDrawFraktionTable_AddsRowSpacing(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	fraktionCounts := map[string]*voteformat.FraktionCounts{
+		"SP":  {Counts: map[string]int{"Ja": 20, "Nein": 5}},
+		"FDP": {Counts: map[string]int{"Ja": 10, "Nein": 15}},
+	}
+
+	startY := 100
+	cur := newCursor(startY, 600)
+	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("2025/100"), fonts.partyBold, fonts.partyNum)
+
+	rowHeight := lineHeight(fonts.partyNum)
+	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
+	expectedY := startY + 3*rowHeight + 2*rowGap // header + header-gap + 2 rows + 1 gap between rows
+	if cur.y != expectedY {
+		t.Fatalf("expected y=%d, got %d", expectedY, cur.y)
+	}
+}
+
+func TestDrawFraktionTable_LimitsRowsWhenSpaceIsTight(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	fraktionCounts := map[string]*voteformat.FraktionCounts{}
+	for i := 0; i < 12; i++ {
+		fraktionCounts[fmt.Sprintf("Fraktion-%d", i)] = &voteformat.FraktionCounts{
+			Counts: map[string]int{"Ja": 1},
+		}
+	}
+
+	rowHeight := lineHeight(fonts.partyNum)
+	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
+	rowStride := rowHeight + rowGap
+	maxRows := 3
+
+	customImgHeight := padding + rowHeight + rowGap + maxRows*rowStride
+	cur := newCursor(0, customImgHeight)
+	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("2025/100"), fonts.partyBold, fonts.partyNum)
+
+	expectedY := rowHeight + rowGap + maxRows*rowHeight + (maxRows-1)*rowGap
+	if cur.y != expectedY {
+		t.Fatalf("expected y=%d with max %d rows, got %d", expectedY, maxRows, cur.y)
 	}
 }

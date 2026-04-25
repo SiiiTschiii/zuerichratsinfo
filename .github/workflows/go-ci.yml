@@ -9,16 +9,36 @@ on:
       - ".golangci.yml"
       - ".github/workflows/go-ci.yml"
   pull_request:
-    paths:
-      - "**.go"
-      - "go.mod"
-      - "go.sum"
-      - ".golangci.yml"
-      - ".github/workflows/go-ci.yml"
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
+  detect_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      go_changed: ${{ steps.filter.outputs.go }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Detect Go path changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            go:
+              - '**.go'
+              - 'go.mod'
+              - 'go.sum'
+              - '.golangci.yml'
+              - '.github/workflows/go-ci.yml'
+
   test:
+    needs: detect_changes
+    if: needs.detect_changes.outputs.go_changed == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -56,3 +76,21 @@ jobs:
               go build -v "./${cmd}"
             fi
           done
+
+  go_ci_gate:
+    needs: [detect_changes, test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce go-ci result only when Go files changed
+        run: |
+          if [ "${{ needs.detect_changes.outputs.go_changed }}" != "true" ]; then
+            echo "✓ No Go-related changes detected -> pass"
+            exit 0
+          fi
+          if [ "${{ needs.test.result }}" = "success" ]; then
+            echo "✓ Go CI tests passed"
+            exit 0
+          fi
+          echo "✗ Go CI tests failed"
+          exit 1
