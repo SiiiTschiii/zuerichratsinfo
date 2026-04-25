@@ -147,6 +147,29 @@ func TestFormatSummaryLine_NumberingAndTruncation(t *testing.T) {
 	}
 }
 
+func TestFormatSummaryLine_AuswahlVote(t *testing.T) {
+	intPtr := func(i int) *int { return &i }
+	vote := zurichapi.Abstimmung{
+		Abstimmungstitel: "Änderungsantrag 17",
+		Schlussresultat:  "Auswahl A",
+		AnzahlA:          intPtr(50),
+		AnzahlB:          intPtr(24),
+		AnzahlC:          intPtr(40),
+		AnzahlAbwesend:   intPtr(11),
+	}
+
+	line, ok := formatSummaryLine(2, vote)
+	if !ok {
+		t.Fatal("expected summary line to be generated")
+	}
+	if !strings.HasPrefix(line, "2. [A] ") {
+		t.Fatalf("expected Auswahl summary line to show bracket label, got %q", line)
+	}
+	if strings.Contains(line, "❌") || strings.Contains(line, "✅") {
+		t.Fatalf("Auswahl summary line should not contain a result emoji, got %q", line)
+	}
+}
+
 func TestFormatProgressBadge(t *testing.T) {
 	if got := formatProgressBadge(2, 3); got != "2/3" {
 		t.Fatalf("expected 2/3, got %q", got)

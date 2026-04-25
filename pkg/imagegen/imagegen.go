@@ -873,8 +873,30 @@ func formatSummaryLine(index int, vote zurichapi.Abstimmung) (string, bool) {
 
 	subtitle := voteformat.CleanVoteSubtitle(vote.Abstimmungstitel)
 	subtitle = truncateWithEllipsis(subtitle, summarySubtitleMaxRunes)
-	emoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
-	return fmt.Sprintf("%d. %s %s", index, emoji, subtitle), true
+
+	counts := voteformat.VoteCounts{
+		Ja: vote.AnzahlJa, Nein: vote.AnzahlNein, Enthaltung: vote.AnzahlEnthaltung,
+		Abwesend: vote.AnzahlAbwesend, A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC,
+		D: vote.AnzahlD, E: vote.AnzahlE,
+	}
+	var verdict string
+	if voteformat.IsAuswahlVote(counts) {
+		verdict = auswahlResultLabel(vote.Schlussresultat)
+	} else {
+		verdict = voteformat.GetVoteResultEmoji(vote.Schlussresultat)
+	}
+	return fmt.Sprintf("%d. %s %s", index, verdict, subtitle), true
+}
+
+// auswahlResultLabel converts a Schlussresultat like "Auswahl A" to a bracket
+// notation like "[A]" for display in summary lines.
+func auswahlResultLabel(schlussresultat string) string {
+	upper := strings.ToUpper(strings.TrimSpace(schlussresultat))
+	letter := upper
+	if strings.HasPrefix(upper, "AUSWAHL ") {
+		letter = upper[len("AUSWAHL "):]
+	}
+	return "[" + letter + "]"
 }
 
 func formatProgressBadge(index, total int) string {
