@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"image/jpeg"
+	"strings"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 func TestGenerateCarousel_ValidJPEG(t *testing.T) {
@@ -72,10 +74,10 @@ func TestLayoutResultCard_WrapsLongSubtitle(t *testing.T) {
 	bg := SelectColor(shortVote.GeschaeftGrNr)
 
 	shortCur := newCursor(0, imgHeight)
-	layoutResultCard(nil, shortCur, &shortVote, bg, fonts)
+	layoutResultCard(nil, shortCur, &shortVote, bg, fonts, 1, 2)
 
 	longCur := newCursor(0, imgHeight)
-	layoutResultCard(nil, longCur, &longVote, bg, fonts)
+	layoutResultCard(nil, longCur, &longVote, bg, fonts, 2, 2)
 
 	if longCur.contentHeight() <= shortCur.contentHeight() {
 		t.Fatalf("expected wrapped long subtitle to use more vertical space (short=%d, long=%d)", shortCur.contentHeight(), longCur.contentHeight())
@@ -124,6 +126,36 @@ func TestSelectColor_DifferentInputs(t *testing.T) {
 	// This is probabilistic but with our palette it's very likely
 	if c1 == c2 {
 		t.Log("warning: different inputs produced same color (possible but unlikely)")
+	}
+}
+
+func TestFormatSummaryLine_NumberingAndTruncation(t *testing.T) {
+	vote := zurichapi.Abstimmung{
+		Abstimmungstitel: "Antrag SP sehr lange Beschreibung mit noch mehr Details für die Übersicht auf der Titelfolie und weiteren Erläuterungen zur Kompetenzordnung im Bereich Stadtentwicklung und Raumplanung",
+		Schlussresultat:  "angenommen",
+	}
+
+	line, ok := formatSummaryLine(2, vote)
+	if !ok {
+		t.Fatal("expected summary line to be generated")
+	}
+	if !strings.HasPrefix(line, "2. ✅ ") {
+		t.Fatalf("expected numbered line with emoji prefix, got %q", line)
+	}
+	if !strings.Contains(line, "…") {
+		t.Fatalf("expected truncated subtitle with ellipsis, got %q", line)
+	}
+}
+
+func TestFormatProgressBadge(t *testing.T) {
+	if got := formatProgressBadge(2, 3); got != "2/3" {
+		t.Fatalf("expected 2/3, got %q", got)
+	}
+	if got := formatProgressBadge(0, 3); got != "" {
+		t.Fatalf("expected empty badge for invalid index, got %q", got)
+	}
+	if got := formatProgressBadge(1, 1); got != "" {
+		t.Fatalf("expected empty badge for single vote, got %q", got)
 	}
 }
 
