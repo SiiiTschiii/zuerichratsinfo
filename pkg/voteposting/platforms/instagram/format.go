@@ -139,8 +139,8 @@ func buildCaption(votes []zurichapi.Abstimmung) string {
 	// Truncate if over Instagram's character limit
 	if len([]rune(caption)) > maxCaptionChars {
 		noticeLine := "\n\n" + truncatedCaptionNotice
-		spaceForBody := maxCaptionChars - runeLen(linkLine) - runeLen(noticeLine)
-		if spaceForBody > 0 {
+		if runeLen(noticeLine)+runeLen(linkLine) < maxCaptionChars {
+			spaceForBody := maxCaptionChars - runeLen(linkLine) - runeLen(noticeLine)
 			caption = truncateWithEllipsis(bodyText, spaceForBody) + noticeLine + linkLine
 		} else {
 			caption = truncateWithEllipsis(bodyText, maxCaptionChars-runeLen(linkLine)) + linkLine

@@ -109,6 +109,7 @@ func TestFormatCarousel_CaptionWithinLimit(t *testing.T) {
 
 func TestFormatCarousel_TruncationKeepsFullLink(t *testing.T) {
 	votes := testfixtures.TenVoteStressTest()
+	// Deliberately inflate titles/subtitles to exceed maxCaptionChars and force truncation.
 	for i := range votes {
 		votes[i].TraktandumTitel = strings.Repeat("Sehr langer Titel für die Geschäftsvorlage ", 20)
 		votes[i].GeschaeftTitel = votes[i].TraktandumTitel
