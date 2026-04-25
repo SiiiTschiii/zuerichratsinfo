@@ -206,6 +206,7 @@ func TestFormatCarousel_LongMultiVoteCaptionPreservesLink(t *testing.T) {
 	}
 
 	expectedLink := voteformat.GenerateTraktandumLink(votes[0].SitzungGuid, votes[0].TraktandumGuid)
+	expectedLink = stripURLFragment(expectedLink)
 	expectedLinkLine := "🔗 " + expectedLink
 
 	if len([]rune(content.Caption)) > maxCaptionChars {
