@@ -234,13 +234,6 @@ contacts:
         - https://www.linkedin.com/in/deborahwettstein/
       x:
         - https://x.com/DeboWettstein
-    - name: Dellenbach Hans
-      instagram:
-        - https://www.instagram.com/dellenbachhans/
-      linkedin:
-        - https://www.linkedin.com/in/hansdellenbach
-      x:
-        - https://x.com/HansDellenbach
     - name: Derek Richter
       linkedin:
         - https://www.linkedin.com/in/derekrichter/
@@ -263,11 +256,22 @@ contacts:
         - https://www.linkedin.com/in/dominik-waser-366118224/
       x:
         - https://x.com/domiwaser
-    - name: Egger Heidi
+    - name: Dominique Späth
       facebook:
-        - https://www.facebook.com/heidieggerzuerich
+        - https://www.facebook.com/dominique.spaeth.50
       instagram:
-        - https://www.instagram.com/heidiegger1512/
+        - https://www.instagram.com/dominiquespaeth/
+      x:
+        - https://x.com/DominiqueSpaeth
+    - name: Emanuel Tschannen
+      facebook:
+        - https://www.facebook.com/emanuel.tschannen
+      instagram:
+        - https://www.instagram.com/emanuel_tschannen
+      linkedin:
+        - https://www.linkedin.com/in/emanueltschannen
+      x:
+        - https://x.com/Emanuel_Georg
     - name: FDP Stadt Zürich
       facebook:
         - https://www.facebook.com/fdpstadtzuerich/
@@ -310,27 +314,6 @@ contacts:
     - name: Frank-Elmar Linxweiler
       linkedin:
         - https://www.linkedin.com/in/frank-elmar-linxweiler-frm-0591063/
-    - name: Frey Selina
-      instagram:
-        - https://www.instagram.com/selina_frey_glp/
-      linkedin:
-        - https://www.linkedin.com/in/selinafrey
-    - name: Gallizzi Sandra
-      facebook:
-        - https://www.facebook.com/sandragallizzi
-      instagram:
-        - https://www.instagram.com/mylife_by_sandrag
-      linkedin:
-        - https://www.linkedin.com/in/sandra-gallizzi-8b00a033b/
-    - name: Gediz Murat
-      facebook:
-        - https://www.facebook.com/share/16EwYFRNqK/?mibextid=wwXIfr
-      instagram:
-        - https://www.instagram.com/murat_gediz?igsh=MXByb29zbGkxcXN3bA%3D%3D&utm_source=qr
-      linkedin:
-        - https://www.linkedin.com/in/murat-gediz-aaaa54139/
-      x:
-        - https://x.com/gediz_zh
     - name: GLP Stadt Zürich
       facebook:
         - https://www.facebook.com/glpStadtZuerich
@@ -356,13 +339,18 @@ contacts:
     - name: Hannah Locher
       facebook:
         - https://www.facebook.com/hannah.locher
-    - name: Hofstetter Thomas
-      facebook:
-        - https://www.facebook.com/thomas.hofstetter.84
+    - name: Hans Dellenbach
       instagram:
-        - https://www.instagram.com/thomas.hofstetter.84
+        - https://www.instagram.com/dellenbachhans/
       linkedin:
-        - https://www.linkedin.com/in/thomas-hofstetter-11aa07388/
+        - https://www.linkedin.com/in/hansdellenbach
+      x:
+        - https://x.com/HansDellenbach
+    - name: Heidi Egger
+      facebook:
+        - https://www.facebook.com/heidieggerzuerich
+      instagram:
+        - https://www.instagram.com/heidiegger1512/
     - name: Hurni Loïc
       linkedin:
         - https://www.linkedin.com/in/lo%C3%AFc-hurni-b22b45194/
@@ -527,6 +515,16 @@ contacts:
         - https://www.instagram.com/marisa_kappelerschudel_glp/
       linkedin:
         - https://www.linkedin.com/in/marisa-kappeler-schudel-65aa4079/
+    - name: Marita Verbali
+      facebook:
+        - https://www.facebook.com/maritaverbaliFDP/
+        - https://www.facebook.com/marita.verbali
+      instagram:
+        - https://www.instagram.com/marita_verbali/
+      linkedin:
+        - https://www.linkedin.com/in/marita-verbali-86087478/?originalSubdomain=ch
+      x:
+        - https://x.com/MaritaVerbali
     - name: Markus Haselbach
       facebook:
         - https://www.facebook.com/markus.haselbach.9
@@ -637,6 +635,15 @@ contacts:
         - https://www.tiktok.com/@felixmoser646
       x:
         - https://x.com/felix_moser
+    - name: Murat Gediz
+      facebook:
+        - https://www.facebook.com/share/16EwYFRNqK/?mibextid=wwXIfr
+      instagram:
+        - https://www.instagram.com/murat_gediz
+      linkedin:
+        - https://www.linkedin.com/in/murat-gediz-aaaa54139/
+      x:
+        - https://x.com/gediz_zh
     - name: Nadina Diday
       facebook:
         - https://www.facebook.com/nadina.diday
@@ -788,6 +795,13 @@ contacts:
         - https://www.linkedin.com/in/samuel-balsiger-b6076b320/
       x:
         - https://x.com/BalsigerSVP
+    - name: Sandra Gallizzi
+      facebook:
+        - https://www.facebook.com/sandragallizzi
+      instagram:
+        - https://www.instagram.com/mylife_by_sandrag
+      linkedin:
+        - https://www.linkedin.com/in/sandra-gallizzi-8b00a033b/
     - name: Sandro Gähler
       linkedin:
         - https://www.linkedin.com/in/sandro-g%C3%A4hler-432695150/
@@ -817,6 +831,11 @@ contacts:
     - name: Sebastian Zopfi
       linkedin:
         - https://www.linkedin.com/in/sebastian-luca-zopfi-7b0316135/
+    - name: Selina Frey
+      instagram:
+        - https://www.instagram.com/selina_frey_glp/
+      linkedin:
+        - https://www.linkedin.com/in/selinafrey
     - name: Selina Walgis
       bluesky:
         - https://bsky.app/profile/swalgis.bsky.social
@@ -911,13 +930,6 @@ contacts:
         - https://linkedin.com/in/JehudaSpielman
       x:
         - https://x.com/JehudaSpielman
-    - name: Späth Dominique
-      facebook:
-        - https://www.facebook.com/dominique.spaeth.50
-      instagram:
-        - https://www.instagram.com/dominiquespaeth/
-      x:
-        - https://x.com/DominiqueSpaeth
     - name: Stefan Reusser
       linkedin:
         - https://www.linkedin.com/in/stefan-reusser-681567359/
@@ -974,6 +986,13 @@ contacts:
     - name: Thomas Bühler
       linkedin:
         - https://www.linkedin.com/in/thomas-b%C3%BChler-a02218188/
+    - name: Thomas Hofstetter
+      facebook:
+        - https://www.facebook.com/thomas.hofstetter.84
+      instagram:
+        - https://www.instagram.com/thomas.hofstetter.84
+      linkedin:
+        - https://www.linkedin.com/in/thomas-hofstetter-11aa07388/
     - name: Tobias Langenegger
       facebook:
         - https://www.facebook.com/profile.php?id=100089351375445
@@ -982,15 +1001,6 @@ contacts:
     - name: Tom Cassee
       facebook:
         - https://www.facebook.com/thomas.cassee
-    - name: Tschannen Emanuel
-      facebook:
-        - https://www.facebook.com/emanuel.tschannen
-      instagram:
-        - https://www.instagram.com/emanuel_tschannen
-      linkedin:
-        - https://www.linkedin.com/in/emanueltschannen
-      x:
-        - https://x.com/Emanuel_Georg
     - name: Urs Riklin
       bluesky:
         - https://bsky.app/profile/ursriklin.bsky.social
@@ -1016,16 +1026,6 @@ contacts:
         - https://www.linkedin.com/in/vera-ay%C5%9Fe-%C3%A7elik-8a17641bb/
       tiktok:
         - https://www.tiktok.com/@veracelik1967
-    - name: Verbali Marita
-      facebook:
-        - https://www.facebook.com/maritaverbaliFDP/
-        - https://www.facebook.com/marita.verbali
-      instagram:
-        - https://www.instagram.com/marita_verbali/
-      linkedin:
-        - https://www.linkedin.com/in/marita-verbali-86087478/?originalSubdomain=ch
-      x:
-        - https://x.com/MaritaVerbali
     - name: Voellmy Xenia
       linkedin:
         - https://www.linkedin.com/in/xenia-voellmy
