@@ -24,10 +24,15 @@
   - Statistics displayed in README.md "Supported Platforms" table
   - GitHub Action automatically updates README on contacts.yaml changes
   - Decision: Bluesky → LinkedIn → Facebook → Instagram → TikTok (by effort/fit)
-- [ ] Generate visual posts (images)
+- [x] Generate visual posts (images)
   - Create simple image posts with text on colored backgrounds (varying colors per post, add shadows)
   - This would enable expansion to visual-first platforms like Instagram and TikTok
   - Start simple: uni-colored background + large text + basic shadow effects
+- [ ] Expand beyond Zurich city politics
+  - Other Swiss cities
+  - Cantonal parliaments / governments
+  - Federal level
+  - Potentially other countries with suitable public data APIs
 
 ## Post Format Improvements
 
