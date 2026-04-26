@@ -185,6 +185,7 @@ func buildPlatforms(platform string, creds platformCredentials, contactMapper *c
 			igPlat = instagram.NewInstagramPlatform(100)
 			fmt.Println("📷 Instagram: stub mode (no credentials)")
 		}
+		igPlat.SetContactMapper(contactMapper)
 		plats = append(plats, namedPlatform{name: "Instagram", plat: igPlat})
 	}
 

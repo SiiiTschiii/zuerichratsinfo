@@ -47,6 +47,44 @@ func TestExtractXHandleFromURL(t *testing.T) {
 	}
 }
 
+func TestExtractInstagramHandleFromURL(t *testing.T) {
+	tests := []struct {
+		name     string
+		url      string
+		expected string
+	}{
+		{
+			name:     "Standard Instagram URL with slash",
+			url:      "https://www.instagram.com/annagraff_/",
+			expected: "@annagraff_",
+		},
+		{
+			name:     "Instagram URL without scheme",
+			url:      "instagram.com/alana.gerdes",
+			expected: "@alana.gerdes",
+		},
+		{
+			name:     "Instagram URL with query",
+			url:      "https://instagram.com/aliwankoh?hl=de",
+			expected: "@aliwankoh",
+		},
+		{
+			name:     "Invalid URL",
+			url:      "https://x.com/someone",
+			expected: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := ExtractInstagramHandleFromURL(tt.url)
+			if result != tt.expected {
+				t.Errorf("ExtractInstagramHandleFromURL(%q) = %q, want %q", tt.url, result, tt.expected)
+			}
+		})
+	}
+}
+
 func TestGenerateNameVariants(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -154,6 +192,71 @@ func TestTagXHandlesInText(t *testing.T) {
 			result := mapper.TagXHandlesInText(tt.input)
 			if result != tt.expected {
 				t.Errorf("TagXHandlesInText() failed\nInput:    %q\nExpected: %q\nGot:      %q", tt.input, tt.expected, result)
+			}
+		})
+	}
+}
+
+func TestTagInstagramHandlesInText(t *testing.T) {
+	mapper := &Mapper{
+		contacts: map[string]Contact{
+			"Graff Anna": {
+				Name:      "Graff Anna",
+				Instagram: []string{"https://www.instagram.com/annagraff_/"},
+			},
+			"graff anna": {
+				Name:      "Graff Anna",
+				Instagram: []string{"https://www.instagram.com/annagraff_/"},
+			},
+			"Garcia Nuñez David": {
+				Name:      "Garcia Nuñez David",
+				Instagram: []string{"https://www.instagram.com/david.gn/"},
+			},
+			"garcia nuñez david": {
+				Name:      "Garcia Nuñez David",
+				Instagram: []string{"https://www.instagram.com/david.gn/"},
+			},
+			"Christian Häberli": {
+				Name: "Christian Häberli",
+			},
+			"christian häberli": {
+				Name: "Christian Häberli",
+			},
+		},
+	}
+
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "Single name match",
+			input:    "Postulat von Anna Graff (SP)",
+			expected: "Postulat von Anna Graff @annagraff_ (SP)",
+		},
+		{
+			name:     "Multiple names, some with handles",
+			input:    "Postulat von Anna Graff (SP), Christian Häberli (AL) und David Garcia Nuñez (AL)",
+			expected: "Postulat von Anna Graff @annagraff_ (SP), Christian Häberli (AL) und David Garcia Nuñez @david.gn (AL)",
+		},
+		{
+			name:     "No matches",
+			input:    "Postulat von Unknown Person (AL)",
+			expected: "Postulat von Unknown Person (AL)",
+		},
+		{
+			name:     "Reversed name format",
+			input:    "Motion von Graff Anna",
+			expected: "Motion von Graff Anna @annagraff_",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := mapper.TagInstagramHandlesInText(tt.input)
+			if result != tt.expected {
+				t.Errorf("TagInstagramHandlesInText() failed\nInput:    %q\nExpected: %q\nGot:      %q", tt.input, tt.expected, result)
 			}
 		})
 	}

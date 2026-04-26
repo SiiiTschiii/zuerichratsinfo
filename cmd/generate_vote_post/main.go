@@ -78,6 +78,7 @@ func main() {
 
 	if showInstagram {
 		igPlatform := instagram.NewInstagramPlatform(*numVotes)
+		igPlatform.SetContactMapper(contactMapper)
 		if showX || showBluesky {
 			fmt.Println()
 		}
