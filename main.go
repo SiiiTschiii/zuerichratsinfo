@@ -111,6 +111,7 @@ func main() {
 		igPlatform := instagram.NewInstagramPlatformWithCredentials(
 			igUserID, igAccessToken, igGithubToken, igRepoOwner, igRepoName, maxIGPostsPerRun,
 		)
+		igPlatform.SetContactMapper(contactMapper)
 
 		if unsupported := runPlatform("Instagram", votelog.PlatformInstagram, igPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays); unsupported {
 			hasUnsupportedVotes = true

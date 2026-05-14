@@ -128,6 +128,17 @@ Possible values: `EXPIRED`, `ERROR`, `FINISHED`, `IN_PROGRESS`, `PUBLISHED`
 
 After successful publishing, the hosted images are removed from the `gh-pages` branch.
 
+### Mentions and first comments
+
+- Caption mentions are supported via `caption` using `@username` (users get mention notifications).
+- An automated first comment is possible after publishing via:
+
+```bash
+curl -X POST "https://graph.facebook.com/v25.0/<MEDIA_ID>/comments" \
+  -d "message=..." \
+  -d "access_token=<TOKEN>"
+```
+
 ## Rate Limits
 
 - 100 API-published posts per 24-hour rolling period
