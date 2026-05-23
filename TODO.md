@@ -38,6 +38,7 @@
 
 - [x] X: use reply threads for large vote groups (currently capped to a single post per group)
 - [x] X + Bluesky: add a reply with per-Fraktion vote breakdown (e.g. SP 32 Ja / 0 Nein, FDP 18 Ja / 5 Nein, …)
+- [ ] Tag party/Fraktion accounts when a Fraktion is mentioned in the vote title (e.g. "Dringliche Motion der SP-, Grüne- und AL-Fraktion vom 17.12.2025: …" should tag the SP, Grüne, and AL accounts)
 
 ## Platform Integrations
 
