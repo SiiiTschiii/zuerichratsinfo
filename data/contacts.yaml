@@ -39,6 +39,9 @@ contacts:
         - https://www.instagram.com/aliwankoh/
       linkedin:
         - https://www.linkedin.com/in/alice-kohli/
+    - name: Andreas Egli
+      instagram:
+        - https://www.instagram.com/kingandithefirst/
     - name: Andreas Hauri
       facebook:
         - https://www.facebook.com/StadtratHauri
@@ -48,9 +51,6 @@ contacts:
         - https://www.linkedin.com/in/andreas-hauri-02a35217/
       x:
         - https://x.com/andreashauri
-    - name: André Odermatt
-      facebook:
-        - https://www.facebook.com/aodermatt
     - name: Angele Florine
       instagram:
         - https://www.instagram.com/florineangele/
@@ -65,9 +65,6 @@ contacts:
         - https://www.instagram.com/angelica_eichenberger/
       x:
         - https://x.com/AngelicaEichen1
-    - name: Ann-Catherine Nabholz
-      linkedin:
-        - https://www.linkedin.com/in/ann-catherine-nabholz-7059202ba/
     - name: Anna Graff
       bluesky:
         - https://bsky.app/profile/annagraff.bsky.social
@@ -77,20 +74,14 @@ contacts:
         - https://www.instagram.com/annagraff_
       linkedin:
         - https://www.linkedin.com/in/annagraff/
-    - name: Anna-Béatrice Schmaltz
-      bluesky:
-        - https://bsky.app/profile/annabschmaltz.bsky.social
-      facebook:
-        - https://www.facebook.com/annabschmaltz
-      instagram:
-        - https://www.instagram.com/anna.beatrice.schmaltz/
-      linkedin:
-        - https://www.linkedin.com/in/anna-b%C3%A9atrice-schmaltz-5aa663197/
-      x:
-        - https://x.com/annabschmaltz
     - name: Anthony Goldstein
       linkedin:
         - https://www.linkedin.com/in/anthony-goldstein-50589693/
+    - name: Ariane Buchli
+      instagram:
+        - https://www.instagram.com/ariane.buchli/
+      linkedin:
+        - https://www.linkedin.com/in/arianebuchli/
     - name: Balthasar Glättli
       bluesky:
         - https://bsky.app/profile/bglaettli.bsky.social
@@ -122,6 +113,11 @@ contacts:
         - https://www.instagram.com/ben_zh78/
       linkedin:
         - https://www.linkedin.com/in/benedikt-gerth-839a332/
+    - name: Brenda Mäder
+      instagram:
+        - https://www.instagram.com/brendamaeder/
+      linkedin:
+        - https://www.linkedin.com/in/brendamaeder/
     - name: Bögli Moritz
       facebook:
         - https://www.facebook.com/moritz.bogli
@@ -153,6 +149,13 @@ contacts:
         - https://www.linkedin.com/in/christian-huser-77708a161/
       x:
         - https://x.com/christianhuser
+    - name: Christian Häberli
+      facebook:
+        - https://www.facebook.com/ch.h.haeberli/
+      instagram:
+        - https://www.instagram.com/christian.haeberli.al/
+      linkedin:
+        - https://www.linkedin.com/in/christian-h%C3%A4berli-40955b25/
     - name: Christian Traber
       facebook:
         - https://www.facebook.com/christian.traber.90
@@ -174,14 +177,6 @@ contacts:
         - https://www.instagram.com/christophriedweg/
       linkedin:
         - https://www.linkedin.com/in/christoph-riedweg-a280941b5/
-    - name: Corine Mauch
-      facebook:
-        - https://www.facebook.com/stadtpraesidentin
-      instagram:
-        - https://www.instagram.com/corine_mauch/
-    - name: Cornelia Taiana
-      linkedin:
-        - https://www.linkedin.com/in/cornelia-taiana-649454159/
     - name: Céline Widmer
       bluesky:
         - https://bsky.app/profile/celinewidmer.bsky.social
@@ -245,17 +240,6 @@ contacts:
     - name: Dominik Haupt
       linkedin:
         - https://www.linkedin.com/in/dominikhaupt/
-    - name: Dominik Waser
-      bluesky:
-        - https://bsky.app/profile/dominikwaser.bsky.social
-      facebook:
-        - https://www.facebook.com/dominik.waser.503/
-      instagram:
-        - https://www.instagram.com/dominik_waser/
-      linkedin:
-        - https://www.linkedin.com/in/dominik-waser-366118224/
-      x:
-        - https://x.com/domiwaser
     - name: Dominique Späth
       facebook:
         - https://www.facebook.com/dominique.spaeth.50
@@ -272,6 +256,13 @@ contacts:
         - https://www.linkedin.com/in/emanueltschannen
       x:
         - https://x.com/Emanuel_Georg
+    - name: Fabian Stieger
+      instagram:
+        - https://www.instagram.com/fabianstieger.ch/
+      linkedin:
+        - https://www.linkedin.com/in/fabianstieger/
+      tiktok:
+        - https://www.tiktok.com/@fabianstieger.ch
     - name: FDP Stadt Zürich
       facebook:
         - https://www.facebook.com/fdpstadtzuerich/
@@ -281,13 +272,6 @@ contacts:
         - https://www.linkedin.com/company/fdp-stadt-z%C3%BCrich/
       x:
         - https://x.com/mehblau
-    - name: Filippo Leutenegger
-      facebook:
-        - https://www.facebook.com/filippo.leutenegger
-      linkedin:
-        - https://www.linkedin.com/in/filippo-leutenegger-6bb863123/
-      x:
-        - https://x.com/F_Leutenegger
     - name: Florian Blättler
       bluesky:
         - https://bsky.app/profile/mesoperm.bsky.social
@@ -298,19 +282,6 @@ contacts:
     - name: Florian Utz
       facebook:
         - https://www.facebook.com/florian.utz.526
-    - name: Flurin Capaul
-      bluesky:
-        - https://bsky.app/profile/flurin-capaul.bsky.social
-      facebook:
-        - https://www.facebook.com/flurin.capaul.14
-      instagram:
-        - https://www.instagram.com/flurin_capaul/
-      linkedin:
-        - https://www.linkedin.com/in/flurin/
-      tiktok:
-        - https://www.tiktok.com/@flurincapaul
-      x:
-        - https://x.com/FlurinCapaul
     - name: Frank-Elmar Linxweiler
       linkedin:
         - https://www.linkedin.com/in/frank-elmar-linxweiler-frm-0591063/
@@ -339,21 +310,6 @@ contacts:
     - name: Hannah Locher
       facebook:
         - https://www.facebook.com/hannah.locher
-    - name: Hans Dellenbach
-      instagram:
-        - https://www.instagram.com/dellenbachhans/
-      linkedin:
-        - https://www.linkedin.com/in/hansdellenbach
-      x:
-        - https://x.com/HansDellenbach
-    - name: Heidi Egger
-      facebook:
-        - https://www.facebook.com/heidieggerzuerich
-      instagram:
-        - https://www.instagram.com/heidiegger1512/
-    - name: Hurni Loïc
-      linkedin:
-        - https://www.linkedin.com/in/lo%C3%AFc-hurni-b22b45194/
     - name: Ivo Bieri
       linkedin:
         - https://www.linkedin.com/in/ivo-bieri/
@@ -400,9 +356,6 @@ contacts:
         - https://www.linkedin.com/in/julia-hofstetter-382546201/
       x:
         - https://x.com/JuliaHofstette6
-    - name: Jürg Rauser
-      instagram:
-        - https://www.instagram.com/juergrauser/
     - name: Karin Rykart
       facebook:
         - https://www.facebook.com/karinrykart/
@@ -467,11 +420,6 @@ contacts:
         - https://www.instagram.com/lisa_diggelmann/
       x:
         - https://x.com/LisaDiggelmann
-    - name: Maggi Luca
-      facebook:
-        - https://www.facebook.com/luca.maggi.96
-      x:
-        - https://x.com/LucaMaggiJG
     - name: Mahrer Liv
       facebook:
         - https://www.facebook.com/profile.php?id=100063702649427
@@ -481,26 +429,6 @@ contacts:
         - https://www.linkedin.com/in/liv-mahrer-12550abb/
       x:
         - https://x.com/LivMahrer
-    - name: Maleica Landolt
-      facebook:
-        - https://www.facebook.com/maleica.landolt
-      instagram:
-        - https://www.instagram.com/maleicalandolt/
-      linkedin:
-        - https://www.linkedin.com/in/maleica-landolt-79699b17/
-      tiktok:
-        - https://www.tiktok.com/@maleicalandolt
-      x:
-        - https://x.com/MaleicaLandolt
-    - name: Marcel Tobler
-      bluesky:
-        - https://bsky.app/profile/marceltoblerzrh.bsky.social
-      facebook:
-        - https://www.facebook.com/marcel.tobler2
-      instagram:
-        - https://www.instagram.com/marceltobler/
-      linkedin:
-        - https://www.linkedin.com/in/marceltoblerzrh/
     - name: Marco Denoth
       facebook:
         - https://www.facebook.com/gemeinderatmarcodenoth
@@ -510,6 +438,15 @@ contacts:
         - https://www.linkedin.com/in/marcodenoth/
       x:
         - https://x.com/marco_denoth
+    - name: Mariem Fiadjigbe Kekić
+      facebook:
+        - https://www.facebook.com/mariemfiadjigbe.ch
+      instagram:
+        - https://www.instagram.com/mariemfiadjigbe.ch/
+      linkedin:
+        - https://www.linkedin.com/in/mariemfiadjigbe/
+      tiktok:
+        - https://www.tiktok.com/@mariemfiadjigbe
     - name: Marisa Kappeler-Schudel
       instagram:
         - https://www.instagram.com/marisa_kappelerschudel_glp/
@@ -536,14 +473,18 @@ contacts:
         - https://www.tiktok.com/@markushaselbach
       x:
         - https://x.com/Markbach54
-    - name: Markus Knauss
-      bluesky:
-        - https://bsky.app/profile/mknauss.bsky.social
-      x:
-        - https://x.com/Markus_Knauss
     - name: Markus Merki
       linkedin:
         - https://www.linkedin.com/in/markus-j-merki-571a0844/
+    - name: Markus Weidmann
+      facebook:
+        - https://www.facebook.com/markus.weidmann.12
+      instagram:
+        - https://www.instagram.com/stingerpuma/
+      linkedin:
+        - https://www.linkedin.com/in/markus-weidmann-95589716/
+      x:
+        - https://x.com/markussweidmann
     - name: Martin Busekros
       instagram:
         - https://www.instagram.com/martin_busekros/
@@ -563,15 +504,6 @@ contacts:
         - https://www.linkedin.com/in/martina-zuercher-boeni/
       x:
         - https://x.com/M_ZuercherBoeni
-    - name: Mary Fiadjigbe Kekić
-      facebook:
-        - https://www.facebook.com/mariemfiadjigbe.ch
-      instagram:
-        - https://www.instagram.com/mariemfiadjigbe.ch/
-      linkedin:
-        - https://www.linkedin.com/in/mariemfiadjigbe/
-      tiktok:
-        - https://www.tiktok.com/@mariemfiadjigbe
     - name: Mathias Egloff
       facebook:
         - https://www.facebook.com/mathias.egloff
@@ -581,11 +513,6 @@ contacts:
         - https://www.linkedin.com/in/mathias-egloff-2392b83b/
       x:
         - https://x.com/EgloffMathias
-    - name: Matthias Renggli
-      facebook:
-        - https://www.facebook.com/mrenggli
-      linkedin:
-        - https://www.linkedin.com/in/matthias-renggli/
     - name: Maya Kägi Götz
       facebook:
         - https://www.facebook.com/maya.kagigotz.3
@@ -624,17 +551,6 @@ contacts:
         - https://ch.linkedin.com/in/mischa-schiwow-520b0816
       tiktok:
         - https://www.tiktok.com/@mischaschiwow
-    - name: Moser Felix
-      facebook:
-        - https://www.facebook.com/felix.moser
-      instagram:
-        - https://www.instagram.com/felixmoser/
-      linkedin:
-        - https://www.linkedin.com/in/felixmoser/
-      tiktok:
-        - https://www.tiktok.com/@felixmoser646
-      x:
-        - https://x.com/felix_moser
     - name: Murat Gediz
       facebook:
         - https://www.facebook.com/share/16EwYFRNqK/?mibextid=wwXIfr
@@ -669,9 +585,6 @@ contacts:
         - https://www.instagram.com/nina_eggenschwiler/
       linkedin:
         - https://www.linkedin.com/in/nina-eggenschwiler-439073aa/
-    - name: Niyazi Erdem
-      facebook:
-        - https://www.facebook.com/niyazi.erdem.129357
     - name: Oliver Heimgartner
       facebook:
         - https://www.facebook.com/oliheimgartner
@@ -729,6 +642,11 @@ contacts:
         - https://www.tiktok.com/@perparim.avdili
       x:
         - https://x.com/PerparimAvdili
+    - name: Rahel Hofstetter
+      instagram:
+        - https://www.instagram.com/rahelhof/
+      linkedin:
+        - https://ch.linkedin.com/in/rahel-hofstetter
     - name: Raphael Golta
       facebook:
         - https://www.facebook.com/golta
@@ -762,17 +680,6 @@ contacts:
     - name: Roger Suter
       facebook:
         - https://www.facebook.com/profile.php?id=100011706251272
-    - name: Roland Hurschler
-      bluesky:
-        - https://bsky.app/profile/rrolee.bsky.social
-      facebook:
-        - https://www.facebook.com/roland.hurschler.9
-      instagram:
-        - https://www.instagram.com/rroleeh
-      linkedin:
-        - https://ch.linkedin.com/in/roland-hurschler-24b812a8
-      x:
-        - https://x.com/rrolee_
     - name: Roman Mörgeli
       linkedin:
         - https://www.linkedin.com/in/roman-m%C3%B6rgeli-b1216017b/
@@ -795,29 +702,11 @@ contacts:
         - https://www.linkedin.com/in/samuel-balsiger-b6076b320/
       x:
         - https://x.com/BalsigerSVP
-    - name: Sandra Gallizzi
-      facebook:
-        - https://www.facebook.com/sandragallizzi
+    - name: Sarah Dähler
       instagram:
-        - https://www.instagram.com/mylife_by_sandrag
+        - https://www.instagram.com/sarah__daehler/
       linkedin:
-        - https://www.linkedin.com/in/sandra-gallizzi-8b00a033b/
-    - name: Sandro Gähler
-      linkedin:
-        - https://www.linkedin.com/in/sandro-g%C3%A4hler-432695150/
-      x:
-        - https://x.com/SandroGaehler
-    - name: Sanija Ameti
-      bluesky:
-        - https://bsky.app/profile/cybersandwich.bsky.social
-      facebook:
-        - https://www.facebook.com/sanya.ameti
-      instagram:
-        - https://www.instagram.com/sanija.ameti/
-      linkedin:
-        - https://www.linkedin.com/in/sanijaameti/
-      x:
-        - https://x.com/cybersandwich
+        - https://www.linkedin.com/in/sarahdaehler/
     - name: Sascha Rüegg
       linkedin:
         - https://www.linkedin.com/in/sascha-r%C3%BCegg-8b121a162/
@@ -867,27 +756,11 @@ contacts:
         - https://www.linkedin.com/in/sibylle-kauer-4b72a8399/
       x:
         - https://x.com/KauerSibylle
-    - name: Siev Ronny
-      facebook:
-        - https://www.facebook.com/ronny.siev
-      instagram:
-        - https://www.instagram.com/ronnysiev
-      linkedin:
-        - https://www.linkedin.com/in/ronny-siev-4272774a
-      tiktok:
-        - https://www.tiktok.com/@ronnysiev
-      x:
-        - https://x.com/RonnySiev
     - name: Simon Hatt
       instagram:
         - https://www.instagram.com/simon_hatt_/
       linkedin:
         - https://www.linkedin.com/in/simon-hatt-613455109
-    - name: Simon Kälin-Werth
-      facebook:
-        - https://www.facebook.com/simon.kaelinwerth
-      x:
-        - https://x.com/kaelin_simon
     - name: Simone Brander
       facebook:
         - https://www.facebook.com/simonebranderzuerich/
@@ -930,9 +803,6 @@ contacts:
         - https://linkedin.com/in/JehudaSpielman
       x:
         - https://x.com/JehudaSpielman
-    - name: Stefan Reusser
-      linkedin:
-        - https://www.linkedin.com/in/stefan-reusser-681567359/
     - name: Stefan Urech
       instagram:
         - https://www.instagram.com/urechstefan/
@@ -969,9 +839,6 @@ contacts:
         - https://www.instagram.com/svp_stadt_zuerich/
       x:
         - https://x.com/svp_stadt_zh
-    - name: Tamara Bosshardt
-      linkedin:
-        - https://www.linkedin.com/in/tamarabosshardt/
     - name: Tanja Maag
       bluesky:
         - https://bsky.app/profile/tnjmaag.bsky.social
@@ -1010,15 +877,15 @@ contacts:
         - https://www.instagram.com/ursriklin/
       linkedin:
         - https://www.linkedin.com/in/ursriklin/
-    - name: Ursina Merkler
-      bluesky:
-        - https://bsky.app/profile/urme.bsky.social
+    - name: Valentina Fazlija
       facebook:
-        - https://www.facebook.com/ursina.merkler
+        - https://www.facebook.com/valentina.anitnellaw
       instagram:
-        - https://www.instagram.com/ursinamerkler/
+        - https://www.instagram.com/valentina_fazlija/
       linkedin:
-        - https://www.linkedin.com/in/ursina-merkler-479251144/
+        - https://www.linkedin.com/in/valentina-fazlija/
+      tiktok:
+        - https://www.tiktok.com/@valentina.fazliu
     - name: Vera Çelik
       instagram:
         - https://www.instagram.com/veeraacelik/
@@ -1029,27 +896,6 @@ contacts:
     - name: Voellmy Xenia
       linkedin:
         - https://www.linkedin.com/in/xenia-voellmy
-    - name: Walter Anken
-      facebook:
-        - https://www.facebook.com/walter.anken
-    - name: Wiesmann Barbara
-      facebook:
-        - https://www.facebook.com/barbara.wiesmann
-      instagram:
-        - https://www.instagram.com/barbara_wiesmann/
-      x:
-        - https://x.com/bawizu
-    - name: Yasmine Bourgeois
-      facebook:
-        - https://www.facebook.com/yasmine.c.bourgeois
-      instagram:
-        - https://www.instagram.com/bourgeoisstrasser/
-      linkedin:
-        - https://www.linkedin.com/in/yasmine-bourgeois-strasser-bb241111b/
-      tiktok:
-        - https://www.tiktok.com/@yasminebourgeoiss
-      x:
-        - https://x.com/YasiBourgeois
     - name: Yves Henz
       bluesky:
         - https://bsky.app/profile/yveshenz.bsky.social
