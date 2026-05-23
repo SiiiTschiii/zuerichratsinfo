@@ -25,14 +25,14 @@ A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Z
 
 | Platform    | Status     | Gemeinderäte & Stadträte | Account                                                                              |
 | ----------- | ---------- | ------------------------ | ------------------------------------------------------------------------------------ |
-| LinkedIn    | ❌ Planned | 121 | -                                                                                    |
-| Facebook    | ❌ Planned | 102 | -                                                                                    |
-| Instagram   | ✅ Active  | 99 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
-| X (Twitter) | ✅ Active  | 74 | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
-| Bluesky     | ✅ Active  | 36 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
-| TikTok      | ❌ Planned | 21 | -                                                                                    |
+| LinkedIn    | ❌ Planned | 108 | -                                                                                    |
+| Facebook    | ❌ Planned | 83 | -                                                                                    |
+| Instagram   | ✅ Active  | 91 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
+| X (Twitter) | ✅ Active  | 59 | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| Bluesky     | ✅ Active  | 28 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
+| TikTok      | ❌ Planned | 18 | -                                                                                    |
 
-_Platforms are sorted by coverage. Counts include both Gemeinderäte and Stadträte (9 Stadtrat members). Out of 154 total contacts in [data/contacts.yaml](data/contacts.yaml)._
+_Platforms are sorted by coverage. Counts include both Gemeinderäte and Stadträte (9 Stadtrat members). Out of 132 total contacts in [data/contacts.yaml](data/contacts.yaml)._
 
 ## What It Does
 
