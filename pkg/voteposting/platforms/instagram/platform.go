@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
@@ -49,6 +50,7 @@ type InstagramPlatform struct {
 	maxPostsPerRun int
 	igClient       *igapi.Client
 	imageHoster    *igapi.ImageHoster
+	contactMapper  *contacts.Mapper
 	stubMode       bool // true when no credentials are configured
 
 	// Injectable functions for testing
@@ -101,7 +103,12 @@ func NewInstagramPlatformWithCredentials(igUserID, accessToken, githubToken, rep
 
 // Format formats a group of votes into Instagram-specific content (carousel images + caption).
 func (p *InstagramPlatform) Format(votes []zurichapi.Abstimmung) (platforms.Content, error) {
-	return FormatCarousel(votes)
+	return FormatCarouselWithContacts(votes, p.contactMapper)
+}
+
+// SetContactMapper configures mapped contacts for @mention tagging in generated captions.
+func (p *InstagramPlatform) SetContactMapper(contactMapper *contacts.Mapper) {
+	p.contactMapper = contactMapper
 }
 
 // Post publishes content to Instagram.
