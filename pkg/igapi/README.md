@@ -45,11 +45,44 @@ curl "https://graph.facebook.com/v25.0/<PAGE_ID>?fields=instagram_business_accou
 # → {"instagram_business_account": {"id": "<IG_USER_ID>"}, ...}
 ```
 
-### Access Token
+### Access Token (never-expiring Page token)
 
-Generate a **User Access Token** in the [Graph API Explorer](https://developers.facebook.com/tools/explorer/) with the permissions listed above.
+The bot uses a **never-expiring Page access token**. To generate one:
 
-User tokens are short-lived (~1 hour in the Explorer, ~60 days when exchanged for a long-lived token). For automated use in GitHub Actions, exchange for a long-lived token and store as a secret (`IG_ACCESS_TOKEN`).
+#### 1. Get App ID and App Secret
+
+- Go to https://developers.facebook.com/apps/
+- Select the ZueriRatsinfo app → **Settings → Basic**
+- Copy the **App ID** and **App Secret**
+
+#### 2. Generate a short-lived User Token
+
+- Open the [Graph API Explorer](https://developers.facebook.com/tools/explorer/)
+- Select the ZueriRatsinfo app
+- Add permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`
+- Click **Generate Access Token** and authorize
+
+#### 3. Exchange for a long-lived User Token (~60 days)
+
+```bash
+curl "https://graph.facebook.com/v25.0/oauth/access_token?grant_type=fb_exchange_token&client_id=<APP_ID>&client_secret=<APP_SECRET>&fb_exchange_token=<SHORT_LIVED_USER_TOKEN>"
+```
+
+#### 4. Get the never-expiring Page Token
+
+```bash
+curl "https://graph.facebook.com/v25.0/me/accounts?access_token=<LONG_LIVED_USER_TOKEN>"
+```
+
+The `access_token` field in the response is a **permanent Page token** that won't expire as long as:
+- You remain an admin of the Facebook Page
+- App permissions are not revoked
+
+#### 5. Update the GitHub Actions secret
+
+Store the Page token as `IG_ACCESS_TOKEN` in **GitHub → Settings → Secrets and variables → Actions**.
+
+**Ref**: https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived
 
 ### Environment Variables
 
