@@ -48,20 +48,21 @@ var palette = []color.RGBA{
 	{0x2C, 0x3E, 0x6B, 0xFF}, // steel blue
 }
 
-// SelectColor returns a deterministic color based on GeschaeftGrNr.
-// It extracts the trailing number (e.g. "2025/100" → 100) so consecutive
-// votes cycle through all palette colors instead of clustering.
+// SelectColor returns a deterministic color based on the full GeschaeftGrNr
+// string (e.g. "2026/153"). It hashes all characters so that votes with the
+// same trailing-number residue but different year/prefix still get different
+// colors.
 func SelectColor(geschaeftGrNr string) color.RGBA {
-	// Find start of trailing digits
-	i := len(geschaeftGrNr)
-	for i > 0 && geschaeftGrNr[i-1] >= '0' && geschaeftGrNr[i-1] <= '9' {
-		i--
+	// FNV-inspired hash over the full string for good distribution
+	h := uint32(2166136261)
+	for i := 0; i < len(geschaeftGrNr); i++ {
+		h ^= uint32(geschaeftGrNr[i])
+		h *= 16777619
 	}
-	n := 0
-	for _, c := range geschaeftGrNr[i:] {
-		n = n*10 + int(c-'0')
+	idx := int(h) % len(palette)
+	if idx < 0 {
+		idx += len(palette)
 	}
-	idx := n % len(palette)
 	return palette[idx]
 }
 
