@@ -148,7 +148,7 @@ func buildCaption(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) 
 func buildCaptionWithPreservedLink(body, link string) string {
 	body = strings.TrimRight(body, "\n")
 	linkLine := fmt.Sprintf("🔗 %s", link)
-	caption := body + "\n" + linkLine
+	caption := body + "\n\n" + linkLine
 
 	// Truncate if over Instagram's character limit
 	if len([]rune(caption)) > maxCaptionChars {

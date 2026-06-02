@@ -75,6 +75,7 @@ curl "https://graph.facebook.com/v25.0/me/accounts?access_token=<LONG_LIVED_USER
 ```
 
 The `access_token` field in the response is a **permanent Page token** that won't expire as long as:
+
 - You remain an admin of the Facebook Page
 - App permissions are not revoked
 
