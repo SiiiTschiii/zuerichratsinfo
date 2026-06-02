@@ -77,7 +77,7 @@ func main() {
 	client := zurichapi.NewClient()
 
 	skipVoteLog := os.Getenv("SKIP_VOTE_LOG") == "true"
-	hasUnsupportedVotes := false
+	hasErrors := false
 
 	// --- X Platform ---
 	if xEnabled {
@@ -88,8 +88,8 @@ func main() {
 		)
 		xPlatform.SetMaxChars(xMaxChars)
 
-		if unsupported := runPlatform("X/Twitter", votelog.PlatformX, xPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays); unsupported {
-			hasUnsupportedVotes = true
+		if runPlatform("X/Twitter", votelog.PlatformX, xPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
+			hasErrors = true
 		}
 	}
 
@@ -101,8 +101,8 @@ func main() {
 			contactMapper,
 		)
 
-		if unsupported := runPlatform("Bluesky", votelog.PlatformBluesky, bskyPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays); unsupported {
-			hasUnsupportedVotes = true
+		if runPlatform("Bluesky", votelog.PlatformBluesky, bskyPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
+			hasErrors = true
 		}
 	}
 
@@ -113,20 +113,20 @@ func main() {
 		)
 		igPlatform.SetContactMapper(contactMapper)
 
-		if unsupported := runPlatform("Instagram", votelog.PlatformInstagram, igPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays); unsupported {
-			hasUnsupportedVotes = true
+		if runPlatform("Instagram", votelog.PlatformInstagram, igPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
+			hasErrors = true
 		}
 	}
 
-	if hasUnsupportedVotes {
-		log.Println("❌ Action failed: one or more votes have an unrecognised format. Check warnings above.")
+	if hasErrors {
+		log.Println("❌ Action failed: one or more platforms encountered errors. Check logs above.")
 		os.Exit(1)
 	}
 }
 
 // runPlatform loads the vote log, prepares vote groups, and posts to the given
-// platform. It returns true if any votes were skipped due to an unsupported
-// format.
+// platform. It returns true if any error occurred (posting failure or
+// unsupported vote format).
 func runPlatform(
 	displayName string,
 	platform votelog.Platform,
@@ -168,10 +168,9 @@ func runPlatform(
 			if posted > 0 {
 				fmt.Printf("Posted %d group(s) to %s (some skipped — see warnings above)\n", posted, displayName)
 			}
-			return true
 		}
-		log.Printf("Error posting to %s: %v", displayName, err)
-		return false
+		log.Printf("❌ Error posting to %s: %v", displayName, err)
+		return true
 	}
 
 	fmt.Printf("🎉 Posted %d new group(s) to %s!\n", posted, displayName)
