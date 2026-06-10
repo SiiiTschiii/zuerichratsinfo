@@ -39,6 +39,11 @@
 - [x] X: use reply threads for large vote groups (currently capped to a single post per group)
 - [x] X + Bluesky: add a reply with per-Fraktion vote breakdown (e.g. SP 32 Ja / 0 Nein, FDP 18 Ja / 5 Nein, …)
 - [ ] Tag party/Fraktion accounts when a Fraktion is mentioned in the vote title (e.g. "Dringliche Motion der SP-, Grüne- und AL-Fraktion vom 17.12.2025: …" should tag the SP, Grüne, and AL accounts)
+- [ ] Explain the type of council business in the post (or its details/comment): add a concise one-sentence explanation of what the relevant Geschäftstyp is (e.g. Motion, Beschluss, Postulat, Beschlussantrag, Interpellation, …), or link to a resource that explains it where the platform allows links. Only include the explanation for the type relevant to the post.
+  - Motivation: help non-experts understand what a vote actually means — e.g. what it means when the council votes Yes on a Motion, what happened before the vote, and what happens next until it can take effect (in case of a Yes).
+- [ ] Explore posting newly submitted Geschäfte (e.g. Motionen, Postulate) when they are handed in, i.e. before the vote
+  - Evaluate whether this is a value-add for users (more timely coverage, full lifecycle of a Geschäft vs. only the final vote)
+  - Investigate whether the submission data is available via the Zürich council (PARIS) API, and which fields/endpoints expose it
 
 ## Platform Integrations
 
