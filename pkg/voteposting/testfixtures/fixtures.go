@@ -121,6 +121,27 @@ func SingleVoteAbgelehnt() []zurichapi.Abstimmung {
 	return []zurichapi.Abstimmung{v}
 }
 
+// SingleVoteDringlicherklaerung returns a single vote whose Abstimmungsgegenstand
+// ("Dringlicherklärung") is not a Schlussabstimmung. This exercises the eyebrow/prefix
+// that gets prepended above the title on single-vote posts and images.
+func SingleVoteDringlicherklaerung() []zurichapi.Abstimmung {
+	v := vote("dringlich-1", "Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kulturanbietenden bei der Suche nach Lokalitäten", "2026/244", "angenommen", 66, 0, 0, 59)
+	v.Abstimmungstitel = "2026_0244 Dringlicherklärung"
+	v.Stimmabgaben.Stimmabgabe = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 37, 0, 0, 4},
+		{"FDP", 0, 0, 0, 24},
+		{"SVP", 0, 0, 0, 16},
+		{"GLP", 0, 0, 0, 15},
+		{"Grüne", 14, 0, 0, 0},
+		{"AL", 8, 0, 0, 0},
+		{"Die Mitte", 7, 0, 0, 0},
+	})
+	return []zurichapi.Abstimmung{v}
+}
+
 // LongTitleTruncation returns a vote with a ~300-char title that triggers truncation.
 func LongTitleTruncation() []zurichapi.Abstimmung {
 	longTitle := "Schlussabstimmung über die bereinigten Dispositivziffern " +
@@ -453,6 +474,7 @@ func PostulatWithGrNrPrefix() []zurichapi.Abstimmung {
 var FixtureNames = []string{
 	"single-vote-angenommen",
 	"single-vote-abgelehnt",
+	"single-vote-dringlicherklaerung",
 	"long-title-truncation",
 	"multi-vote-group",
 	"generic-antrag-fallback",
@@ -466,15 +488,16 @@ var FixtureNames = []string{
 // AllFixtures returns all fixtures keyed by kebab-case name.
 func AllFixtures() map[string][]zurichapi.Abstimmung {
 	return map[string][]zurichapi.Abstimmung{
-		"single-vote-angenommen":    SingleVoteAngenommen(),
-		"single-vote-abgelehnt":     SingleVoteAbgelehnt(),
-		"long-title-truncation":     LongTitleTruncation(),
-		"multi-vote-group":          MultiVoteGroup(),
-		"generic-antrag-fallback":   GenericAntragFallback(),
-		"ten-vote-stress-test":      TenVoteStressTest(),
-		"vote-with-mentions":        VoteWithMentions(),
-		"auswahl-vote":              AuswahlVote(),
-		"mixed-multi-vote":          MixedMultiVote(),
-		"postulat-with-grnr-prefix": PostulatWithGrNrPrefix(),
+		"single-vote-angenommen":          SingleVoteAngenommen(),
+		"single-vote-abgelehnt":           SingleVoteAbgelehnt(),
+		"single-vote-dringlicherklaerung": SingleVoteDringlicherklaerung(),
+		"long-title-truncation":           LongTitleTruncation(),
+		"multi-vote-group":                MultiVoteGroup(),
+		"generic-antrag-fallback":         GenericAntragFallback(),
+		"ten-vote-stress-test":            TenVoteStressTest(),
+		"vote-with-mentions":              VoteWithMentions(),
+		"auswahl-vote":                    AuswahlVote(),
+		"mixed-multi-vote":                MixedMultiVote(),
+		"postulat-with-grnr-prefix":       PostulatWithGrNrPrefix(),
 	}
 }

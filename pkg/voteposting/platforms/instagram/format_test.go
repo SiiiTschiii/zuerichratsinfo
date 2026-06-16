@@ -269,3 +269,99 @@ contacts:
 		t.Errorf("expected caption to include tagged Instagram handle\n%s", content.Caption)
 	}
 }
+
+func intPtr(i int) *int {
+	return &i
+}
+
+func TestFormatCarousel_SingleVoteSubtitlePrefix(t *testing.T) {
+	tests := []struct {
+		name             string
+		votes            []zurichapi.Abstimmung
+		shouldContain    []string
+		shouldNotContain []string
+	}{
+		{
+			name: "Single vote non-Schlussabstimmung prepends Abstimmungsgegenstand",
+			votes: []zurichapi.Abstimmung{
+				{
+					OBJGUID:           "test-guid-dring",
+					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Abstimmungstitel:  "2026_0244 Dringlicherklärung",
+					SitzungDatum:      "2026-05-27",
+					Schlussresultat:   "angenommen",
+					AnzahlJa:          intPtr(66),
+					AnzahlNein:        intPtr(0),
+					AnzahlEnthaltung:  intPtr(0),
+					AnzahlAbwesend:    intPtr(59),
+				},
+			},
+			shouldContain:    []string{"Dringlicherklärung\n"},
+			shouldNotContain: []string{},
+		},
+		{
+			name: "Single vote Schlussabstimmung does NOT prepend",
+			votes: []zurichapi.Abstimmung{
+				{
+					OBJGUID:           "test-guid-schluss",
+					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Abstimmungstitel:  "2026_0244 Schlussabstimmung",
+					SitzungDatum:      "2026-05-27",
+					Schlussresultat:   "angenommen",
+					AnzahlJa:          intPtr(66),
+					AnzahlNein:        intPtr(0),
+					AnzahlEnthaltung:  intPtr(0),
+					AnzahlAbwesend:    intPtr(59),
+				},
+			},
+			shouldContain:    []string{},
+			shouldNotContain: []string{"Schlussabstimmung\n"},
+		},
+		{
+			name: "Single vote empty Abstimmungstitel does NOT prepend",
+			votes: []zurichapi.Abstimmung{
+				{
+					OBJGUID:           "test-guid-empty",
+					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Abstimmungstitel:  "",
+					SitzungDatum:      "2026-05-27",
+					Schlussresultat:   "angenommen",
+					AnzahlJa:          intPtr(66),
+					AnzahlNein:        intPtr(0),
+					AnzahlEnthaltung:  intPtr(0),
+					AnzahlAbwesend:    intPtr(59),
+				},
+			},
+			shouldContain:    []string{},
+			shouldNotContain: []string{"\n\n\n"},
+		},
+		{
+			name: "Multi-vote does NOT prepend subtitle to caption",
+			votes: testfixtures.MultiVoteGroup(),
+			shouldContain:    []string{},
+			shouldNotContain: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			content, err := FormatCarousel(tt.votes)
+			if err != nil {
+				t.Fatalf("FormatCarousel error: %v", err)
+			}
+			caption := content.Caption
+			t.Logf("Caption:\n%s", caption)
+
+			for _, s := range tt.shouldContain {
+				if !strings.Contains(caption, s) {
+					t.Errorf("Expected caption to contain %q", s)
+				}
+			}
+			for _, s := range tt.shouldNotContain {
+				if strings.Contains(caption, s) {
+					t.Errorf("Expected caption NOT to contain %q", s)
+				}
+			}
+		})
+	}
+}

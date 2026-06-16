@@ -450,3 +450,52 @@ func TestFormatVoteCountsLong(t *testing.T) {
 		})
 	}
 }
+
+func TestIsSchlussabstimmung(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected bool
+	}{
+		{"contains Schlussabstimmung", "2026_0244 Schlussabstimmung", true},
+		{"contains Schlussabstimmung with detail", "Schlussabstimmung über die Dispositivziffer 1", true},
+		{"case insensitive", "2026_0244 schlussabstimmung", true},
+		{"mixed case", "SCHLUSSABSTIMMUNG", true},
+		{"Dringlicherklärung", "2026_0244 Dringlicherklärung", false},
+		{"empty string", "", false},
+		{"unrelated text", "Antrag 1", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := IsSchlussabstimmung(tt.input)
+			if got != tt.expected {
+				t.Errorf("IsSchlussabstimmung(%q) = %v, want %v", tt.input, got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestSingleVoteSubtitlePrefix(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{"Dringlicherklärung with number", "2026_0244 Dringlicherklärung", "Dringlicherklärung"},
+		{"Schlussabstimmung returns empty", "2026_0244 Schlussabstimmung", ""},
+		{"empty returns empty", "", ""},
+		{"whitespace-only after strip returns empty", "  ", ""},
+		{"no number prefix", "Dringlicherklärung", "Dringlicherklärung"},
+		{"Schlussabstimmung case insensitive", "schlussabstimmung über Ziffer 1", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := SingleVoteSubtitlePrefix(tt.input)
+			if got != tt.expected {
+				t.Errorf("SingleVoteSubtitlePrefix(%q) = %q, want %q", tt.input, got, tt.expected)
+			}
+		})
+	}
+}

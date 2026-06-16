@@ -422,3 +422,92 @@ func TestFormatVoteThread_AuswahlWithFraktion(t *testing.T) {
 		t.Error("Auswahl vote header should NOT be (Ja/Nein/Enth/Abw)")
 	}
 }
+
+func TestFormatVoteThread_SingleVoteSubtitlePrefix(t *testing.T) {
+	tests := []struct {
+		name             string
+		votes            []zurichapi.Abstimmung
+		shouldContain    []string
+		shouldNotContain []string
+	}{
+		{
+			name: "Single vote non-Schlussabstimmung prepends Abstimmungsgegenstand",
+			votes: []zurichapi.Abstimmung{
+				{
+					OBJGUID:           "test-guid-dring",
+					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Abstimmungstitel:  "2026_0244 Dringlicherklärung",
+					SitzungDatum:      "2026-05-27",
+					Schlussresultat:   "angenommen",
+					AnzahlJa:          intPtr(66),
+					AnzahlNein:        intPtr(0),
+					AnzahlEnthaltung:  intPtr(0),
+					AnzahlAbwesend:    intPtr(59),
+				},
+			},
+			shouldContain:    []string{"Dringlicherklärung\n"},
+			shouldNotContain: []string{},
+		},
+		{
+			name: "Single vote Schlussabstimmung does NOT prepend",
+			votes: []zurichapi.Abstimmung{
+				{
+					OBJGUID:           "test-guid-schluss",
+					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Abstimmungstitel:  "2026_0244 Schlussabstimmung",
+					SitzungDatum:      "2026-05-27",
+					Schlussresultat:   "angenommen",
+					AnzahlJa:          intPtr(66),
+					AnzahlNein:        intPtr(0),
+					AnzahlEnthaltung:  intPtr(0),
+					AnzahlAbwesend:    intPtr(59),
+				},
+			},
+			shouldContain:    []string{},
+			shouldNotContain: []string{"Schlussabstimmung\n"},
+		},
+		{
+			name: "Single vote empty Abstimmungstitel does NOT prepend",
+			votes: []zurichapi.Abstimmung{
+				{
+					OBJGUID:           "test-guid-empty",
+					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Abstimmungstitel:  "",
+					SitzungDatum:      "2026-05-27",
+					Schlussresultat:   "angenommen",
+					AnzahlJa:          intPtr(66),
+					AnzahlNein:        intPtr(0),
+					AnzahlEnthaltung:  intPtr(0),
+					AnzahlAbwesend:    intPtr(59),
+				},
+			},
+			shouldContain:    []string{},
+			shouldNotContain: []string{"\n\n\n"},
+		},
+		{
+			name: "Multi-vote does NOT prepend subtitle to root",
+			votes: testfixtures.MultiVoteGroup(),
+			shouldContain:    []string{},
+			shouldNotContain: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			thread := FormatVoteThread(tt.votes, nil, DefaultMaxChars)
+			root := thread[0].Text
+			t.Logf("Root post:\n%s", root)
+
+			for _, s := range tt.shouldContain {
+				if !strings.Contains(root, s) {
+					t.Errorf("Expected root to contain %q", s)
+				}
+			}
+			for _, s := range tt.shouldNotContain {
+				if strings.Contains(root, s) {
+					t.Errorf("Expected root NOT to contain %q", s)
+				}
+			}
+		})
+	}
+}

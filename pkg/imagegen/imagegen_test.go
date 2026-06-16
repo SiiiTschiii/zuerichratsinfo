@@ -111,6 +111,52 @@ func TestLayoutTitleCard_WrapsLongSummaryLine(t *testing.T) {
 	}
 }
 
+func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	base := testfixtures.SingleVoteAngenommen()[0]
+	bg := SelectColor(base.GeschaeftGrNr)
+
+	// Non-Schlussabstimmung Abstimmungstitel: prepended inline in front of the title.
+	withPrefix := base
+	withPrefix.Abstimmungstitel = "Dringlicherklärung"
+	prefixCur := newCursor(0, imgHeight)
+	_, prefixLines, err := layoutCombinedCard(nil, prefixCur, &withPrefix, bg, fonts)
+	if err != nil {
+		t.Fatalf("layoutCombinedCard failed: %v", err)
+	}
+	if got := strings.Join(prefixLines, " "); !strings.HasPrefix(got, "Dringlicherklärung: ") {
+		t.Fatalf("expected title to start with %q, got %q", "Dringlicherklärung: ", got)
+	}
+
+	// Schlussabstimmung Abstimmungstitel: no prefix added.
+	schluss := base
+	schluss.Abstimmungstitel = "Schlussabstimmung"
+	schlussCur := newCursor(0, imgHeight)
+	_, schlussLines, err := layoutCombinedCard(nil, schlussCur, &schluss, bg, fonts)
+	if err != nil {
+		t.Fatalf("layoutCombinedCard failed: %v", err)
+	}
+	if got := strings.Join(schlussLines, " "); strings.Contains(got, "Schlussabstimmung:") {
+		t.Fatalf("expected no prefix for Schlussabstimmung, got %q", got)
+	}
+
+	// Empty Abstimmungstitel: no prefix added.
+	none := base
+	none.Abstimmungstitel = ""
+	noneCur := newCursor(0, imgHeight)
+	_, noneLines, err := layoutCombinedCard(nil, noneCur, &none, bg, fonts)
+	if err != nil {
+		t.Fatalf("layoutCombinedCard failed: %v", err)
+	}
+	if got := strings.Join(noneLines, " "); strings.Contains(got, ": ") && strings.HasPrefix(got, "Dringlicherklärung") {
+		t.Fatalf("expected no prefix for empty Abstimmungstitel, got %q", got)
+	}
+}
+
 func TestSelectColor_Deterministic(t *testing.T) {
 	c1 := SelectColor("2025/100")
 	c2 := SelectColor("2025/100")
