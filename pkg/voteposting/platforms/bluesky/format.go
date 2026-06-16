@@ -73,6 +73,12 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string) *BlueskyPos
 	header := fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date)
 	threadHint := "\n\n👇 Details im Thread"
 
+	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
+	var subtitlePrefix string
+	if len(votes) == 1 {
+		subtitlePrefix = voteformat.SingleVoteSubtitlePrefix(votes[0].Abstimmungstitel)
+	}
+
 	var body string
 	if len(votes) == 1 {
 		// Single vote: include result in root (unless it's an Auswahl A/B/C vote)
@@ -89,6 +95,9 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string) *BlueskyPos
 			result := voteformat.GetVoteResultText(vote.Schlussresultat)
 			body = fmt.Sprintf("%s %s: %s", resultEmoji, result, title)
 		}
+		if subtitlePrefix != "" {
+			body = subtitlePrefix + "\n" + body
+		}
 	} else {
 		// Multi-vote: just the title
 		body = title
@@ -99,6 +108,9 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string) *BlueskyPos
 	// Truncate title if root exceeds limit (rare, only for very long titles)
 	if graphemeLen(fullText) > maxGraphemes {
 		overhead := graphemeLen(header) + graphemeLen(threadHint) + 1 // 1 for "…"
+		if subtitlePrefix != "" {
+			overhead += graphemeLen(subtitlePrefix) + 1 // +1 for "\n"
+		}
 		available := maxGraphemes - overhead
 		if len(votes) == 1 {
 			vote := votes[0]
@@ -120,6 +132,9 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string) *BlueskyPos
 					title = truncateText(title, titleAvailable)
 				}
 				body = prefix + title
+			}
+			if subtitlePrefix != "" {
+				body = subtitlePrefix + "\n" + body
 			}
 		} else {
 			body = truncateText(title, available)

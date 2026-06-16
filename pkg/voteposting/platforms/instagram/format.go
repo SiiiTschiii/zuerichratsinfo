@@ -80,6 +80,15 @@ func buildCaption(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) 
 
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date))
+
+	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
+	if len(votes) == 1 {
+		if prefix := voteformat.SingleVoteSubtitlePrefix(votes[0].Abstimmungstitel); prefix != "" {
+			sb.WriteString(prefix)
+			sb.WriteString("\n")
+		}
+	}
+
 	sb.WriteString(title)
 	sb.WriteString("\n\n")
 

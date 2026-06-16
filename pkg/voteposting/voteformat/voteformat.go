@@ -204,6 +204,29 @@ func FormatVoteCountsLong(c VoteCounts) string {
 		abwesend)
 }
 
+// IsSchlussabstimmung returns true if the Abstimmungstitel contains "Schlussabstimmung" (case-insensitive).
+func IsSchlussabstimmung(abstimmungstitel string) bool {
+	return strings.Contains(strings.ToLower(abstimmungstitel), "schlussabstimmung")
+}
+
+// SingleVoteSubtitlePrefix returns the cleaned Abstimmungsgegenstand text to prepend
+// to a single-vote post, or "" if no prefix should be added.
+// A prefix is added only when: the Abstimmungstitel is non-empty AND does not
+// contain "Schlussabstimmung" (case-insensitive).
+func SingleVoteSubtitlePrefix(abstimmungstitel string) string {
+	if abstimmungstitel == "" {
+		return ""
+	}
+	if IsSchlussabstimmung(abstimmungstitel) {
+		return ""
+	}
+	cleaned := CleanVoteSubtitle(abstimmungstitel)
+	if cleaned == "" {
+		return ""
+	}
+	return cleaned
+}
+
 // GenerateVoteLink creates the link to the vote detail page
 func GenerateVoteLink(objGUID string) string {
 	return fmt.Sprintf("https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=%s", objGUID)
