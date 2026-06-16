@@ -26,10 +26,10 @@ import (
 var notoEmojiTTF []byte
 
 const (
-	imgWidth  = 1080
-	imgHeight = 1350
-	padding   = 60
-	shadowOff = 2
+	imgWidth                = 1080
+	imgHeight               = 1350
+	padding                 = 60
+	shadowOff               = 2
 	summarySubtitleMaxRunes = 90
 
 	fraktionNameColWidth  = 200
@@ -407,6 +407,12 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimm
 	title := voteformat.CleanVoteTitle(
 		voteformat.SelectBestTitle(v.TraktandumTitel, v.GeschaeftTitel),
 	)
+
+	// Single-vote non-Schlussabstimmung: prepend the Abstimmungsgegenstand inline
+	// in front of the title (e.g. "Dringlicherklärung: Motion von …").
+	if prefix := voteformat.SingleVoteSubtitlePrefix(v.Abstimmungstitel); prefix != "" {
+		title = prefix + ": " + title
+	}
 
 	// Calculate available space for title: reserve space for verdict + stats + party breakdown
 	fraktionCounts := voteformat.AggregateFraktionCounts(v.Stimmabgaben.Stimmabgabe)
