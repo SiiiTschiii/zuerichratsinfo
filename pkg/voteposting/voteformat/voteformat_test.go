@@ -499,3 +499,82 @@ func TestSingleVoteSubtitlePrefix(t *testing.T) {
 		})
 	}
 }
+func intPtr(n int) *int { return &n }
+
+func TestIsSchlussresultatConsistent(t *testing.T) {
+	tests := []struct {
+		name            string
+		schlussresultat string
+		ja              *int
+		nein            *int
+		wantConsistent  bool
+	}{
+		{
+			// Reproduces the 2025/217 bug: API returned "Ja" but counts show Nein > Ja.
+			name:            "API says Ja but Nein > Ja — inconsistent",
+			schlussresultat: "Ja",
+			ja:              intPtr(41),
+			nein:            intPtr(75),
+			wantConsistent:  false,
+		},
+		{
+			name:            "API says Angenommen but Nein > Ja — inconsistent",
+			schlussresultat: "Angenommen",
+			ja:              intPtr(41),
+			nein:            intPtr(75),
+			wantConsistent:  false,
+		},
+		{
+			name:            "API says Ja and Ja > Nein — consistent",
+			schlussresultat: "Ja",
+			ja:              intPtr(75),
+			nein:            intPtr(41),
+			wantConsistent:  true,
+		},
+		{
+			name:            "API says Nein with Nein > Ja — consistent",
+			schlussresultat: "Nein",
+			ja:              intPtr(41),
+			nein:            intPtr(75),
+			wantConsistent:  true,
+		},
+		{
+			name:            "Tie: Ja == Nein — consistent (no contradiction)",
+			schlussresultat: "Ja",
+			ja:              intPtr(60),
+			nein:            intPtr(60),
+			wantConsistent:  true,
+		},
+		{
+			name:            "Nil ja count — consistent (cannot validate)",
+			schlussresultat: "Ja",
+			ja:              nil,
+			nein:            intPtr(75),
+			wantConsistent:  true,
+		},
+		{
+			name:            "Nil nein count — consistent (cannot validate)",
+			schlussresultat: "Ja",
+			ja:              intPtr(41),
+			nein:            nil,
+			wantConsistent:  true,
+		},
+		{
+			name:            "Auswahl result — always consistent",
+			schlussresultat: "Auswahl A",
+			ja:              intPtr(0),
+			nein:            intPtr(99),
+			wantConsistent:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := IsSchlussresultatConsistent(tt.schlussresultat, tt.ja, tt.nein)
+			if got != tt.wantConsistent {
+				t.Errorf("IsSchlussresultatConsistent(%q, ja=%v, nein=%v) = %v, want %v",
+					tt.schlussresultat, tt.ja, tt.nein, got, tt.wantConsistent)
+			}
+		})
+	}
+}

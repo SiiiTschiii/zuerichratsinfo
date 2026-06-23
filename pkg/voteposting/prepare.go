@@ -16,6 +16,11 @@ import (
 // unrecognised count format. The group is skipped (not posted, not logged).
 var ErrUnsupportedVoteType = errors.New("unsupported vote type")
 
+// ErrInconsistentSchlussresultat is returned when a vote's Schlussresultat
+// field contradicts its raw vote counts (e.g. API says "Ja" but Nein > Ja).
+// The entire run is aborted so no platform posts incorrect results.
+var ErrInconsistentSchlussresultat = errors.New("Schlussresultat contradicts vote counts")
+
 // PrepareVoteGroups prepares vote groups for posting
 // It fetches recent votes, filters out already posted ones, and groups them by Geschäft
 // This is platform-agnostic - the same preparation for all platforms
@@ -75,6 +80,21 @@ func PrepareVoteGroups(
 	groups, err := client.GroupAbstimmungenByGeschaeft(unpostedVotes)
 	if err != nil {
 		return nil, err
+	}
+
+	// Validate consistency of every vote's Schlussresultat against its counts.
+	// If the API has published wrong data (e.g. "Ja" when Nein > Ja), abort
+	// before posting anything so the workflow fails and alerts the operator.
+	for _, group := range groups {
+		for _, v := range group {
+			if !voteformat.IsSchlussresultatConsistent(v.Schlussresultat, v.AnzahlJa, v.AnzahlNein) {
+				return nil, fmt.Errorf("%w: %s (%s) has Schlussresultat=%q but Ja=%d Nein=%d",
+					ErrInconsistentSchlussresultat,
+					v.GeschaeftGrNr, v.Abstimmungstitel,
+					v.Schlussresultat, *v.AnzahlJa, *v.AnzahlNein,
+				)
+			}
+		}
 	}
 
 	return groups, nil

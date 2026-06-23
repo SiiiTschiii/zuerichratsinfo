@@ -47,6 +47,23 @@ func GetVoteResultText(result string) string {
 	return "Abgelehnt"
 }
 
+// IsSchlussresultatConsistent reports whether the Schlussresultat field is
+// consistent with the raw vote counts. Returns false when the API declares
+// "Ja"/"Angenommen" but the Nein count exceeds the Ja count, indicating
+// stale or erroneous API data that should block posting.
+// Auswahl (A/B/C/D) results and nil counts are always considered consistent.
+func IsSchlussresultatConsistent(schlussresultat string, ja, nein *int) bool {
+	if ja == nil || nein == nil {
+		return true
+	}
+	lower := strings.TrimSpace(strings.ToLower(schlussresultat))
+	if strings.HasPrefix(lower, "auswahl") {
+		return true
+	}
+	statedAccepted := strings.Contains(lower, "angenommen") || lower == "ja"
+	return !(statedAccepted && *nein > *ja)
+}
+
 // SelectBestTitle chooses between TraktandumTitel and GeschaeftTitel
 // If TraktandumTitel is just a generic "Antrag XXX" pattern, use GeschaeftTitel instead
 func SelectBestTitle(traktandumTitel, geschaeftTitel string) string {
