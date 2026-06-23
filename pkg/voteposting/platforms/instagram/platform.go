@@ -20,7 +20,7 @@ const (
 	// pagesDeploymentPollInterval is the time between GitHub Pages availability checks.
 	pagesDeploymentPollInterval = 10 * time.Second
 	// pagesDeploymentTimeout is the maximum time to wait for GitHub Pages deployment.
-	pagesDeploymentTimeout = 3 * time.Minute
+	pagesDeploymentTimeout = 6 * time.Minute
 )
 
 // CreateMediaContainerFunc is the signature for creating an IG media container.
