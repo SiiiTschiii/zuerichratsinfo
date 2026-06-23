@@ -52,6 +52,7 @@ jobs:
         run: go run main.go
 
       - name: Commit updated vote log
+        if: always()
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
