@@ -57,4 +57,5 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add data/posted_votes_x.json data/posted_votes_bluesky.json data/posted_votes_instagram.json
           git diff --staged --quiet || git commit -m "Update posted votes log [skip ci]"
+          git pull --rebase origin main
           git push
