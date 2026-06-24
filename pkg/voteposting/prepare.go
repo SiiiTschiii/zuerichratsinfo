@@ -19,7 +19,7 @@ var ErrUnsupportedVoteType = errors.New("unsupported vote type")
 // ErrInconsistentSchlussresultat is returned when a vote's Schlussresultat
 // field contradicts its raw vote counts (e.g. API says "Ja" but Nein > Ja).
 // The entire run is aborted so no platform posts incorrect results.
-var ErrInconsistentSchlussresultat = errors.New("Schlussresultat contradicts vote counts")
+var ErrInconsistentSchlussresultat = errors.New("schlussresultat contradicts vote counts")
 
 // PrepareVoteGroups prepares vote groups for posting
 // It fetches recent votes, filters out already posted ones, and groups them by Geschäft

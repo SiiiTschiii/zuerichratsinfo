@@ -61,7 +61,7 @@ func IsSchlussresultatConsistent(schlussresultat string, ja, nein *int) bool {
 		return true
 	}
 	statedAccepted := strings.Contains(lower, "angenommen") || lower == "ja"
-	return !(statedAccepted && *nein > *ja)
+	return !statedAccepted || *nein <= *ja
 }
 
 // SelectBestTitle chooses between TraktandumTitel and GeschaeftTitel
