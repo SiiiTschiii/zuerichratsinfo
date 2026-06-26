@@ -132,16 +132,16 @@ func GetTypeLabel(geschaeftsart string, dringlich bool) string {
 }
 
 // FormatDate converts an ISO datetime string (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
-// to the German format DD.MM.YYYY.
+// to the German format DD.MM.YYYY. Returns an empty string for invalid/empty input.
 func FormatDate(isoDate string) string {
 	if len(isoDate) < 10 {
-		return isoDate
+		return ""
 	}
 	parts := strings.Split(isoDate[:10], "-")
 	if len(parts) == 3 {
 		return fmt.Sprintf("%s.%s.%s", parts[2], parts[1], parts[0])
 	}
-	return isoDate[:10]
+	return ""
 }
 
 // FormatSubmitterLine formats the ✍️ submitter line for a post.

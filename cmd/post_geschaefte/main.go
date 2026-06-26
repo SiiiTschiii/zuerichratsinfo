@@ -159,18 +159,12 @@ func main() {
 			}
 
 			if !*dryRun && xEnabled {
-				// X posting is handled via the existing xapi package
-				// For now, log a note — full X integration follows the same pattern as voteposting
-				log.Printf("ℹ️  X posting for Geschäfte not yet wired to xapi; mark as posted manually")
+				// X posting via xapi is not yet wired up for Geschäfte.
+				// Posting must be done manually until xapi integration is added.
+				log.Printf("ℹ️  X posting for Geschäfte not yet wired to xapi; post manually")
+				// Do NOT mark as posted — the item was not actually published.
 			} else if *dryRun {
 				fmt.Println("  [dry-run: not posted]")
-			}
-
-			if xEnabled && !*dryRun {
-				xLog.MarkAsPosted(g.OBJGUID)
-				if err := xLog.Save(); err != nil {
-					log.Printf("Warning: failed to save X log: %v", err)
-				}
 			}
 		}
 	}
