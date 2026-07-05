@@ -11,3 +11,7 @@ zurichratsinfo
 data/email_overrides.yaml
 
 out/
+
+# Claude Code (local, machine-specific)
+.claude/settings.local.json
+.claude/worktrees/
