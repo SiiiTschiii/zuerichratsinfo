@@ -10,6 +10,11 @@ zurichratsinfo
 
 data/email_overrides.yaml
 
+# Outreach campaign recipient lists contain personal emails — keep local.
+# Only the schema example is committed.
+data/campaign_recipients/*
+!data/campaign_recipients/recipients.example.yaml
+
 out/
 
 # Claude Code (local, machine-specific)

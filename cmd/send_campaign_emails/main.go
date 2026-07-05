@@ -17,14 +17,16 @@ import (
 )
 
 var (
-	contactsPath  = flag.String("contacts", "data/contacts.yaml", "Path to contacts YAML file")
-	overridesPath = flag.String("overrides", "data/email_overrides.yaml", "Path to email overrides YAML file")
-	platform      = flag.String("platform", "", "Target platform (required): bluesky | instagram")
-	preview       = flag.Bool("preview", false, "Preview: render all emails")
-	outputFile    = flag.String("output", "", "Output file for preview (default: stdout)")
-	testAddr      = flag.String("test", "", "Test mode: send all emails to this address")
-	send          = flag.Bool("send", false, "Send emails to actual recipients")
-	delay         = flag.Int("delay", 2, "Seconds between sends")
+	contactsPath   = flag.String("contacts", "data/contacts.yaml", "Path to contacts YAML file")
+	overridesPath  = flag.String("overrides", "data/email_overrides.yaml", "Path to email overrides YAML file")
+	platform       = flag.String("platform", "", "Platform campaign: bluesky | instagram (mutually exclusive with --audience)")
+	audience       = flag.String("audience", "", "Audience campaign: city-parties | cantonal-national-parties | cantonal-zh | federal-zh (mutually exclusive with --platform)")
+	recipientsPath = flag.String("recipients", "", "Override the recipient YAML file for --audience (default: the audience's data/campaign_recipients/*.yaml)")
+	preview        = flag.Bool("preview", false, "Preview: render all emails")
+	outputFile     = flag.String("output", "", "Output file for preview (default: stdout)")
+	testAddr       = flag.String("test", "", "Test mode: send all emails to this address")
+	send           = flag.Bool("send", false, "Send emails to actual recipients")
+	delay          = flag.Int("delay", 2, "Seconds between sends")
 )
 
 type platformConfig struct {
@@ -37,6 +39,74 @@ type platformConfig struct {
 var platformConfigs = map[string]platformConfig{
 	"bluesky":   blueskyConfig,
 	"instagram": instagramConfig,
+}
+
+// audienceConfig describes an outreach campaign to a whole audience (parties,
+// cantonal/federal politicians). Unlike platformConfig, recipients come from a
+// curated YAML file and the body is the general announcement template.
+type audienceConfig struct {
+	Key            string
+	DisplayName    string
+	Subject        string
+	RecipientsFile string
+}
+
+var audienceConfigs = map[string]audienceConfig{
+	"city-parties": {
+		Key:            "city-parties",
+		DisplayName:    "Stadtparteien Zürich",
+		Subject:        "zuerichratsinfo – Transparenz für die Zürcher Stadtpolitik",
+		RecipientsFile: "data/campaign_recipients/city_parties.yaml",
+	},
+	"cantonal-national-parties": {
+		Key:            "cantonal-national-parties",
+		DisplayName:    "Kantonal- und Bundesparteien",
+		Subject:        "zuerichratsinfo – Transparenz für die Zürcher Politik",
+		RecipientsFile: "data/campaign_recipients/cantonal_national_parties.yaml",
+	},
+	"cantonal-zh": {
+		Key:            "cantonal-zh",
+		DisplayName:    "Kantonsrat & Regierungsrat Zürich",
+		Subject:        "zuerichratsinfo – Abstimmungen aus dem Gemeinderat Zürich transparent gemacht",
+		RecipientsFile: "data/campaign_recipients/cantonal_zh_politicians.yaml",
+	},
+	"federal-zh": {
+		Key:            "federal-zh",
+		DisplayName:    "National- & Ständerat (ZH)",
+		Subject:        "zuerichratsinfo – Abstimmungen aus dem Gemeinderat Zürich transparent gemacht",
+		RecipientsFile: "data/campaign_recipients/federal_zh_politicians.yaml",
+	},
+}
+
+// generalBody renders the general intro + heads-up announcement used by all
+// audience campaigns. Pronouns and greeting adapt to org vs. person recipients.
+func generalBody(r Recipient) string {
+	greeting := "Guten Tag"
+	followShare := "Ich würde mich freuen, wenn ihr dem Account folgt und den einen oder anderen Beitrag teilt. Über Feedback und Ideen freue ich mich jederzeit."
+	if r.Type != "org" {
+		greeting = fmt.Sprintf("%s %s", r.Salutation, r.Name)
+		followShare = "Ich würde mich freuen, wenn du dem Account folgst und den einen oder anderen Beitrag teilst. Über Feedback und Ideen freue ich mich jederzeit."
+	}
+	return fmt.Sprintf(`%s
+
+zuerichratsinfo ist ein zivilgesellschaftliches Projekt, das die Abstimmungsresultate aus dem Gemeinderat der Stadt Zürich auf Social Media veröffentlicht – transparent, automatisiert und für alle nachvollziehbar. Bei jedem Geschäft markieren wir jeweils die beteiligten Politikerinnen und Politiker.
+
+Zu finden sind wir auf:
+🔵 Bluesky: https://bsky.app/profile/zuerichratsinfo.bsky.social
+✖️ X: https://x.com/zuerichratsinfo
+📸 Instagram: https://www.instagram.com/zueriratsinfo
+
+Aktuell liegt der Fokus auf der Stadt Zürich. Eine Ausweitung auf Kanton und Bund ist geplant – wir melden uns wieder, sobald es so weit ist.
+
+%s
+
+Weitere Informationen zum Projekt:
+https://github.com/SiiiTschiii/zuerichratsinfo
+
+Herzliche Grüsse
+Christof
+https://www.linkedin.com/in/christof-gerber/
+`, greeting, followShare)
 }
 
 var blueskyConfig = platformConfig{
@@ -53,7 +123,7 @@ Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit St
 
 Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
  
-Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
+Weitere Informationen zum Projekt:
 https://github.com/SiiiTschiii/zuerichratsinfo
 
 Vielen Dank und liebe Grüsse
@@ -77,7 +147,7 @@ Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit St
 
 Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
 
-Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
+Weitere Informationen zum Projekt:
 https://github.com/SiiiTschiii/zuerichratsinfo
 
 Vielen Dank und liebe Grüsse
@@ -94,6 +164,33 @@ type Recipient struct {
 	Salutation  string
 	PlatformURL string
 	Source      string
+	Type        string // "person" (default) or "org"
+	Role        string // e.g. "Nationalrätin" (audience campaigns)
+	Party       string // e.g. "SP" (audience campaigns)
+}
+
+// Campaign is a fully-resolved email campaign: a subject, the recipient list,
+// and a function that renders the full body (including greeting) per recipient.
+// Both platform and audience campaigns are expressed as a Campaign so the
+// verify/preview/send code paths are shared.
+type Campaign struct {
+	Subject    string
+	Recipients []Recipient
+	RenderBody func(Recipient) string
+}
+
+// audienceRecipient mirrors one entry in a data/campaign_recipients/*.yaml file.
+type audienceRecipient struct {
+	Name   string `yaml:"name"`
+	Email  string `yaml:"email"`
+	Type   string `yaml:"type"`
+	Gender string `yaml:"gender"`
+	Role   string `yaml:"role"`
+	Party  string `yaml:"party"`
+}
+
+type audienceRecipientsFile struct {
+	Recipients []audienceRecipient `yaml:"recipients"`
 }
 
 type Override struct {
@@ -113,26 +210,101 @@ func main() {
 		log.Fatal("Cannot use --send and --test at the same time")
 	}
 
-	cfg, ok := platformConfigs[strings.ToLower(*platform)]
-	if !ok {
-		log.Fatalf("--platform is required; supported: bluesky, instagram")
-	}
-
-	recipients := buildRecipientList(cfg)
+	campaign := buildCampaign()
 
 	switch {
 	case *preview:
-		runPreview(cfg, recipients)
+		runPreview(campaign)
 	case *testAddr != "":
-		runSend(cfg, recipients, *testAddr)
+		runSend(campaign, *testAddr)
 	case *send:
-		runSend(cfg, recipients, "")
+		runSend(campaign, "")
 	default:
-		runVerify(cfg, recipients)
+		runVerify(campaign)
 	}
 }
 
-func buildRecipientList(cfg platformConfig) []Recipient {
+// buildCampaign resolves the selected campaign from --platform or --audience.
+func buildCampaign() Campaign {
+	if *platform != "" && *audience != "" {
+		log.Fatal("Use either --platform or --audience, not both")
+	}
+
+	switch {
+	case *platform != "":
+		cfg, ok := platformConfigs[strings.ToLower(*platform)]
+		if !ok {
+			log.Fatalf("Unknown --platform %q; supported: bluesky, instagram", *platform)
+		}
+		return Campaign{
+			Subject:    cfg.Subject,
+			Recipients: buildPlatformRecipientList(cfg),
+			RenderBody: func(r Recipient) string {
+				return fmt.Sprintf("%s %s\n\n%s", r.Salutation, r.Name, cfg.Body(r.PlatformURL))
+			},
+		}
+	case *audience != "":
+		ac, ok := audienceConfigs[strings.ToLower(*audience)]
+		if !ok {
+			log.Fatalf("Unknown --audience %q; supported: city-parties, cantonal-national-parties, cantonal-zh, federal-zh", *audience)
+		}
+		file := ac.RecipientsFile
+		if *recipientsPath != "" {
+			file = *recipientsPath
+		}
+		return Campaign{
+			Subject:    ac.Subject,
+			Recipients: loadAudienceRecipients(file),
+			RenderBody: generalBody,
+		}
+	default:
+		log.Fatal("One of --platform (bluesky|instagram) or --audience (city-parties|cantonal-national-parties|cantonal-zh|federal-zh) is required")
+		return Campaign{} // unreachable
+	}
+}
+
+// loadAudienceRecipients reads a curated recipient YAML file for an audience
+// campaign. Entries with an empty email are skipped with a warning.
+func loadAudienceRecipients(path string) []Recipient {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("Failed to read recipients file %s: %v", path, err)
+	}
+	var f audienceRecipientsFile
+	if err := yaml.Unmarshal(data, &f); err != nil {
+		log.Fatalf("Failed to parse recipients file %s: %v", path, err)
+	}
+
+	var recipients []Recipient
+	for _, e := range f.Recipients {
+		typ := strings.ToLower(strings.TrimSpace(e.Type))
+		if typ == "" {
+			typ = "person"
+		}
+		if strings.TrimSpace(e.Email) == "" {
+			fmt.Fprintf(os.Stderr, "  ⚠️  Skipping (no email): %s\n", e.Name)
+			continue
+		}
+		sal := ""
+		if typ != "org" {
+			sal = salutation(e.Gender)
+		}
+		recipients = append(recipients, Recipient{
+			Name:       e.Name,
+			Email:      e.Email,
+			Gender:     e.Gender,
+			Salutation: sal,
+			Source:     "file",
+			Type:       typ,
+			Role:       e.Role,
+			Party:      e.Party,
+		})
+	}
+	fmt.Fprintf(os.Stderr, "Loaded %d recipients from %s\n", len(recipients), path)
+	return recipients
+}
+
+func buildPlatformRecipientList(cfg platformConfig) []Recipient {
 	mapper, err := contacts.LoadContacts(*contactsPath)
 	if err != nil {
 		log.Fatalf("Failed to load contacts: %v", err)
@@ -179,6 +351,7 @@ func buildRecipientList(cfg platformConfig) []Recipient {
 				Salutation:  salutation(o.Gender),
 				PlatformURL: platformURL,
 				Source:      "override",
+				Type:        "person",
 			})
 			continue
 		}
@@ -200,6 +373,7 @@ func buildRecipientList(cfg platformConfig) []Recipient {
 			Salutation:  salutation(gender),
 			PlatformURL: platformURL,
 			Source:      "api",
+			Type:        "person",
 		})
 	}
 
@@ -283,28 +457,29 @@ func normalize(s string) string {
 
 // --- Verify mode ---
 
-func runVerify(cfg platformConfig, recipients []Recipient) {
+func runVerify(c Campaign) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	_, _ = fmt.Fprintf(w, "#\tName\tEmail\tGender\tSalutation\t%s URL\tSource\n", cfg.DisplayName)
-	_, _ = fmt.Fprintf(w, "-\t----\t-----\t------\t----------\t-----------\t------\n")
-	for i, r := range recipients {
-		_, _ = fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\n",
-			i+1, r.Name, r.Email, r.Gender, r.Salutation, r.PlatformURL, r.Source)
+	_, _ = fmt.Fprintf(w, "#\tName\tEmail\tType\tGender\tRole\tParty\tPlatform URL\tSource\n")
+	_, _ = fmt.Fprintf(w, "-\t----\t-----\t----\t------\t----\t-----\t------------\t------\n")
+	for i, r := range c.Recipients {
+		_, _ = fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+			i+1, r.Name, r.Email, r.Type, r.Gender, r.Role, r.Party, r.PlatformURL, r.Source)
 	}
 	if err := w.Flush(); err != nil {
 		log.Fatalf("Failed to flush table: %v", err)
 	}
 
-	fmt.Printf("\nTotal: %d recipients\n", len(recipients))
-	fmt.Printf("\n--- Email Template ---\n\n")
-	fmt.Printf("Subject: %s\n\n", cfg.Subject)
-	fmt.Printf("{Salutation} {Name}\n\n")
-	fmt.Print(cfg.Body(fmt.Sprintf("{%sURL}", cfg.DisplayName)))
+	fmt.Printf("\nTotal: %d recipients\n", len(c.Recipients))
+	fmt.Printf("\nSubject: %s\n", c.Subject)
+	if len(c.Recipients) > 0 {
+		fmt.Printf("\n--- Sample rendered email (recipient #1) ---\n\n")
+		fmt.Println(c.RenderBody(c.Recipients[0]))
+	}
 }
 
 // --- Preview mode ---
 
-func runPreview(cfg platformConfig, recipients []Recipient) {
+func runPreview(c Campaign) {
 	output := os.Stdout
 	if *outputFile != "" {
 		f, err := os.Create(*outputFile)
@@ -319,26 +494,25 @@ func runPreview(cfg platformConfig, recipients []Recipient) {
 		output = f
 	}
 
-	_, _ = fmt.Fprintf(output, "# %s\n\n---\n\n", cfg.Subject)
+	_, _ = fmt.Fprintf(output, "# %s\n\n---\n\n", c.Subject)
 
-	for i, r := range recipients {
+	for i, r := range c.Recipients {
 		_, _ = fmt.Fprintf(output, "## %d. %s\n\n", i+1, r.Name)
 		_, _ = fmt.Fprintf(output, "**An:** %s\n\n", r.Email)
-		_, _ = fmt.Fprintf(output, "%s %s\n\n", r.Salutation, r.Name)
-		_, _ = fmt.Fprintf(output, "%s", cfg.Body(r.PlatformURL))
+		_, _ = fmt.Fprintf(output, "%s", c.RenderBody(r))
 		_, _ = fmt.Fprintf(output, "\n---\n\n")
 	}
 
-	_, _ = fmt.Fprintf(output, "Total: %d emails\n", len(recipients))
+	_, _ = fmt.Fprintf(output, "Total: %d emails\n", len(c.Recipients))
 
 	if *outputFile != "" {
-		fmt.Fprintf(os.Stderr, "Wrote %d emails to %s\n", len(recipients), *outputFile)
+		fmt.Fprintf(os.Stderr, "Wrote %d emails to %s\n", len(c.Recipients), *outputFile)
 	}
 }
 
 // --- Send mode ---
 
-func runSend(cfg platformConfig, recipients []Recipient, testOverride string) {
+func runSend(c Campaign, testOverride string) {
 	gmailAddr := os.Getenv("GMAIL_ADDRESS")
 	gmailPass := os.Getenv("GMAIL_APP_PASSWORD")
 	if gmailAddr == "" || gmailPass == "" {
@@ -349,31 +523,31 @@ func runSend(cfg platformConfig, recipients []Recipient, testOverride string) {
 	if isTest {
 		fmt.Fprintf(os.Stderr, "🧪 TEST MODE: All emails will be sent to %s\n\n", testOverride)
 	} else {
-		fmt.Fprintf(os.Stderr, "📧 SENDING %d emails for real\n\n", len(recipients))
+		fmt.Fprintf(os.Stderr, "📧 SENDING %d emails for real\n\n", len(c.Recipients))
 	}
 
 	var sent, failed int
 
-	for i, r := range recipients {
+	for i, r := range c.Recipients {
 		toAddr := r.Email
 		if isTest {
 			toAddr = testOverride
 		}
 
-		body := fmt.Sprintf("%s %s\n\n%s", r.Salutation, r.Name, cfg.Body(r.PlatformURL))
-		msg := buildMIMEMessage(gmailAddr, toAddr, cfg.Subject, body)
+		body := c.RenderBody(r)
+		msg := buildMIMEMessage(gmailAddr, toAddr, c.Subject, body)
 
 		err := sendEmail(gmailAddr, gmailPass, toAddr, msg)
 
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "[%d/%d] ❌ %s <%s>: %v\n", i+1, len(recipients), r.Name, toAddr, err)
+			fmt.Fprintf(os.Stderr, "[%d/%d] ❌ %s <%s>: %v\n", i+1, len(c.Recipients), r.Name, toAddr, err)
 			failed++
 		} else {
-			fmt.Fprintf(os.Stderr, "[%d/%d] ✅ %s <%s>\n", i+1, len(recipients), r.Name, toAddr)
+			fmt.Fprintf(os.Stderr, "[%d/%d] ✅ %s <%s>\n", i+1, len(c.Recipients), r.Name, toAddr)
 			sent++
 		}
 
-		if i < len(recipients)-1 {
+		if i < len(c.Recipients)-1 {
 			time.Sleep(time.Duration(*delay) * time.Second)
 		}
 	}

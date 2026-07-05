@@ -1,0 +1,36 @@
+# Recipient list for an audience outreach campaign (cmd/send_campaign_emails --audience …).
+#
+# The real files (city_parties.yaml, cantonal_national_parties.yaml,
+# cantonal_zh_politicians.yaml, federal_zh_politicians.yaml) contain personal
+# contact emails and are GITIGNORED — they must NOT be committed. This example
+# documents the schema only and carries no real addresses.
+#
+# Fields:
+#   name    required. Person full name, or the organization name for parties.
+#   email   required. Entries without an email are skipped.
+#   type    "person" (default) or "org". Drives the greeting:
+#             person -> "Liebe/Lieber <Name>" (by gender)
+#             org    -> "Guten Tag"
+#   gender  "weiblich" | "männlich" — only used for person salutation.
+#   role    optional, informational (shown in the verify table), e.g. "Nationalrätin".
+#   party   optional, informational, e.g. "SP".
+
+recipients:
+  - name: SP Stadt Zürich
+    email: info@example.org
+    type: org
+    party: SP
+
+  - name: Erika Musterfrau
+    email: erika.musterfrau@example.org
+    type: person
+    gender: weiblich
+    role: Kantonsrätin
+    party: GLP
+
+  - name: Max Mustermann
+    email: max.mustermann@example.org
+    type: person
+    gender: männlich
+    role: Nationalrat
+    party: FDP
