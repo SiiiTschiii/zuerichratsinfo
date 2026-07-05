@@ -1,13 +1,29 @@
 # Send Campaign Emails
 
-Send personalized campaign emails to Gemeinderat members with an account on a given social platform, announcing zuerichratsinfo on that platform.
+Send personalized campaign emails announcing zuerichratsinfo. Two kinds of campaign:
 
-## Supported platforms
+- **`--platform`** — to Gemeinderat members who have an account on a given social platform (emails pulled from the Zürich PARIS API + overrides). Message: "we're now on <platform>, you were tagged".
+- **`--audience`** — general outreach to a whole audience (parties, cantonal/federal politicians). Recipients come from a curated local YAML file; message is the general intro + heads-up announcement.
+
+Exactly one of `--platform` or `--audience` is required.
+
+## Supported platforms (`--platform`)
 
 - `bluesky`
 - `instagram`
 
 Planned future additions: `facebook`, `tiktok`, `linkedin` (once those project accounts are active).
+
+## Supported audiences (`--audience`)
+
+| Audience                    | Recipient file (local, gitignored)                  |
+| --------------------------- | --------------------------------------------------- |
+| `city-parties`              | `data/campaign_recipients/city_parties.yaml`        |
+| `cantonal-national-parties` | `data/campaign_recipients/cantonal_national_parties.yaml` |
+| `cantonal-zh`               | `data/campaign_recipients/cantonal_zh_politicians.yaml`   |
+| `federal-zh`                | `data/campaign_recipients/federal_zh_politicians.yaml`    |
+
+The workflow (verify → preview → test → send) below is identical for both kinds; just swap `--platform instagram` for e.g. `--audience city-parties`.
 
 ## Prerequisites
 
@@ -88,3 +104,37 @@ overrides:
 ```
 
 The `name` must match exactly the name in `data/contacts.yaml`. Overrides take priority over API data.
+
+## Audience recipient files
+
+For `--audience` campaigns, recipients are read from a curated YAML file (one per audience, see the table above). These files hold personal contact emails and are **gitignored** — they must not be committed. Only `data/campaign_recipients/recipients.example.yaml` (schema, no real emails) is committed.
+
+Schema (see the example file for details):
+
+```yaml
+recipients:
+  - name: SP Stadt Zürich       # org: the party name
+    email: info@spzuerich.ch
+    type: org                   # "person" (default) or "org"
+    party: SP
+  - name: Erika Musterfrau      # person
+    email: erika@example.ch
+    type: person
+    gender: weiblich            # drives Liebe/Lieber salutation
+    role: Kantonsrätin
+    party: GLP
+```
+
+- `type: org` → greeting "Guten Tag" (uses *ihr*); `type: person` → "Liebe/Lieber <Name>" (uses *du*).
+- Entries without an `email` are skipped with a warning.
+- `--recipients <file>` overrides the default file for an audience (handy for testing against `recipients.example.yaml`).
+
+### Sourcing the recipient lists
+
+Use open data for the *who* (names, party, role), then fill emails manually from official profile/party pages:
+
+- **Federal (ZH):** parlament.ch OData `Councillors` + `Cantons` for the National-/Ständerat members representing Zürich; emails are often `firstname.lastname@parl.ch`.
+- **Cantonal (ZH):** Kantonsrat member roster (`kantonsrat.zh.ch/mitglieder/`, 180) + Regierungsrat (`zh.ch/de/regierungsrat.html`, 7).
+- **Parties:** official contact addresses from each party's website.
+
+Always review the list via `--preview` before any real send.
