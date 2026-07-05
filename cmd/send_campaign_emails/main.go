@@ -100,7 +100,7 @@ Aktuell liegt der Fokus auf der Stadt Zürich. Eine Ausweitung auf Kanton und Bu
 
 %s
 
-Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
+Weitere Informationen zum Projekt:
 https://github.com/SiiiTschiii/zuerichratsinfo
 
 Herzliche Grüsse
