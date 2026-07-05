@@ -123,7 +123,7 @@ Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit St
 
 Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
  
-Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
+Weitere Informationen zum Projekt:
 https://github.com/SiiiTschiii/zuerichratsinfo
 
 Vielen Dank und liebe Grüsse
@@ -147,7 +147,7 @@ Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit St
 
 Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
 
-Weitere Informationen zum Projekt und eine Übersicht, wo alle GemeinderätInnen und StadträtInnen auf Social Media zu finden sind:
+Weitere Informationen zum Projekt:
 https://github.com/SiiiTschiii/zuerichratsinfo
 
 Vielen Dank und liebe Grüsse
