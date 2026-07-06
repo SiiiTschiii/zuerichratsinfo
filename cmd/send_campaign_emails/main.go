@@ -79,24 +79,39 @@ var audienceConfigs = map[string]audienceConfig{
 }
 
 // generalBody renders the general intro + heads-up announcement used by all
-// audience campaigns. Pronouns and greeting adapt to org vs. person recipients.
+// audience campaigns. Greeting and pronouns adapt to three address forms:
+//   - org (any):        "Guten Tag" + ihr (informal plural)
+//   - person, formal:   "Sehr geehrte/r Frau/Herr <Name>" + Sie
+//   - person, informal: "Liebe/Lieber <Name>" + du
 func generalBody(r Recipient) string {
-	greeting := "Guten Tag"
-	followShare := "Ich würde mich freuen, wenn ihr dem Account folgt und den einen oder anderen Beitrag teilt. Über Feedback und Ideen freue ich mich jederzeit."
-	if r.Type != "org" {
+	var greeting, followShare string
+	switch {
+	case r.Type == "org":
+		greeting = "Guten Tag"
+		followShare = "Ich würde mich freuen, wenn ihr dem Account folgt. Über Feedback und Ideen freue ich mich jederzeit."
+	case r.Formal:
+		// Formal address uses the surname only ("Sehr geehrte Frau Moser").
+		// Fall back to the full name if no lastname is curated.
+		name := r.Lastname
+		if name == "" {
+			name = r.Name
+		}
+		greeting = fmt.Sprintf("%s %s", formalSalutation(r.Gender), name)
+		followShare = "Ich würde mich freuen, wenn Sie dem Account folgen. Über Feedback und Ideen freue ich mich jederzeit."
+	default:
 		greeting = fmt.Sprintf("%s %s", r.Salutation, r.Name)
-		followShare = "Ich würde mich freuen, wenn du dem Account folgst und den einen oder anderen Beitrag teilst. Über Feedback und Ideen freue ich mich jederzeit."
+		followShare = "Ich würde mich freuen, wenn du dem Account folgst. Über Feedback und Ideen freue ich mich jederzeit."
 	}
 	return fmt.Sprintf(`%s
 
-zuerichratsinfo ist ein zivilgesellschaftliches Projekt, das die Abstimmungsresultate aus dem Gemeinderat der Stadt Zürich auf Social Media veröffentlicht – transparent, automatisiert und für alle nachvollziehbar. Bei jedem Geschäft markieren wir jeweils die beteiligten Politikerinnen und Politiker.
+zuerichratsinfo ist ein zivilgesellschaftliches Projekt, das die Abstimmungsresultate aus dem Gemeinderat der Stadt Zürich auf Social Media veröffentlicht, transparent, automatisiert und für alle nachvollziehbar. Zudem markieren wir jeweils die Politikernnen und Politiker, welche die entsprechenden Vorstösse etc. eingereicht haben.
 
 Zu finden sind wir auf:
 🔵 Bluesky: https://bsky.app/profile/zuerichratsinfo.bsky.social
 ✖️ X: https://x.com/zuerichratsinfo
 📸 Instagram: https://www.instagram.com/zueriratsinfo
 
-Aktuell liegt der Fokus auf der Stadt Zürich. Eine Ausweitung auf Kanton und Bund ist geplant – wir melden uns wieder, sobald es so weit ist.
+Wir arbeiten laufend daran, die Posts weiterzuentwickeln, zum Beispiel kürzlich mit Statistiken, wie die einzelnen Fraktionen abgestimmt haben. Aktuell liegt der Fokus auf der Stadt Zürich. Eine Ausweitung auf Kantonsrat und Bundesparlament ist ein weiterer geplanter Meilenstein.
 
 %s
 
@@ -167,6 +182,8 @@ type Recipient struct {
 	Type        string // "person" (default) or "org"
 	Role        string // e.g. "Nationalrätin" (audience campaigns)
 	Party       string // e.g. "SP" (audience campaigns)
+	Formal      bool   // person only: use Sie ("Sehr geehrte/r …") instead of du
+	Lastname    string // person only: surname for the formal salutation
 }
 
 // Campaign is a fully-resolved email campaign: a subject, the recipient list,
@@ -187,6 +204,11 @@ type audienceRecipient struct {
 	Gender string `yaml:"gender"`
 	Role   string `yaml:"role"`
 	Party  string `yaml:"party"`
+	// Formal: person only. true -> Sie ("Sehr geehrte/r …"), false/unset -> du.
+	// Seeded by the age+office heuristic (see README); hand-tune per entry.
+	Formal *bool `yaml:"formal"`
+	// Lastname: person only, surname for the formal salutation ("… Frau Moser").
+	Lastname string `yaml:"lastname"`
 }
 
 type audienceRecipientsFile struct {
@@ -289,6 +311,7 @@ func loadAudienceRecipients(path string) []Recipient {
 		if typ != "org" {
 			sal = salutation(e.Gender)
 		}
+		formal := e.Formal != nil && *e.Formal
 		recipients = append(recipients, Recipient{
 			Name:       e.Name,
 			Email:      e.Email,
@@ -298,6 +321,8 @@ func loadAudienceRecipients(path string) []Recipient {
 			Type:       typ,
 			Role:       e.Role,
 			Party:      e.Party,
+			Formal:     formal,
+			Lastname:   e.Lastname,
 		})
 	}
 	fmt.Fprintf(os.Stderr, "Loaded %d recipients from %s\n", len(recipients), path)
@@ -402,6 +427,25 @@ func salutation(gender string) string {
 	return "Lieber"
 }
 
+func formalSalutation(gender string) string {
+	if gender == "weiblich" {
+		return "Sehr geehrte Frau"
+	}
+	return "Sehr geehrter Herr"
+}
+
+// addressForm is the pronoun a recipient is addressed with, for the verify table.
+func addressForm(r Recipient) string {
+	switch {
+	case r.Type == "org":
+		return "ihr"
+	case r.Formal:
+		return "Sie"
+	default:
+		return "du"
+	}
+}
+
 func loadOverrides(path string) []Override {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -459,11 +503,11 @@ func normalize(s string) string {
 
 func runVerify(c Campaign) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	_, _ = fmt.Fprintf(w, "#\tName\tEmail\tType\tGender\tRole\tParty\tPlatform URL\tSource\n")
-	_, _ = fmt.Fprintf(w, "-\t----\t-----\t----\t------\t----\t-----\t------------\t------\n")
+	_, _ = fmt.Fprintf(w, "#\tName\tEmail\tType\tAnrede\tGender\tRole\tParty\tPlatform URL\tSource\n")
+	_, _ = fmt.Fprintf(w, "-\t----\t-----\t----\t------\t------\t----\t-----\t------------\t------\n")
 	for i, r := range c.Recipients {
-		_, _ = fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
-			i+1, r.Name, r.Email, r.Type, r.Gender, r.Role, r.Party, r.PlatformURL, r.Source)
+		_, _ = fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+			i+1, r.Name, r.Email, r.Type, addressForm(r), r.Gender, r.Role, r.Party, r.PlatformURL, r.Source)
 	}
 	if err := w.Flush(); err != nil {
 		log.Fatalf("Failed to flush table: %v", err)

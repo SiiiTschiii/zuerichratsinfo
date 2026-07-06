@@ -117,17 +117,36 @@ recipients:
     email: info@spzuerich.ch
     type: org                   # "person" (default) or "org"
     party: SP
-  - name: Erika Musterfrau      # person
+  - name: Erika Musterfrau      # person, du
     email: erika@example.ch
     type: person
-    gender: weiblich            # drives Liebe/Lieber salutation
+    gender: weiblich            # drives Liebe/Lieber (du) or Frau/Herr (Sie)
     role: Kantonsrätin
     party: GLP
+  - name: Max Mustermann        # person, Sie
+    lastname: Mustermann        # surname for the formal salutation
+    email: max@example.ch
+    type: person
+    formal: true                # -> "Sehr geehrter Herr Mustermann" + Sie
+    gender: männlich
+    role: Nationalrat
+    party: FDP
 ```
 
-- `type: org` → greeting "Guten Tag" (uses *ihr*); `type: person` → "Liebe/Lieber <Name>" (uses *du*).
+- Greeting/pronouns: `type: org` → "Guten Tag" + *ihr*; `type: person` with `formal: true` → "Sehr geehrte/r Frau/Herr &lt;lastname&gt;" + *Sie*; otherwise → "Liebe/Lieber &lt;Name&gt;" + *du*.
 - Entries without an `email` are skipped with a warning.
 - `--recipients <file>` overrides the default file for an audience (handy for testing against `recipients.example.yaml`).
+- Run verify (no flag) to eyeball the **Anrede** column (du / Sie / ihr) before sending.
+
+### du or Sie? (formal address)
+
+Cold outreach carries an asymmetric risk: *Sie* to someone who'd have accepted *du* is nearly free, but *du* to someone who expects *Sie* can get the mail dismissed. So the default is *du* (fits the grassroots voice), and *Sie* is switched on only where *du* genuinely misfires. The `formal` flag is seeded per person by this heuristic:
+
+- **High office → Sie:** Regierungsrat and Ständerat (also, those go to office inboxes).
+- **Older cohort → Sie:** born before **1970** (~55+), the point where *du*-culture stops being safe across parties.
+- **Everyone else → du.**
+
+Age comes from the same sources as the roster (`birthdate` in the kantonsrat payload, `birthDate` from the parl.ch API). The flag is written into each entry with a comment noting the reason (`# Sie: geb. 1961` / `# Sie: Ständerat (Amt)`); set `formal:` explicitly on any entry to override. Party orgs stay informal (*ihr*).
 
 ### Sourcing the recipient lists
 
