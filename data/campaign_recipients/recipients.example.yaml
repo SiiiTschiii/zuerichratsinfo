@@ -6,14 +6,20 @@
 # documents the schema only and carries no real addresses.
 #
 # Fields:
-#   name    required. Person full name, or the organization name for parties.
-#   email   required. Entries without an email are skipped.
-#   type    "person" (default) or "org". Drives the greeting:
-#             person -> "Liebe/Lieber <Name>" (by gender)
-#             org    -> "Guten Tag"
-#   gender  "weiblich" | "männlich" — only used for person salutation.
-#   role    optional, informational (shown in the verify table), e.g. "Nationalrätin".
-#   party   optional, informational, e.g. "SP".
+#   name      required. Person full name, or the organization name for parties.
+#   email     required. Entries without an email are skipped.
+#   type      "person" (default) or "org". Drives the greeting:
+#               person -> "Liebe/Lieber <Name>" (du), or "Sehr geehrte/r …" (Sie)
+#               org    -> "Guten Tag" (ihr)
+#   gender    "weiblich" | "männlich" — used for the person salutation.
+#   role      optional, informational (shown in the verify table), e.g. "Nationalrätin".
+#   party     optional, informational, e.g. "SP".
+#   formal    person only, optional. true -> Sie ("Sehr geehrte/r Frau/Herr <lastname>"),
+#             false/unset -> du. Seeded by the age+office heuristic (see the cmd README);
+#             set it explicitly to override the default for a given person.
+#   lastname  person only, optional. Surname used in the formal (Sie) salutation, so it
+#             reads "Sehr geehrte Frau Moser" rather than the full name. Falls back to
+#             `name` when unset.
 
 recipients:
   - name: SP Stadt Zürich
@@ -21,16 +27,18 @@ recipients:
     type: org
     party: SP
 
-  - name: Erika Musterfrau
+  - name: Erika Musterfrau         # young -> du
     email: erika.musterfrau@example.org
     type: person
     gender: weiblich
     role: Kantonsrätin
     party: GLP
 
-  - name: Max Mustermann
+  - name: Max Mustermann           # senior / high office -> Sie
+    lastname: Mustermann
     email: max.mustermann@example.org
     type: person
+    formal: true
     gender: männlich
     role: Nationalrat
     party: FDP
