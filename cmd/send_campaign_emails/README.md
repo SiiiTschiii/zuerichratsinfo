@@ -131,10 +131,23 @@ recipients:
 
 ### Sourcing the recipient lists
 
-Use open data for the *who* (names, party, role), then fill emails manually from official profile/party pages:
+Both parliaments publish members' contact emails through their data services, so
+most entries need no manual filling (verified 2026-07):
 
-- **Federal (ZH):** parlament.ch OData `Councillors` + `Cantons` for the National-/Ständerat members representing Zürich; emails are often `firstname.lastname@parl.ch`.
-- **Cantonal (ZH):** Kantonsrat member roster (`kantonsrat.zh.ch/mitglieder/`, 180) + Regierungsrat (`zh.ch/de/regierungsrat.html`, 7).
-- **Parties:** official contact addresses from each party's website.
+- **Federal (ZH):** roster via parlament.ch OData
+  (`MemberCouncil`, `CantonAbbreviation eq 'ZH' and Active eq true`); each member's
+  *published* email via the legacy REST API
+  `ws-old.parlament.ch/councillors/<id>?format=json` (`contact.emailWork`).
+  Don't guess `firstname.lastname@parl.ch` — several members publish a different
+  address. A few publish none; leave `email` empty so the tool skips them.
+- **Cantonal (ZH):** `kantonsrat.zh.ch/mitglieder/` ships the full roster —
+  including published emails, party, and gender — in the page's Nuxt
+  `_payload.json`. Regierungsrat members (`zh.ch/de/regierungsrat.html`) publish
+  no personal emails; use the Direktionsassistenz/office address from each
+  member's zh.ch page.
+- **Parties:** official contact addresses from each party's website (some hide
+  them behind Cloudflare `data-cfemail` obfuscation or block scraping — check
+  the impressum page, or fill manually). Watch for shared secretariats: the
+  same address can appear in both the city and the cantonal list.
 
 Always review the list via `--preview` before any real send.
