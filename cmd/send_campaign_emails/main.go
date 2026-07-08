@@ -19,8 +19,9 @@ import (
 var (
 	contactsPath   = flag.String("contacts", "data/contacts.yaml", "Path to contacts YAML file")
 	overridesPath  = flag.String("overrides", "data/email_overrides.yaml", "Path to email overrides YAML file")
-	platform       = flag.String("platform", "", "Platform campaign: bluesky | instagram (mutually exclusive with --audience)")
-	audience       = flag.String("audience", "", "Audience campaign: city-parties | cantonal-national-parties | cantonal-zh | federal-zh (mutually exclusive with --platform)")
+	platform       = flag.String("platform", "", "Platform campaign: bluesky | instagram (mutually exclusive with --audience/--custom)")
+	audience       = flag.String("audience", "", "Audience campaign: city-parties | cantonal-national-parties | cantonal-zh | federal-zh (mutually exclusive with --platform/--custom)")
+	custom         = flag.String("custom", "", "Custom campaign: path to a messages YAML file (per-message to/subject/body; mutually exclusive with --platform/--audience)")
 	recipientsPath = flag.String("recipients", "", "Override the recipient YAML file for --audience (default: the audience's data/campaign_recipients/*.yaml)")
 	preview        = flag.Bool("preview", false, "Preview: render all emails")
 	outputFile     = flag.String("output", "", "Output file for preview (default: stdout)")
@@ -84,22 +85,14 @@ var audienceConfigs = map[string]audienceConfig{
 //   - person, formal:   "Sehr geehrte/r Frau/Herr <Name>" + Sie
 //   - person, informal: "Liebe/Lieber <Name>" + du
 func generalBody(r Recipient) string {
-	var greeting, followShare string
+	greeting := greetingFor(r)
+	var followShare string
 	switch {
 	case r.Type == "org":
-		greeting = "Guten Tag"
 		followShare = "Ich würde mich freuen, wenn ihr dem Account folgt. Über Feedback und Ideen freue ich mich jederzeit."
 	case r.Formal:
-		// Formal address uses the surname only ("Sehr geehrte Frau Moser").
-		// Fall back to the full name if no lastname is curated.
-		name := r.Lastname
-		if name == "" {
-			name = r.Name
-		}
-		greeting = fmt.Sprintf("%s %s", formalSalutation(r.Gender), name)
 		followShare = "Ich würde mich freuen, wenn Sie dem Account folgen. Über Feedback und Ideen freue ich mich jederzeit."
 	default:
-		greeting = fmt.Sprintf("%s %s", r.Salutation, r.Name)
 		followShare = "Ich würde mich freuen, wenn du dem Account folgst. Über Feedback und Ideen freue ich mich jederzeit."
 	}
 	return fmt.Sprintf(`%s
@@ -184,6 +177,8 @@ type Recipient struct {
 	Party       string // e.g. "SP" (audience campaigns)
 	Formal      bool   // person only: use Sie ("Sehr geehrte/r …") instead of du
 	Lastname    string // person only: surname for the formal salutation
+	Subject     string // custom campaigns: this message's subject line
+	Body        string // custom campaigns: this message's fully-rendered body
 }
 
 // Campaign is a fully-resolved email campaign: a subject, the recipient list,
@@ -191,9 +186,9 @@ type Recipient struct {
 // Both platform and audience campaigns are expressed as a Campaign so the
 // verify/preview/send code paths are shared.
 type Campaign struct {
-	Subject    string
-	Recipients []Recipient
-	RenderBody func(Recipient) string
+	Recipients    []Recipient
+	RenderSubject func(Recipient) string
+	RenderBody    func(Recipient) string
 }
 
 // audienceRecipient mirrors one entry in a data/campaign_recipients/*.yaml file.
@@ -246,21 +241,33 @@ func main() {
 	}
 }
 
-// buildCampaign resolves the selected campaign from --platform or --audience.
+// buildCampaign resolves the selected campaign from --platform, --audience or
+// --custom. Exactly one mode must be chosen.
 func buildCampaign() Campaign {
-	if *platform != "" && *audience != "" {
-		log.Fatal("Use either --platform or --audience, not both")
+	modes := 0
+	for _, on := range []bool{*platform != "", *audience != "", *custom != ""} {
+		if on {
+			modes++
+		}
+	}
+	if modes == 0 {
+		log.Fatal("One of --platform (bluesky|instagram), --audience (city-parties|…) or --custom <file> is required")
+	}
+	if modes > 1 {
+		log.Fatal("Use only one of --platform, --audience or --custom")
 	}
 
 	switch {
+	case *custom != "":
+		return buildCustomCampaign(*custom)
 	case *platform != "":
 		cfg, ok := platformConfigs[strings.ToLower(*platform)]
 		if !ok {
 			log.Fatalf("Unknown --platform %q; supported: bluesky, instagram", *platform)
 		}
 		return Campaign{
-			Subject:    cfg.Subject,
-			Recipients: buildPlatformRecipientList(cfg),
+			Recipients:    buildPlatformRecipientList(cfg),
+			RenderSubject: func(Recipient) string { return cfg.Subject },
 			RenderBody: func(r Recipient) string {
 				return fmt.Sprintf("%s %s\n\n%s", r.Salutation, r.Name, cfg.Body(r.PlatformURL))
 			},
@@ -275,14 +282,108 @@ func buildCampaign() Campaign {
 			file = *recipientsPath
 		}
 		return Campaign{
-			Subject:    ac.Subject,
-			Recipients: loadAudienceRecipients(file),
-			RenderBody: generalBody,
+			Recipients:    loadAudienceRecipients(file),
+			RenderSubject: func(Recipient) string { return ac.Subject },
+			RenderBody:    generalBody,
 		}
 	default:
-		log.Fatal("One of --platform (bluesky|instagram) or --audience (city-parties|cantonal-national-parties|cantonal-zh|federal-zh) is required")
-		return Campaign{} // unreachable
+		// Unreachable: the mode count is validated above.
+		return Campaign{}
 	}
+}
+
+// buildCustomCampaign resolves a --custom campaign from a messages file: a list
+// of self-contained messages, each carrying its own recipient address(es),
+// subject and body. Each address becomes an individual send, so recipients
+// never see one another.
+func buildCustomCampaign(path string) Campaign {
+	return Campaign{
+		Recipients:    loadCustomMessages(path),
+		RenderSubject: func(r Recipient) string { return r.Subject },
+		RenderBody:    func(r Recipient) string { return r.Body },
+	}
+}
+
+// addressList accepts either a single email string or a YAML list of them, so
+// a message can be addressed to one or several recipients.
+type addressList []string
+
+func (a *addressList) UnmarshalYAML(value *yaml.Node) error {
+	var one string
+	if err := value.Decode(&one); err == nil {
+		*a = addressList{one}
+		return nil
+	}
+	var many []string
+	if err := value.Decode(&many); err != nil {
+		return err
+	}
+	*a = many
+	return nil
+}
+
+// customMessage is one fully self-contained email in a --custom messages file:
+// its own recipient address(es), subject and body.
+type customMessage struct {
+	Name    string      `yaml:"name"` // optional label for logs/preview
+	To      addressList `yaml:"to"`
+	Subject string      `yaml:"subject"`
+	Body    string      `yaml:"body"`
+}
+
+type customMessagesFile struct {
+	Messages []customMessage `yaml:"messages"`
+}
+
+// loadCustomMessages reads a --custom messages file and flattens it into one
+// Recipient per address, each carrying that message's subject and body. A
+// message missing a recipient, subject or body is a hard error — a half-formed
+// email must never reach the send loop.
+func loadCustomMessages(path string) []Recipient {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("Failed to read messages file %s: %v", path, err)
+	}
+	var f customMessagesFile
+	if err := yaml.Unmarshal(data, &f); err != nil {
+		log.Fatalf("Failed to parse messages file %s: %v", path, err)
+	}
+	if len(f.Messages) == 0 {
+		log.Fatalf("No messages found in %s", path)
+	}
+
+	var recipients []Recipient
+	for i, m := range f.Messages {
+		label := m.Name
+		if label == "" && len(m.To) > 0 {
+			label = m.To[0]
+		}
+		if len(m.To) == 0 {
+			log.Fatalf("Message %d (%q) has no `to` address", i+1, label)
+		}
+		if strings.TrimSpace(m.Subject) == "" {
+			log.Fatalf("Message %d (%q) has no `subject`", i+1, label)
+		}
+		if strings.TrimSpace(m.Body) == "" {
+			log.Fatalf("Message %d (%q) has no `body`", i+1, label)
+		}
+		for _, addr := range m.To {
+			if strings.TrimSpace(addr) == "" {
+				log.Fatalf("Message %d (%q) has an empty `to` address", i+1, label)
+			}
+			recipients = append(recipients, Recipient{
+				Name:  m.Name,
+				Email: strings.TrimSpace(addr),
+				// Type/greeting fields stay empty: custom bodies are literal, so
+				// there is no adaptive salutation to report in the verify table.
+				Source:  "file",
+				Subject: m.Subject,
+				Body:    m.Body,
+			})
+		}
+	}
+	fmt.Fprintf(os.Stderr, "Loaded %d messages (%d recipients) from %s\n", len(f.Messages), len(recipients), path)
+	return recipients
 }
 
 // loadAudienceRecipients reads a curated recipient YAML file for an audience
@@ -434,9 +535,32 @@ func formalSalutation(gender string) string {
 	return "Sehr geehrter Herr"
 }
 
+// greetingFor renders the salutation line for a recipient, matching the three
+// address forms (org -> "Guten Tag"; formal person -> "Sehr geehrte/r Frau/Herr
+// <lastname>"; informal person -> "Liebe/Lieber <Name>"). Shared by generalBody
+// and custom-campaign templates (exposed there as {{.Greeting}}).
+func greetingFor(r Recipient) string {
+	switch {
+	case r.Type == "org":
+		return "Guten Tag"
+	case r.Formal:
+		// Formal address uses the surname only ("Sehr geehrte Frau Moser").
+		// Fall back to the full name if no lastname is curated.
+		name := r.Lastname
+		if name == "" {
+			name = r.Name
+		}
+		return fmt.Sprintf("%s %s", formalSalutation(r.Gender), name)
+	default:
+		return fmt.Sprintf("%s %s", r.Salutation, r.Name)
+	}
+}
+
 // addressForm is the pronoun a recipient is addressed with, for the verify table.
 func addressForm(r Recipient) string {
 	switch {
+	case r.Type == "":
+		return "-" // custom campaigns: literal body, no adaptive salutation
 	case r.Type == "org":
 		return "ihr"
 	case r.Formal:
@@ -503,20 +627,20 @@ func normalize(s string) string {
 
 func runVerify(c Campaign) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	_, _ = fmt.Fprintf(w, "#\tName\tEmail\tType\tAnrede\tGender\tRole\tParty\tPlatform URL\tSource\n")
-	_, _ = fmt.Fprintf(w, "-\t----\t-----\t----\t------\t------\t----\t-----\t------------\t------\n")
+	_, _ = fmt.Fprintf(w, "#\tName\tEmail\tType\tAnrede\tGender\tRole\tParty\tPlatform URL\tSubject\tSource\n")
+	_, _ = fmt.Fprintf(w, "-\t----\t-----\t----\t------\t------\t----\t-----\t------------\t-------\t------\n")
 	for i, r := range c.Recipients {
-		_, _ = fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
-			i+1, r.Name, r.Email, r.Type, addressForm(r), r.Gender, r.Role, r.Party, r.PlatformURL, r.Source)
+		_, _ = fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+			i+1, r.Name, r.Email, r.Type, addressForm(r), r.Gender, r.Role, r.Party, r.PlatformURL, c.RenderSubject(r), r.Source)
 	}
 	if err := w.Flush(); err != nil {
 		log.Fatalf("Failed to flush table: %v", err)
 	}
 
 	fmt.Printf("\nTotal: %d recipients\n", len(c.Recipients))
-	fmt.Printf("\nSubject: %s\n", c.Subject)
 	if len(c.Recipients) > 0 {
 		fmt.Printf("\n--- Sample rendered email (recipient #1) ---\n\n")
+		fmt.Printf("Subject: %s\n\n", c.RenderSubject(c.Recipients[0]))
 		fmt.Println(c.RenderBody(c.Recipients[0]))
 	}
 }
@@ -538,11 +662,12 @@ func runPreview(c Campaign) {
 		output = f
 	}
 
-	_, _ = fmt.Fprintf(output, "# %s\n\n---\n\n", c.Subject)
+	_, _ = fmt.Fprintf(output, "# Campaign preview\n\n---\n\n")
 
 	for i, r := range c.Recipients {
 		_, _ = fmt.Fprintf(output, "## %d. %s\n\n", i+1, r.Name)
 		_, _ = fmt.Fprintf(output, "**An:** %s\n\n", r.Email)
+		_, _ = fmt.Fprintf(output, "**Betreff:** %s\n\n", c.RenderSubject(r))
 		_, _ = fmt.Fprintf(output, "%s", c.RenderBody(r))
 		_, _ = fmt.Fprintf(output, "\n---\n\n")
 	}
@@ -579,7 +704,7 @@ func runSend(c Campaign, testOverride string) {
 		}
 
 		body := c.RenderBody(r)
-		msg := buildMIMEMessage(gmailAddr, toAddr, c.Subject, body)
+		msg := buildMIMEMessage(gmailAddr, toAddr, c.RenderSubject(r), body)
 
 		err := sendEmail(gmailAddr, gmailPass, toAddr, msg)
 
