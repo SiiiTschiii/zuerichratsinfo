@@ -1,11 +1,12 @@
 # Send Campaign Emails
 
-Send personalized campaign emails announcing zuerichratsinfo. Two kinds of campaign:
+Send personalized campaign emails announcing zuerichratsinfo. Three kinds of campaign:
 
 - **`--platform`** — to Gemeinderat members who have an account on a given social platform (emails pulled from the Zürich PARIS API + overrides). Message: "we're now on <platform>, you were tagged".
 - **`--audience`** — general outreach to a whole audience (parties, cantonal/federal politicians). Recipients come from a curated local YAML file; message is the general intro + heads-up announcement.
+- **`--custom <file>`** — send fully hand-written emails: each entry in the file carries its own recipient address(es), subject and body. Used e.g. for journalist/newsroom outreach. Nothing is templated — what you write is what gets sent.
 
-Exactly one of `--platform` or `--audience` is required.
+Exactly one of `--platform`, `--audience` or `--custom` is required.
 
 ## Supported platforms (`--platform`)
 
@@ -23,7 +24,41 @@ Planned future additions: `facebook`, `tiktok`, `linkedin` (once those project a
 | `cantonal-zh`               | `data/campaign_recipients/cantonal_zh_politicians.yaml`   |
 | `federal-zh`                | `data/campaign_recipients/federal_zh_politicians.yaml`    |
 
-The workflow (verify → preview → test → send) below is identical for both kinds; just swap `--platform instagram` for e.g. `--audience city-parties`.
+The workflow (verify → preview → test → send) below is identical for all kinds; just swap `--platform instagram` for e.g. `--audience city-parties` or a `--custom` invocation.
+
+## Custom campaigns (`--custom <file>`)
+
+Send fully hand-written emails from a single messages file — no shared template, no code change. Each message is self-contained:
+
+```yaml
+messages:
+  - name: Beat Metzler (Tages-Anzeiger)   # optional label for logs/preview
+    to: beat.metzler@tages-anzeiger.ch    # a single address, or a YAML list
+    subject: zuerichratsinfo – …
+    body: |
+      Sehr geehrter Herr Metzler
+
+      … der ganze, individuelle Text dieser einen Nachricht …
+
+      Herzliche Grüsse
+      Christof
+```
+
+- `to` accepts a single string **or** a list. Each address gets its **own** copy (single-recipient `To:`), so recipients never see one another.
+- `subject` and `body` are literal — write the greeting yourself. A YAML block scalar (`body: |`) preserves line breaks.
+- A message missing `to`, `subject` or `body` aborts the whole run, so a half-formed email can never be sent.
+
+See [`data/campaign_messages/messages.example.yaml`](../../data/campaign_messages/messages.example.yaml) for the schema. Real message files carry personal emails and are gitignored under `data/campaign_messages/`.
+
+**Journalist/newsroom outreach** ships ready to use in `data/campaign_messages/media.yaml`:
+
+```bash
+# verify → preview → test → send (see workflow below), e.g.:
+go run cmd/send_campaign_emails/main.go --custom data/campaign_messages/media.yaml
+go run cmd/send_campaign_emails/main.go --custom data/campaign_messages/media.yaml --preview
+go run cmd/send_campaign_emails/main.go --custom data/campaign_messages/media.yaml --test you@gmail.com
+go run cmd/send_campaign_emails/main.go --custom data/campaign_messages/media.yaml --send
+```
 
 ## Prerequisites
 
