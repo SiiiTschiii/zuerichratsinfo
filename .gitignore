@@ -15,6 +15,11 @@ data/email_overrides.yaml
 data/campaign_recipients/*
 !data/campaign_recipients/recipients.example.yaml
 
+# --custom message files also carry personal emails — keep local.
+# Only the schema example is committed.
+data/campaign_messages/*
+!data/campaign_messages/*.example.yaml
+
 out/
 
 # Claude Code (local, machine-specific)

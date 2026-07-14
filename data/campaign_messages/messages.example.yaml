@@ -1,0 +1,42 @@
+# Messages file for a --custom campaign (cmd/send_campaign_emails --custom <file>).
+#
+# Unlike --audience, each entry is a FULLY self-contained email: its own
+# recipient address(es), subject and body. Nothing is templated — what you write
+# here is what gets sent. The real files carry personal emails and are
+# GITIGNORED; only this schema example is committed.
+#
+# Fields per message:
+#   name      optional. A label shown in the verify/preview output and send log.
+#   to        required. A single email string, or a YAML list of them. Each
+#             address is sent its OWN copy (single-recipient To:), so recipients
+#             never see one another.
+#   subject   required. This message's subject line.
+#   body      required. This message's full body (a YAML block scalar with `|`
+#             preserves line breaks). Write the greeting yourself.
+#
+# Run verify (no flag) / --preview before any real send.
+
+messages:
+  - name: Erika Musterfrau
+    to: erika.musterfrau@example.org
+    subject: Betreff für Erika
+    body: |
+      Sehr geehrte Frau Musterfrau
+
+      hier steht der vollständige, individuelle Text für diese eine Nachricht.
+
+      Herzliche Grüsse
+      Christof
+
+  - name: Redaktion Beispielblatt
+    to:
+      - redaktion@example.org
+      - tipps@example.org
+    subject: Ein anderer Betreff für die Redaktion
+    body: |
+      Guten Tag
+
+      diese Nachricht geht an zwei Adressen – jede erhält eine eigene Kopie.
+
+      Herzliche Grüsse
+      Christof
