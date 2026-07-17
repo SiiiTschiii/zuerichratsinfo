@@ -35,8 +35,7 @@ jobs:
           git fetch origin "$STATE_BRANCH" || true
           if git show-ref --verify --quiet "refs/remotes/origin/$STATE_BRANCH"; then
             echo "State branch '$STATE_BRANCH' found; restoring vote logs from it."
-            git checkout "origin/$STATE_BRANCH" -- $STATE_FILES
-          else
+            git checkout "origin/$STATE_BRANCH" -- $STATE_FILES          else
             echo "State branch '$STATE_BRANCH' not found; using committed vote logs as bootstrap seed."
           fi
 
@@ -88,7 +87,7 @@ jobs:
           mkdir -p "$worktree/data"
           cp $STATE_FILES "$worktree/data/"
 
-          git -C "$worktree" add $STATE_FILES
+          git -C "$worktree" add -- $STATE_FILES
           if git -C "$worktree" diff --staged --quiet; then
             echo "No vote log changes to commit."
           else
