@@ -17,9 +17,28 @@ jobs:
     permissions:
       contents: write
 
+    env:
+      # Isolated branch that holds the mutable state log (posted votes).
+      # Keeping it off `main` lets this Action update state without tripping
+      # the pull request ruleset / branch protection on the primary branch.
+      STATE_BRANCH: state-log
+      STATE_FILES: "data/posted_votes_x.json data/posted_votes_bluesky.json data/posted_votes_instagram.json"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
+      - name: Restore vote log from state branch
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git fetch origin "$STATE_BRANCH" || true
+          if git show-ref --verify --quiet "refs/remotes/origin/$STATE_BRANCH"; then
+            echo "State branch '$STATE_BRANCH' found; restoring vote logs from it."
+            git checkout "origin/$STATE_BRANCH" -- $STATE_FILES
+          else
+            echo "State branch '$STATE_BRANCH' not found; using committed vote logs as bootstrap seed."
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -50,12 +69,31 @@ jobs:
           IG_MAX_POSTS_PER_RUN: ${{ vars.IG_MAX_POSTS_PER_RUN }}
         run: go run main.go
 
-      - name: Commit updated vote log
+      - name: Commit updated vote log to state branch
         if: always()
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/posted_votes_x.json data/posted_votes_bluesky.json data/posted_votes_instagram.json
-          git diff --staged --quiet || git commit -m "Update posted votes log [skip ci]"
-          git pull --rebase origin main
-          git push
+
+          # Update the state log on the isolated STATE_BRANCH using a dedicated
+          # worktree, so nothing is ever committed to the protected primary branch.
+          worktree="$(mktemp -d)"
+          if git show-ref --verify --quiet "refs/remotes/origin/$STATE_BRANCH"; then
+            git worktree add -B "$STATE_BRANCH" "$worktree" "origin/$STATE_BRANCH"
+          else
+            echo "Creating new state branch '$STATE_BRANCH'."
+            git worktree add --orphan -b "$STATE_BRANCH" "$worktree"
+          fi
+
+          mkdir -p "$worktree/data"
+          cp $STATE_FILES "$worktree/data/"
+
+          git -C "$worktree" add $STATE_FILES
+          if git -C "$worktree" diff --staged --quiet; then
+            echo "No vote log changes to commit."
+          else
+            git -C "$worktree" commit -m "Update posted votes log [skip ci]"
+            git -C "$worktree" push origin "$STATE_BRANCH"
+          fi
+
+          git worktree remove --force "$worktree"
