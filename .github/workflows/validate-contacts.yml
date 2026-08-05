@@ -21,7 +21,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -38,14 +38,30 @@ jobs:
       - name: Validate contacts.yaml
         run: go run cmd/validate_contacts/main.go data/contacts.yaml
 
-      - name: Update platform statistics
-        run: go run cmd/platform_stats/main.go
-
-      - name: Commit updated README
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      # The generator rewrites README.md in place, so running it and diffing
+      # tells us whether the committed stats still match data/contacts.yaml.
+      # This used to push the regenerated README straight to main, which the
+      # branch ruleset now blocks — so report it and let the dev commit it.
+      - name: Check platform statistics are up to date
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add README.md
-          git diff --staged --quiet || git commit -m "Update platform statistics in README [skip ci]"
-          git push
+          go run cmd/platform_stats/main.go
+
+          if git diff --quiet -- README.md; then
+            echo "README.md platform statistics are up to date."
+            exit 0
+          fi
+
+          echo "::error file=README.md::Platform statistics in README.md are out of date with data/contacts.yaml."
+          cat <<'MSG'
+
+          The platform statistics table in README.md no longer matches
+          data/contacts.yaml. Regenerate it and commit the result:
+
+              go run cmd/platform_stats/main.go
+              git add README.md
+              git commit -m "Update platform statistics in README"
+
+          Required changes:
+          MSG
+          git --no-pager diff -- README.md
+          exit 1
