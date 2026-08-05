@@ -34,20 +34,25 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          # Probe origin once. An unreachable remote must fail the run: treating
-          # it as "no state branch" would dedup against the stale seed committed
-          # on main and re-post votes that have already gone out.
+          # '$STATE_BRANCH' holds the only copy of the vote log, so every failure
+          # below is fatal: votelog.Load treats a missing log file as an *empty*
+          # log with no error, which reads as "nothing was ever posted" and would
+          # re-post everything inside MAX_VOTE_AGE_DAYS.
           if ! state_ref="$(git ls-remote --heads origin "$STATE_BRANCH")"; then
             echo "::error::Cannot reach origin to look up '$STATE_BRANCH'."
             exit 1
           fi
 
-          if [ -n "$state_ref" ]; then
-            echo "State branch '$STATE_BRANCH' found; restoring vote logs from it."
-            git fetch origin "$STATE_BRANCH"
-            git checkout FETCH_HEAD -- $STATE_FILES
-          else
-            echo "State branch '$STATE_BRANCH' not found; using committed vote logs as bootstrap seed."
+          if [ -z "$state_ref" ]; then
+            echo "::error::State branch '$STATE_BRANCH' does not exist. It holds the only copy of the vote log; running without it would re-post already-published votes. Recreate it from a known-good log before running again."
+            exit 1
+          fi
+
+          echo "State branch '$STATE_BRANCH' found; restoring vote logs from it."
+          git fetch origin "$STATE_BRANCH"
+          if ! git checkout FETCH_HEAD -- $STATE_FILES; then
+            echo "::error::'$STATE_BRANCH' is missing one or more of: $STATE_FILES"
+            exit 1
           fi
 
       - name: Set up Go
@@ -79,21 +84,20 @@ jobs:
           IG_MAX_POSTS_PER_RUN: ${{ vars.IG_MAX_POSTS_PER_RUN }}
         run: go run main.go
 
+      # Runs even when the bot itself fails, so a partial run still records what
+      # it posted — but not when the restore failed, since the logs on disk would
+      # then be missing or stale rather than the real state.
       - name: Commit updated vote log to state branch
-        if: always()
+        if: always() && steps.restore.outcome == 'success'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
           # Update the state log on the isolated STATE_BRANCH using a dedicated
           # worktree, so nothing is ever committed to the protected primary branch.
+          # The restore step guarantees the branch exists and is fetched.
           worktree="$(mktemp -d)"
-          if git show-ref --verify --quiet "refs/remotes/origin/$STATE_BRANCH"; then
-            git worktree add -B "$STATE_BRANCH" "$worktree" "origin/$STATE_BRANCH"
-          else
-            echo "Creating new state branch '$STATE_BRANCH'."
-            git worktree add --orphan -b "$STATE_BRANCH" "$worktree"
-          fi
+          git worktree add -B "$STATE_BRANCH" "$worktree" "origin/$STATE_BRANCH"
 
           mkdir -p "$worktree/data"
           cp $STATE_FILES "$worktree/data/"
