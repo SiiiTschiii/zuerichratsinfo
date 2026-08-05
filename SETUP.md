@@ -48,17 +48,96 @@ X_ACCESS_SECRET=your_access_secret_here
 
 **Important**: Never commit your `.env` file to git! It's already in `.gitignore`.
 
-## 4. Test Without Posting
+## 4. Preview Posts Locally
 
-Preview what will be posted without actually posting to X:
+Nothing here posts anywhere or needs credentials — every command below prints to
+your terminal or writes JPEGs to disk. This is the loop for reviewing how posts
+read before they go anywhere near an account.
+
+### Post text, from live data
+
+`generate_vote_post` fetches the most recent votes and renders them exactly as
+the bot would. It ignores the vote log, so already-posted votes still show up.
 
 ```bash
-# Preview the latest vote
-go run cmd/generate_vote_post/main.go
+# Latest Gemeinderat vote group, all three platforms
+go run ./cmd/generate_vote_post
 
-# Preview the last 5 votes
-go run cmd/generate_vote_post/main.go 5
+# Latest Kantonsrat vote group
+go run ./cmd/generate_vote_post -jurisdiction zurich-canton
+
+# One platform, three groups
+go run ./cmd/generate_vote_post -platform x -n 3
 ```
+
+Rendering both bodies side by side is how you check a reader could not mistake
+one for the other — they post to the same accounts:
+
+```bash
+go run ./cmd/generate_vote_post -jurisdiction zurich-city   -platform x -n 1
+go run ./cmd/generate_vote_post -jurisdiction zurich-canton -platform x -n 1
+```
+
+Flags: `-jurisdiction` (`zurich-city`, `zurich-canton`), `-platform`
+(`x`, `bluesky`, `instagram`; default all), `-n` groups to show, `-fetch` how
+many individual votes to pull from the API.
+
+### Images, from fixtures
+
+`generate_vote_image` writes the Instagram carousel JPEGs. It runs off fixtures
+rather than the live API, so it is fast, offline and reproducible.
+
+```bash
+# Every fixture, including the Kantonsrat one
+go run ./cmd/generate_vote_image -out out/images
+
+# One fixture, with the Instagram caption printed alongside
+go run ./cmd/generate_vote_image -fixture kantonsrat-vote -platform instagram -out out/images
+```
+
+Open `out/images/` to compare. Each card carries the chamber name in the
+top-left corner, and background colour is keyed on jurisdiction plus business
+number.
+
+Fixture names come from `pkg/voteposting/testfixtures` — `single-vote-angenommen`,
+`multi-vote-group`, `auswahl-vote`, `kantonsrat-vote`, and others; an unknown
+name prints the full list.
+
+### What the real bot would do right now
+
+`check_unposted` is the dry-run mirror of `main.go`: it reads the actual vote
+logs, applies each jurisdiction's age guard, and prints what would be posted —
+including how the shared per-run budget is spent across both bodies. It
+previews every jurisdiction, enabled or not.
+
+```bash
+go run ./cmd/check_unposted
+go run ./cmd/check_unposted -platform x -jurisdiction zurich-canton -max-posts 10
+```
+
+This needs the vote logs on disk. They live on the `state-log` branch, not in
+`main`:
+
+```bash
+mkdir -p data/zurich-city
+for p in x bluesky instagram; do
+  git show origin/state-log:data/posted_votes_$p.json > data/zurich-city/posted_votes_$p.json
+done
+```
+
+(They are gitignored, so they will not end up in a commit.)
+
+### Comparing the two data sources
+
+Stadt Zürich is served by both PARIS and OpenParlData, which is what makes the
+OpenParlData adapter checkable at all — the Kantonsrat has no second source to
+verify against.
+
+```bash
+go run ./cmd/compare_sources -n 40
+```
+
+It exits non-zero if any totals, decisions or titles disagree.
 
 ## Development
 
@@ -108,9 +187,24 @@ SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go
 
 **Regression workflow** (after formatting or posting changes):
 
-1. `go test ./...` — automated unit tests
+1. `go test ./...` — automated unit tests, including the golden snapshot below
 2. `source .env.test && go run cmd/post_fixture/main.go --fixture=all` — manual fixture verification
 3. `source .env.test && SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go` — manual live vote verification
+
+### Golden Snapshot
+
+`pkg/voteposting/golden` renders every fixture through all three platforms and
+compares the result against `testdata/golden.txt` — post text verbatim, plus a
+hash of every generated image.
+
+A refactor that is meant to preserve behaviour must leave this file untouched;
+that is what makes the claim checkable rather than asserted. When a change is
+*meant* to alter output, regenerate and read the diff before committing it:
+
+```bash
+go test ./pkg/voteposting/golden -update
+git diff pkg/voteposting/golden/testdata/golden.txt
+```
 
 ### Linting
 
