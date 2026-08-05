@@ -78,7 +78,7 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 	}
 
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date))
+	sb.WriteString(fmt.Sprintf("🗳️ %s | Abstimmung vom %s\n\n", voteformat.BodyLabel(group), date))
 
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
 	if len(group) == 1 {
@@ -136,12 +136,12 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 		}
 	}
 
-	return buildCaptionWithPreservedLink(sb.String(), voteformat.GroupLink(group))
+	return buildCaptionWithPreservedLink(sb.String(), voteformat.LinkLine(group))
 }
 
-func buildCaptionWithPreservedLink(body, link string) string {
+func buildCaptionWithPreservedLink(body, linkBlock string) string {
 	body = strings.TrimRight(body, "\n")
-	linkLine := fmt.Sprintf("🔗 %s", link)
+	linkLine := strings.TrimLeft(linkBlock, "\n")
 	caption := body + "\n\n" + linkLine
 
 	// Truncate if over Instagram's character limit

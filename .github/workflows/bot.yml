@@ -93,6 +93,11 @@ jobs:
           # Unprefixed name applies to Stadt Zürich; other jurisdictions use
           # MAX_VOTE_AGE_DAYS_<JURISDICTION>.
           MAX_VOTE_AGE_DAYS: ${{ vars.MAX_VOTE_AGE_DAYS }}
+          MAX_VOTE_AGE_DAYS_ZURICH_CANTON: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CANTON }}
+          # Kanton Zürich is implemented but stays off until its vote log is
+          # seeded and its first posts are reviewed. Set the repository variable
+          # to "true" to enable it; see the README.
+          JURISDICTION_ZURICH_CANTON_ENABLED: ${{ vars.JURISDICTION_ZURICH_CANTON_ENABLED }}
           X_MAX_POSTS_PER_RUN: ${{ vars.X_MAX_POSTS_PER_RUN }}
           X_MAX_CHARS: ${{ vars.X_MAX_CHARS }}
           BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.BLUESKY_MAX_POSTS_PER_RUN }}

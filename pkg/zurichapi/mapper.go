@@ -44,6 +44,7 @@ func ToVote(a Abstimmung) votes.Vote {
 	return votes.Vote{
 		SourceID:     a.OBJGUID,
 		Jurisdiction: JurisdictionKey,
+		Body:         Jurisdiction.ShortName,
 		SessionID:    a.SitzungGuid,
 		Sequence:     a.SEQ,
 		Date:         parseSitzungDatum(a.SitzungDatum),

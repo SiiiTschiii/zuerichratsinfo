@@ -35,13 +35,12 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 	// Common components
 	date := voteformat.FormatVoteDate(firstVote.Date)
 	title := voteformat.CleanVoteTitle(firstVote.Title)
-	link := voteformat.GroupLink(group)
 
 	// --- Build root post ---
 	root := buildRootPost(group, date, title)
 
 	// --- Build reply posts ---
-	replies := buildReplyPosts(group, link)
+	replies := buildReplyPosts(group, voteformat.LinkLine(group), voteformat.GroupLink(group))
 
 	thread := make([]*BlueskyPost, 0, 1+len(replies))
 	thread = append(thread, root)
@@ -60,7 +59,7 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 // buildRootPost creates the root post with header, title, result, and thread hint.
 // If the title is too long, it is truncated with "…"; replies go straight to vote details.
 func buildRootPost(group []votes.Vote, date, title string) *BlueskyPost {
-	header := fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date)
+	header := fmt.Sprintf("🗳️ %s | Abstimmung vom %s\n\n", voteformat.BodyLabel(group), date)
 	threadHint := "\n\n👇 Details im Thread"
 
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
@@ -130,8 +129,7 @@ func buildRootPost(group []votes.Vote, date, title string) *BlueskyPost {
 // buildReplyPosts creates reply posts with vote details and link.
 // Packs as many vote entries as fit into each reply (≤300 graphemes).
 // The link is appended to the last reply.
-func buildReplyPosts(group []votes.Vote, link string) []*BlueskyPost {
-	linkLine := fmt.Sprintf("\n\n🔗 %s", link)
+func buildReplyPosts(group []votes.Vote, linkLine, linkURL string) []*BlueskyPost {
 
 	// Build individual vote entry strings
 	var entries []string
@@ -211,11 +209,10 @@ func buildReplyPosts(group []votes.Vote, link string) []*BlueskyPost {
 	if len(currentEntries) > 0 {
 		body := strings.Join(currentEntries, "\n\n")
 		if graphemeLen(body+linkLine) <= maxGraphemes {
-			replies = append(replies, makePost(body+linkLine, link))
+			replies = append(replies, makePost(body+linkLine, linkURL))
 		} else {
 			replies = append(replies, makePost(body, ""))
-			linkOnly := fmt.Sprintf("🔗 %s", link)
-			replies = append(replies, makePost(linkOnly, link))
+			replies = append(replies, makePost(strings.TrimLeft(linkLine, "\n"), linkURL))
 		}
 	}
 

@@ -41,13 +41,11 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 		title = contactMapper.TagXHandlesInText(title)
 	}
 
-	link := voteformat.GroupLink(group)
-
 	// --- Build root post ---
 	root := buildRootPost(group, date, title, charLimit)
 
 	// --- Build reply posts ---
-	replies := buildReplyPosts(group, link, charLimit)
+	replies := buildReplyPosts(group, voteformat.LinkLine(group), charLimit)
 
 	thread := make([]*XPost, 0, 1+len(replies))
 	thread = append(thread, root)
@@ -59,7 +57,7 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 // buildRootPost creates the root post with header, title, result, and thread hint.
 // If the title is too long, it is truncated with "…".
 func buildRootPost(group []votes.Vote, date, title string, charLimit int) *XPost {
-	header := fmt.Sprintf("🗳️  Gemeinderat | Abstimmung vom %s\n\n", date)
+	header := fmt.Sprintf("🗳️  %s | Abstimmung vom %s\n\n", voteformat.BodyLabel(group), date)
 	threadHint := "\n\n👇 Details im Thread"
 
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
@@ -126,8 +124,7 @@ func buildRootPost(group []votes.Vote, date, title string, charLimit int) *XPost
 // buildReplyPosts creates reply posts with vote details and link.
 // Packs as many vote entries as fit into each reply (≤charLimit).
 // The link is appended to the last reply.
-func buildReplyPosts(group []votes.Vote, link string, charLimit int) []*XPost {
-	linkLine := fmt.Sprintf("\n\n🔗 %s", link)
+func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPost {
 
 	// Build individual vote entry strings
 	var entries []string
@@ -210,7 +207,7 @@ func buildReplyPosts(group []votes.Vote, link string, charLimit int) []*XPost {
 			replies = append(replies, &XPost{Text: body + linkLine})
 		} else {
 			replies = append(replies, &XPost{Text: body})
-			replies = append(replies, &XPost{Text: fmt.Sprintf("🔗 %s", link)})
+			replies = append(replies, &XPost{Text: strings.TrimLeft(linkLine, "\n")})
 		}
 	}
 

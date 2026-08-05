@@ -44,9 +44,17 @@ func main() {
 	anyPlatformConfigured := false
 
 	for _, channel := range config.Channels() {
-		jurisdictions, err := channel.ResolveJurisdictions()
+		// Only jurisdictions explicitly cleared to post. A newly registered
+		// body ships disabled: its vote log has to be seeded and its first
+		// posts reviewed before it runs unattended, and merging code should not
+		// substitute for either.
+		jurisdictions, err := channel.EnabledJurisdictions()
 		if err != nil {
 			log.Fatalf("Error resolving channel %q: %v", channel.Key, err)
+		}
+		if len(jurisdictions) == 0 {
+			log.Printf("⚠️  Channel %q: no enabled jurisdictions, skipping", channel.Key)
+			continue
 		}
 
 		plats := buildPlatforms(channel, jurisdictions)

@@ -35,8 +35,12 @@ type Channel struct {
 // config change rather than a rework of credential resolution.
 var channels = []Channel{
 	{
-		Key:           "zurich",
-		Jurisdictions: []string{"zurich-city"},
+		Key: "zurich",
+		// "Zürich Ratsinfo" is geographically accurate for both bodies and the
+		// audiences overlap almost entirely, so the canton posts to the
+		// existing accounts rather than needing a new credential set and a
+		// second X Premium subscription.
+		Jurisdictions: []string{"zurich-city", ZurichCantonKey},
 		UsesLegacyEnv: true,
 	},
 }
@@ -75,7 +79,7 @@ func (c Channel) EnvInt(name string, fallback int) int {
 	return fallback
 }
 
-// ResolveJurisdictions looks up this channel's jurisdictions in registry order.
+// ResolveJurisdictions looks up every jurisdiction on this channel, in order.
 func (c Channel) ResolveJurisdictions() ([]Jurisdiction, error) {
 	out := make([]Jurisdiction, 0, len(c.Jurisdictions))
 	for _, key := range c.Jurisdictions {
@@ -84,6 +88,23 @@ func (c Channel) ResolveJurisdictions() ([]Jurisdiction, error) {
 			return nil, fmt.Errorf("channel %q: %w", c.Key, err)
 		}
 		out = append(out, j)
+	}
+	return out, nil
+}
+
+// EnabledJurisdictions is ResolveJurisdictions filtered to those cleared to
+// post. The scheduled run uses this; dry-run tools use ResolveJurisdictions,
+// because previewing a body is what you do before enabling it.
+func (c Channel) EnabledJurisdictions() ([]Jurisdiction, error) {
+	all, err := c.ResolveJurisdictions()
+	if err != nil {
+		return nil, err
+	}
+	out := make([]Jurisdiction, 0, len(all))
+	for _, j := range all {
+		if j.Enabled {
+			out = append(out, j)
+		}
 	}
 	return out, nil
 }

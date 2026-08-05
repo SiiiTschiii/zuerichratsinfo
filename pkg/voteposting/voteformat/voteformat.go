@@ -237,3 +237,38 @@ func GroupLink(group []votes.Vote) string {
 	}
 	return group[0].SourceURL
 }
+
+// defaultBodyLabel is used when a source did not name the body. It is the Stadt
+// Zürich chamber because that is the only jurisdiction whose posts predate the
+// Body field; a post with a wrong-but-plausible label would be worse than this
+// only if some other body could reach here, and none can.
+const defaultBodyLabel = "Gemeinderat"
+
+// BodyLabel returns the chamber name to put in a post header.
+//
+// Several bodies post to one account, so this is what tells a reader whether
+// they are looking at a city or a cantonal vote. It is not decoration.
+func BodyLabel(group []votes.Vote) string {
+	if len(group) > 0 && group[0].Body != "" {
+		return group[0].Body
+	}
+	return defaultBodyLabel
+}
+
+// LinkLine returns the trailing block of a post: the link, plus the source
+// credit when the data's licence requires one.
+//
+// The two are built together so that the platforms' character-budget
+// arithmetic accounts for the credit. Appending it afterwards would make posts
+// overflow exactly on the votes that need it.
+func LinkLine(group []votes.Vote) string {
+	link := GroupLink(group)
+	if link == "" {
+		return ""
+	}
+	out := "\n\n🔗 " + link
+	if len(group) > 0 && group[0].Attribution != "" {
+		out += "\n" + group[0].Attribution
+	}
+	return out
+}

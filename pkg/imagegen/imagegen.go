@@ -48,15 +48,21 @@ var palette = []color.RGBA{
 	{0x2C, 0x3E, 0x6B, 0xFF}, // steel blue
 }
 
-// SelectColor returns a deterministic color based on the full GeschaeftGrNr
-// string (e.g. "2026/153"). It hashes all characters so that votes with the
-// same trailing-number residue but different year/prefix still get different
-// colors.
-func SelectColor(geschaeftGrNr string) color.RGBA {
+// SelectColor returns a deterministic background colour for a vote group,
+// keyed on the jurisdiction and the full business number (e.g. "2026/153").
+//
+// Hashing the whole string gives votes with the same trailing-number residue
+// but a different year or prefix different colours. The jurisdiction is part of
+// the key so that two bodies posting to one account do not land on the same
+// colour for the same-numbered business — colour is a weak signal on its own,
+// which is why the card also carries the body name.
+func SelectColor(jurisdiction, affairNumber string) color.RGBA {
+	seed := jurisdiction + "|" + affairNumber
+
 	// FNV-inspired hash over the full string for good distribution
 	h := uint32(2166136261)
-	for i := 0; i < len(geschaeftGrNr); i++ {
-		h ^= uint32(geschaeftGrNr[i])
+	for i := 0; i < len(seed); i++ {
+		h ^= uint32(seed[i])
 		h *= 16777619
 	}
 	idx := int(h) % len(palette)
@@ -207,7 +213,7 @@ func GenerateCarousel(group []votes.Vote) ([][]byte, error) {
 		return nil, fmt.Errorf("no votes provided")
 	}
 
-	bgColor := SelectColor(group[0].Affair.Number)
+	bgColor := SelectColor(group[0].Jurisdiction, group[0].Affair.Number)
 
 	fonts, err := loadFontSet()
 	if err != nil {
@@ -382,6 +388,7 @@ func renderCombinedCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, e
 		startY = padding
 	}
 	img := newImage(bg)
+	drawBodyCaption(img, fonts.small, v.Body, bg)
 
 	cur := newCursor(startY, imgHeight)
 	_, _, err = layoutCombinedCard(img, cur, v, bg, fonts)
@@ -490,6 +497,20 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
 
 	return titleFace, titleLines, nil
+}
+
+// drawBodyCaption writes which chamber voted into the top-left corner.
+//
+// Both Zurich bodies post to the same account, so without this a reader has no
+// way to tell a cantonal vote from a city one. It is drawn in the corner rather
+// than in the flow so it costs no vertical space and cannot reflow a card that
+// has already been measured.
+func drawBodyCaption(img *image.RGBA, face font.Face, body string, bg color.RGBA) {
+	if img == nil || body == "" {
+		return
+	}
+	baseline := padding + face.Metrics().Ascent.Ceil()
+	drawShadowedText(img, face, nil, padding, baseline, body, bg)
 }
 
 // statCol holds a value/label pair for dashboard-style stat columns.
@@ -703,6 +724,7 @@ func renderTitleCard(group []votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte,
 		startY = padding
 	}
 	img := newImage(bg)
+	drawBodyCaption(img, fonts.small, group[0].Body, bg)
 
 	cur := newCursor(startY, imgHeight)
 	layoutTitleCard(img, cur, group, bg, fonts)
@@ -786,6 +808,7 @@ func renderResultCard(v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total i
 		startY = padding
 	}
 	img := newImage(bg)
+	drawBodyCaption(img, fonts.small, v.Body, bg)
 	cur := newCursor(startY, imgHeight)
 	layoutResultCard(img, cur, v, bg, fonts, idx, total)
 

@@ -104,3 +104,84 @@ func TestMergeOldestFirst_TiesFollowArgumentOrder(t *testing.T) {
 			merged[0][0].SourceID, merged[1][0].SourceID)
 	}
 }
+
+// stubSource serves a fixed set of votes without touching a network.
+type stubSource struct {
+	jurisdiction votes.Jurisdiction
+	fetched      []votes.Vote
+}
+
+func (s stubSource) FetchRecent(int) ([]votes.Vote, error) { return s.fetched, nil }
+func (s stubSource) GroupByAffair(vs []votes.Vote) ([][]votes.Vote, error) {
+	return votes.GroupByAffairAndDate(vs), nil
+}
+func (s stubSource) Jurisdiction() votes.Jurisdiction { return s.jurisdiction }
+
+func members(n int, fraktion, choice string) []votes.MemberVote {
+	out := make([]votes.MemberVote, n)
+	for i := range out {
+		out[i] = votes.MemberVote{Fraktion: fraktion, Choice: choice}
+	}
+	return out
+}
+
+// A truncated member list still renders a plausible-looking Fraktion table that
+// understates whichever factions are missing — silently, and with no way for a
+// reader to tell. The gate drops the breakdown so the post falls back to the
+// totals, which the source reports independently and which stay correct.
+func TestCompletenessGate(t *testing.T) {
+	ja, nein, abw := 100, 20, 5
+	base := votes.Vote{
+		SourceID:     "gate-1",
+		Jurisdiction: testJurisdiction,
+		Date:         testfixtures.MustDate("2026-06-01"),
+		Yes:          &ja, No: &nein, Absent: &abw,
+		Affair: votes.Affair{Number: "2026/1"},
+	}
+
+	t.Run("complete breakdown is kept", func(t *testing.T) {
+		v := base
+		v.MemberVotes = members(125, "SP", "Ja")
+
+		groups := prepare(t, v, 125)
+		if got := len(groups[0][0].MemberVotes); got != 125 {
+			t.Errorf("kept %d member votes, want all 125", got)
+		}
+	})
+
+	t.Run("truncated breakdown is dropped", func(t *testing.T) {
+		v := base
+		v.MemberVotes = members(90, "SP", "Ja") // totals say 125
+
+		groups := prepare(t, v, 125)
+		if got := len(groups[0][0].MemberVotes); got != 0 {
+			t.Errorf("kept %d member votes; a partial breakdown must not be posted", got)
+		}
+	})
+
+	t.Run("a source with no member list at all is untouched", func(t *testing.T) {
+		// Totals-only data is correct as far as it goes; there is nothing to gate.
+		groups := prepare(t, base, 125)
+		if groups[0][0].MemberVotes != nil {
+			t.Error("expected no member votes")
+		}
+	})
+}
+
+func prepare(t *testing.T, v votes.Vote, seats int) [][]votes.Vote {
+	t.Helper()
+	defer setupTempDir(t)()
+
+	src := stubSource{
+		jurisdiction: votes.Jurisdiction{Key: testJurisdiction, Seats: seats},
+		fetched:      []votes.Vote{v},
+	}
+	groups, err := PrepareVoteGroups(src, votelog.NewEmpty(testJurisdiction, votelog.PlatformX), 10, 0)
+	if err != nil {
+		t.Fatalf("PrepareVoteGroups: %v", err)
+	}
+	if len(groups) != 1 {
+		t.Fatalf("got %d groups, want 1", len(groups))
+	}
+	return groups
+}

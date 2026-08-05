@@ -131,6 +131,7 @@ func base(guid, title, grNr string) votes.Vote {
 	return votes.Vote{
 		SourceID:     objGUID,
 		Jurisdiction: "zurich-city",
+		Body:         "Gemeinderat",
 		SessionID:    sitzungGUID,
 		Date:         sitzungDate,
 		Title:        title,
@@ -455,6 +456,65 @@ func PostulatWithGrNrPrefix() []votes.Vote {
 	return []votes.Vote{v}
 }
 
+// KantonsratVote is a Kanton Zürich vote as the OpenParlData adapter delivers
+// it, for rendering next to a Gemeinderat post.
+//
+// The two bodies share an account, so the fixtures have to cover both — this is
+// what makes "can a reader tell these apart?" a question the golden snapshot
+// answers rather than one that gets checked once by eye and then drifts.
+//
+// It also captures how cantonal data differs: no agenda item (hence no
+// subtitle), a decision derived from the counts rather than reported, a
+// business number in the canton's DD/YYYY form, and links to two different
+// hosts.
+func KantonsratVote() []votes.Vote {
+	const title = "Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich"
+
+	v := votes.Vote{
+		SourceID:     "EBA24B53-B404-3BCB-9A1B-4E7E01C1ACAC",
+		Jurisdiction: "zurich-canton",
+		Body:         "Kantonsrat",
+		Date:         time.Date(2026, 7, 6, 10, 21, 43, 0, time.UTC),
+		Sequence:     "1783333303",
+		Title:        title,
+		Decision:     "Nein",
+		Yes:          intPtr(83),
+		No:           intPtr(87),
+		Abstention:   intPtr(0),
+		Absent:       intPtr(10),
+		SourceURL:    "https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4",
+		// OpenParlData is CC BY 4.0; the credit is a licence obligation, so it
+		// must actually appear in the rendered post.
+		Attribution: "Source: OpenParlData.ch",
+		GroupURL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e",
+		Affair: votes.Affair{
+			Number: "6087",
+			Title:  title,
+			ID:     "313093",
+			URL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e",
+		},
+	}
+	v.MemberVotes = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SVP", 44, 0, 0, 3},
+		{"SP", 0, 35, 0, 1},
+		{"FDP", 27, 0, 0, 3},
+		{"Grünliberale", 0, 22, 0, 1},
+		{"Grüne", 0, 19, 0, 0},
+		{"Die Mitte", 11, 0, 0, 1},
+		{"EVP", 0, 6, 0, 1},
+		{"AL", 0, 5, 0, 0},
+	})
+	// One member of the chamber is not mapped to a faction, as ~1% are in the
+	// real data: they must stay out of the table without being dropped from the
+	// totals, which the source reports independently.
+	v.MemberVotes = append(v.MemberVotes, votes.MemberVote{Name: "Fraktionslos", Choice: "Ja"})
+
+	return []votes.Vote{v}
+}
+
 // FixtureNames returns fixture names in definition order.
 var FixtureNames = []string{
 	"single-vote-angenommen",
@@ -468,6 +528,7 @@ var FixtureNames = []string{
 	"auswahl-vote",
 	"mixed-multi-vote",
 	"postulat-with-grnr-prefix",
+	"kantonsrat-vote",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
@@ -484,5 +545,6 @@ func AllFixtures() map[string][]votes.Vote {
 		"auswahl-vote":                    AuswahlVote(),
 		"mixed-multi-vote":                MixedMultiVote(),
 		"postulat-with-grnr-prefix":       PostulatWithGrNrPrefix(),
+		"kantonsrat-vote":                 KantonsratVote(),
 	}
 }

@@ -36,6 +36,12 @@ type Vote struct {
 	SourceID string
 	// Jurisdiction is the Jurisdiction.Key this vote belongs to.
 	Jurisdiction string
+	// Body is the chamber's short display name, e.g. "Gemeinderat". It is
+	// denormalised onto the vote so formatters can label which body voted
+	// without depending on the configuration registry — and label it they must,
+	// because two bodies share one account and a reader seeing a single post
+	// has nothing else to go on.
+	Body string
 	// SessionID identifies the sitting this vote was taken in. May be empty
 	// when the source has no session concept.
 	SessionID string
@@ -71,6 +77,11 @@ type Vote struct {
 	// Decision is the source's outcome label ("angenommen", "abgelehnt",
 	// "Auswahl A"). Derived from the totals when the source omits it.
 	Decision string
+
+	// Attribution is the credit line the source's licence requires, or empty
+	// when it requires none. It rides on the vote rather than being looked up
+	// because it is a property of where this particular datum came from.
+	Attribution string
 
 	Affair      Affair
 	MemberVotes []MemberVote

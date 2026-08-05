@@ -33,6 +33,7 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 	out := votes.Vote{
 		SourceID:     v.ExternalID,
 		Jurisdiction: c.jurisdiction.Key,
+		Body:         c.jurisdiction.ShortName,
 		Date:         date,
 		// OpenParlData has no per-session sequence number, but its timestamps
 		// are second-precision, so they order votes within a sitting exactly.
@@ -50,6 +51,9 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 		Absent:     v.ResultsAbsent,
 
 		Decision: decision(v),
+
+		// CC BY 4.0 obliges us to credit the source wherever the data appears.
+		Attribution: Attribution,
 
 		Affair: votes.Affair{
 			Title:  deref(v.AffairTitleDe),

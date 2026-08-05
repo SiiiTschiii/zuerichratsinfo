@@ -71,7 +71,7 @@ func TestLayoutResultCard_WrapsLongSubtitle(t *testing.T) {
 	longVote := group[0]
 	longVote.Subtitle = "Änderungsantrag zur Teilrevision der Gemeindeordnung mit zusätzlichen Bestimmungen zur Stadtentwicklung und Raumplanung"
 
-	bg := SelectColor(shortVote.Affair.Number)
+	bg := SelectColor("zurich-city", shortVote.Affair.Number)
 
 	shortCur := newCursor(0, imgHeight)
 	layoutResultCard(nil, shortCur, &shortVote, bg, fonts, 1, 2)
@@ -98,7 +98,7 @@ func TestLayoutTitleCard_WrapsLongSummaryLine(t *testing.T) {
 	longVotes[0].Subtitle = "Einleitung"
 	longVotes[1].Subtitle = "Schlussabstimmung mit zusätzlichen Bestimmungen zur Neuordnung der Kompetenzen im Bereich Stadtentwicklung und Raumplanung"
 
-	bg := SelectColor(shortVotes[0].Affair.Number)
+	bg := SelectColor("zurich-city", shortVotes[0].Affair.Number)
 
 	shortCur := newCursor(0, imgHeight)
 	layoutTitleCard(nil, shortCur, shortVotes, bg, fonts)
@@ -118,7 +118,7 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 	}
 
 	base := testfixtures.SingleVoteAngenommen()[0]
-	bg := SelectColor(base.Affair.Number)
+	bg := SelectColor("zurich-city", base.Affair.Number)
 
 	// Non-Schlussabstimmung Abstimmungstitel: prepended inline in front of the title.
 	withPrefix := base
@@ -158,16 +158,16 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 }
 
 func TestSelectColor_Deterministic(t *testing.T) {
-	c1 := SelectColor("2025/100")
-	c2 := SelectColor("2025/100")
+	c1 := SelectColor("zurich-city", "2025/100")
+	c2 := SelectColor("zurich-city", "2025/100")
 	if c1 != c2 {
 		t.Error("same input should produce same color")
 	}
 }
 
 func TestSelectColor_DifferentInputs(t *testing.T) {
-	c1 := SelectColor("2025/100")
-	c2 := SelectColor("2025/101")
+	c1 := SelectColor("zurich-city", "2025/100")
+	c2 := SelectColor("zurich-city", "2025/101")
 	// Different inputs should (usually) produce different colors
 	// This is probabilistic but with our palette it's very likely
 	if c1 == c2 {
@@ -241,7 +241,7 @@ func TestDrawFraktionTable_AddsRowSpacing(t *testing.T) {
 
 	startY := 100
 	cur := newCursor(startY, 600)
-	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("2025/100"), fonts.partyBold, fonts.partyNum)
+	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("zurich-city", "2025/100"), fonts.partyBold, fonts.partyNum)
 
 	rowHeight := lineHeight(fonts.partyNum)
 	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
@@ -271,7 +271,7 @@ func TestDrawFraktionTable_LimitsRowsWhenSpaceIsTight(t *testing.T) {
 
 	customImgHeight := padding + rowHeight + rowGap + maxRows*rowStride
 	cur := newCursor(0, customImgHeight)
-	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("2025/100"), fonts.partyBold, fonts.partyNum)
+	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("zurich-city", "2025/100"), fonts.partyBold, fonts.partyNum)
 
 	expectedY := rowHeight + rowGap + maxRows*rowHeight + (maxRows-1)*rowGap
 	if cur.y != expectedY {

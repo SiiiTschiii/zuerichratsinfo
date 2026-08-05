@@ -84,20 +84,34 @@ func (c *Client) GroupByAffair(vs []votes.Vote) ([][]votes.Vote, error) {
 	return votes.GroupByAffairAndDate(complete), nil
 }
 
-// completeGroups fetches any other votings belonging to the same affairs, so a
+// completeGroups fetches the other votings of each affair already present, so a
 // business matter whose earlier votes fell outside the fetch window is posted
 // whole rather than truncated.
+//
+// Completion is confined to sitting days the caller already has. An affair can
+// run for years — a Kantonsrat business matter routinely has votes from 2022 and
+// 2026 — and those older votes have already been through the age guard, or were
+// never eligible for it. Pulling them back in here would smuggle them past the
+// only defence against re-posting history, because this runs *after* the guard.
+//
+// Widening a group to its own sitting day is the same scope the PARIS adapter
+// gets for free by completing per session.
 func (c *Client) completeGroups(vs []votes.Vote) ([]votes.Vote, error) {
 	seenVote := make(map[string]bool, len(vs))
 	var affairIDs []string
-	seenAffair := make(map[string]bool)
+	// daysWanted[affairID] is the set of sitting days already in play for it.
+	daysWanted := make(map[string]map[string]bool)
 
 	for _, v := range vs {
 		seenVote[v.SourceID] = true
-		if v.Affair.ID != "" && !seenAffair[v.Affair.ID] {
-			seenAffair[v.Affair.ID] = true
+		if v.Affair.ID == "" {
+			continue
+		}
+		if _, ok := daysWanted[v.Affair.ID]; !ok {
+			daysWanted[v.Affair.ID] = make(map[string]bool)
 			affairIDs = append(affairIDs, v.Affair.ID)
 		}
+		daysWanted[v.Affair.ID][v.DateString()] = true
 	}
 
 	for _, affairID := range affairIDs {
@@ -118,9 +132,13 @@ func (c *Client) completeGroups(vs []votes.Vote) ([]votes.Vote, error) {
 			if seenVote[dto.ExternalID] {
 				continue
 			}
+			candidate := c.toVote(dto)
+			if !daysWanted[affairID][candidate.DateString()] {
+				continue
+			}
 			seenVote[dto.ExternalID] = true
 			c.rememberVotingID(dto)
-			vs = append(vs, c.toVote(dto))
+			vs = append(vs, candidate)
 		}
 	}
 

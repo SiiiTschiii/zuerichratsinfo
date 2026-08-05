@@ -73,7 +73,35 @@ func PrepareVoteGroups(
 		}
 	}
 
+	applyCompletenessGate(groups, src.Jurisdiction().Seats)
+
 	return groups, nil
+}
+
+// applyCompletenessGate drops the member list from any vote whose recorded
+// members do not account for the totals the source reported.
+//
+// A partial member list still renders a plausible-looking Fraktion table — it
+// just understates whichever factions are missing, silently and unfalsifiably.
+// Dropping it degrades the post to totals only, which are reported
+// independently and remain correct.
+//
+// This lives here rather than in the adapters so every source is held to the
+// same bar, and here rather than in the formatters so the decision is made once
+// instead of once per platform.
+func applyCompletenessGate(groups [][]votes.Vote, seats int) {
+	for _, group := range groups {
+		for i := range group {
+			v := &group[i]
+			if votes.IsBreakdownComplete(*v, seats) {
+				continue
+			}
+			total, _ := v.TotalRecorded()
+			log.Printf("⚠️  %s: %d member votes for reported totals of %d (%d seats) — posting totals only, without the Fraktion breakdown",
+				v.SourceID, len(v.MemberVotes), total, seats)
+			v.MemberVotes = nil
+		}
+	}
 }
 
 // filterUnpostedVotes filters out votes that have already been posted.

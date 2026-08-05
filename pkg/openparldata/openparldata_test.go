@@ -502,3 +502,44 @@ func newVoteDTO(name, group, vote, display string) voteDTO {
 	}
 	return d
 }
+
+// Group completion runs after the age guard has already filtered the input, so
+// anything it adds bypasses that guard. A Kantonsrat business matter routinely
+// spans years — affair 313093 has votes from 2022 through 2026 — and pulling
+// its old votes back in here would re-publish history that the guard exists to
+// suppress. Completion must therefore stay within sitting days already in play.
+func TestCompleteGroupsStaysWithinTheSittingDay(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(12)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+
+	// One vote from the affair whose recorded listing spans several years.
+	var seed votes.Vote
+	for _, v := range vs {
+		if v.Affair.ID == "313093" {
+			seed = v
+			break
+		}
+	}
+	if seed.SourceID == "" {
+		t.Fatal("fixture no longer contains a vote from affair 313093")
+	}
+
+	completed, err := c.completeGroups([]votes.Vote{seed})
+	if err != nil {
+		t.Fatalf("completeGroups: %v", err)
+	}
+
+	if len(completed) <= 1 {
+		t.Error("completion should have pulled in the affair's other votes from the same sitting")
+	}
+	for _, v := range completed {
+		if got := v.DateString(); got != seed.DateString() {
+			t.Errorf("completion added a vote from %s; only %s was in play, and older votes have already passed the age guard",
+				got, seed.DateString())
+		}
+	}
+}

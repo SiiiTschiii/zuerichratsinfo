@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/openparldata"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -37,7 +38,33 @@ type Jurisdiction struct {
 
 	// NewSource builds the adapter that fetches this body's votes.
 	NewSource func() votes.Source
+
+	// Enabled decides whether the scheduled run posts this body.
+	//
+	// It exists so shipping the code and going live are separate decisions. A
+	// new jurisdiction needs its vote log seeded and its first posts reviewed
+	// by a human before it runs unattended, and neither of those is something
+	// merging a pull request should trigger. Override with
+	// JURISDICTION_<KEY>_ENABLED, e.g. JURISDICTION_ZURICH_CANTON_ENABLED=true.
+	//
+	// Dry-run tools ignore this: previewing a body is exactly what you do
+	// before enabling it.
+	Enabled bool
 }
+
+// ZurichCantonKey identifies the Kantonsrat Zürich.
+const ZurichCantonKey = "zurich-canton"
+
+// zurichCanton is served by OpenParlData; PARIS covers only the city.
+var zurichCanton = votes.Jurisdiction{
+	Key:       ZurichCantonKey,
+	Name:      "Kantonsrat Zürich",
+	ShortName: "Kantonsrat",
+	Seats:     180,
+}
+
+// zurichCantonBodyKey is the canton's body_key in OpenParlData.
+const zurichCantonBodyKey = "ZH"
 
 // jurisdictions is the registry, keyed by Jurisdiction.Key.
 var jurisdictions = map[string]Jurisdiction{
@@ -45,6 +72,23 @@ var jurisdictions = map[string]Jurisdiction{
 		Jurisdiction: zurichapi.Jurisdiction,
 		MaxAgeDays:   90,
 		NewSource:    func() votes.Source { return zurichapi.NewClient() },
+		Enabled:      true,
+	},
+	ZurichCantonKey: {
+		Jurisdiction: zurichCanton,
+		// Far tighter than the city's 90 days, for two reasons. OpenParlData
+		// harvests with a lag of up to ~4.2 days, so anything below that would
+		// drop votes before they arrive. And the canton's log starts empty
+		// against 2,626 historical votings, every one of which reads as
+		// unposted — until the log is seeded, this number alone bounds what a
+		// first run would publish. See cmd/seed_votelog.
+		MaxAgeDays: 14,
+		NewSource: func() votes.Source {
+			return openparldata.New(zurichCanton, zurichCantonBodyKey)
+		},
+		// Off until the vote log is seeded and the first posts are reviewed.
+		// See the Kanton Zürich section of README.md for the launch steps.
+		Enabled: false,
 	},
 }
 
@@ -56,7 +100,21 @@ func LookupJurisdiction(key string) (Jurisdiction, error) {
 		return Jurisdiction{}, fmt.Errorf("unknown jurisdiction %q", key)
 	}
 	j.MaxAgeDays = maxAgeDays(key, j.MaxAgeDays)
+	j.Enabled = enabled(key, j.Enabled)
 	return j, nil
+}
+
+// enabled resolves the posting switch for a jurisdiction.
+func enabled(key string, fallback bool) bool {
+	raw := os.Getenv("JURISDICTION_" + envKey(key) + "_ENABLED")
+	if raw == "" {
+		return fallback
+	}
+	v, err := strconv.ParseBool(raw)
+	if err != nil {
+		return fallback
+	}
+	return v
 }
 
 // JurisdictionKeys lists every registered jurisdiction, sorted for stable output.
