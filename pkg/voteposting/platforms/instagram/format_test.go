@@ -8,25 +8,24 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 func TestFormatCarousel_EmptyVotes(t *testing.T) {
 	_, err := FormatCarousel(nil)
 	if err == nil {
-		t.Error("expected error for nil votes")
+		t.Error("expected error for nil group")
 	}
 
-	_, err = FormatCarousel([]zurichapi.Abstimmung{})
+	_, err = FormatCarousel([]votes.Vote{})
 	if err == nil {
-		t.Error("expected error for empty votes")
+		t.Error("expected error for empty group")
 	}
 }
 
 func TestFormatCarousel_SingleVote(t *testing.T) {
-	votes := testfixtures.SingleVoteAngenommen()
-	content, err := FormatCarousel(votes)
+	group := testfixtures.SingleVoteAngenommen()
+	content, err := FormatCarousel(group)
 	if err != nil {
 		t.Fatalf("FormatCarousel error: %v", err)
 	}
@@ -53,14 +52,14 @@ func TestFormatCarousel_SingleVote(t *testing.T) {
 }
 
 func TestFormatCarousel_MultiVote(t *testing.T) {
-	votes := testfixtures.MultiVoteGroup()
-	content, err := FormatCarousel(votes)
+	group := testfixtures.MultiVoteGroup()
+	content, err := FormatCarousel(group)
 	if err != nil {
 		t.Fatalf("FormatCarousel error: %v", err)
 	}
 
 	// Multi-vote: 1 title card + 1 per vote = 3
-	expectedImages := 1 + len(votes)
+	expectedImages := 1 + len(group)
 	if len(content.Images) != expectedImages {
 		t.Errorf("expected %d images for multi-vote, got %d", expectedImages, len(content.Images))
 	}
@@ -79,9 +78,9 @@ func TestFormatCarousel_MultiVote(t *testing.T) {
 
 func TestFormatCarousel_CaptionWithinLimit(t *testing.T) {
 	// Test all fixtures to ensure no caption exceeds Instagram's 2200 char limit
-	for name, votes := range testfixtures.AllFixtures() {
+	for name, group := range testfixtures.AllFixtures() {
 		t.Run(name, func(t *testing.T) {
-			content, err := FormatCarousel(votes)
+			content, err := FormatCarousel(group)
 			if err != nil {
 				t.Fatalf("FormatCarousel error: %v", err)
 			}
@@ -95,10 +94,10 @@ func TestFormatCarousel_CaptionWithinLimit(t *testing.T) {
 }
 
 func TestFormatCarousel_CarouselImageCap(t *testing.T) {
-	// ten-vote-stress-test has 10 votes → would produce 11 images (1 title + 10 results)
+	// ten-vote-stress-test has 10 group → would produce 11 images (1 title + 10 results)
 	// Instagram carousel cap is 10, so it should be trimmed
-	votes := testfixtures.TenVoteStressTest()
-	content, err := FormatCarousel(votes)
+	group := testfixtures.TenVoteStressTest()
+	content, err := FormatCarousel(group)
 	if err != nil {
 		t.Fatalf("FormatCarousel error: %v", err)
 	}
@@ -109,9 +108,9 @@ func TestFormatCarousel_CarouselImageCap(t *testing.T) {
 }
 
 func TestFormatCarousel_AllFixtures(t *testing.T) {
-	for name, votes := range testfixtures.AllFixtures() {
+	for name, group := range testfixtures.AllFixtures() {
 		t.Run(name, func(t *testing.T) {
-			content, err := FormatCarousel(votes)
+			content, err := FormatCarousel(group)
 			if err != nil {
 				t.Fatalf("FormatCarousel error: %v", err)
 			}
@@ -144,8 +143,8 @@ func TestFormatCarousel_AllFixtures(t *testing.T) {
 }
 
 func TestFormatCarousel_CaptionContainsVoteLink(t *testing.T) {
-	votes := testfixtures.SingleVoteAngenommen()
-	content, err := FormatCarousel(votes)
+	group := testfixtures.SingleVoteAngenommen()
+	content, err := FormatCarousel(group)
 	if err != nil {
 		t.Fatalf("FormatCarousel error: %v", err)
 	}
@@ -156,14 +155,14 @@ func TestFormatCarousel_CaptionContainsVoteLink(t *testing.T) {
 }
 
 func TestFormatCarousel_LongMultiVoteCaptionPreservesLink(t *testing.T) {
-	votes := testfixtures.InstagramLongMultiVoteTruncation()
+	group := testfixtures.InstagramLongMultiVoteTruncation()
 
-	content, err := FormatCarousel(votes)
+	content, err := FormatCarousel(group)
 	if err != nil {
 		t.Fatalf("FormatCarousel error: %v", err)
 	}
 
-	expectedLink := voteformat.GenerateTraktandumLink(votes[0].SitzungGuid, votes[0].TraktandumGuid)
+	expectedLink := group[0].GroupURL
 	expectedLinkLine := "🔗 " + expectedLink
 
 	if len([]rune(content.Caption)) > maxCaptionChars {
@@ -184,8 +183,8 @@ func TestFormatCarousel_LongMultiVoteCaptionPreservesLink(t *testing.T) {
 }
 
 func TestFormatCarousel_ShortCaptionHasNoTruncationNotice(t *testing.T) {
-	votes := testfixtures.MultiVoteGroup()
-	content, err := FormatCarousel(votes)
+	group := testfixtures.MultiVoteGroup()
+	content, err := FormatCarousel(group)
 	if err != nil {
 		t.Fatalf("FormatCarousel error: %v", err)
 	}
@@ -196,8 +195,8 @@ func TestFormatCarousel_ShortCaptionHasNoTruncationNotice(t *testing.T) {
 }
 
 func TestFormatCarousel_CaptionContainsFraktionBreakdown(t *testing.T) {
-	votes := testfixtures.SingleVoteAngenommen()
-	content, err := FormatCarousel(votes)
+	group := testfixtures.SingleVoteAngenommen()
+	content, err := FormatCarousel(group)
 	if err != nil {
 		t.Fatalf("FormatCarousel error: %v", err)
 	}
@@ -208,13 +207,13 @@ func TestFormatCarousel_CaptionContainsFraktionBreakdown(t *testing.T) {
 }
 
 func TestFormatCarousel_AuswahlVoteNoResultEmoji(t *testing.T) {
-	votes := testfixtures.AuswahlVote()
-	content, err := FormatCarousel(votes)
+	group := testfixtures.AuswahlVote()
+	content, err := FormatCarousel(group)
 	if err != nil {
 		t.Fatalf("FormatCarousel error: %v", err)
 	}
 
-	// Auswahl votes should not have ✅/❌ in caption
+	// Auswahl group should not have ✅/❌ in caption
 	if strings.Contains(content.Caption, "✅") || strings.Contains(content.Caption, "❌") {
 		t.Errorf("Auswahl vote caption should not contain result emoji\n%s", content.Caption)
 	}
@@ -241,8 +240,8 @@ func TestContentString(t *testing.T) {
 }
 
 func TestFormatCarouselWithContacts_TagsInstagramHandlesInTitle(t *testing.T) {
-	votes := testfixtures.SingleVoteAngenommen()
-	votes[0].TraktandumTitel = "Postulat von Anna Graff"
+	group := testfixtures.SingleVoteAngenommen()
+	group[0].Title = "Postulat von Anna Graff"
 
 	contactsFile := filepath.Join(t.TempDir(), "contacts.yaml")
 	err := os.WriteFile(contactsFile, []byte(`version: "1.0"
@@ -260,7 +259,7 @@ contacts:
 		t.Fatalf("load contacts: %v", err)
 	}
 
-	content, err := FormatCarouselWithContacts(votes, mapper)
+	content, err := FormatCarouselWithContacts(group, mapper)
 	if err != nil {
 		t.Fatalf("FormatCarouselWithContacts error: %v", err)
 	}
@@ -277,23 +276,24 @@ func intPtr(i int) *int {
 func TestFormatCarousel_SingleVoteSubtitlePrefix(t *testing.T) {
 	tests := []struct {
 		name             string
-		votes            []zurichapi.Abstimmung
+		group            []votes.Vote
 		shouldContain    []string
 		shouldNotContain []string
 	}{
 		{
 			name: "Single vote non-Schlussabstimmung prepends Abstimmungsgegenstand",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:           "test-guid-dring",
-					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
-					Abstimmungstitel:  "2026_0244 Dringlicherklärung",
-					SitzungDatum:      "2026-05-27",
-					Schlussresultat:   "angenommen",
-					AnzahlJa:          intPtr(66),
-					AnzahlNein:        intPtr(0),
-					AnzahlEnthaltung:  intPtr(0),
-					AnzahlAbwesend:    intPtr(59),
+					SourceID:   "test-guid-dring",
+					Title:      "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Subtitle:   "2026_0244 Dringlicherklärung",
+					Date:       testfixtures.MustDate("2026-05-27"),
+					Decision:   "angenommen",
+					Yes:        intPtr(66),
+					No:         intPtr(0),
+					Abstention: intPtr(0),
+					Absent:     intPtr(59),
+					SourceURL:  testfixtures.VoteURL("test-guid-dring"),
 				},
 			},
 			shouldContain:    []string{"Dringlicherklärung\n"},
@@ -301,17 +301,18 @@ func TestFormatCarousel_SingleVoteSubtitlePrefix(t *testing.T) {
 		},
 		{
 			name: "Single vote Schlussabstimmung does NOT prepend",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:           "test-guid-schluss",
-					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
-					Abstimmungstitel:  "2026_0244 Schlussabstimmung",
-					SitzungDatum:      "2026-05-27",
-					Schlussresultat:   "angenommen",
-					AnzahlJa:          intPtr(66),
-					AnzahlNein:        intPtr(0),
-					AnzahlEnthaltung:  intPtr(0),
-					AnzahlAbwesend:    intPtr(59),
+					SourceID:   "test-guid-schluss",
+					Title:      "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Subtitle:   "2026_0244 Schlussabstimmung",
+					Date:       testfixtures.MustDate("2026-05-27"),
+					Decision:   "angenommen",
+					Yes:        intPtr(66),
+					No:         intPtr(0),
+					Abstention: intPtr(0),
+					Absent:     intPtr(59),
+					SourceURL:  testfixtures.VoteURL("test-guid-schluss"),
 				},
 			},
 			shouldContain:    []string{},
@@ -319,25 +320,26 @@ func TestFormatCarousel_SingleVoteSubtitlePrefix(t *testing.T) {
 		},
 		{
 			name: "Single vote empty Abstimmungstitel does NOT prepend",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:           "test-guid-empty",
-					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
-					Abstimmungstitel:  "",
-					SitzungDatum:      "2026-05-27",
-					Schlussresultat:   "angenommen",
-					AnzahlJa:          intPtr(66),
-					AnzahlNein:        intPtr(0),
-					AnzahlEnthaltung:  intPtr(0),
-					AnzahlAbwesend:    intPtr(59),
+					SourceID:   "test-guid-empty",
+					Title:      "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Subtitle:   "",
+					Date:       testfixtures.MustDate("2026-05-27"),
+					Decision:   "angenommen",
+					Yes:        intPtr(66),
+					No:         intPtr(0),
+					Abstention: intPtr(0),
+					Absent:     intPtr(59),
+					SourceURL:  testfixtures.VoteURL("test-guid-empty"),
 				},
 			},
 			shouldContain:    []string{},
 			shouldNotContain: []string{"\n\n\n"},
 		},
 		{
-			name: "Multi-vote does NOT prepend subtitle to caption",
-			votes: testfixtures.MultiVoteGroup(),
+			name:             "Multi-vote does NOT prepend subtitle to caption",
+			group:            testfixtures.MultiVoteGroup(),
 			shouldContain:    []string{},
 			shouldNotContain: []string{},
 		},
@@ -345,7 +347,7 @@ func TestFormatCarousel_SingleVoteSubtitlePrefix(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			content, err := FormatCarousel(tt.votes)
+			content, err := FormatCarousel(tt.group)
 			if err != nil {
 				t.Fatalf("FormatCarousel error: %v", err)
 			}

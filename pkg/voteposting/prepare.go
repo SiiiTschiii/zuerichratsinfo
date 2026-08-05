@@ -9,89 +9,64 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 // ErrUnsupportedVoteType is returned when a group contains a vote with an
 // unrecognised count format. The group is skipped (not posted, not logged).
 var ErrUnsupportedVoteType = errors.New("unsupported vote type")
 
-// ErrInconsistentSchlussresultat is returned when a vote's Schlussresultat
-// field contradicts its raw vote counts (e.g. API says "Ja" but Nein > Ja).
-// The entire run is aborted so no platform posts incorrect results.
-var ErrInconsistentSchlussresultat = errors.New("schlussresultat contradicts vote counts")
+// ErrInconsistentDecision is returned when a vote's Decision field contradicts
+// its raw vote counts (e.g. the source says "Ja" but Nein > Ja). The entire run
+// is aborted so no platform posts incorrect results.
+var ErrInconsistentDecision = errors.New("decision contradicts vote counts")
 
-// PrepareVoteGroups prepares vote groups for posting
-// It fetches recent votes, filters out already posted ones, and groups them by Geschäft
-// This is platform-agnostic - the same preparation for all platforms
-// maxAgeDays limits how old a vote's SitzungDatum can be (0 = no limit).
+// PrepareVoteGroups fetches recent votes from a source, drops the ones already
+// posted, and groups the rest for posting. It is platform-agnostic — every
+// platform gets the same preparation.
+//
+// maxAgeDays limits how old a vote's sitting date can be (0 = no limit). It is
+// not a freshness knob: it is the backstop that stops a re-indexed old vote
+// being posted a second time when it falls outside what the vote log covers.
 func PrepareVoteGroups(
-	client *zurichapi.Client,
+	src votes.Source,
 	voteLog *votelog.VoteLog,
 	maxVotesToFetch int,
 	maxAgeDays int,
-) ([][]zurichapi.Abstimmung, error) {
-	// Fetch recent votes
-	votes, err := client.FetchRecentAbstimmungen(maxVotesToFetch)
+) ([][]votes.Vote, error) {
+	fetched, err := src.FetchRecent(maxVotesToFetch)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(votes) == 0 {
+	if len(fetched) == 0 {
 		return nil, nil
 	}
 
-	// Filter out already posted votes BEFORE grouping
-	// This is more efficient than grouping first
-	unpostedVotes := filterUnpostedVotes(votes, voteLog)
+	// Filter out already posted votes BEFORE grouping — cheaper, and grouping
+	// can trigger further source calls.
+	unposted := filterUnpostedVotes(fetched, voteLog)
+	unposted = filterOldVotes(unposted, maxAgeDays)
 
-	// Filter out votes with a SitzungDatum older than maxAgeDays to prevent
-	// accidentally posting old votes that get re-indexed by the API.
-	if maxAgeDays > 0 {
-		cutoff := time.Now().AddDate(0, 0, -maxAgeDays)
-		var recent []zurichapi.Abstimmung
-		for _, v := range unpostedVotes {
-			dt, err := time.Parse("2006-01-02 15:04:05", v.SitzungDatum)
-			if err != nil {
-				// If we can't parse the date, try date-only
-				dt, err = time.Parse("2006-01-02", v.SitzungDatum[:10])
-			}
-			if err != nil {
-				// If still unparseable, keep the vote to be safe
-				recent = append(recent, v)
-				continue
-			}
-			if dt.Before(cutoff) {
-				log.Printf("⚠️  Skipping old vote %s (SitzungDatum %s, older than %d days)",
-					v.OBJGUID, v.SitzungDatum[:10], maxAgeDays)
-				continue
-			}
-			recent = append(recent, v)
-		}
-		unpostedVotes = recent
-	}
-
-	if len(unpostedVotes) == 0 {
+	if len(unposted) == 0 {
 		return nil, nil
 	}
 
-	// Group votes by Geschäft and date
-	// This includes ensuring the last vote's group is complete
-	groups, err := client.GroupAbstimmungenByGeschaeft(unpostedVotes)
+	groups, err := src.GroupByAffair(unposted)
 	if err != nil {
 		return nil, err
 	}
 
-	// Validate consistency of every vote's Schlussresultat against its counts.
-	// If the API has published wrong data (e.g. "Ja" when Nein > Ja), abort
-	// before posting anything so the workflow fails and alerts the operator.
+	// Validate every vote's Decision against its counts. If the source has
+	// published wrong data (e.g. "Ja" when Nein > Ja), abort before posting
+	// anything so the workflow fails and alerts the operator.
 	for _, group := range groups {
 		for _, v := range group {
-			if !voteformat.IsSchlussresultatConsistent(v.Schlussresultat, v.AnzahlJa, v.AnzahlNein) {
-				return nil, fmt.Errorf("%w: %s (%s) has Schlussresultat=%q but Ja=%d Nein=%d",
-					ErrInconsistentSchlussresultat,
-					v.GeschaeftGrNr, v.Abstimmungstitel,
-					v.Schlussresultat, *v.AnzahlJa, *v.AnzahlNein,
+			if !voteformat.IsDecisionConsistent(v.Decision, v.Yes, v.No) {
+				return nil, fmt.Errorf("%w: %s (%s) has Decision=%q but Ja=%d Nein=%d",
+					ErrInconsistentDecision,
+					v.Affair.Number, v.Title,
+					v.Decision, *v.Yes, *v.No,
 				)
 			}
 		}
@@ -100,22 +75,42 @@ func PrepareVoteGroups(
 	return groups, nil
 }
 
-// filterUnpostedVotes filters out votes that have already been posted
-func filterUnpostedVotes(votes []zurichapi.Abstimmung, voteLog *votelog.VoteLog) []zurichapi.Abstimmung {
-	var unposted []zurichapi.Abstimmung
-	for _, vote := range votes {
-		if !voteLog.IsPosted(vote.OBJGUID) {
-			unposted = append(unposted, vote)
+// filterUnpostedVotes filters out votes that have already been posted.
+func filterUnpostedVotes(vs []votes.Vote, voteLog *votelog.VoteLog) []votes.Vote {
+	var unposted []votes.Vote
+	for _, v := range vs {
+		if !voteLog.IsPosted(v.SourceID) {
+			unposted = append(unposted, v)
 		}
 	}
 	return unposted
 }
 
-// PostToPlatform posts vote groups to a platform
-// If dryRun is true, only prints the content without posting
-// Returns the number of groups successfully posted
+// filterOldVotes drops votes whose sitting date is more than maxAgeDays old.
+// Votes with an unknown date are kept: an unparseable date is a data problem,
+// and silently dropping a vote is worse than posting one that is a little old.
+func filterOldVotes(vs []votes.Vote, maxAgeDays int) []votes.Vote {
+	if maxAgeDays <= 0 {
+		return vs
+	}
+	cutoff := time.Now().AddDate(0, 0, -maxAgeDays)
+	var recent []votes.Vote
+	for _, v := range vs {
+		if !v.Date.IsZero() && v.Date.Before(cutoff) {
+			log.Printf("⚠️  Skipping old vote %s (date %s, older than %d days)",
+				v.SourceID, v.DateString(), maxAgeDays)
+			continue
+		}
+		recent = append(recent, v)
+	}
+	return recent
+}
+
+// PostToPlatform posts vote groups to a platform.
+// If dryRun is true, only prints the content without posting.
+// Returns the number of groups successfully posted.
 func PostToPlatform(
-	groups [][]zurichapi.Abstimmung,
+	groups [][]votes.Vote,
 	platform platforms.Platform,
 	voteLog *votelog.VoteLog,
 	dryRun bool,
@@ -147,8 +142,8 @@ func PostToPlatform(
 			}
 			fmt.Println("────────────────────────────────────────────────────────────────────────────────")
 			fmt.Printf("  📋 %s (%s) — %d vote(s) [not visible in post]\n",
-				group[0].GeschaeftGrNr,
-				group[0].SitzungDatum[:10],
+				group[0].Affair.Number,
+				group[0].DateString(),
 				len(group),
 			)
 			fmt.Println("────────────────────────────────────────────────────────────────────────────────")
@@ -161,12 +156,12 @@ func PostToPlatform(
 		} else {
 			// Real posting — log which group for tracing
 			fmt.Printf("📋 %s (%s) — %d vote(s):\n",
-				group[0].GeschaeftGrNr,
-				group[0].SitzungDatum[:10],
+				group[0].Affair.Number,
+				group[0].DateString(),
 				len(group),
 			)
 			for _, v := range group {
-				fmt.Printf("   https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=%s\n", v.OBJGUID)
+				fmt.Printf("   %s\n", v.SourceURL)
 			}
 
 			shouldContinue, err := platform.Post(content)
@@ -175,8 +170,8 @@ func PostToPlatform(
 			}
 
 			// Mark all votes in the group as posted
-			for _, vote := range group {
-				voteLog.MarkAsPosted(vote.OBJGUID)
+			for _, v := range group {
+				voteLog.MarkAsPosted(v.SourceID)
 			}
 
 			// Save vote log after each successful post
@@ -202,16 +197,11 @@ func PostToPlatform(
 // validateGroupCounts checks that every vote in a group has a recognisable
 // count format (standard Ja/Nein or Auswahl A-E). Returns ErrUnsupportedVoteType
 // with details if any vote is unrecognisable.
-func validateGroupCounts(group []zurichapi.Abstimmung) error {
-	for _, vote := range group {
-		c := voteformat.VoteCounts{
-			Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
-			Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
-			A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
-		}
-		if voteformat.IsUnsupportedVoteType(c) {
-			return fmt.Errorf("%w: vote %s (%q, Abstimmungstyp=%q) has all-zero counts",
-				ErrUnsupportedVoteType, vote.OBJGUID, vote.Abstimmungstitel, vote.Abstimmungstyp)
+func validateGroupCounts(group []votes.Vote) error {
+	for _, v := range group {
+		if voteformat.IsUnsupportedVoteType(voteformat.CountsOf(v)) {
+			return fmt.Errorf("%w: vote %s (%q, type=%q) has all-zero counts",
+				ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)
 		}
 	}
 	return nil

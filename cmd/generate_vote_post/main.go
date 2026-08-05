@@ -30,8 +30,7 @@ func main() {
 		log.Fatalf("Unknown platform %q. Use: x, bluesky, instagram", *platform)
 	}
 
-	// Create API client
-	client := zurichapi.NewClient()
+	src := zurichapi.NewClient()
 
 	// Load contacts for tagging (used by both X and Bluesky)
 	contactsPath := filepath.Join("data", "contacts.yaml")
@@ -45,7 +44,7 @@ func main() {
 	emptyLog := votelog.NewEmpty(votelog.PlatformX)
 
 	// Prepare votes (same logic as main.go)
-	groups, err := voteposting.PrepareVoteGroups(client, emptyLog, *fetchLimit, 0)
+	groups, err := voteposting.PrepareVoteGroups(src, emptyLog, *fetchLimit, 0)
 	if err != nil {
 		log.Fatalf("Error preparing votes: %v", err)
 	}

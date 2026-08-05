@@ -4,29 +4,21 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
+
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 var geschaeftNumberRegex = regexp.MustCompile(`^\d+/\d+\s+`)
 var geschaeftNumberUnderscoreRegex = regexp.MustCompile(`^\d+_\d+\s+`)
 
-// antragOnlyRegex matches titles that are just "Antrag XXX" or "Anträge XXX bis YYY",
-// optionally followed by "zu Dispositivziffer X" (e.g. "Antrag 1 zu Dispositivziffer 1a").
-// These generic titles should be replaced with the GeschaeftTitel.
-// The dot after the number is optional because the API sometimes omits it (e.g. "Antrag 1" vs "Antrag 007.")
-var antragOnlyRegex = regexp.MustCompile(`^(\d+/\d+\s+)?Antr(a|ä)ge?\s+\d+\.?(\s*(bis|–|-)\s*\d+\.?)?(\s+zu\s+Dispositivziffer\s+\S+)?$`)
-
-
-// FormatVoteDate formats the date from ISO format to DD.MM.YYYY
-func FormatVoteDate(isoDate string) string {
-	if len(isoDate) < 10 {
-		return isoDate
+// FormatVoteDate renders a sitting date as DD.MM.YYYY.
+// An unknown (zero) date renders as "" rather than year 1.
+func FormatVoteDate(t time.Time) string {
+	if t.IsZero() {
+		return ""
 	}
-	// isoDate is in format YYYY-MM-DD...
-	parts := strings.Split(isoDate[:10], "-")
-	if len(parts) == 3 {
-		return fmt.Sprintf("%s.%s.%s", parts[2], parts[1], parts[0])
-	}
-	return isoDate[:10]
+	return t.Format("02.01.2006")
 }
 
 // GetVoteResultEmoji returns the appropriate emoji for a vote result
@@ -47,43 +39,21 @@ func GetVoteResultText(result string) string {
 	return "Abgelehnt"
 }
 
-// IsSchlussresultatConsistent reports whether the Schlussresultat field is
-// consistent with the raw vote counts. Returns false when the API declares
-// "Ja"/"Angenommen" but the Nein count exceeds the Ja count, indicating
-// stale or erroneous API data that should block posting.
+// IsDecisionConsistent reports whether a vote's stated decision is consistent
+// with its raw counts. Returns false when the source declares "Ja"/"Angenommen"
+// but the Nein count exceeds the Ja count, indicating stale or erroneous data
+// that should block posting.
 // Auswahl (A/B/C/D) results and nil counts are always considered consistent.
-func IsSchlussresultatConsistent(schlussresultat string, ja, nein *int) bool {
+func IsDecisionConsistent(decision string, ja, nein *int) bool {
 	if ja == nil || nein == nil {
 		return true
 	}
-	lower := strings.TrimSpace(strings.ToLower(schlussresultat))
+	lower := strings.TrimSpace(strings.ToLower(decision))
 	if strings.HasPrefix(lower, "auswahl") {
 		return true
 	}
 	statedAccepted := strings.Contains(lower, "angenommen") || lower == "ja"
 	return !statedAccepted || *nein <= *ja
-}
-
-// SelectBestTitle chooses between TraktandumTitel and GeschaeftTitel
-// If TraktandumTitel is just a generic "Antrag XXX" pattern, use GeschaeftTitel instead
-func SelectBestTitle(traktandumTitel, geschaeftTitel string) string {
-	if IsGenericAntragTitle(traktandumTitel) {
-		return geschaeftTitel
-	}
-	return traktandumTitel
-}
-
-// IsGenericAntragTitle checks if a title is just a generic "Antrag XXX" pattern
-func IsGenericAntragTitle(traktandumTitel string) bool {
-	// Clean up the traktandum title for pattern matching
-	cleaned := strings.TrimSpace(traktandumTitel)
-	cleaned = strings.ReplaceAll(cleaned, "\r\n", " ")
-	cleaned = strings.ReplaceAll(cleaned, "\n", " ")
-	cleaned = strings.ReplaceAll(cleaned, "\r", " ")
-	cleaned = strings.Join(strings.Fields(cleaned), " ")
-
-	// Check if it matches the generic "Antrag XXX" pattern
-	return antragOnlyRegex.MatchString(cleaned)
 }
 
 // CleanVoteTitle removes newlines, extra whitespace, and Geschäft number from titles
@@ -137,11 +107,21 @@ func FormatVoteCount(count *int) string {
 // Standard Ja/Nein votes use Ja/Nein/Enthaltung/Abwesend.
 // "Gleichgerichtete Anträge mit N Optionen" votes use A/B/C/D/E.
 type VoteCounts struct {
-	Ja         *int
-	Nein       *int
-	Enthaltung *int
-	Abwesend   *int
+	Ja            *int
+	Nein          *int
+	Enthaltung    *int
+	Abwesend      *int
 	A, B, C, D, E *int
+}
+
+// CountsOf reads the totals off a vote. Totals are always taken from the
+// source's own count fields and never summed from MemberVotes: sources derive
+// the two separately and are allowed to disagree.
+func CountsOf(v votes.Vote) VoteCounts {
+	return VoteCounts{
+		Ja: v.Yes, Nein: v.No, Enthaltung: v.Abstention, Abwesend: v.Absent,
+		A: v.ChoiceA, B: v.ChoiceB, C: v.ChoiceC, D: v.ChoiceD, E: v.ChoiceE,
+	}
 }
 
 // IsAuswahlVote returns true when the vote used the A/B/C/D/E option format
@@ -244,19 +224,16 @@ func SingleVoteSubtitlePrefix(abstimmungstitel string) string {
 	return cleaned
 }
 
-// GenerateVoteLink creates the link to the vote detail page
-func GenerateVoteLink(objGUID string) string {
-	return fmt.Sprintf("https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=%s", objGUID)
-}
-
-// GenerateTraktandumLink creates the link to the Traktandum (agenda item) page
-// This shows all votes related to a specific business matter in a session
-func GenerateTraktandumLink(sitzungGuid, traktandumGuid string) string {
-	return fmt.Sprintf("https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=%s#%s", sitzungGuid, traktandumGuid)
-}
-
-// GenerateGeschaeftLink creates the link to the Geschäft (business matter) page
-// This shows all information related to a specific Geschäft (e.g., budget 2025/391)
-func GenerateGeschaeftLink(geschaeftGuid string) string {
-	return fmt.Sprintf("https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=%s", geschaeftGuid)
+// GroupLink returns the URL a post about this group should point at: the page
+// covering the whole group when several votes are posted together, otherwise
+// the single vote's own page. Sources decide what those two URLs are; this only
+// picks between them.
+func GroupLink(group []votes.Vote) string {
+	if len(group) == 0 {
+		return ""
+	}
+	if len(group) > 1 && group[0].GroupURL != "" {
+		return group[0].GroupURL
+	}
+	return group[0].SourceURL
 }

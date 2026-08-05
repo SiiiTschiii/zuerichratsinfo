@@ -64,7 +64,7 @@ func main() {
 		contactMapper = nil
 	}
 
-	client := zurichapi.NewClient()
+	src := zurichapi.NewClient()
 
 	if showX {
 		fmt.Println("\n━━━ X/Twitter ━━━")
@@ -74,7 +74,7 @@ func main() {
 		}
 		fmt.Printf("Loaded X vote log: %d votes already posted\n", voteLog.Count())
 
-		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck, 0)
+		groups, err := voteposting.PrepareVoteGroups(src, voteLog, maxVotesToCheck, 0)
 		if err != nil {
 			log.Fatalf("Error preparing votes for X: %v", err)
 		}
@@ -101,7 +101,7 @@ func main() {
 		}
 		fmt.Printf("Loaded Bluesky vote log: %d votes already posted\n", voteLog.Count())
 
-		groups, err := voteposting.PrepareVoteGroups(client, voteLog, maxVotesToCheck, 0)
+		groups, err := voteposting.PrepareVoteGroups(src, voteLog, maxVotesToCheck, 0)
 		if err != nil {
 			log.Fatalf("Error preparing votes for Bluesky: %v", err)
 		}

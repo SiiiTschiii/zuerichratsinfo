@@ -15,6 +15,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
@@ -73,8 +74,7 @@ func main() {
 		contactMapper = nil // Continue without tagging
 	}
 
-	// Create API client
-	client := zurichapi.NewClient()
+	src := zurichapi.NewClient()
 
 	skipVoteLog := os.Getenv("SKIP_VOTE_LOG") == "true"
 	hasErrors := false
@@ -88,7 +88,7 @@ func main() {
 		)
 		xPlatform.SetMaxChars(xMaxChars)
 
-		if runPlatform("X/Twitter", votelog.PlatformX, xPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
+		if runPlatform("X/Twitter", votelog.PlatformX, xPlatform, src, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
 			hasErrors = true
 		}
 	}
@@ -101,7 +101,7 @@ func main() {
 			contactMapper,
 		)
 
-		if runPlatform("Bluesky", votelog.PlatformBluesky, bskyPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
+		if runPlatform("Bluesky", votelog.PlatformBluesky, bskyPlatform, src, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
 			hasErrors = true
 		}
 	}
@@ -113,7 +113,7 @@ func main() {
 		)
 		igPlatform.SetContactMapper(contactMapper)
 
-		if runPlatform("Instagram", votelog.PlatformInstagram, igPlatform, client, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
+		if runPlatform("Instagram", votelog.PlatformInstagram, igPlatform, src, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
 			hasErrors = true
 		}
 	}
@@ -131,7 +131,7 @@ func runPlatform(
 	displayName string,
 	platform votelog.Platform,
 	poster platforms.Platform,
-	client *zurichapi.Client,
+	src votes.Source,
 	skipVoteLog bool,
 	maxVotesToCheck, maxVoteAgeDays int,
 ) bool {
@@ -150,7 +150,7 @@ func runPlatform(
 		fmt.Printf("Loaded %s vote log: %d votes already posted\n", displayName, vl.Count())
 	}
 
-	groups, err := voteposting.PrepareVoteGroups(client, vl, maxVotesToCheck, maxVoteAgeDays)
+	groups, err := voteposting.PrepareVoteGroups(src, vl, maxVotesToCheck, maxVoteAgeDays)
 	if err != nil {
 		log.Fatalf("Error preparing votes for %s: %v", displayName, err)
 	}

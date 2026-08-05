@@ -10,7 +10,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 func main() {
@@ -20,16 +20,16 @@ func main() {
 	flag.Parse()
 
 	allFixtures := testfixtures.AllFixtures()
-	var fixtures map[string][]zurichapi.Abstimmung
+	var fixtures map[string][]votes.Vote
 
 	if *fixture == "all" {
 		fixtures = allFixtures
 	} else {
-		votes, ok := allFixtures[*fixture]
+		group, ok := allFixtures[*fixture]
 		if !ok {
 			log.Fatalf("Unknown fixture %q. Available: %v", *fixture, testfixtures.FixtureNames)
 		}
-		fixtures = map[string][]zurichapi.Abstimmung{*fixture: votes}
+		fixtures = map[string][]votes.Vote{*fixture: group}
 	}
 
 	if err := os.MkdirAll(*outDir, 0o755); err != nil {
@@ -45,8 +45,8 @@ func main() {
 	}
 
 	for idx, name := range fixtureNames {
-		votes := fixtures[name]
-		images, err := imagegen.GenerateCarousel(votes)
+		group := fixtures[name]
+		images, err := imagegen.GenerateCarousel(group)
 		if err != nil {
 			log.Printf("Error generating %s: %v", name, err)
 			continue
@@ -64,7 +64,7 @@ func main() {
 
 		// If Instagram platform is requested, also show formatted caption
 		if *platform == "instagram" {
-			content, err := instagram.FormatCarousel(votes)
+			content, err := instagram.FormatCarousel(group)
 			if err != nil {
 				log.Printf("Error formatting Instagram content for %s: %v", name, err)
 				continue

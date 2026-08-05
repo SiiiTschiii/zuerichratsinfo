@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
@@ -32,11 +31,11 @@ var Jurisdiction = votes.Jurisdiction{
 //     because the agenda item says nothing; otherwise a single vote links to
 //     the vote detail page and a group links to the agenda item covering it.
 func ToVote(a Abstimmung) votes.Vote {
-	genericAntrag := voteformat.IsGenericAntragTitle(a.TraktandumTitel)
+	genericAntrag := IsGenericAntragTitle(a.TraktandumTitel)
 
-	sourceURL := voteformat.GenerateVoteLink(a.OBJGUID)
-	groupURL := voteformat.GenerateTraktandumLink(a.SitzungGuid, a.TraktandumGuid)
-	geschaeftURL := voteformat.GenerateGeschaeftLink(a.GeschaeftGuid)
+	sourceURL := VoteLink(a.OBJGUID)
+	groupURL := TraktandumLink(a.SitzungGuid, a.TraktandumGuid)
+	geschaeftURL := GeschaeftLink(a.GeschaeftGuid)
 	if genericAntrag {
 		sourceURL = geschaeftURL
 		groupURL = geschaeftURL
@@ -49,7 +48,7 @@ func ToVote(a Abstimmung) votes.Vote {
 		Sequence:     a.SEQ,
 		Date:         parseSitzungDatum(a.SitzungDatum),
 
-		Title:    voteformat.SelectBestTitle(a.TraktandumTitel, a.GeschaeftTitel),
+		Title:    SelectBestTitle(a.TraktandumTitel, a.GeschaeftTitel),
 		Subtitle: a.Abstimmungstitel,
 		Type:     a.Abstimmungstyp,
 

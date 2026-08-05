@@ -25,7 +25,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 var update = flag.Bool("update", false, "rewrite testdata/golden.txt from current output")
@@ -44,18 +44,18 @@ func TestGoldenOutput(t *testing.T) {
 
 	var sb strings.Builder
 	for _, name := range fixtureNames() {
-		votes := fixtureByName(t, name)
+		group := fixtureByName(t, name)
 		sb.WriteString(fmt.Sprintf("################ FIXTURE %s ################\n\n", name))
 
 		for _, limit := range xCharLimits {
 			sb.WriteString(fmt.Sprintf("---- X (limit %d) ----\n", limit))
-			for i, post := range x.FormatVoteThread(votes, mapper, limit) {
+			for i, post := range x.FormatVoteThread(group, mapper, limit) {
 				sb.WriteString(fmt.Sprintf("[post %d]\n%s\n\n", i, post.Text))
 			}
 		}
 
 		sb.WriteString("---- Bluesky ----\n")
-		for i, post := range bluesky.FormatVoteThread(votes, mapper) {
+		for i, post := range bluesky.FormatVoteThread(group, mapper) {
 			sb.WriteString(fmt.Sprintf("[post %d]\n%s\n", i, post.Text))
 			for _, f := range post.Facets {
 				sb.WriteString(fmt.Sprintf("[facet] %+v\n", f))
@@ -67,7 +67,7 @@ func TestGoldenOutput(t *testing.T) {
 		}
 
 		sb.WriteString("---- Instagram ----\n")
-		content, err := instagram.FormatCarouselWithContacts(votes, mapper)
+		content, err := instagram.FormatCarouselWithContacts(group, mapper)
 		if err != nil {
 			t.Fatalf("formatting Instagram content for %s: %v", name, err)
 		}
@@ -107,16 +107,16 @@ func fixtureNames() []string {
 	return append(append([]string{}, testfixtures.FixtureNames...), "instagram-long-multi-vote-truncation")
 }
 
-func fixtureByName(t *testing.T, name string) []zurichapi.Abstimmung {
+func fixtureByName(t *testing.T, name string) []votes.Vote {
 	t.Helper()
 	if name == "instagram-long-multi-vote-truncation" {
 		return testfixtures.InstagramLongMultiVoteTruncation()
 	}
-	votes, ok := testfixtures.AllFixtures()[name]
+	group, ok := testfixtures.AllFixtures()[name]
 	if !ok {
 		t.Fatalf("unknown fixture %q", name)
 	}
-	return votes
+	return group
 }
 
 // firstDiff reports the line number and surrounding context of the first

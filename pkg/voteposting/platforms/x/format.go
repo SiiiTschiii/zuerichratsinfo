@@ -6,7 +6,7 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 // DefaultMaxChars is the X post character limit.
@@ -25,38 +25,29 @@ type XPost struct {
 //
 // Root post contains: header, title, result (single vote), thread hint
 // Replies contain: vote details (counts per vote), link
-func FormatVoteThread(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper, charLimit int) []*XPost {
-	if len(votes) == 0 {
+func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLimit int) []*XPost {
+	if len(group) == 0 {
 		return nil
 	}
 
-	firstVote := votes[0]
+	firstVote := group[0]
 
 	// Common components
-	date := voteformat.FormatVoteDate(firstVote.SitzungDatum)
-	title := voteformat.SelectBestTitle(firstVote.TraktandumTitel, firstVote.GeschaeftTitel)
-	title = voteformat.CleanVoteTitle(title)
+	date := voteformat.FormatVoteDate(firstVote.Date)
+	title := voteformat.CleanVoteTitle(firstVote.Title)
 
 	// Tag X handles in the title if contact mapper is provided
 	if contactMapper != nil {
 		title = contactMapper.TagXHandlesInText(title)
 	}
 
-	// Generate the link
-	var link string
-	if voteformat.IsGenericAntragTitle(firstVote.TraktandumTitel) {
-		link = voteformat.GenerateGeschaeftLink(firstVote.GeschaeftGuid)
-	} else if len(votes) > 1 {
-		link = voteformat.GenerateTraktandumLink(firstVote.SitzungGuid, firstVote.TraktandumGuid)
-	} else {
-		link = voteformat.GenerateVoteLink(firstVote.OBJGUID)
-	}
+	link := voteformat.GroupLink(group)
 
 	// --- Build root post ---
-	root := buildRootPost(votes, date, title, charLimit)
+	root := buildRootPost(group, date, title, charLimit)
 
 	// --- Build reply posts ---
-	replies := buildReplyPosts(votes, link, charLimit)
+	replies := buildReplyPosts(group, link, charLimit)
 
 	thread := make([]*XPost, 0, 1+len(replies))
 	thread = append(thread, root)
@@ -67,29 +58,25 @@ func FormatVoteThread(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapp
 
 // buildRootPost creates the root post with header, title, result, and thread hint.
 // If the title is too long, it is truncated with "…".
-func buildRootPost(votes []zurichapi.Abstimmung, date, title string, charLimit int) *XPost {
+func buildRootPost(group []votes.Vote, date, title string, charLimit int) *XPost {
 	header := fmt.Sprintf("🗳️  Gemeinderat | Abstimmung vom %s\n\n", date)
 	threadHint := "\n\n👇 Details im Thread"
 
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
 	var subtitlePrefix string
-	if len(votes) == 1 {
-		subtitlePrefix = voteformat.SingleVoteSubtitlePrefix(votes[0].Abstimmungstitel)
+	if len(group) == 1 {
+		subtitlePrefix = voteformat.SingleVoteSubtitlePrefix(group[0].Subtitle)
 	}
 
 	var body string
-	if len(votes) == 1 {
-		vote := votes[0]
-		counts := voteformat.VoteCounts{
-			Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
-			Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
-			A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
-		}
+	if len(group) == 1 {
+		vote := group[0]
+		counts := voteformat.CountsOf(vote)
 		if voteformat.IsAuswahlVote(counts) {
 			body = title
 		} else {
-			resultEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
-			result := voteformat.GetVoteResultText(vote.Schlussresultat)
+			resultEmoji := voteformat.GetVoteResultEmoji(vote.Decision)
+			result := voteformat.GetVoteResultText(vote.Decision)
 			body = fmt.Sprintf("%s %s: %s", resultEmoji, result, title)
 		}
 		if subtitlePrefix != "" {
@@ -108,19 +95,15 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string, charLimit i
 			overhead += len(subtitlePrefix) + 1 // +1 for "\n"
 		}
 		available := charLimit - overhead
-		if len(votes) == 1 {
-			vote := votes[0]
-			counts := voteformat.VoteCounts{
-				Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
-				Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
-				A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
-			}
+		if len(group) == 1 {
+			vote := group[0]
+			counts := voteformat.CountsOf(vote)
 			if voteformat.IsAuswahlVote(counts) {
 				title = truncateText(title, available)
 				body = title
 			} else {
-				resultEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
-				result := voteformat.GetVoteResultText(vote.Schlussresultat)
+				resultEmoji := voteformat.GetVoteResultEmoji(vote.Decision)
+				result := voteformat.GetVoteResultText(vote.Decision)
 				prefix := fmt.Sprintf("%s %s: ", resultEmoji, result)
 				titleAvailable := available - len(prefix)
 				if titleAvailable > 0 {
@@ -143,26 +126,22 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string, charLimit i
 // buildReplyPosts creates reply posts with vote details and link.
 // Packs as many vote entries as fit into each reply (≤charLimit).
 // The link is appended to the last reply.
-func buildReplyPosts(votes []zurichapi.Abstimmung, link string, charLimit int) []*XPost {
+func buildReplyPosts(group []votes.Vote, link string, charLimit int) []*XPost {
 	linkLine := fmt.Sprintf("\n\n🔗 %s", link)
 
 	// Build individual vote entry strings
 	var entries []string
 
-	for i, vote := range votes {
+	for i, vote := range group {
 		var entry strings.Builder
 
-		counts := voteformat.VoteCounts{
-			Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
-			Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
-			A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
-		}
-		if len(votes) == 1 {
+		counts := voteformat.CountsOf(vote)
+		if len(group) == 1 {
 			// Single vote: just the counts
 			entry.WriteString(voteformat.FormatVoteCountsLong(counts))
 		} else {
 			// Multi-vote: subtitle + counts
-			voteTitle := voteformat.CleanVoteSubtitle(vote.Abstimmungstitel)
+			voteTitle := voteformat.CleanVoteSubtitle(vote.Subtitle)
 			if voteTitle == "" {
 				voteTitle = fmt.Sprintf("Abstimmung %d", i+1)
 			}
@@ -170,7 +149,7 @@ func buildReplyPosts(votes []zurichapi.Abstimmung, link string, charLimit int) [
 				// Auswahl: no ✅/❌ prefix
 				entry.WriteString(fmt.Sprintf("%s\n", voteTitle))
 			} else {
-				voteEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
+				voteEmoji := voteformat.GetVoteResultEmoji(vote.Decision)
 				entry.WriteString(fmt.Sprintf("%s %s\n", voteEmoji, voteTitle))
 			}
 			entry.WriteString(voteformat.FormatVoteCountsLong(counts))
@@ -179,8 +158,8 @@ func buildReplyPosts(votes []zurichapi.Abstimmung, link string, charLimit int) [
 		entries = append(entries, entry.String())
 
 		// Add Fraktion breakdown as separate entry
-		if stimmabgaben := vote.Stimmabgaben.Stimmabgabe; len(stimmabgaben) > 0 {
-			fraktionCounts := voteformat.AggregateFraktionCounts(zurichapi.ToMemberVotes(stimmabgaben))
+		if len(vote.MemberVotes) > 0 {
+			fraktionCounts := voteformat.AggregateFraktionCounts(vote.MemberVotes)
 			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
 				entries = append(entries, breakdown)
 			}
@@ -247,25 +226,4 @@ func truncateText(s string, maxLen int) string {
 	}
 	truncated := strings.TrimRight(string(runes), " \n")
 	return truncated + "…"
-}
-
-// FormatVoteGroupPost creates a formatted X post for a group of related votes.
-// Deprecated: use FormatVoteThread for thread-aware formatting.
-// Kept for backward compatibility during migration.
-func FormatVoteGroupPost(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) string {
-	thread := FormatVoteThread(votes, contactMapper, DefaultMaxChars)
-	if len(thread) == 0 {
-		return ""
-	}
-	var parts []string
-	for _, post := range thread {
-		parts = append(parts, post.Text)
-	}
-	return strings.Join(parts, "\n\n")
-}
-
-// FormatVotePost creates a formatted X post for a single vote.
-// Deprecated: use FormatVoteThread for thread-aware formatting.
-func FormatVotePost(vote *zurichapi.Abstimmung, contactMapper *contacts.Mapper) string {
-	return FormatVoteGroupPost([]zurichapi.Abstimmung{*vote}, contactMapper)
 }

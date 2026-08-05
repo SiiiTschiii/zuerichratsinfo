@@ -19,7 +19,7 @@ import (
 	"golang.org/x/image/math/fixed"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 //go:embed fonts/NotoEmoji-Regular.ttf
@@ -202,12 +202,12 @@ func wrapText(face font.Face, text string, maxWidth int) []string {
 
 // GenerateCarousel produces carousel JPEG images for a vote group.
 // Returns [][]byte (JPEG-encoded images).
-func GenerateCarousel(votes []zurichapi.Abstimmung) ([][]byte, error) {
-	if len(votes) == 0 {
+func GenerateCarousel(group []votes.Vote) ([][]byte, error) {
+	if len(group) == 0 {
 		return nil, fmt.Errorf("no votes provided")
 	}
 
-	bgColor := SelectColor(votes[0].GeschaeftGrNr)
+	bgColor := SelectColor(group[0].Affair.Number)
 
 	fonts, err := loadFontSet()
 	if err != nil {
@@ -216,23 +216,23 @@ func GenerateCarousel(votes []zurichapi.Abstimmung) ([][]byte, error) {
 
 	var images [][]byte
 
-	if len(votes) == 1 {
+	if len(group) == 1 {
 		// Single vote: combine title + results into one image
-		combinedImg, err := renderCombinedCard(&votes[0], bgColor, fonts)
+		combinedImg, err := renderCombinedCard(&group[0], bgColor, fonts)
 		if err != nil {
 			return nil, fmt.Errorf("rendering combined card: %w", err)
 		}
 		images = append(images, combinedImg)
 	} else {
 		// Multi-vote: title card + one result card per vote
-		titleImg, err := renderTitleCard(votes, bgColor, fonts)
+		titleImg, err := renderTitleCard(group, bgColor, fonts)
 		if err != nil {
 			return nil, fmt.Errorf("rendering title card: %w", err)
 		}
 		images = append(images, titleImg)
 
-		for i := range votes {
-			resultImg, err := renderResultCard(&votes[i], bgColor, fonts, i+1, len(votes))
+		for i := range group {
+			resultImg, err := renderResultCard(&group[i], bgColor, fonts, i+1, len(group))
 			if err != nil {
 				return nil, fmt.Errorf("rendering result card %d: %w", i, err)
 			}
@@ -368,7 +368,7 @@ func loadFontSet() (*fontSet, error) {
 
 // renderCombinedCard renders a single image with visual hierarchy:
 // large verdict, bold title, dashboard stats, and grouped party breakdown.
-func renderCombinedCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) ([]byte, error) {
+func renderCombinedCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
 	// Dry run to measure content height
 	dry := newCursor(0, imgHeight)
 	_, _, err := layoutCombinedCard(nil, dry, v, bg, fonts)
@@ -392,30 +392,24 @@ func renderCombinedCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) 
 	return encodeJPEG(img)
 }
 
-func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) (font.Face, []string, error) {
+func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg color.RGBA, fonts *fontSet) (font.Face, []string, error) {
 	maxTextWidth := imgWidth - 2*padding
 
 	// Build counts
-	counts := voteformat.VoteCounts{
-		Ja: v.AnzahlJa, Nein: v.AnzahlNein, Enthaltung: v.AnzahlEnthaltung,
-		Abwesend: v.AnzahlAbwesend, A: v.AnzahlA, B: v.AnzahlB, C: v.AnzahlC,
-		D: v.AnzahlD, E: v.AnzahlE,
-	}
+	counts := voteformat.CountsOf(*v)
 	isAuswahl := voteformat.IsAuswahlVote(counts)
 
 	// Title first: bold, wrapped, centered
-	title := voteformat.CleanVoteTitle(
-		voteformat.SelectBestTitle(v.TraktandumTitel, v.GeschaeftTitel),
-	)
+	title := voteformat.CleanVoteTitle(v.Title)
 
 	// Single-vote non-Schlussabstimmung: prepend the Abstimmungsgegenstand inline
 	// in front of the title (e.g. "Dringlicherklärung: Motion von …").
-	if prefix := voteformat.SingleVoteSubtitlePrefix(v.Abstimmungstitel); prefix != "" {
+	if prefix := voteformat.SingleVoteSubtitlePrefix(v.Subtitle); prefix != "" {
 		title = prefix + ": " + title
 	}
 
 	// Calculate available space for title: reserve space for verdict + stats + party breakdown
-	fraktionCounts := voteformat.AggregateFraktionCounts(zurichapi.ToMemberVotes(v.Stimmabgaben.Stimmabgabe))
+	fraktionCounts := voteformat.AggregateFraktionCounts(v.MemberVotes)
 	numParties := len(fraktionCounts)
 	verdictHeight := lineHeight(fonts.verdict)
 	statsHeight := lineHeight(fonts.statNum) + lineHeight(fonts.statLabel)
@@ -449,9 +443,9 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimm
 	// Verdict first: large centered emoji above the title
 	var verdictText string
 	if !isAuswahl {
-		verdictText = voteformat.GetVoteResultEmoji(v.Schlussresultat)
+		verdictText = voteformat.GetVoteResultEmoji(v.Decision)
 	} else {
-		verdictText = strings.ToUpper(v.Schlussresultat)
+		verdictText = strings.ToUpper(v.Decision)
 	}
 	if img != nil {
 		drawCenteredText(img, fonts.verdict, fonts.emojiVerdict, cur.baseline(fonts.verdict), verdictText, bg)
@@ -699,10 +693,10 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 	}
 }
 
-func renderTitleCard(votes []zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) ([]byte, error) {
+func renderTitleCard(group []votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
 	// Dry run to measure content height
 	dry := newCursor(0, imgHeight)
-	layoutTitleCard(nil, dry, votes, bg, fonts)
+	layoutTitleCard(nil, dry, group, bg, fonts)
 
 	startY := (imgHeight - dry.contentHeight()) / 2
 	if startY < padding {
@@ -711,19 +705,17 @@ func renderTitleCard(votes []zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet
 	img := newImage(bg)
 
 	cur := newCursor(startY, imgHeight)
-	layoutTitleCard(img, cur, votes, bg, fonts)
+	layoutTitleCard(img, cur, group, bg, fonts)
 
 	return encodeJPEG(img)
 }
 
-func layoutTitleCard(img *image.RGBA, cur *layoutCursor, votes []zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet) {
-	v := votes[0]
+func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg color.RGBA, fonts *fontSet) {
+	v := group[0]
 	maxTextWidth := imgWidth - 2*padding
 
 	// Title: bold, wrapped, centered (no verdict — ambiguous for multi-vote groups)
-	title := voteformat.CleanVoteTitle(
-		voteformat.SelectBestTitle(v.TraktandumTitel, v.GeschaeftTitel),
-	)
+	title := voteformat.CleanVoteTitle(v.Title)
 
 	titleFontSize := 42.0
 	var titleFace font.Face
@@ -753,14 +745,14 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, votes []zurichapi.Absti
 	// Summary: list each sub-vote with number + emoji + short subtitle.
 	cur.gap(fonts.regular, 0.75)
 	if img != nil {
-		header := fmt.Sprintf("Übersicht (%d Teilabstimmungen)", len(votes))
+		header := fmt.Sprintf("Übersicht (%d Teilabstimmungen)", len(group))
 		drawCenteredText(img, fonts.small, nil, cur.baseline(fonts.small), header, bg)
 	}
 	cur.advance(fonts.small)
 	cur.gap(fonts.small, 0.4)
 
 	var summaryLines []string
-	for i, sv := range votes {
+	for i, sv := range group {
 		line, ok := formatSummaryLine(i+1, sv)
 		if ok {
 			summaryLines = append(summaryLines, wrapText(fonts.small, line, maxTextWidth)...)
@@ -783,7 +775,7 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, votes []zurichapi.Absti
 	}
 }
 
-func renderResultCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet, idx, total int) ([]byte, error) {
+func renderResultCard(v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) ([]byte, error) {
 	// Dry run to measure content height
 	dry := newCursor(0, imgHeight)
 	layoutResultCard(nil, dry, v, bg, fonts, idx, total)
@@ -800,7 +792,7 @@ func renderResultCard(v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet, id
 	return encodeJPEG(img)
 }
 
-func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmung, bg color.RGBA, fonts *fontSet, idx, total int) {
+func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) {
 	if img != nil {
 		badge := formatProgressBadge(idx, total)
 		if badge != "" {
@@ -812,8 +804,8 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmun
 	}
 
 	// Subtitle if present (for multi-vote groups)
-	if v.Abstimmungstitel != "" {
-		sub := voteformat.CleanVoteSubtitle(v.Abstimmungstitel)
+	if v.Subtitle != "" {
+		sub := voteformat.CleanVoteSubtitle(v.Subtitle)
 		maxTextWidth := imgWidth - 2*padding
 		subLines := wrapText(fonts.boldHeading, sub, maxTextWidth)
 		for _, line := range subLines {
@@ -827,19 +819,15 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmun
 	}
 
 	// Vote counts
-	counts := voteformat.VoteCounts{
-		Ja: v.AnzahlJa, Nein: v.AnzahlNein, Enthaltung: v.AnzahlEnthaltung,
-		Abwesend: v.AnzahlAbwesend, A: v.AnzahlA, B: v.AnzahlB, C: v.AnzahlC,
-		D: v.AnzahlD, E: v.AnzahlE,
-	}
+	counts := voteformat.CountsOf(*v)
 
 	// Verdict: large centered
 	isAuswahl := voteformat.IsAuswahlVote(counts)
 	var verdictText string
 	if !isAuswahl {
-		verdictText = voteformat.GetVoteResultEmoji(v.Schlussresultat)
+		verdictText = voteformat.GetVoteResultEmoji(v.Decision)
 	} else {
-		verdictText = strings.ToUpper(v.Schlussresultat)
+		verdictText = strings.ToUpper(v.Decision)
 	}
 	if img != nil {
 		drawCenteredText(img, fonts.verdictSm, fonts.emojiVerdict, cur.baseline(fonts.verdictSm), verdictText, bg)
@@ -869,28 +857,24 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmun
 	cur.gap(fonts.partyBold, 1.25)
 
 	// Party breakdown table
-	fraktionCounts := voteformat.AggregateFraktionCounts(zurichapi.ToMemberVotes(v.Stimmabgaben.Stimmabgabe))
+	fraktionCounts := voteformat.AggregateFraktionCounts(v.MemberVotes)
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
 }
 
-func formatSummaryLine(index int, vote zurichapi.Abstimmung) (string, bool) {
-	if vote.Abstimmungstitel == "" {
+func formatSummaryLine(index int, vote votes.Vote) (string, bool) {
+	if vote.Subtitle == "" {
 		return "", false
 	}
 
-	subtitle := voteformat.CleanVoteSubtitle(vote.Abstimmungstitel)
+	subtitle := voteformat.CleanVoteSubtitle(vote.Subtitle)
 	subtitle = truncateWithEllipsis(subtitle, summarySubtitleMaxRunes)
 
-	counts := voteformat.VoteCounts{
-		Ja: vote.AnzahlJa, Nein: vote.AnzahlNein, Enthaltung: vote.AnzahlEnthaltung,
-		Abwesend: vote.AnzahlAbwesend, A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC,
-		D: vote.AnzahlD, E: vote.AnzahlE,
-	}
+	counts := voteformat.CountsOf(vote)
 	var verdict string
 	if voteformat.IsAuswahlVote(counts) {
-		verdict = auswahlResultLabel(vote.Schlussresultat)
+		verdict = auswahlResultLabel(vote.Decision)
 	} else {
-		verdict = voteformat.GetVoteResultEmoji(vote.Schlussresultat)
+		verdict = voteformat.GetVoteResultEmoji(vote.Decision)
 	}
 	return fmt.Sprintf("%d. %s %s", index, verdict, subtitle), true
 }
