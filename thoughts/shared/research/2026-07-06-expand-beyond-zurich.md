@@ -114,10 +114,20 @@ Ranked by data quality for a vote bot; all carry the full non-data cost (new acc
 
 ## Open Questions / To Verify (blocked in this session)
 
+> **Update 2026-08-05**: items 1–3 of the recommendation list were investigated in depth in
+> [2026-08-05-openparldata-federal-kantonsrat-feasibility.md](2026-08-05-openparldata-federal-kantonsrat-feasibility.md).
+> Summary of what changed: OpenParlData's `votings` **does** carry `results_yes/no/abstention/absent`
+> and its `votes` carry the Fraktion, so **both Kantonsrat ZH and the Nationalrat clear feature parity**.
+> Kantonsrat ZH vote data exists but is **PDF-derived with fuzzy name matching** (already maintained
+> upstream — no PDF parsing needed in this project, but a completeness check is required).
+> **Stadt Zürich is the only one of 50 indexed Swiss cities with vote data in OpenParlData**, so the
+> "other Swiss cities" branch below is effectively empty at the vote level. The remaining open items
+> are live-data questions (volume, lag, quality), listed at the end of that document.
+
 This session's sandbox egress policy blocked direct API calls (only web search was available), so the following need hands-on verification from a normal network:
 
-- [ ] OpenParlData: does `/votings` contain per-member ballots for Kantonsrat ZH / Stadt Zürich / Bund? Freshness vs PARIS? Beta stability, rate limits?
-- [ ] Kantonsrat ZH cdws web service: enumerate actual endpoints (`parlzhcdws.cmicloud.ch/.../cdws/...`) — is there any Abstimmungen resource beyond the opendata.swiss description?
+- [x] OpenParlData: does `/votings` contain per-member ballots for Kantonsrat ZH / Stadt Zürich / Bund? — **yes for all three** (schema + per-parliament ETL verified 2026-08-05); freshness/rate limits still open
+- [x] Kantonsrat ZH: is there a machine-readable Abstimmungen source? — **not first-party**; OpenParlData scrapes the `AR*` Abstimmungsresultat PDFs and exposes structured totals + member votes
 - [ ] ws.parlament.ch OData: confirm `Voting` publication lag during sessions; current Ständerat name-list rules
 - [ ] Basel-Stadt dataset 100186: field structure, historical depth, Opendatasoft rate limits
 - [ ] Kanton Bern i14y dataset KTBE-APM0002162: per-member or aggregate?
