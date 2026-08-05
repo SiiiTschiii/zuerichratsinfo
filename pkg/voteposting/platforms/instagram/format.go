@@ -128,7 +128,7 @@ func buildCaption(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) 
 
 		// Fraktion breakdown
 		if stimmabgaben := vote.Stimmabgaben.Stimmabgabe; len(stimmabgaben) > 0 {
-			fraktionCounts := voteformat.AggregateFraktionCounts(stimmabgaben)
+			fraktionCounts := voteformat.AggregateFraktionCounts(zurichapi.ToMemberVotes(stimmabgaben))
 			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
 				sb.WriteString("\n")
 				sb.WriteString(breakdown)

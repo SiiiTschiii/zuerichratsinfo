@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 // FraktionCounts holds vote counts per faction, keyed by Abstimmungsverhalten value.
@@ -13,20 +13,24 @@ type FraktionCounts struct {
 	Counts map[string]int // e.g. {"Ja": 32, "Nein": 0, "Enthaltung": 0, "Abwesend": 5}
 }
 
-// AggregateFraktionCounts groups Stimmabgaben by Fraktion, counting each Abstimmungsverhalten.
-// Empty Fraktion ("") is omitted. The returned map contains exactly the factions present in the data.
-func AggregateFraktionCounts(stimmabgaben []zurichapi.Stimmabgabe) map[string]*FraktionCounts {
+// AggregateFraktionCounts groups member votes by Fraktion, counting each Choice.
+// Members with no Fraktion are omitted — every source has a small tail of
+// unmapped members, and inventing a bucket for them would be worse than leaving
+// them out of the table; they still count towards the vote totals, which are
+// reported independently.
+// The returned map contains exactly the factions present in the data.
+func AggregateFraktionCounts(memberVotes []votes.MemberVote) map[string]*FraktionCounts {
 	result := make(map[string]*FraktionCounts)
-	for _, s := range stimmabgaben {
-		if s.Fraktion == "" {
+	for _, m := range memberVotes {
+		if m.Fraktion == "" {
 			continue
 		}
-		fc, ok := result[s.Fraktion]
+		fc, ok := result[m.Fraktion]
 		if !ok {
 			fc = &FraktionCounts{Counts: make(map[string]int)}
-			result[s.Fraktion] = fc
+			result[m.Fraktion] = fc
 		}
-		fc.Counts[s.Abstimmungsverhalten]++
+		fc.Counts[m.Choice]++
 	}
 	return result
 }

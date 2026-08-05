@@ -415,7 +415,7 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimm
 	}
 
 	// Calculate available space for title: reserve space for verdict + stats + party breakdown
-	fraktionCounts := voteformat.AggregateFraktionCounts(v.Stimmabgaben.Stimmabgabe)
+	fraktionCounts := voteformat.AggregateFraktionCounts(zurichapi.ToMemberVotes(v.Stimmabgaben.Stimmabgabe))
 	numParties := len(fraktionCounts)
 	verdictHeight := lineHeight(fonts.verdict)
 	statsHeight := lineHeight(fonts.statNum) + lineHeight(fonts.statLabel)
@@ -869,7 +869,7 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *zurichapi.Abstimmun
 	cur.gap(fonts.partyBold, 1.25)
 
 	// Party breakdown table
-	fraktionCounts := voteformat.AggregateFraktionCounts(v.Stimmabgaben.Stimmabgabe)
+	fraktionCounts := voteformat.AggregateFraktionCounts(zurichapi.ToMemberVotes(v.Stimmabgaben.Stimmabgabe))
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
 }
 

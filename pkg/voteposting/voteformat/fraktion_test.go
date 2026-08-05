@@ -4,19 +4,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
-func stimmabgabe(fraktion, verhalten string) zurichapi.Stimmabgabe {
-	return zurichapi.Stimmabgabe{
-		Fraktion:             fraktion,
-		Abstimmungsverhalten: verhalten,
+func stimmabgabe(fraktion, verhalten string) votes.MemberVote {
+	return votes.MemberVote{
+		Fraktion: fraktion,
+		Choice:   verhalten,
 	}
 }
 
-// repeat creates n copies of a Stimmabgabe.
-func repeat(s zurichapi.Stimmabgabe, n int) []zurichapi.Stimmabgabe {
-	out := make([]zurichapi.Stimmabgabe, n)
+// repeat creates n copies of a member vote.
+func repeat(s votes.MemberVote, n int) []votes.MemberVote {
+	out := make([]votes.MemberVote, n)
 	for i := range out {
 		out[i] = s
 	}
@@ -24,7 +24,7 @@ func repeat(s zurichapi.Stimmabgabe, n int) []zurichapi.Stimmabgabe {
 }
 
 func TestAggregateFraktionCounts(t *testing.T) {
-	stimmabgaben := []zurichapi.Stimmabgabe{
+	stimmabgaben := []votes.MemberVote{
 		stimmabgabe("SP", "Ja"),
 		stimmabgabe("SP", "Ja"),
 		stimmabgabe("SP", "Abwesend"),
@@ -53,7 +53,7 @@ func TestAggregateFraktionCounts(t *testing.T) {
 
 func TestFormatFraktionBreakdown_JaNein(t *testing.T) {
 	// Realistic 7-faction Ja/Nein vote (79 Ja / 29 Nein / 0 Enth / 17 Abw = 125 total)
-	var stimmabgaben []zurichapi.Stimmabgabe
+	var stimmabgaben []votes.MemberVote
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "Ja"), 32)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "Abwesend"), 5)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("Grüne", "Ja"), 17)...)
@@ -106,7 +106,7 @@ func TestFormatFraktionBreakdown_JaNein(t *testing.T) {
 }
 
 func TestFormatFraktionBreakdown_Auswahl(t *testing.T) {
-	var stimmabgaben []zurichapi.Stimmabgabe
+	var stimmabgaben []votes.MemberVote
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "A"), 20)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "B"), 10)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "Abwesend"), 5)...)
@@ -157,7 +157,7 @@ func TestFormatFraktionBreakdown_Empty(t *testing.T) {
 
 func TestFormatFraktionBreakdown_TieBreaking(t *testing.T) {
 	// Two factions with same total — should be sorted alphabetically
-	var stimmabgaben []zurichapi.Stimmabgabe
+	var stimmabgaben []votes.MemberVote
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("Zebra", "Ja"), 10)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("Alpha", "Ja"), 10)...)
 

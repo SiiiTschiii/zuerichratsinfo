@@ -1,0 +1,2030 @@
+################ FIXTURE single-vote-angenommen ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Reto Brüesch @Z7f3a94241 (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
+
+👇 Details im Thread
+
+[post 1]
+📊 90 Ja | 30 Nein | 0 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/0/1
+SVP 22/0/0/0
+FDP 20/0/0/1
+GLP 18/0/0/0
+AL 15/0/0/1
+Die Mitte 15/0/0/0
+Grüne 0/0/0/2
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-angenommen-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Reto Brüesch @Z7f3a94241 (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
+
+👇 Details im Thread
+
+[post 1]
+📊 90 Ja | 30 Nein | 0 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/0/1
+SVP 22/0/0/0
+FDP 20/0/0/1
+GLP 18/0/0/0
+AL 15/0/0/1
+Die Mitte 15/0/0/0
+Grüne 0/0/0/2
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-angenommen-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Reto Brüesch (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
+
+👇 Details im Thread
+[mention] zri-testbot-7f3a.bsky.social @ 78-91
+
+[post 1]
+📊 90 Ja | 30 Nein | 0 Enth. | 5 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/0/1
+SVP 22/0/0/0
+FDP 20/0/0/1
+GLP 18/0/0/0
+AL 15/0/0/1
+Die Mitte 15/0/0/0
+Grüne 0/0/0/2
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-angenommen-1
+[facet] {Index:{ByteStart:183 ByteEnd:266} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-angenommen-1 DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 125793 bytes sha256=faa81da0289fdd2ed892056e3e0b353eb8840a1d3a7b8d859be680ddc93671a7
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Postulat von Reto Brüesch @zueri835 (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
+
+✅ Angenommen
+📊 90 Ja | 30 Nein | 0 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/0/1
+SVP 22/0/0/0
+FDP 20/0/0/1
+GLP 18/0/0/0
+AL 15/0/0/1
+Die Mitte 15/0/0/0
+Grüne 0/0/0/2
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-angenommen-1
+
+################ FIXTURE single-vote-abgelehnt ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+❌ Abgelehnt: Motion von Liv Mahrer @Z7f3a94241 (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
+
+👇 Details im Thread
+
+[post 1]
+📊 20 Ja | 95 Nein | 5 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/2/1
+FDP 0/20/0/1
+SVP 0/18/0/1
+Grüne 0/15/3/0
+GLP 8/7/0/1
+Die Mitte 12/0/0/1
+AL 0/5/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-abgelehnt-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+❌ Abgelehnt: Motion von Liv Mahrer @Z7f3a94241 (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
+
+👇 Details im Thread
+
+[post 1]
+📊 20 Ja | 95 Nein | 5 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/2/1
+FDP 0/20/0/1
+SVP 0/18/0/1
+Grüne 0/15/3/0
+GLP 8/7/0/1
+Die Mitte 12/0/0/1
+AL 0/5/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-abgelehnt-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+❌ Abgelehnt: Motion von Liv Mahrer (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
+
+👇 Details im Thread
+[mention] zri-testbot-7f3a.bsky.social @ 75-85
+
+[post 1]
+📊 20 Ja | 95 Nein | 5 Enth. | 5 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/2/1
+FDP 0/20/0/1
+SVP 0/18/0/1
+Grüne 0/15/3/0
+GLP 8/7/0/1
+Die Mitte 12/0/0/1
+AL 0/5/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-abgelehnt-1
+[facet] {Index:{ByteStart:182 ByteEnd:264} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-abgelehnt-1 DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 129731 bytes sha256=6905d658632d61c53989e3806a723e1c1e66dd6029a2a00402ed9e5ec42fe090
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Motion von Liv Mahrer @zueri835 (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
+
+❌ Abgelehnt
+📊 20 Ja | 95 Nein | 5 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/2/1
+FDP 0/20/0/1
+SVP 0/18/0/1
+Grüne 0/15/3/0
+GLP 8/7/0/1
+Die Mitte 12/0/0/1
+AL 0/5/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-abgelehnt-1
+
+################ FIXTURE single-vote-dringlicherklaerung ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+Dringlicherklärung
+✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kultu…
+
+👇 Details im Thread
+
+[post 1]
+📊 66 Ja | 0 Nein | 0 Enthaltung | 59 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 37/0/0/4
+FDP 0/0/0/24
+SVP 0/0/0/16
+GLP 0/0/0/15
+Grüne 14/0/0/0
+AL 8/0/0/0
+Die Mitte 7/0/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-dringlich-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+Dringlicherklärung
+✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kulturanbietenden bei der Suche nach Lokalitäten
+
+👇 Details im Thread
+
+[post 1]
+📊 66 Ja | 0 Nein | 0 Enthaltung | 59 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 37/0/0/4
+FDP 0/0/0/24
+SVP 0/0/0/16
+GLP 0/0/0/15
+Grüne 14/0/0/0
+AL 8/0/0/0
+Die Mitte 7/0/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-dringlich-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Dringlicherklärung
+✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kulturanbietenden bei der Suche nach Lok…
+
+👇 Details im Thread
+
+[post 1]
+📊 66 Ja | 0 Nein | 0 Enth. | 59 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 37/0/0/4
+FDP 0/0/0/24
+SVP 0/0/0/16
+GLP 0/0/0/15
+Grüne 14/0/0/0
+AL 8/0/0/0
+Die Mitte 7/0/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-dringlich-1
+[facet] {Index:{ByteStart:182 ByteEnd:264} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-dringlich-1 DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 136622 bytes sha256=27e7cb9cb1d0852b6ba461be7da532e34d21a2c16b6b25afc0129b755f57c6fb
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Dringlicherklärung
+Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kulturanbietenden bei der Suche nach Lokalitäten
+
+✅ Angenommen
+📊 66 Ja | 0 Nein | 0 Enthaltung | 59 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 37/0/0/4
+FDP 0/0/0/24
+SVP 0/0/0/16
+GLP 0/0/0/15
+Grüne 14/0/0/0
+AL 8/0/0/0
+Die Mitte 7/0/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-dringlich-1
+
+################ FIXTURE long-title-truncation ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdi…
+
+👇 Details im Thread
+
+[post 1]
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/0/0/2
+SVP 0/18/0/1
+Grüne 14/0/3/1
+GLP 10/5/0/2
+Die Mitte 8/5/0/1
+AL 0/2/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdischer Durchmesserlinie und ergänzenden Massnahmen zur Verbesserung der Verkehrsinfrastruktur im Grossraum Zürich inklusive der notwendigen Anpassungen an die bestehende urbane Planung
+
+👇 Details im Thread
+
+[post 1]
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/0/0/2
+SVP 0/18/0/1
+Grüne 14/0/3/1
+GLP 10/5/0/2
+Die Mitte 8/5/0/1
+AL 0/2/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdischer Durchmesserlinie und ergänzend…
+
+👇 Details im Thread
+
+[post 1]
+📊 80 Ja | 30 Nein | 5 Enth. | 10 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/0/0/2
+SVP 0/18/0/1
+Grüne 14/0/3/1
+GLP 10/5/0/2
+Die Mitte 8/5/0/1
+AL 0/2/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1
+[facet] {Index:{ByteStart:183 ByteEnd:265} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1 DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 204913 bytes sha256=3d5f9a0e257f2d5782b78947dafbe7d22d7f8b200736fee29464c6082d97d087
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdischer Durchmesserlinie und ergänzenden Massnahmen zur Verbesserung der Verkehrsinfrastruktur im Grossraum Zürich inklusive der notwendigen Anpassungen an die bestehende urbane Planung
+
+✅ Angenommen
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/0/0/2
+SVP 0/18/0/1
+Grüne 14/0/3/1
+GLP 10/5/0/2
+Die Mitte 8/5/0/1
+AL 0/2/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1
+
+################ FIXTURE multi-vote-group ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung
+
+👇 Details im Thread
+
+[post 1]
+✅ Einleitungsartikel
+📊 90 Ja | 20 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+FDP 20/0/0/2
+SVP 0/18/0/1
+Grüne 12/0/5/1
+GLP 14/0/0/2
+Die Mitte 12/0/0/1
+AL 0/2/0/1
+
+[post 2]
+❌ Schlussabstimmung
+📊 40 Ja | 70 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 3]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/2/2
+FDP 0/20/0/2
+SVP 18/0/0/1
+GLP 12/0/0/2
+Grüne 10/0/3/1
+Die Mitte 0/12/0/1
+AL 0/8/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-multi#trakt-multi
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung
+
+👇 Details im Thread
+
+[post 1]
+✅ Einleitungsartikel
+📊 90 Ja | 20 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+FDP 20/0/0/2
+SVP 0/18/0/1
+Grüne 12/0/5/1
+GLP 14/0/0/2
+Die Mitte 12/0/0/1
+AL 0/2/0/1
+
+❌ Schlussabstimmung
+📊 40 Ja | 70 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/2/2
+FDP 0/20/0/2
+SVP 18/0/0/1
+GLP 12/0/0/2
+Grüne 10/0/3/1
+Die Mitte 0/12/0/1
+AL 0/8/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-multi#trakt-multi
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung
+
+👇 Details im Thread
+
+[post 1]
+✅ Einleitungsartikel
+📊 90 Ja | 20 Nein | 5 Enth. | 10 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+FDP 20/0/0/2
+SVP 0/18/0/1
+Grüne 12/0/5/1
+GLP 14/0/0/2
+Die Mitte 12/0/0/1
+AL 0/2/0/1
+
+❌ Schlussabstimmung
+📊 40 Ja | 70 Nein | 5 Enth. | 10 Abw.
+
+[post 2]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/2/2
+FDP 0/20/0/2
+SVP 18/0/0/1
+GLP 12/0/0/2
+Grüne 10/0/3/1
+Die Mitte 0/12/0/1
+AL 0/8/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-multi#trakt-multi
+[facet] {Index:{ByteStart:142 ByteEnd:225} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-multi#trakt-multi DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 79088 bytes sha256=8254890dcfe3e73f2ccbfe711edcc804b72e05d0e2e99a01c4f2d072f3a73f68
+[image 1] 74459 bytes sha256=6ddd9a69fe83e67899569efea41d47e8fa37cbde38e97ef6b0959ea920ebf480
+[image 2] 76010 bytes sha256=91d340bde7e3d6e2bb5898338378ad909fe6bd312107d0e60c2e1343cd255e13
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung
+
+✅ Angenommen: Einleitungsartikel
+📊 90 Ja | 20 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+FDP 20/0/0/2
+SVP 0/18/0/1
+Grüne 12/0/5/1
+GLP 14/0/0/2
+Die Mitte 12/0/0/1
+AL 0/2/0/1
+
+❌ Abgelehnt: Schlussabstimmung
+📊 40 Ja | 70 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/30/2/2
+FDP 0/20/0/2
+SVP 18/0/0/1
+GLP 12/0/0/2
+Grüne 10/0/3/1
+Die Mitte 0/12/0/1
+AL 0/8/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-multi#trakt-multi
+
+################ FIXTURE generic-antrag-fallback ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Max Müller @Z7f3a94241 (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
+
+👇 Details im Thread
+
+[post 1]
+📊 80 Ja | 35 Nein | 5 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/1
+FDP 20/0/0/1
+Grüne 12/5/3/0
+SVP 0/20/0/0
+GLP 12/3/0/1
+Die Mitte 8/5/0/1
+AL 0/2/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=geschaeft-antrag
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Max Müller @Z7f3a94241 (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
+
+👇 Details im Thread
+
+[post 1]
+📊 80 Ja | 35 Nein | 5 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/1
+FDP 20/0/0/1
+Grüne 12/5/3/0
+SVP 0/20/0/0
+GLP 12/3/0/1
+Die Mitte 8/5/0/1
+AL 0/2/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=geschaeft-antrag
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Max Müller (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
+
+👇 Details im Thread
+[mention] zri-testbot-7f3a.bsky.social @ 78-89
+
+[post 1]
+📊 80 Ja | 35 Nein | 5 Enth. | 5 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/1
+FDP 20/0/0/1
+Grüne 12/5/3/0
+SVP 0/20/0/0
+GLP 12/3/0/1
+Die Mitte 8/5/0/1
+AL 0/2/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=geschaeft-antrag
+[facet] {Index:{ByteStart:182 ByteEnd:259} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=geschaeft-antrag DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 129026 bytes sha256=25b12654ad4830925d4f09a4d704fc85d23d9528cf8c58aa995c473c099664a9
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Postulat von Max Müller @zueri835 (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
+
+✅ Angenommen
+📊 80 Ja | 35 Nein | 5 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/1
+FDP 20/0/0/1
+Grüne 12/5/3/0
+SVP 0/20/0/0
+GLP 12/3/0/1
+Die Mitte 8/5/0/1
+AL 0/2/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=geschaeft-antrag
+
+################ FIXTURE ten-vote-stress-test ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht
+
+👇 Details im Thread
+
+[post 1]
+✅ Ziffer A
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 25/0/2/2
+FDP 18/2/0/2
+GLP 12/5/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/15/0/1
+AL 0/3/0/1
+
+✅ Ziffer B
+📊 81 Ja | 29 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 2]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 26/0/2/2
+FDP 18/2/0/2
+GLP 13/4/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/14/0/1
+AL 0/3/0/1
+
+✅ Ziffer C
+📊 82 Ja | 28 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 3]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 27/0/2/2
+FDP 18/2/0/2
+GLP 14/3/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/13/0/1
+AL 0/3/0/1
+
+✅ Ziffer D
+📊 83 Ja | 27 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 4]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/2
+FDP 18/2/0/2
+GLP 15/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/12/0/1
+AL 0/3/0/1
+
+✅ Ziffer E
+📊 84 Ja | 26 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 5]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 29/0/2/2
+FDP 18/2/0/2
+GLP 16/1/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/11/0/1
+AL 0/3/0/1
+
+✅ Ziffer F
+📊 85 Ja | 25 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 6]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/2/0/2
+GLP 17/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/10/0/1
+AL 0/3/0/1
+
+✅ Ziffer G
+📊 86 Ja | 24 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 7]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 31/0/2/2
+FDP 18/2/0/2
+GLP 18/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/9/0/1
+AL 0/3/0/1
+
+✅ Ziffer H
+📊 87 Ja | 23 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 8]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/2/2
+FDP 18/2/0/2
+GLP 19/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/8/0/1
+AL 0/3/0/1
+
+✅ Ziffer I
+📊 88 Ja | 22 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 9]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 33/0/2/2
+FDP 18/2/0/2
+GLP 20/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/7/0/1
+AL 0/3/0/1
+
+✅ Ziffer J
+📊 89 Ja | 21 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 10]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 34/0/2/2
+GLP 21/0/0/2
+FDP 18/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/6/0/1
+AL 0/3/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht
+
+👇 Details im Thread
+
+[post 1]
+✅ Ziffer A
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 25/0/2/2
+FDP 18/2/0/2
+GLP 12/5/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/15/0/1
+AL 0/3/0/1
+
+✅ Ziffer B
+📊 81 Ja | 29 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 26/0/2/2
+FDP 18/2/0/2
+GLP 13/4/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/14/0/1
+AL 0/3/0/1
+
+✅ Ziffer C
+📊 82 Ja | 28 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 27/0/2/2
+FDP 18/2/0/2
+GLP 14/3/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/13/0/1
+AL 0/3/0/1
+
+✅ Ziffer D
+📊 83 Ja | 27 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/2
+FDP 18/2/0/2
+GLP 15/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/12/0/1
+AL 0/3/0/1
+
+✅ Ziffer E
+📊 84 Ja | 26 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 29/0/2/2
+FDP 18/2/0/2
+GLP 16/1/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/11/0/1
+AL 0/3/0/1
+
+✅ Ziffer F
+📊 85 Ja | 25 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/2/0/2
+GLP 17/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/10/0/1
+AL 0/3/0/1
+
+✅ Ziffer G
+📊 86 Ja | 24 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 31/0/2/2
+FDP 18/2/0/2
+GLP 18/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/9/0/1
+AL 0/3/0/1
+
+✅ Ziffer H
+📊 87 Ja | 23 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/2/2
+FDP 18/2/0/2
+GLP 19/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/8/0/1
+AL 0/3/0/1
+
+✅ Ziffer I
+📊 88 Ja | 22 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 33/0/2/2
+FDP 18/2/0/2
+GLP 20/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/7/0/1
+AL 0/3/0/1
+
+✅ Ziffer J
+📊 89 Ja | 21 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 2]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 34/0/2/2
+GLP 21/0/0/2
+FDP 18/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/6/0/1
+AL 0/3/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht
+
+👇 Details im Thread
+
+[post 1]
+✅ Ziffer A
+📊 80 Ja | 30 Nein | 5 Enth. | 10 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 25/0/2/2
+FDP 18/2/0/2
+GLP 12/5/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/15/0/1
+AL 0/3/0/1
+
+✅ Ziffer B
+📊 81 Ja | 29 Nein | 5 Enth. | 10 Abw.
+
+[post 2]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 26/0/2/2
+FDP 18/2/0/2
+GLP 13/4/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/14/0/1
+AL 0/3/0/1
+
+✅ Ziffer C
+📊 82 Ja | 28 Nein | 5 Enth. | 10 Abw.
+
+[post 3]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 27/0/2/2
+FDP 18/2/0/2
+GLP 14/3/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/13/0/1
+AL 0/3/0/1
+
+✅ Ziffer D
+📊 83 Ja | 27 Nein | 5 Enth. | 10 Abw.
+
+[post 4]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/2
+FDP 18/2/0/2
+GLP 15/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/12/0/1
+AL 0/3/0/1
+
+✅ Ziffer E
+📊 84 Ja | 26 Nein | 5 Enth. | 10 Abw.
+
+[post 5]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 29/0/2/2
+FDP 18/2/0/2
+GLP 16/1/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/11/0/1
+AL 0/3/0/1
+
+✅ Ziffer F
+📊 85 Ja | 25 Nein | 5 Enth. | 10 Abw.
+
+[post 6]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/2/0/2
+GLP 17/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/10/0/1
+AL 0/3/0/1
+
+✅ Ziffer G
+📊 86 Ja | 24 Nein | 5 Enth. | 10 Abw.
+
+[post 7]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 31/0/2/2
+FDP 18/2/0/2
+GLP 18/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/9/0/1
+AL 0/3/0/1
+
+✅ Ziffer H
+📊 87 Ja | 23 Nein | 5 Enth. | 10 Abw.
+
+[post 8]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/2/2
+FDP 18/2/0/2
+GLP 19/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/8/0/1
+AL 0/3/0/1
+
+✅ Ziffer I
+📊 88 Ja | 22 Nein | 5 Enth. | 10 Abw.
+
+[post 9]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 33/0/2/2
+FDP 18/2/0/2
+GLP 20/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/7/0/1
+AL 0/3/0/1
+
+✅ Ziffer J
+📊 89 Ja | 21 Nein | 5 Enth. | 10 Abw.
+
+[post 10]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 34/0/2/2
+GLP 21/0/0/2
+FDP 18/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/6/0/1
+AL 0/3/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+[facet] {Index:{ByteStart:141 ByteEnd:226} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 96658 bytes sha256=4fba49f906b5ec735dee3028266702e53a68fe73beb1c574d71c0c463c8e20c0
+[image 1] 69212 bytes sha256=fa2b1022ac34a69b9edf5f7fd1f703bbd206a753ef018a6223a83e6ce178a88b
+[image 2] 68941 bytes sha256=d24fba9f39f895c58f1e8623af2b020d706ba82d25f742485ee792223927515a
+[image 3] 69135 bytes sha256=4c933c28052b1a6e9e543b4e08b97a1f78b3b4ee6d89531d6ed66c6f0b3b10ca
+[image 4] 68998 bytes sha256=523d2a6e11451bc95ed42ea708779041fa83b08f6fd5bc1a2b498539060d72d5
+[image 5] 69112 bytes sha256=1da867c58b46feb5d793468e288bc854e2b317d6d48de85f094724cdfe1c255f
+[image 6] 68950 bytes sha256=2e2e4f7e6838f07a8fbb72e031b75bf225f47e19d83c2a2b975609794788fa67
+[image 7] 68878 bytes sha256=e96942588a6ebae69a00b89897642bfb4f4f6e7cd268d5e3d4d93c36340a3fe9
+[image 8] 68632 bytes sha256=d0324c035e7d1040e3a2036f7634f3c5949de83890a55ee5835f046a2bb1ba98
+[image 9] 68710 bytes sha256=86c3216e9e00b9377267a68b0acf801d083079efa69ffb8a7d1da1858d3a55d9
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht
+
+✅ Angenommen: Ziffer A
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 25/0/2/2
+FDP 18/2/0/2
+GLP 12/5/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/15/0/1
+AL 0/3/0/1
+
+✅ Angenommen: Ziffer B
+📊 81 Ja | 29 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 26/0/2/2
+FDP 18/2/0/2
+GLP 13/4/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/14/0/1
+AL 0/3/0/1
+
+✅ Angenommen: Ziffer C
+📊 82 Ja | 28 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 27/0/2/2
+FDP 18/2/0/2
+GLP 14/3/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/13/0/1
+AL 0/3/0/1
+
+✅ Angenommen: Ziffer D
+📊 83 Ja | 27 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/2
+FDP 18/2/0/2
+GLP 15/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/12/0/1
+AL 0/3/0/1
+
+✅ Angenommen: Ziffer E
+📊 84 Ja | 26 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 29/0/2/2
+FDP 18/2/0/2
+GLP 16/1/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/11/0/1
+AL 0/3/0/1
+
+✅ Angenommen: Ziffer F
+📊 85 Ja | 25 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/2/0/2
+GLP 17/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/10/0/1
+AL 0/3/0/1
+
+✅ Angenommen: Ziffer G
+📊 86 Ja | 24 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 31/0/2/2
+FDP 18/2/0/2
+GLP 18/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/9/0/1
+AL 0/3/0/1
+
+✅ Angenommen: Ziffer H
+📊 87 Ja | 23 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/2/2
+FDP 18/2/0/2
+GLP 19/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/8/0/1
+AL 0/3/0/1
+
+✅ Angenommen: Ziffer I
+📊 88 Ja | 22 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 33/0/2/2
+FDP 18/2/0/2
+GLP 20/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/7/0/1
+AL 0/3/0/1
+
+✅ Angenommen: Ziffer J
+📊 89 Ja | 21 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP…
+ℹ️ Gekürzt – weitere Teilabstimmungen im Link.
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+
+################ FIXTURE vote-with-mentions ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Anna Graff @Z7f3a94241 (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
+
+👇 Details im Thread
+
+[post 1]
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+FDP 15/5/0/2
+GLP 10/4/3/2
+Grüne 16/0/2/1
+SVP 0/18/0/1
+Die Mitte 7/3/0/1
+AL 0/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mention-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Anna Graff @Z7f3a94241 (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
+
+👇 Details im Thread
+
+[post 1]
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+FDP 15/5/0/2
+GLP 10/4/3/2
+Grüne 16/0/2/1
+SVP 0/18/0/1
+Die Mitte 7/3/0/1
+AL 0/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mention-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Anna Graff (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
+
+👇 Details im Thread
+[mention] zri-testbot-7f3a.bsky.social @ 78-88
+
+[post 1]
+📊 80 Ja | 30 Nein | 5 Enth. | 10 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+FDP 15/5/0/2
+GLP 10/4/3/2
+Grüne 16/0/2/1
+SVP 0/18/0/1
+Die Mitte 7/3/0/1
+AL 0/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mention-1
+[facet] {Index:{ByteStart:183 ByteEnd:263} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mention-1 DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 112195 bytes sha256=2b0696c4ac3cf5ad182d005acc897b0ab4ed08602a541340d4d16383e574d62b
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Postulat von Anna Graff @zueri835 (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
+
+✅ Angenommen
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+FDP 15/5/0/2
+GLP 10/4/3/2
+Grüne 16/0/2/1
+SVP 0/18/0/1
+Die Mitte 7/3/0/1
+AL 0/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mention-1
+
+################ FIXTURE auswahl-vote ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 04.03.2026
+
+Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots
+
+👇 Details im Thread
+
+[post 1]
+📊 A: 74 | B: 28 | C: 13 | Abwesend 10
+
+🏛️ Fraktionen (A/B/C/Abw):
+SP 30/0/0/2
+FDP 18/2/0/2
+SVP 0/18/0/2
+GLP 14/0/0/1
+Grüne 0/0/13/1
+Die Mitte 12/0/0/1
+AL 0/8/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 04.03.2026
+
+Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots
+
+👇 Details im Thread
+
+[post 1]
+📊 A: 74 | B: 28 | C: 13 | Abwesend 10
+
+🏛️ Fraktionen (A/B/C/Abw):
+SP 30/0/0/2
+FDP 18/2/0/2
+SVP 0/18/0/2
+GLP 14/0/0/1
+Grüne 0/0/13/1
+Die Mitte 12/0/0/1
+AL 0/8/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 04.03.2026
+
+Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots
+
+👇 Details im Thread
+
+[post 1]
+📊 A: 74 | B: 28 | C: 13 | Abw. 10
+
+🏛️ Fraktionen (A/B/C/Abw):
+SP 30/0/0/2
+FDP 18/2/0/2
+SVP 0/18/0/2
+GLP 14/0/0/1
+Grüne 0/0/13/1
+Die Mitte 12/0/0/1
+AL 0/8/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-1
+[facet] {Index:{ByteStart:173 ByteEnd:253} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-1 DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 125060 bytes sha256=4e7e93f1f24f4858d2122c2eb1056bfab9eab2175e70f376ef1ab26c351fe204
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 04.03.2026
+
+Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots
+
+📊 A: 74 | B: 28 | C: 13 | Abwesend 10
+
+🏛️ Fraktionen (A/B/C/Abw):
+SP 30/0/0/2
+FDP 18/2/0/2
+SVP 0/18/0/2
+GLP 14/0/0/1
+Grüne 0/0/13/1
+Die Mitte 12/0/0/1
+AL 0/8/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-1
+
+################ FIXTURE mixed-multi-vote ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 25.02.2026
+
+Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen
+
+👇 Details im Thread
+
+[post 1]
+✅ Änderungsantrag 9
+📊 62 Ja | 51 Nein | 0 Enthaltung | 12 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/0/2
+FDP 0/20/0/2
+SVP 0/18/0/2
+GLP 10/5/0/2
+Die Mitte 8/5/0/2
+Grüne 14/0/0/1
+AL 0/3/0/1
+
+[post 2]
+Änderungsantrag 17, 1. Abstimmung Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung
+📊 A: 50 | B: 24 | C: 40 | Abwesend 11
+
+[post 3]
+🏛️ Fraktionen (A/B/C/Abw):
+SP 28/0/0/2
+SVP 0/0/20/2
+FDP 0/18/0/2
+GLP 8/6/0/2
+Grüne 10/0/5/1
+Die Mitte 4/0/10/1
+AL 0/0/5/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-mixed#trakt-mixed
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 25.02.2026
+
+Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen
+
+👇 Details im Thread
+
+[post 1]
+✅ Änderungsantrag 9
+📊 62 Ja | 51 Nein | 0 Enthaltung | 12 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/0/2
+FDP 0/20/0/2
+SVP 0/18/0/2
+GLP 10/5/0/2
+Die Mitte 8/5/0/2
+Grüne 14/0/0/1
+AL 0/3/0/1
+
+Änderungsantrag 17, 1. Abstimmung Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung
+📊 A: 50 | B: 24 | C: 40 | Abwesend 11
+
+🏛️ Fraktionen (A/B/C/Abw):
+SP 28/0/0/2
+SVP 0/0/20/2
+FDP 0/18/0/2
+GLP 8/6/0/2
+Grüne 10/0/5/1
+Die Mitte 4/0/10/1
+AL 0/0/5/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-mixed#trakt-mixed
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 25.02.2026
+
+Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen
+
+👇 Details im Thread
+
+[post 1]
+✅ Änderungsantrag 9
+📊 62 Ja | 51 Nein | 0 Enth. | 12 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/0/2
+FDP 0/20/0/2
+SVP 0/18/0/2
+GLP 10/5/0/2
+Die Mitte 8/5/0/2
+Grüne 14/0/0/1
+AL 0/3/0/1
+
+[post 2]
+Änderungsantrag 17, 1. Abstimmung Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung
+📊 A: 50 | B: 24 | C: 40 | Abw. 11
+
+[post 3]
+🏛️ Fraktionen (A/B/C/Abw):
+SP 28/0/0/2
+SVP 0/0/20/2
+FDP 0/18/0/2
+GLP 8/6/0/2
+Grüne 10/0/5/1
+Die Mitte 4/0/10/1
+AL 0/0/5/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-mixed#trakt-mixed
+[facet] {Index:{ByteStart:134 ByteEnd:217} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-mixed#trakt-mixed DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 103371 bytes sha256=e72a88f6c73dd379743c7f29e25ee60903e111a5624434baae98586c7f5e9029
+[image 1] 70157 bytes sha256=27fbdd0f4f109e1157b1ab4b4eea07cd68f8bc635cb4d6834e365f6ac7196f10
+[image 2] 118237 bytes sha256=3f51af8a787769bd9ee3628d8e62e8fadab616e621eeed67dd674422ed7a6934
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 25.02.2026
+
+Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen
+
+✅ Angenommen: Änderungsantrag 9
+📊 62 Ja | 51 Nein | 0 Enthaltung | 12 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/0/2
+FDP 0/20/0/2
+SVP 0/18/0/2
+GLP 10/5/0/2
+Die Mitte 8/5/0/2
+Grüne 14/0/0/1
+AL 0/3/0/1
+
+Änderungsantrag 17, 1. Abstimmung Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung
+📊 A: 50 | B: 24 | C: 40 | Abwesend 11
+
+🏛️ Fraktionen (A/B/C/Abw):
+SP 28/0/0/2
+SVP 0/0/20/2
+FDP 0/18/0/2
+GLP 8/6/0/2
+Grüne 10/0/5/1
+Die Mitte 4/0/10/1
+AL 0/0/5/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-mixed#trakt-mixed
+
+################ FIXTURE postulat-with-grnr-prefix ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 26.11.2025
+
+❌ Abgelehnt: Postulat von Reto Brüesch @Z7f3a94241 (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
+
+👇 Details im Thread
+
+[post 1]
+📊 21 Ja | 38 Nein | 56 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/0/30/2
+FDP 0/20/0/2
+GLP 3/10/5/2
+SVP 18/0/0/1
+Grüne 0/0/15/1
+Die Mitte 0/8/6/1
+AL 0/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-grnr-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 26.11.2025
+
+❌ Abgelehnt: Postulat von Reto Brüesch @Z7f3a94241 (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
+
+👇 Details im Thread
+
+[post 1]
+📊 21 Ja | 38 Nein | 56 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/0/30/2
+FDP 0/20/0/2
+GLP 3/10/5/2
+SVP 18/0/0/1
+Grüne 0/0/15/1
+Die Mitte 0/8/6/1
+AL 0/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-grnr-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 26.11.2025
+
+❌ Abgelehnt: Postulat von Reto Brüesch (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
+
+👇 Details im Thread
+[mention] zri-testbot-7f3a.bsky.social @ 77-90
+
+[post 1]
+📊 21 Ja | 38 Nein | 56 Enth. | 10 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/0/30/2
+FDP 0/20/0/2
+GLP 3/10/5/2
+SVP 18/0/0/1
+Grüne 0/0/15/1
+Die Mitte 0/8/6/1
+AL 0/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-grnr-1
+[facet] {Index:{ByteStart:184 ByteEnd:261} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-grnr-1 DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 106084 bytes sha256=f964bb83ae807478be65944076988cfb741ab8ee005aa187ae7377d87ca27696
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 26.11.2025
+
+Postulat von Reto Brüesch @zueri835 (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
+
+❌ Abgelehnt
+📊 21 Ja | 38 Nein | 56 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 0/0/30/2
+FDP 0/20/0/2
+GLP 3/10/5/2
+SVP 18/0/0/1
+Grüne 0/0/15/1
+Die Mitte 0/8/6/1
+AL 0/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-grnr-1
+
+################ FIXTURE instagram-long-multi-vote-truncation ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktan…
+
+👇 Details im Thread
+
+[post 1]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 2]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 25/0/2/2
+FDP 18/2/0/2
+GLP 12/5/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/15/0/1
+AL 0/3/0/1
+
+[post 3]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 81 Ja | 29 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 4]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 26/0/2/2
+FDP 18/2/0/2
+GLP 13/4/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/14/0/1
+AL 0/3/0/1
+
+[post 5]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 82 Ja | 28 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 6]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 27/0/2/2
+FDP 18/2/0/2
+GLP 14/3/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/13/0/1
+AL 0/3/0/1
+
+[post 7]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 83 Ja | 27 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 8]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/2
+FDP 18/2/0/2
+GLP 15/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/12/0/1
+AL 0/3/0/1
+
+[post 9]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 84 Ja | 26 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 10]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 29/0/2/2
+FDP 18/2/0/2
+GLP 16/1/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/11/0/1
+AL 0/3/0/1
+
+[post 11]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 85 Ja | 25 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 12]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/2/0/2
+GLP 17/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/10/0/1
+AL 0/3/0/1
+
+[post 13]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 86 Ja | 24 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 14]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 31/0/2/2
+FDP 18/2/0/2
+GLP 18/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/9/0/1
+AL 0/3/0/1
+
+[post 15]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 87 Ja | 23 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 16]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/2/2
+FDP 18/2/0/2
+GLP 19/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/8/0/1
+AL 0/3/0/1
+
+[post 17]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 88 Ja | 22 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 18]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 33/0/2/2
+FDP 18/2/0/2
+GLP 20/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/7/0/1
+AL 0/3/0/1
+
+[post 19]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 89 Ja | 21 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 20]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 34/0/2/2
+GLP 21/0/0/2
+FDP 18/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/6/0/1
+AL 0/3/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Tr…
+
+👇 Details im Thread
+
+[post 1]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 25/0/2/2
+FDP 18/2/0/2
+GLP 12/5/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/15/0/1
+AL 0/3/0/1
+
+[post 2]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 81 Ja | 29 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 26/0/2/2
+FDP 18/2/0/2
+GLP 13/4/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/14/0/1
+AL 0/3/0/1
+
+[post 3]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 82 Ja | 28 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 27/0/2/2
+FDP 18/2/0/2
+GLP 14/3/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/13/0/1
+AL 0/3/0/1
+
+[post 4]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 83 Ja | 27 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/2
+FDP 18/2/0/2
+GLP 15/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/12/0/1
+AL 0/3/0/1
+
+[post 5]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 84 Ja | 26 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 29/0/2/2
+FDP 18/2/0/2
+GLP 16/1/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/11/0/1
+AL 0/3/0/1
+
+[post 6]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 85 Ja | 25 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/2/0/2
+GLP 17/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/10/0/1
+AL 0/3/0/1
+
+[post 7]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 86 Ja | 24 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 31/0/2/2
+FDP 18/2/0/2
+GLP 18/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/9/0/1
+AL 0/3/0/1
+
+[post 8]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 87 Ja | 23 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/2/2
+FDP 18/2/0/2
+GLP 19/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/8/0/1
+AL 0/3/0/1
+
+[post 9]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 88 Ja | 22 Nein | 5 Enthaltung | 10 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 33/0/2/2
+FDP 18/2/0/2
+GLP 20/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/7/0/1
+AL 0/3/0/1
+
+[post 10]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 89 Ja | 21 Nein | 5 Enthaltung | 10 Abwesend
+
+[post 11]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 34/0/2/2
+GLP 21/0/0/2
+FDP 18/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/6/0/1
+AL 0/3/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr…
+
+👇 Details im Thread
+
+[post 1]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 80 Ja | 30 Nein | 5 Enth. | 10 Abw.
+
+[post 2]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 25/0/2/2
+FDP 18/2/0/2
+GLP 12/5/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/15/0/1
+AL 0/3/0/1
+
+[post 3]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 81 Ja | 29 Nein | 5 Enth. | 10 Abw.
+
+[post 4]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 26/0/2/2
+FDP 18/2/0/2
+GLP 13/4/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/14/0/1
+AL 0/3/0/1
+
+[post 5]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 82 Ja | 28 Nein | 5 Enth. | 10 Abw.
+
+[post 6]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 27/0/2/2
+FDP 18/2/0/2
+GLP 14/3/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/13/0/1
+AL 0/3/0/1
+
+[post 7]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 83 Ja | 27 Nein | 5 Enth. | 10 Abw.
+
+[post 8]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 28/0/2/2
+FDP 18/2/0/2
+GLP 15/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/12/0/1
+AL 0/3/0/1
+
+[post 9]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 84 Ja | 26 Nein | 5 Enth. | 10 Abw.
+
+[post 10]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 29/0/2/2
+FDP 18/2/0/2
+GLP 16/1/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/11/0/1
+AL 0/3/0/1
+
+[post 11]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 85 Ja | 25 Nein | 5 Enth. | 10 Abw.
+
+[post 12]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 30/0/2/2
+FDP 18/2/0/2
+GLP 17/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/10/0/1
+AL 0/3/0/1
+
+[post 13]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 86 Ja | 24 Nein | 5 Enth. | 10 Abw.
+
+[post 14]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 31/0/2/2
+FDP 18/2/0/2
+GLP 18/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/9/0/1
+AL 0/3/0/1
+
+[post 15]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 87 Ja | 23 Nein | 5 Enth. | 10 Abw.
+
+[post 16]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/2/2
+FDP 18/2/0/2
+GLP 19/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/8/0/1
+AL 0/3/0/1
+
+[post 17]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 88 Ja | 22 Nein | 5 Enth. | 10 Abw.
+
+[post 18]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 33/0/2/2
+FDP 18/2/0/2
+GLP 20/0/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/7/0/1
+AL 0/3/0/1
+
+[post 19]
+✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
+📊 89 Ja | 21 Nein | 5 Enth. | 10 Abw.
+
+[post 20]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 34/0/2/2
+GLP 21/0/0/2
+FDP 18/2/0/2
+Grüne 15/0/3/1
+Die Mitte 10/5/0/1
+SVP 0/6/0/1
+AL 0/3/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+[facet] {Index:{ByteStart:141 ByteEnd:226} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress DID: Tag:}]}
+
+---- Instagram ----
+[image 0] 584188 bytes sha256=ddc614f31abf799e4ac89187dd3c86e71186e13ce581b4e225703f10351e09c0
+[image 1] 319061 bytes sha256=d70603613ee65e2a9c9a226bf1f1a4b79f74823ecfb4e6feef616a1199a071ef
+[image 2] 319286 bytes sha256=ad893215c7c93b9fc181e74cc0c70756794c1a5fedd29232ae17f68a1e6c2435
+[image 3] 319270 bytes sha256=884148739329b55a4e107553d4799cad4efc005ec3db40f7b3e738b6ddbf57ed
+[image 4] 319133 bytes sha256=a4ff30771aff320f963e60be56dde8dd8f22bca7ec70efdf6ca6dabb7b5279f3
+[image 5] 319332 bytes sha256=4fe5e37206c49e1e88f2b4b4a6da7a3643ccc553f9e4838a1b9c8da3469e05f2
+[image 6] 319335 bytes sha256=3856b53abfe75234ab41a3856081846586ce9894d204b930559f8c8e39ebe848
+[image 7] 319115 bytes sha256=1b7ac4e3f3e774b978580d05bc0b0797cbb8863b89f01ea7196ed94e4def3218
+[image 8] 319169 bytes sha256=6c9507e1f7a84de589a6667bff31ca25027dc3ac33b1137a10625b4e9eb8dfa9
+[image 9] 319342 bytes sha256=70895cf3ff06445416b64af69d396a6d0795b679037da095a4bd3e7c9ef45200
+[caption]
+🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktan…
+ℹ️ Gekürzt – weitere Teilabstimmungen im Link.
+🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+
