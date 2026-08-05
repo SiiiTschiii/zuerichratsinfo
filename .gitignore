@@ -20,3 +20,7 @@ out/
 # Claude Code (local, machine-specific)
 .claude/settings.local.json
 .claude/worktrees/
+
+# Vote state log lives on the `state-log` branch, not here. The bot restores
+# these into the checkout at runtime; they must never be committed to main.
+data/posted_votes_*.json
