@@ -1,33 +1,6 @@
 {
  "data": [
-  {
-   "id": 104492,
-   "external_id": "B073E72C-3C26-5E80-4160-A8E79A54A3A3",
-   "body_key": "ZH",
-   "date": "2026-07-06T13:13:28",
-   "affair_id": 335151,
-   "results_yes": 165,
-   "results_no": 0,
-   "results_abstention": 0,
-   "results_absent": 15,
-   "decision": null,
-   "title_de": "Rechenschaftsbericht Sozialversicherungsgericht 2025",
-   "affair_title_de": "Rechenschaftsbericht Sozialversicherungsgericht 2025",
-   "type_de": null,
-   "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=b7eed3d1-82e5-4dad-8e50-0f7664f51c53&segmentUid=23bdf0df-a442-446e-8cdb-21ee22b5c2de"
-  }
+ {"affair_id": 335151, "affair_title_de": "Rechenschaftsbericht Sozialversicherungsgericht 2025", "body_key": "ZH", "date": "2026-07-06T13:13:28", "decision": null, "external_id": "B073E72C-3C26-5E80-4160-A8E79A54A3A3", "id": 104492, "results_absent": 15, "results_abstention": 0, "results_no": 0, "results_yes": 165, "title_de": "Rechenschaftsbericht Sozialversicherungsgericht 2025", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=b7eed3d1-82e5-4dad-8e50-0f7664f51c53&segmentUid=23bdf0df-a442-446e-8cdb-21ee22b5c2de"}
  ],
- "meta": {
-  "offset": 0,
-  "limit": 100,
-  "total_records": 1,
-  "total_pages": 1,
-  "current_page": 1,
-  "has_more": false,
-  "next_page": null,
-  "prev_page": null,
-  "first_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335151&lang_format=flat&offset=0&limit=100",
-  "last_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335151&lang_format=flat&offset=0&limit=100",
-  "self": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335151&limit=100&lang_format=flat"
- }
+ "meta": {"offset": 0, "limit": 100, "total_records": 1, "total_pages": 1, "current_page": 1, "has_more": false, "next_page": null, "prev_page": null, "first_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335151&lang_format=flat&offset=0&limit=100", "last_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335151&lang_format=flat&offset=0&limit=100", "self": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335151&limit=100&lang_format=flat"}
 }

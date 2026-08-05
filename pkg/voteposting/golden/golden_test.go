@@ -1,9 +1,15 @@
 // Package golden holds a cross-platform snapshot test over every fixture.
 //
 // It exists to make refactors that are supposed to be behaviour-preserving
-// provable: the file testdata/golden.txt contains the exact text every platform
-// formatter produces for every fixture, plus a hash of every generated image.
-// Any diff is a behaviour change and must be justified, not accepted.
+// provable: testdata/golden.txt contains the exact text every platform
+// formatter produces for every fixture. Any diff is a behaviour change and must
+// be justified, not accepted.
+//
+// Generated images are checked separately, by properties rather than by bytes —
+// see TestGeneratedImages. JPEG bytes are not portable: golang.org/x/image
+// rasterises glyphs through an AMD64-specific code path, so the same card
+// encodes to different bytes on arm64 and amd64. A byte hash here would pass
+// locally and fail in CI, which is worse than no check at all.
 //
 // Regenerate with:
 //
@@ -11,16 +17,19 @@
 package golden
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
+	"bytes"
 	"flag"
 	"fmt"
+	"image"
+	"image/color"
+	"image/jpeg"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
@@ -71,10 +80,7 @@ func TestGoldenOutput(t *testing.T) {
 		if err != nil {
 			t.Fatalf("formatting Instagram content for %s: %v", name, err)
 		}
-		for i, img := range content.Images {
-			sum := sha256.Sum256(img)
-			sb.WriteString(fmt.Sprintf("[image %d] %d bytes sha256=%s\n", i, len(img), hex.EncodeToString(sum[:])))
-		}
+		sb.WriteString(fmt.Sprintf("[images] %d\n", len(content.Images)))
 		sb.WriteString(fmt.Sprintf("[caption]\n%s\n\n", content.Caption))
 	}
 
@@ -137,4 +143,93 @@ func firstDiff(want, got string) string {
 		}
 	}
 	return "no line difference (trailing whitespace?)"
+}
+
+// TestGeneratedImages checks the carousel images by the properties that must
+// hold everywhere, rather than by a byte hash that only holds on one
+// architecture.
+//
+// The background is a flat fill with no anti-aliasing, so its colour is
+// bit-exact on every platform — which makes it a real assertion about
+// SelectColor. The body caption is checked as a fact ("something was drawn
+// there"), not a value, so glyph-rasterisation differences cannot break it.
+func TestGeneratedImages(t *testing.T) {
+	for _, name := range fixtureNames() {
+		t.Run(name, func(t *testing.T) {
+			group := fixtureByName(t, name)
+
+			images, err := imagegen.GenerateCarousel(group)
+			if err != nil {
+				t.Fatalf("GenerateCarousel: %v", err)
+			}
+			if len(images) == 0 {
+				t.Fatal("no images generated")
+			}
+			// Instagram caps a carousel at 10; the formatter trims, but the
+			// generator should not be producing wildly more than that.
+			if len(images) > 11 {
+				t.Errorf("generated %d images", len(images))
+			}
+
+			wantBG := imagegen.SelectColor(group[0].Jurisdiction, group[0].Affair.Number)
+
+			for i, data := range images {
+				img, err := jpeg.Decode(bytes.NewReader(data))
+				if err != nil {
+					t.Fatalf("image %d does not decode: %v", i, err)
+				}
+
+				b := img.Bounds()
+				if b.Dx() != 1080 || b.Dy() != 1350 {
+					t.Errorf("image %d is %dx%d, want 1080x1350", i, b.Dx(), b.Dy())
+				}
+
+				// Sample a corner the layout never draws into.
+				if got := img.At(b.Max.X-4, b.Max.Y-4); !closeTo(got, wantBG) {
+					t.Errorf("image %d background = %v, want %v (SelectColor must key on jurisdiction and affair)",
+						i, got, wantBG)
+				}
+
+				if !hasInk(img, image.Rect(50, 50, 500, 120), wantBG) {
+					t.Errorf("image %d has nothing drawn in the body-caption area; "+
+						"posts from two chambers share an account and must say which is which", i)
+				}
+			}
+		})
+	}
+}
+
+// closeTo compares against the JPEG-decoded colour, allowing for the small
+// error lossy encoding introduces in a flat region.
+func closeTo(got color.Color, want color.RGBA) bool {
+	const tolerance = 0x0800 // ~2 levels in 8-bit terms
+
+	gr, gg, gb, _ := got.RGBA()
+	wr, wg, wb, _ := color.RGBA{want.R, want.G, want.B, 0xFF}.RGBA()
+
+	return absDiff(gr, wr) <= tolerance && absDiff(gg, wg) <= tolerance && absDiff(gb, wb) <= tolerance
+}
+
+func absDiff(a, b uint32) uint32 {
+	if a > b {
+		return a - b
+	}
+	return b - a
+}
+
+// hasInk reports whether anything was drawn in a region, by looking for pixels
+// clearly lighter than the background. Text is drawn in white on a dark fill.
+func hasInk(img image.Image, region image.Rectangle, bg color.RGBA) bool {
+	bgR, bgG, bgB, _ := color.RGBA{bg.R, bg.G, bg.B, 0xFF}.RGBA()
+	bgSum := int(bgR) + int(bgG) + int(bgB)
+
+	for y := region.Min.Y; y < region.Max.Y; y++ {
+		for x := region.Min.X; x < region.Max.X; x++ {
+			r, g, b, _ := img.At(x, y).RGBA()
+			if int(r)+int(g)+int(b) > bgSum+0x8000 {
+				return true
+			}
+		}
+	}
+	return false
 }

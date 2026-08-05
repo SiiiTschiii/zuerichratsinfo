@@ -1,97 +1,10 @@
 {
  "data": [
-  {
-   "id": 104481,
-   "external_id": "EBA24B53-B404-3BCB-9A1B-4E7E01C1ACAC",
-   "body_key": "ZH",
-   "date": "2026-07-06T10:21:43",
-   "affair_id": 313093,
-   "results_yes": 83,
-   "results_no": 87,
-   "results_abstention": 0,
-   "results_absent": 10,
-   "decision": null,
-   "title_de": "Geschäftsbericht Regierungsrat 2025",
-   "affair_title_de": "Geschäftsbericht Regierungsrat 2025",
-   "type_de": null,
-   "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=921ebc9c-1891-4d4e-bd8f-12d0ab2a7353"
-  },
-  {
-   "id": 104479,
-   "external_id": "DC6F8322-1029-2AFE-694D-1669592C387C",
-   "body_key": "ZH",
-   "date": "2026-07-06T09:47:25",
-   "affair_id": 313093,
-   "results_yes": 172,
-   "results_no": 0,
-   "results_abstention": 0,
-   "results_absent": 8,
-   "decision": null,
-   "title_de": "Geschäftsbericht Regierungsrat 2025",
-   "affair_title_de": "Geschäftsbericht Regierungsrat 2025",
-   "type_de": null,
-   "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=84c0cc9f-9335-4c5d-a0c4-38ae7c73d19a"
-  },
-  {
-   "id": 104480,
-   "external_id": "E62AC3CB-A8B4-D24F-E28C-A9F6D7AC4E8E",
-   "body_key": "ZH",
-   "date": "2026-07-06T09:46:31",
-   "affair_id": 313093,
-   "results_yes": 174,
-   "results_no": 0,
-   "results_abstention": 0,
-   "results_absent": 6,
-   "decision": null,
-   "title_de": "Geschäftsbericht Regierungsrat 2025",
-   "affair_title_de": "Geschäftsbericht Regierungsrat 2025",
-   "type_de": null,
-   "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=0b053544-d851-453c-82b5-ec0caf750cc1"
-  },
-  {
-   "id": 104476,
-   "external_id": "9EC16701-1A76-D3BA-2184-EC1DDA266C25",
-   "body_key": "ZH",
-   "date": "2026-07-06T09:45:34",
-   "affair_id": 313093,
-   "results_yes": 174,
-   "results_no": 0,
-   "results_abstention": 0,
-   "results_absent": 6,
-   "decision": null,
-   "title_de": "Geschäftsbericht Regierungsrat 2025",
-   "affair_title_de": "Geschäftsbericht Regierungsrat 2025",
-   "type_de": null,
-   "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=8ec16fa9-b8cc-4bad-9510-1f4188744007"
-  },
-  {
-   "id": 104474,
-   "external_id": "3A839EF4-FD97-0DAD-692A-8CDAAE50B4F9",
-   "body_key": "ZH",
-   "date": "2026-07-06T09:44:35",
-   "affair_id": 313093,
-   "results_yes": 174,
-   "results_no": 0,
-   "results_abstention": 0,
-   "results_absent": 6,
-   "decision": null,
-   "title_de": "Geschäftsbericht Regierungsrat 2025",
-   "affair_title_de": "Geschäftsbericht Regierungsrat 2025",
-   "type_de": null,
-   "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=672b4d23-d178-476e-b007-7ca8309ab2ac"
-  }
+ {"affair_id": 313093, "affair_title_de": "Geschäftsbericht Regierungsrat 2025", "body_key": "ZH", "date": "2026-07-06T10:21:43", "decision": null, "external_id": "EBA24B53-B404-3BCB-9A1B-4E7E01C1ACAC", "id": 104481, "results_absent": 10, "results_abstention": 0, "results_no": 87, "results_yes": 83, "title_de": "Geschäftsbericht Regierungsrat 2025", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=921ebc9c-1891-4d4e-bd8f-12d0ab2a7353"},
+ {"affair_id": 313093, "affair_title_de": "Geschäftsbericht Regierungsrat 2025", "body_key": "ZH", "date": "2026-07-06T09:47:25", "decision": null, "external_id": "DC6F8322-1029-2AFE-694D-1669592C387C", "id": 104479, "results_absent": 8, "results_abstention": 0, "results_no": 0, "results_yes": 172, "title_de": "Geschäftsbericht Regierungsrat 2025", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=84c0cc9f-9335-4c5d-a0c4-38ae7c73d19a"},
+ {"affair_id": 313093, "affair_title_de": "Geschäftsbericht Regierungsrat 2025", "body_key": "ZH", "date": "2026-07-06T09:46:31", "decision": null, "external_id": "E62AC3CB-A8B4-D24F-E28C-A9F6D7AC4E8E", "id": 104480, "results_absent": 6, "results_abstention": 0, "results_no": 0, "results_yes": 174, "title_de": "Geschäftsbericht Regierungsrat 2025", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=0b053544-d851-453c-82b5-ec0caf750cc1"},
+ {"affair_id": 313093, "affair_title_de": "Geschäftsbericht Regierungsrat 2025", "body_key": "ZH", "date": "2026-07-06T09:45:34", "decision": null, "external_id": "9EC16701-1A76-D3BA-2184-EC1DDA266C25", "id": 104476, "results_absent": 6, "results_abstention": 0, "results_no": 0, "results_yes": 174, "title_de": "Geschäftsbericht Regierungsrat 2025", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=8ec16fa9-b8cc-4bad-9510-1f4188744007"},
+ {"affair_id": 313093, "affair_title_de": "Geschäftsbericht Regierungsrat 2025", "body_key": "ZH", "date": "2026-07-06T09:44:35", "decision": null, "external_id": "3A839EF4-FD97-0DAD-692A-8CDAAE50B4F9", "id": 104474, "results_absent": 6, "results_abstention": 0, "results_no": 0, "results_yes": 174, "title_de": "Geschäftsbericht Regierungsrat 2025", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=672b4d23-d178-476e-b007-7ca8309ab2ac"}
  ],
- "meta": {
-  "offset": 0,
-  "limit": 100,
-  "total_records": 5,
-  "total_pages": 1,
-  "current_page": 1,
-  "has_more": false,
-  "next_page": null,
-  "prev_page": null,
-  "first_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=313093&lang_format=flat&offset=0&limit=100",
-  "last_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=313093&lang_format=flat&offset=0&limit=100",
-  "self": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=313093&limit=100&lang_format=flat"
- }
+ "meta": {"offset": 0, "limit": 100, "total_records": 5, "total_pages": 1, "current_page": 1, "has_more": false, "next_page": null, "prev_page": null, "first_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=313093&lang_format=flat&offset=0&limit=100", "last_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=313093&lang_format=flat&offset=0&limit=100", "self": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=313093&limit=100&lang_format=flat"}
 }

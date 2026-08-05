@@ -20,3 +20,7 @@ To re-record, fetch each URL with `lang_format=flat` and prune to the fields in
     /v1/votings/<id>/votes?limit=500                          -> zh_votes_<id>.json
     /v1/votings/<id>/affairs                                  -> zh_affairs_<id>.json
     /v1/votings/?body_key=ZH&affair_id=<id>&limit=100         -> zh_votings_affair_<id>.json
+
+Records are written one per line. These are captured API responses rather than
+hand-maintained files, so per-field line breaks cost a reviewable diff and buy
+nothing.

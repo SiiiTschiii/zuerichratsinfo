@@ -69,7 +69,7 @@ Grüne 0/0/0/2
 [facet] {Index:{ByteStart:183 ByteEnd:266} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-angenommen-1 DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 124429 bytes sha256=1d59091c044f2241bfae10c2a5b331f16c614ede39ff7d56f693cc5c98ffae51
+[images] 1
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 15.06.2025
 
@@ -160,7 +160,7 @@ AL 0/5/0/0
 [facet] {Index:{ByteStart:182 ByteEnd:264} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-abgelehnt-1 DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 127143 bytes sha256=5e8264871f4e35f39f602c4f37658537e62a6a4c9d89d43b9fd03949af010b05
+[images] 1
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 15.06.2025
 
@@ -253,7 +253,7 @@ Die Mitte 7/0/0/0
 [facet] {Index:{ByteStart:182 ByteEnd:264} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-dringlich-1 DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 145849 bytes sha256=22ba8f438c197c868848fdc145320bc5d229f78999cc238c91304d8e87813664
+[images] 1
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 15.06.2025
 
@@ -344,7 +344,7 @@ AL 0/2/0/1
 [facet] {Index:{ByteStart:183 ByteEnd:265} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1 DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 202504 bytes sha256=88b9807b1753fc820ea15c6e63f80a912e968164215bee3f3777aa29a539003a
+[images] 1
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 15.06.2025
 
@@ -476,9 +476,7 @@ AL 0/8/0/1
 [facet] {Index:{ByteStart:142 ByteEnd:225} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-multi#trakt-multi DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 85684 bytes sha256=abf9fac2972eb04f0f2ac3158246caa9a1932305002ae6990030bf1d48c4ff4f
-[image 1] 80012 bytes sha256=2591d68bf842f2db58a0ef8963ad7b92e5fca9d41d2170809e7b631b312a9925
-[image 2] 81666 bytes sha256=1cc580f6fa9c8701d0fd7d96572d8b66f7434488555e6c206c2769a02be2186e
+[images] 3
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 15.06.2025
 
@@ -581,7 +579,7 @@ AL 0/2/0/1
 [facet] {Index:{ByteStart:182 ByteEnd:259} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=geschaeft-antrag DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 136701 bytes sha256=b761b5116a2b7c9ca2298eb4093a60c0ce2620a0945d97beb98b5f4db6f04679
+[images] 1
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 15.06.2025
 
@@ -1017,16 +1015,7 @@ AL 0/3/0/1
 [facet] {Index:{ByteStart:141 ByteEnd:226} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 103554 bytes sha256=be7ff66b0a087e7002aab2b596daca12114150c0903c7f1aef224795bf5e0aaf
-[image 1] 75055 bytes sha256=32f1d7ee6fadf7f7983cc4aa1a3e13dcbc2b48486700aecad514244fcd490875
-[image 2] 74732 bytes sha256=2b8297b3fcd22087e1cb9b2371ee253657c20cd955c45209f4e4cbc7bcb3ba52
-[image 3] 74917 bytes sha256=bc6d1e68cfd037ec996e819ef6ed810f82733bfa2583dc95a94d504e16d3eba0
-[image 4] 74690 bytes sha256=c30435065336dd1c3bf62abcfa29b5e4cbc90ac3b6fe0fe464c6e782852e71c2
-[image 5] 74823 bytes sha256=8cc75dd2f01efc89df6c29937027fd2163e1af3918832ee6a6dec113e6b35f81
-[image 6] 74696 bytes sha256=a11832822f8f8551820efc7003c7348bf6809a7f5fec7125aa8607f87b5069cf
-[image 7] 74684 bytes sha256=ae276e2e57c41493c98148fdfa178d22883698c77596cf407d39a1da204ba77f
-[image 8] 74466 bytes sha256=3a8c61cace163ab1d631e3a6bfefed5059cd6ddc17b82f928272faae92f28275
-[image 9] 74463 bytes sha256=66f094221c6c6a329fae8116cd67eccc8bd28cf6b0761881f2b7d01c5ead4bbb
+[images] 10
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 15.06.2025
 
@@ -1219,7 +1208,7 @@ AL 0/0/0/1
 [facet] {Index:{ByteStart:183 ByteEnd:263} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mention-1 DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 119194 bytes sha256=905b91bab8872806ad22d47f840d76da09305b74b751c98e1006feb1046b0f30
+[images] 1
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 15.06.2025
 
@@ -1309,7 +1298,7 @@ AL 0/8/0/1
 [facet] {Index:{ByteStart:173 ByteEnd:253} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-1 DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 123403 bytes sha256=3646006e19581409c315f88594522868c56fd0bddf6ef0cbff8eae49cee1b059
+[images] 1
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 04.03.2026
 
@@ -1441,9 +1430,7 @@ AL 0/0/5/1
 [facet] {Index:{ByteStart:134 ByteEnd:217} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-mixed#trakt-mixed DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 109336 bytes sha256=bc0bb59551e7c488dfb63b5ede4e5b7ebf463a40cdc829084d4ecb3b07b47c07
-[image 1] 74611 bytes sha256=5594428cafd01ccb5bba687beee780a456e7f60702d86e8f0c76de61e3e89d86
-[image 2] 124071 bytes sha256=a9d3c1f830882cbcb2d549a5782592143dd0ff4cbd7f47b2a8289eba8fcb5766
+[images] 3
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 25.02.2026
 
@@ -1546,7 +1533,7 @@ AL 0/0/0/1
 [facet] {Index:{ByteStart:184 ByteEnd:261} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-grnr-1 DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 105428 bytes sha256=647b106a5c7cd82655847a665da01916b882d92ba1034458d20edd5eae8646a7
+[images] 1
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 26.11.2025
 
@@ -1643,7 +1630,7 @@ Source: OpenParlData.ch
 [facet] {Index:{ByteStart:206 ByteEnd:287} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4 DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 114158 bytes sha256=97e6836d0a72ed820cf2dc5fd46c031490c96e4a10f2762953d6f960ccf73477
+[images] 1
 [caption]
 🗳️ Kantonsrat | Abstimmung vom 06.07.2026
 
@@ -2110,16 +2097,7 @@ AL 0/3/0/1
 [facet] {Index:{ByteStart:141 ByteEnd:226} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress DID: Tag:}]}
 
 ---- Instagram ----
-[image 0] 618348 bytes sha256=ea4aa110027666ff416856243fb056891405bc82341c3a6a2ef6fb77cfd9e80b
-[image 1] 334773 bytes sha256=4e47a7978d1d222d4f4a354c7113eb4a13c3ee6a1dfed411dcaf767b02cebe48
-[image 2] 334818 bytes sha256=259098b771ad5a7b14296ad9ad32f5b61b28e787d748bb0e09303f3d28391320
-[image 3] 334923 bytes sha256=d42c4278f36a573e43b3516910e47172d5583e8eb0dd0922e239a2ebbce98668
-[image 4] 334915 bytes sha256=1904c954738fcca57e631442648e12f4868d06949f5a9a73ce8671b5a29a127f
-[image 5] 334992 bytes sha256=0908c7afc94379a1f89e62761f790099e50b606488918964314f11e4a083c85c
-[image 6] 334853 bytes sha256=939ca1ce97dfe2071c5a6d547c97d3dbfef9f5a0bc8d9a6bd33ad1595068c3d1
-[image 7] 334935 bytes sha256=2fe68c8b991b7c4c8b71058c46c26e9f9eb801457406c60f25f088eaac39d6dd
-[image 8] 334847 bytes sha256=a457879707e4f7e1d8f441f084b35de630d16b5f9e1480a6f5185d8bd0929292
-[image 9] 334983 bytes sha256=2dae202b8fbab26612d00f568dd8830ee6d100e00b7cb21e1561c4e9094c4d82
+[images] 10
 [caption]
 🗳️ Gemeinderat | Abstimmung vom 15.06.2025
 
