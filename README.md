@@ -32,14 +32,14 @@ A civic tech bot that shares updates from the Zurich City Council (Gemeinderat Z
 | Bluesky     | ✅ Active  | 28 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
 | TikTok      | ❌ Planned | 18 | -                                                                                    |
 
-_Platforms are sorted by coverage. Counts include both Gemeinderäte and Stadträte (9 Stadtrat members). Out of 132 total contacts in [data/contacts.yaml](data/contacts.yaml)._
+_Platforms are sorted by coverage. Counts include both Gemeinderäte and Stadträte (9 Stadtrat members). Out of 132 total contacts in [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml)._
 
 ## What It Does
 
 - **Automated Vote Posts**: Shares council vote results (Abstimmungen) from the [Gemeinderat Zürich](https://www.gemeinderat-zuerich.ch/) on social media platforms. Posting timing depends on when results are published in the [PARIS API](pkg/zurichapi/README.md) by the City of Zurich (typically 5–7 days after the vote) — the same data source as [gemeinderat-zuerich.ch](https://www.gemeinderat-zuerich.ch/sitzungen/termine/?navid=968842968842).
 - **Politician Tagging**: Automatically tags mentioned politicians using their social media accounts when available in our mapping
   - _Example: "Postulat von Ivo Bieri @ivo_bieri (SP) und Liv Mahrer @LivMahrer (SP)..."_
-- **Social Media Mapping**: Curates an extensive mapping of Zurich politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok) - see [data/contacts.yaml](data/contacts.yaml)
+- **Social Media Mapping**: Curates an extensive mapping of Zurich politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok) - see [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml)
 
 ### Contributing to the Social Media Mapping
 

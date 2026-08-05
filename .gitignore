@@ -21,6 +21,8 @@ out/
 .claude/settings.local.json
 .claude/worktrees/
 
-# Vote state log lives on the `state-log` branch, not here. The bot restores
-# these into the checkout at runtime; they must never be committed to main.
+# Vote state logs live on the `state-log` branch, not here. The bot restores
+# them into the checkout at runtime; they must never be committed to main.
+# Both the per-jurisdiction layout and the flat one it replaced are covered.
+data/*/posted_votes_*.json
 data/posted_votes_*.json

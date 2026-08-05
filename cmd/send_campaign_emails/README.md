@@ -103,7 +103,7 @@ overrides:
     gender: weiblich
 ```
 
-The `name` must match exactly the name in `data/contacts.yaml`. Overrides take priority over API data.
+The `name` must match exactly the name in `data/zurich-city/contacts.yaml`. Overrides take priority over API data.
 
 ## Audience recipient files
 

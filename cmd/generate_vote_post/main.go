@@ -1,25 +1,33 @@
+// generate_vote_post renders what the bot would post for the most recent votes,
+// ignoring the vote log so already-posted votes still show up.
+//
+// Rendering two jurisdictions side by side is the design loop for post copy:
+//
+//	go run ./cmd/generate_vote_post -jurisdiction zurich-city  -n 1
+//	go run ./cmd/generate_vote_post -jurisdiction zurich-canton -n 1
 package main
 
 import (
 	"flag"
 	"fmt"
 	"log"
-	"path/filepath"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 func main() {
 	numVotes := flag.Int("n", 1, "number of vote groups to preview")
-	fetchLimit := flag.Int("fetch", 35, "number of individual votes to fetch from API")
+	fetchLimit := flag.Int("fetch", 35, "number of individual votes to fetch from the source")
 	platform := flag.String("platform", "", "platform to preview: x, bluesky, instagram (default: all)")
+	jurisdictionKey := flag.String("jurisdiction", "zurich-city", "jurisdiction to preview")
 	flag.Parse()
 
 	showX := *platform == "" || strings.EqualFold(*platform, "x")
@@ -30,62 +38,52 @@ func main() {
 		log.Fatalf("Unknown platform %q. Use: x, bluesky, instagram", *platform)
 	}
 
-	src := zurichapi.NewClient()
+	jurisdiction, err := config.LookupJurisdiction(*jurisdictionKey)
+	if err != nil {
+		log.Fatalf("%v. Available: %v", err, config.JurisdictionKeys())
+	}
 
-	// Load contacts for tagging (used by both X and Bluesky)
-	contactsPath := filepath.Join("data", "contacts.yaml")
-	contactMapper, err := contacts.LoadContacts(contactsPath)
+	contactMapper, err := contacts.LoadContactFiles(contacts.PathFor(jurisdiction.Key))
 	if err != nil {
 		log.Printf("Warning: Could not load contacts for tagging: %v", err)
 		contactMapper = nil
 	}
 
-	// Use empty vote log (show all votes, not just unposted)
-	emptyLog := votelog.NewEmpty(votelog.PlatformX)
-
-	// Prepare votes (same logic as main.go)
-	groups, err := voteposting.PrepareVoteGroups(src, emptyLog, *fetchLimit, 0)
+	// An empty log shows every recent vote, not just unposted ones, and no age
+	// guard so the preview still works during a recess.
+	emptyLog := votelog.NewEmpty(jurisdiction.Key, votelog.PlatformX)
+	groups, err := voteposting.PrepareVoteGroups(jurisdiction.NewSource(), emptyLog, *fetchLimit, 0)
 	if err != nil {
 		log.Fatalf("Error preparing votes: %v", err)
 	}
-
 	if len(groups) == 0 {
-		log.Fatal("No votes found")
+		log.Fatalf("No votes found for %s", jurisdiction.Key)
+	}
+
+	fmt.Printf("Jurisdiction: %s (%s)\n", jurisdiction.Name, jurisdiction.Key)
+
+	first := true
+	preview := func(name string, logPlatform votelog.Platform, poster platforms.Platform) {
+		if !first {
+			fmt.Println()
+		}
+		first = false
+		fmt.Printf("━━━ %s ━━━\n", name)
+		logs := voteposting.SingleLog(jurisdiction.Key, votelog.NewEmpty(jurisdiction.Key, logPlatform))
+		if _, err := voteposting.PostToPlatform(groups, poster, logs, true); err != nil {
+			log.Fatalf("Error: %v", err)
+		}
 	}
 
 	if showX {
-		xPlatform := x.NewXPlatform("", "", "", "", contactMapper, *numVotes)
-		fmt.Println("━━━ X/Twitter ━━━")
-		_, err = voteposting.PostToPlatform(groups, xPlatform, emptyLog, true)
-		if err != nil {
-			log.Fatalf("Error: %v", err)
-		}
+		preview("X/Twitter", votelog.PlatformX, x.NewXPlatform("", "", "", "", contactMapper, *numVotes))
 	}
-
 	if showBluesky {
-		bskyPlatform := bluesky.NewBlueskyPlatform("", "", *numVotes, contactMapper)
-		if showX {
-			fmt.Println()
-		}
-		fmt.Println("━━━ Bluesky ━━━")
-		bskyLog := votelog.NewEmpty(votelog.PlatformBluesky)
-		_, err = voteposting.PostToPlatform(groups, bskyPlatform, bskyLog, true)
-		if err != nil {
-			log.Fatalf("Error: %v", err)
-		}
+		preview("Bluesky", votelog.PlatformBluesky, bluesky.NewBlueskyPlatform("", "", *numVotes, contactMapper))
 	}
-
 	if showInstagram {
 		igPlatform := instagram.NewInstagramPlatform(*numVotes)
 		igPlatform.SetContactMapper(contactMapper)
-		if showX || showBluesky {
-			fmt.Println()
-		}
-		fmt.Println("━━━ Instagram ━━━")
-		igLog := votelog.NewEmpty(votelog.PlatformInstagram)
-		_, err = voteposting.PostToPlatform(groups, igPlatform, igLog, true)
-		if err != nil {
-			log.Fatalf("Error: %v", err)
-		}
+		preview("Instagram", votelog.PlatformInstagram, igPlatform)
 	}
 }

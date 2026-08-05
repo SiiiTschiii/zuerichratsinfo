@@ -3,14 +3,14 @@ name: Validate Contacts
 on:
   push:
     paths:
-      - "data/contacts.yaml"
+      - "data/zurich-city/contacts.yaml"
       - "cmd/validate_contacts/**"
       - "cmd/platform_stats/**"
       - "README.md"
       - ".github/workflows/validate-contacts.yml"
   pull_request:
     paths:
-      - "data/contacts.yaml"
+      - "data/zurich-city/contacts.yaml"
       - "cmd/validate_contacts/**"
       - "cmd/platform_stats/**"
       - "README.md"
@@ -36,10 +36,10 @@ jobs:
         run: go mod download
 
       - name: Validate contacts.yaml
-        run: go run cmd/validate_contacts/main.go data/contacts.yaml
+        run: go run cmd/validate_contacts/main.go data/zurich-city/contacts.yaml
 
       # The generator rewrites README.md in place, so running it and diffing
-      # tells us whether the committed stats still match data/contacts.yaml.
+      # tells us whether the committed stats still match data/zurich-city/contacts.yaml.
       # This used to push the regenerated README straight to main, which the
       # branch ruleset now blocks — so report it and let the dev commit it.
       - name: Check platform statistics are up to date
@@ -51,11 +51,11 @@ jobs:
             exit 0
           fi
 
-          echo "::error file=README.md::Platform statistics in README.md are out of date with data/contacts.yaml."
+          echo "::error file=README.md::Platform statistics in README.md are out of date with data/zurich-city/contacts.yaml."
           cat <<'MSG'
 
           The platform statistics table in README.md no longer matches
-          data/contacts.yaml. Regenerate it and commit the result:
+          data/zurich-city/contacts.yaml. Regenerate it and commit the result:
 
               go run cmd/platform_stats/main.go
               git add README.md

@@ -13,6 +13,8 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
+const testJurisdiction = "zurich-city"
+
 // setupTempDir creates a temp directory for tests and changes to it
 // Returns a cleanup function that should be deferred
 func setupTempDir(t *testing.T) func() {
@@ -78,15 +80,16 @@ func (p *MockPlatform) Name() string {
 func createVote(guid, affair, date string) votes.Vote {
 	ja := 100
 	return votes.Vote{
-		SourceID: guid,
-		Date:     testfixtures.MustDate(date),
-		Yes:      &ja,
-		Affair:   votes.Affair{Number: affair},
+		SourceID:     guid,
+		Jurisdiction: testJurisdiction,
+		Date:         testfixtures.MustDate(date),
+		Yes:          &ja,
+		Affair:       votes.Affair{Number: affair},
 	}
 }
 
 func TestFilterUnpostedVotes(t *testing.T) {
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 	voteLog.MarkAsPosted("vote1")
 	voteLog.MarkAsPosted("vote3")
 
@@ -110,14 +113,14 @@ func TestFilterUnpostedVotes(t *testing.T) {
 
 func TestPostToPlatform_DryRun(t *testing.T) {
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
 	groups := [][]votes.Vote{
 		{createVote("vote1", "2025/369", "2025-11-19")},
 		{createVote("vote2", "2025/370", "2025-11-19")},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, true)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -147,14 +150,14 @@ func TestPostToPlatform_RealPosting(t *testing.T) {
 	defer setupTempDir(t)()
 
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
 	groups := [][]votes.Vote{
 		{createVote("vote1", "2025/369", "2025-11-19")},
 		{createVote("vote2", "2025/370", "2025-11-19"), createVote("vote3", "2025/370", "2025-11-19")},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -189,7 +192,7 @@ func TestPostToPlatform_LimitRespected(t *testing.T) {
 
 	// Platform that stops after 2 posts
 	mockPlatform := &MockPlatform{maxPosts: 2}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
 	groups := [][]votes.Vote{
 		{createVote("vote1", "2025/369", "2025-11-19")},
@@ -198,7 +201,7 @@ func TestPostToPlatform_LimitRespected(t *testing.T) {
 		{createVote("vote4", "2025/372", "2025-11-19")},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -221,13 +224,13 @@ func TestPostToPlatform_LimitRespected(t *testing.T) {
 func TestPostToPlatform_ErrorHandling(t *testing.T) {
 	// Platform that fails on posting
 	mockPlatform := &MockPlatform{maxPosts: 10, shouldFailPost: true}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
 	groups := [][]votes.Vote{
 		{createVote("vote1", "2025/369", "2025-11-19")},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 
 	// Should return error
 	if err == nil {
@@ -246,7 +249,7 @@ func TestPostToPlatform_ErrorHandling(t *testing.T) {
 }
 
 func TestFilterUnpostedVotes_AllPosted(t *testing.T) {
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 	voteLog.MarkAsPosted("vote1")
 	voteLog.MarkAsPosted("vote2")
 
@@ -263,7 +266,7 @@ func TestFilterUnpostedVotes_AllPosted(t *testing.T) {
 }
 
 func TestFilterUnpostedVotes_NonePosted(t *testing.T) {
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
 	group := []votes.Vote{
 		createVote("vote1", "2025/369", "2025-11-19"),
@@ -280,11 +283,11 @@ func TestFilterUnpostedVotes_NonePosted(t *testing.T) {
 
 func TestPostToPlatform_EmptyGroups(t *testing.T) {
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
 	groups := [][]votes.Vote{}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -302,7 +305,7 @@ func TestPostToPlatform_AllVotesInGroupAreLogged(t *testing.T) {
 	defer setupTempDir(t)()
 
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
 	// Create a group with 5 group (simulating a complex Geschäft)
 	groups := [][]votes.Vote{
@@ -315,7 +318,7 @@ func TestPostToPlatform_AllVotesInGroupAreLogged(t *testing.T) {
 		},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -343,7 +346,7 @@ func TestPostToPlatform_MultipleGroupsAllVotesLogged(t *testing.T) {
 	defer setupTempDir(t)()
 
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
 	// Multiple groups with varying sizes
 	groups := [][]votes.Vote{
@@ -359,7 +362,7 @@ func TestPostToPlatform_MultipleGroupsAllVotesLogged(t *testing.T) {
 		}, // 3 group
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}

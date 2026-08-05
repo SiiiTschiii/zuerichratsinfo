@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"strconv"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
@@ -16,106 +16,55 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
+// channelPlatform pairs a constructed platform with the vote-log key it uses.
+//
+// The instance is built once per channel and shared across that channel's
+// jurisdictions. The per-run post budget is a counter on the instance, so
+// rebuilding it per jurisdiction would reset the counter and silently multiply
+// what the account posts in an hour.
+type channelPlatform struct {
+	displayName string
+	logPlatform votelog.Platform
+	poster      platforms.Platform
+}
+
 func main() {
-	// Load configuration from environment
-	apiKey := os.Getenv("X_API_KEY")
-	apiSecret := os.Getenv("X_API_SECRET")
-	accessToken := os.Getenv("X_ACCESS_TOKEN")
-	accessSecret := os.Getenv("X_ACCESS_SECRET")
-
-	xEnabled := apiKey != "" && apiSecret != "" && accessToken != "" && accessSecret != ""
-
-	// Bluesky credentials
-	bskyHandle := os.Getenv("BLUESKY_HANDLE")
-	bskyPassword := os.Getenv("BLUESKY_PASSWORD")
-
-	bskyEnabled := bskyHandle != "" && bskyPassword != ""
-
-	igUserID := os.Getenv("IG_USER_ID")
-	igAccessToken := os.Getenv("IG_ACCESS_TOKEN")
-	igGithubToken := os.Getenv("GITHUB_TOKEN")
-	igRepoOwner := os.Getenv("IG_REPO_OWNER")
-	igRepoName := os.Getenv("IG_REPO_NAME")
-
-	igEnabled := igUserID != "" && igAccessToken != "" && igGithubToken != "" && igRepoOwner != "" && igRepoName != ""
-
-	if !xEnabled && !bskyEnabled && !igEnabled {
-		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky, or IG_USER_ID/IG_ACCESS_TOKEN/GITHUB_TOKEN/IG_REPO_OWNER/IG_REPO_NAME for Instagram.")
+	if err := config.Validate(); err != nil {
+		log.Fatalf("Invalid configuration: %v", err)
 	}
 
-	if !xEnabled {
-		log.Println("⚠️  X/Twitter not configured (missing X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET)")
-	}
-	if !bskyEnabled {
-		log.Println("⚠️  Bluesky not configured (missing BLUESKY_HANDLE/BLUESKY_PASSWORD)")
-	}
-	if !igEnabled {
-		log.Println("⚠️  Instagram not configured (missing IG_USER_ID/IG_ACCESS_TOKEN/GITHUB_TOKEN/IG_REPO_OWNER/IG_REPO_NAME)")
-	}
-
-	// Load rate limit configuration from environment
 	maxVotesToCheck := getEnvInt("MAX_VOTES_TO_CHECK", 50)
-	maxVoteAgeDays := getEnvInt("MAX_VOTE_AGE_DAYS", 90)
-	maxXPostsPerRun := getEnvInt("X_MAX_POSTS_PER_RUN", 10)
-	maxBskyPostsPerRun := getEnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10)
-	maxIGPostsPerRun := getEnvInt("IG_MAX_POSTS_PER_RUN", 5)
-	xMaxChars := getEnvInt("X_MAX_CHARS", x.DefaultMaxChars)
+	skipVoteLog := os.Getenv("SKIP_VOTE_LOG") == "true"
 
 	fmt.Printf("Configuration: Check last %d votes\n", maxVotesToCheck)
 
-	// Load contacts for X handle tagging
-	contactsPath := filepath.Join("data", "contacts.yaml")
-	contactMapper, err := contacts.LoadContacts(contactsPath)
-	if err != nil {
-		log.Printf("Warning: Could not load contacts for tagging: %v", err)
-		contactMapper = nil // Continue without tagging
-	}
-
-	src := zurichapi.NewClient()
-
-	skipVoteLog := os.Getenv("SKIP_VOTE_LOG") == "true"
 	hasErrors := false
+	anyPlatformConfigured := false
 
-	// --- X Platform ---
-	if xEnabled {
-		xPlatform := x.NewXPlatform(
-			apiKey, apiSecret, accessToken, accessSecret,
-			contactMapper,
-			maxXPostsPerRun,
-		)
-		xPlatform.SetMaxChars(xMaxChars)
+	for _, channel := range config.Channels() {
+		jurisdictions, err := channel.ResolveJurisdictions()
+		if err != nil {
+			log.Fatalf("Error resolving channel %q: %v", channel.Key, err)
+		}
 
-		if runPlatform("X/Twitter", votelog.PlatformX, xPlatform, src, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
-			hasErrors = true
+		plats := buildPlatforms(channel, jurisdictions)
+		if len(plats) == 0 {
+			log.Printf("⚠️  Channel %q: no platform credentials configured, skipping", channel.Key)
+			continue
+		}
+		anyPlatformConfigured = true
+
+		for _, p := range plats {
+			if runChannelPlatform(channel, jurisdictions, p, skipVoteLog, maxVotesToCheck) {
+				hasErrors = true
+			}
 		}
 	}
 
-	// --- Bluesky Platform ---
-	if bskyEnabled {
-		bskyPlatform := bluesky.NewBlueskyPlatform(
-			bskyHandle, bskyPassword,
-			maxBskyPostsPerRun,
-			contactMapper,
-		)
-
-		if runPlatform("Bluesky", votelog.PlatformBluesky, bskyPlatform, src, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
-			hasErrors = true
-		}
-	}
-
-	// --- Instagram Platform ---
-	if igEnabled {
-		igPlatform := instagram.NewInstagramPlatformWithCredentials(
-			igUserID, igAccessToken, igGithubToken, igRepoOwner, igRepoName, maxIGPostsPerRun,
-		)
-		igPlatform.SetContactMapper(contactMapper)
-
-		if runPlatform("Instagram", votelog.PlatformInstagram, igPlatform, src, skipVoteLog, maxVotesToCheck, maxVoteAgeDays) {
-			hasErrors = true
-		}
+	if !anyPlatformConfigured {
+		log.Fatal("No platform credentials configured for any channel. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky, or IG_USER_ID/IG_ACCESS_TOKEN/GITHUB_TOKEN/IG_REPO_OWNER/IG_REPO_NAME for Instagram.")
 	}
 
 	if hasErrors {
@@ -124,56 +73,134 @@ func main() {
 	}
 }
 
-// runPlatform loads the vote log, prepares vote groups, and posts to the given
-// platform. It returns true if any error occurred (posting failure or
-// unsupported vote format).
-func runPlatform(
-	displayName string,
-	platform votelog.Platform,
-	poster platforms.Platform,
-	src votes.Source,
-	skipVoteLog bool,
-	maxVotesToCheck, maxVoteAgeDays int,
-) bool {
-	fmt.Printf("\n━━━ %s ━━━\n", displayName)
+// buildPlatforms constructs one instance per platform for a channel, using that
+// channel's credentials. Platforms without complete credentials are skipped.
+func buildPlatforms(channel config.Channel, jurisdictions []config.Jurisdiction) []channelPlatform {
+	// Tagging is configured per jurisdiction but a platform instance is per
+	// channel, so its mapper has to cover every jurisdiction the channel serves.
+	contactMapper := loadContacts(jurisdictions)
 
-	var vl *votelog.VoteLog
-	if skipVoteLog {
-		vl = votelog.NewNoOp(platform)
-		fmt.Println("⚠️  SKIP_VOTE_LOG=true — treating all votes as unposted, not saving vote log")
+	var plats []channelPlatform
+
+	apiKey := channel.Env("X_API_KEY")
+	apiSecret := channel.Env("X_API_SECRET")
+	accessToken := channel.Env("X_ACCESS_TOKEN")
+	accessSecret := channel.Env("X_ACCESS_SECRET")
+	if apiKey != "" && apiSecret != "" && accessToken != "" && accessSecret != "" {
+		xPlatform := x.NewXPlatform(
+			apiKey, apiSecret, accessToken, accessSecret,
+			contactMapper,
+			channel.EnvInt("X_MAX_POSTS_PER_RUN", 10),
+		)
+		xPlatform.SetMaxChars(channel.EnvInt("X_MAX_CHARS", x.DefaultMaxChars))
+		plats = append(plats, channelPlatform{"X/Twitter", votelog.PlatformX, xPlatform})
 	} else {
-		var err error
-		vl, err = votelog.Load(platform)
-		if err != nil {
-			log.Fatalf("Error loading %s vote log: %v", displayName, err)
-		}
-		fmt.Printf("Loaded %s vote log: %d votes already posted\n", displayName, vl.Count())
+		log.Printf("⚠️  Channel %q: X/Twitter not configured (missing X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET)", channel.Key)
 	}
 
-	groups, err := voteposting.PrepareVoteGroups(src, vl, maxVotesToCheck, maxVoteAgeDays)
+	bskyHandle := channel.Env("BLUESKY_HANDLE")
+	bskyPassword := channel.Env("BLUESKY_PASSWORD")
+	if bskyHandle != "" && bskyPassword != "" {
+		plats = append(plats, channelPlatform{"Bluesky", votelog.PlatformBluesky, bluesky.NewBlueskyPlatform(
+			bskyHandle, bskyPassword,
+			channel.EnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10),
+			contactMapper,
+		)})
+	} else {
+		log.Printf("⚠️  Channel %q: Bluesky not configured (missing BLUESKY_HANDLE/BLUESKY_PASSWORD)", channel.Key)
+	}
+
+	igUserID := channel.Env("IG_USER_ID")
+	igAccessToken := channel.Env("IG_ACCESS_TOKEN")
+	igGithubToken := channel.Env("GITHUB_TOKEN")
+	igRepoOwner := channel.Env("IG_REPO_OWNER")
+	igRepoName := channel.Env("IG_REPO_NAME")
+	if igUserID != "" && igAccessToken != "" && igGithubToken != "" && igRepoOwner != "" && igRepoName != "" {
+		igPlatform := instagram.NewInstagramPlatformWithCredentials(
+			igUserID, igAccessToken, igGithubToken, igRepoOwner, igRepoName,
+			channel.EnvInt("IG_MAX_POSTS_PER_RUN", 5),
+		)
+		igPlatform.SetContactMapper(contactMapper)
+		plats = append(plats, channelPlatform{"Instagram", votelog.PlatformInstagram, igPlatform})
+	} else {
+		log.Printf("⚠️  Channel %q: Instagram not configured (missing IG_USER_ID/IG_ACCESS_TOKEN/GITHUB_TOKEN/IG_REPO_OWNER/IG_REPO_NAME)", channel.Key)
+	}
+
+	return plats
+}
+
+// loadContacts merges every configured jurisdiction's contacts file. A missing
+// or empty file is normal — a jurisdiction ships before its contacts are
+// curated — so this degrades to no tagging rather than failing the run.
+func loadContacts(jurisdictions []config.Jurisdiction) *contacts.Mapper {
+	var paths []string
+	for _, j := range jurisdictions {
+		paths = append(paths, contacts.PathFor(j.Key))
+	}
+	mapper, err := contacts.LoadContactFiles(paths...)
 	if err != nil {
-		log.Fatalf("Error preparing votes for %s: %v", displayName, err)
+		log.Printf("Warning: Could not load contacts for tagging: %v", err)
+		return nil
+	}
+	return mapper
+}
+
+// runChannelPlatform posts one channel's jurisdictions to one platform,
+// sharing a single per-run budget across them. It returns true if anything
+// went wrong.
+func runChannelPlatform(
+	channel config.Channel,
+	jurisdictions []config.Jurisdiction,
+	p channelPlatform,
+	skipVoteLog bool,
+	maxVotesToCheck int,
+) bool {
+	fmt.Printf("\n━━━ %s / %s ━━━\n", channel.Key, p.displayName)
+
+	logs := make(voteposting.VoteLogs, len(jurisdictions))
+	var perJurisdiction [][][]votes.Vote
+
+	for _, j := range jurisdictions {
+		var vl *votelog.VoteLog
+		if skipVoteLog {
+			vl = votelog.NewNoOp(j.Key, p.logPlatform)
+			fmt.Printf("⚠️  SKIP_VOTE_LOG=true — treating all %s votes as unposted, not saving vote log\n", j.Key)
+		} else {
+			var err error
+			vl, err = votelog.Load(j.Key, p.logPlatform)
+			if err != nil {
+				log.Fatalf("Error loading %s/%s vote log: %v", j.Key, p.displayName, err)
+			}
+			fmt.Printf("Loaded %s/%s vote log: %d votes already posted\n", j.Key, p.displayName, vl.Count())
+		}
+		logs[j.Key] = vl
+
+		groups, err := voteposting.PrepareVoteGroups(j.NewSource(), vl, maxVotesToCheck, j.MaxAgeDays)
+		if err != nil {
+			log.Fatalf("Error preparing %s votes for %s: %v", j.Key, p.displayName, err)
+		}
+		if len(groups) > 0 {
+			fmt.Printf("Found %d group(s) from %s\n", len(groups), j.Key)
+		}
+		perJurisdiction = append(perJurisdiction, groups)
 	}
 
-	if len(groups) == 0 {
-		fmt.Printf("No new votes to post on %s!\n", displayName)
+	merged := voteposting.MergeOldestFirst(perJurisdiction...)
+	if len(merged) == 0 {
+		fmt.Printf("No new votes to post on %s!\n", p.displayName)
 		return false
 	}
 
-	fmt.Printf("Found %d group(s) to post on %s\n", len(groups), displayName)
-
-	posted, err := voteposting.PostToPlatform(groups, poster, vl, false)
+	posted, err := voteposting.PostToPlatform(merged, p.poster, logs, false)
 	if err != nil {
-		if errors.Is(err, voteposting.ErrUnsupportedVoteType) {
-			if posted > 0 {
-				fmt.Printf("Posted %d group(s) to %s (some skipped — see warnings above)\n", posted, displayName)
-			}
+		if errors.Is(err, voteposting.ErrUnsupportedVoteType) && posted > 0 {
+			fmt.Printf("Posted %d group(s) to %s (some skipped — see warnings above)\n", posted, p.displayName)
 		}
-		log.Printf("❌ Error posting to %s: %v", displayName, err)
+		log.Printf("❌ Error posting to %s: %v", p.displayName, err)
 		return true
 	}
 
-	fmt.Printf("🎉 Posted %d new group(s) to %s!\n", posted, displayName)
+	fmt.Printf("🎉 Posted %d new group(s) to %s!\n", posted, p.displayName)
 	return false
 }
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
@@ -106,13 +107,72 @@ func filterOldVotes(vs []votes.Vote, maxAgeDays int) []votes.Vote {
 	return recent
 }
 
+// VoteLogs resolves the log a group belongs in, keyed by jurisdiction. A
+// channel serving several jurisdictions posts them through one platform
+// instance but must record each in its own log.
+type VoteLogs map[string]*votelog.VoteLog
+
+// SingleLog builds a VoteLogs for the common one-jurisdiction case.
+func SingleLog(jurisdiction string, vl *votelog.VoteLog) VoteLogs {
+	return VoteLogs{jurisdiction: vl}
+}
+
+func (l VoteLogs) forGroup(group []votes.Vote) (*votelog.VoteLog, error) {
+	key := group[0].Jurisdiction
+	vl, ok := l[key]
+	if !ok {
+		return nil, fmt.Errorf("no vote log configured for jurisdiction %q", key)
+	}
+	return vl, nil
+}
+
+// MergeOldestFirst interleaves groups from several jurisdictions into the order
+// they should be posted: oldest vote first, ties broken by the order the
+// jurisdictions were passed in.
+//
+// This is what stops a busy sitting in one chamber from starving the other when
+// they share a per-run budget, and it preserves today's behaviour of draining a
+// backlog chronologically.
+func MergeOldestFirst(perJurisdiction ...[][]votes.Vote) [][]votes.Vote {
+	var merged [][]votes.Vote
+	for _, groups := range perJurisdiction {
+		merged = append(merged, groups...)
+	}
+	sort.SliceStable(merged, func(i, j int) bool {
+		return groupDate(merged[i]).Before(groupDate(merged[j]))
+	})
+	return merged
+}
+
+// groupDate is the earliest known vote date in a group. Groups whose dates are
+// all unknown sort last, so a data problem cannot jump the queue.
+func groupDate(group []votes.Vote) time.Time {
+	var earliest time.Time
+	for _, v := range group {
+		if v.Date.IsZero() {
+			continue
+		}
+		if earliest.IsZero() || v.Date.Before(earliest) {
+			earliest = v.Date
+		}
+	}
+	if earliest.IsZero() {
+		return time.Unix(1<<62, 0)
+	}
+	return earliest
+}
+
 // PostToPlatform posts vote groups to a platform.
 // If dryRun is true, only prints the content without posting.
 // Returns the number of groups successfully posted.
+//
+// The platform instance carries the per-run budget, so callers must pass the
+// same instance for every jurisdiction on a channel — constructing one per
+// jurisdiction resets the counter and doubles what the account posts.
 func PostToPlatform(
 	groups [][]votes.Vote,
 	platform platforms.Platform,
-	voteLog *votelog.VoteLog,
+	voteLogs VoteLogs,
 	dryRun bool,
 ) (int, error) {
 	posted := 0
@@ -120,6 +180,9 @@ func PostToPlatform(
 	var firstUnsupportedErr error
 
 	for _, group := range groups {
+		if len(group) == 0 {
+			continue
+		}
 		// Validate vote counts before formatting; skip groups with unknown formats
 		if err := validateGroupCounts(group); err != nil {
 			log.Printf("⚠️  Skipping group (unsupported vote type): %v", err)
@@ -141,7 +204,8 @@ func PostToPlatform(
 				fmt.Println()
 			}
 			fmt.Println("────────────────────────────────────────────────────────────────────────────────")
-			fmt.Printf("  📋 %s (%s) — %d vote(s) [not visible in post]\n",
+			fmt.Printf("  📋 %s %s (%s) — %d vote(s) [not visible in post]\n",
+				group[0].Jurisdiction,
 				group[0].Affair.Number,
 				group[0].DateString(),
 				len(group),
@@ -154,8 +218,14 @@ func PostToPlatform(
 				break
 			}
 		} else {
+			voteLog, err := voteLogs.forGroup(group)
+			if err != nil {
+				return posted, err
+			}
+
 			// Real posting — log which group for tracing
-			fmt.Printf("📋 %s (%s) — %d vote(s):\n",
+			fmt.Printf("📋 %s %s (%s) — %d vote(s):\n",
+				group[0].Jurisdiction,
 				group[0].Affair.Number,
 				group[0].DateString(),
 				len(group),

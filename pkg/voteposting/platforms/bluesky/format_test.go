@@ -373,7 +373,7 @@ func TestFormatVoteThread_NilMapper(t *testing.T) {
 func mustLoadTestMapper(t *testing.T) *contacts.Mapper {
 	t.Helper()
 	// Use the real contacts file if available, otherwise build a minimal one
-	mapper, err := contacts.LoadContacts("../../../../data/contacts.yaml")
+	mapper, err := contacts.LoadContacts("../../../../data/zurich-city/contacts.yaml")
 	if err != nil {
 		t.Skipf("contacts.yaml not available: %v", err)
 	}

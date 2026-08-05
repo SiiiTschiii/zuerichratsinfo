@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	contactsPath   = flag.String("contacts", "data/contacts.yaml", "Path to contacts YAML file")
+	contactsPath   = flag.String("contacts", contacts.PathFor("zurich-city"), "Path to contacts YAML file")
 	overridesPath  = flag.String("overrides", "data/email_overrides.yaml", "Path to email overrides YAML file")
 	platform       = flag.String("platform", "", "Platform campaign: bluesky | instagram (mutually exclusive with --audience)")
 	audience       = flag.String("audience", "", "Audience campaign: city-parties | cantonal-national-parties | cantonal-zh | federal-zh (mutually exclusive with --platform)")

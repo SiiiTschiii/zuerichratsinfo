@@ -22,7 +22,11 @@ jobs:
       # Keeping it off `main` lets this Action update state without tripping
       # the pull request ruleset / branch protection on the primary branch.
       STATE_BRANCH: state-log
-      STATE_FILES: "data/posted_votes_x.json data/posted_votes_bluesky.json data/posted_votes_instagram.json"
+      # Vote logs live at data/<jurisdiction>/posted_votes_<platform>.json.
+      # Globbing both layouts means adding a jurisdiction needs no edit here,
+      # and a run during the migration still finds the pre-jurisdiction files.
+      STATE_GLOB_NESTED: "data/*/posted_votes_*.json"
+      STATE_GLOB_LEGACY: "data/posted_votes_*.json"
 
     steps:
       - name: Checkout code
@@ -50,10 +54,19 @@ jobs:
 
           echo "State branch '$STATE_BRANCH' found; restoring vote logs from it."
           git fetch origin "$STATE_BRANCH"
-          if ! git checkout FETCH_HEAD -- $STATE_FILES; then
-            echo "::error::'$STATE_BRANCH' is missing one or more of: $STATE_FILES"
+
+          # Either layout may be present, so a missing match is not itself an
+          # error — but ending up with no logs at all is.
+          git checkout FETCH_HEAD -- "$STATE_GLOB_NESTED" || true
+          git checkout FETCH_HEAD -- "$STATE_GLOB_LEGACY" || true
+
+          restored="$(find data -name 'posted_votes_*.json' 2>/dev/null | sort)"
+          if [ -z "$restored" ]; then
+            echo "::error::'$STATE_BRANCH' contains no vote logs matching $STATE_GLOB_NESTED or $STATE_GLOB_LEGACY."
             exit 1
           fi
+          echo "Restored:"
+          echo "$restored"
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -77,6 +90,8 @@ jobs:
           IG_REPO_OWNER: SiiiTschiii
           IG_REPO_NAME: zuerichratsinfo
           MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
+          # Unprefixed name applies to Stadt Zürich; other jurisdictions use
+          # MAX_VOTE_AGE_DAYS_<JURISDICTION>.
           MAX_VOTE_AGE_DAYS: ${{ vars.MAX_VOTE_AGE_DAYS }}
           X_MAX_POSTS_PER_RUN: ${{ vars.X_MAX_POSTS_PER_RUN }}
           X_MAX_CHARS: ${{ vars.X_MAX_CHARS }}
@@ -99,10 +114,27 @@ jobs:
           worktree="$(mktemp -d)"
           git worktree add -B "$STATE_BRANCH" "$worktree" "origin/$STATE_BRANCH"
 
-          mkdir -p "$worktree/data"
-          cp $STATE_FILES "$worktree/data/"
+          # --parents preserves data/<jurisdiction>/, without which two
+          # jurisdictions' logs would overwrite each other in the state branch
+          # and votes would look unposted on the next run.
+          mapfile -t state_files < <(find data -name 'posted_votes_*.json' | sort)
+          cp --parents "${state_files[@]}" "$worktree/"
 
-          git -C "$worktree" add -- $STATE_FILES
+          # Once a jurisdiction's log exists at the nested path, drop the flat
+          # one it was migrated from so the state branch has a single copy.
+          for nested in "${state_files[@]}"; do
+            case "$nested" in
+              data/*/posted_votes_*.json)
+                legacy="data/$(basename "$nested")"
+                if [ -e "$worktree/$legacy" ]; then
+                  echo "Migrated $legacy -> $nested; removing the flat copy."
+                  git -C "$worktree" rm --quiet -- "$legacy"
+                fi
+                ;;
+            esac
+          done
+
+          git -C "$worktree" add -- data
           if git -C "$worktree" diff --staged --quiet; then
             echo "No vote log changes to commit."
           else

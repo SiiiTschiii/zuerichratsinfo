@@ -91,7 +91,7 @@ go run cmd/post_fixture/main.go --fixture=multi-vote-group --platform=bluesky
 go run cmd/post_fixture/main.go --fixture=all
 
 # Use real contacts (tags real accounts — use with care)
-go run cmd/post_fixture/main.go --contacts=data/contacts.yaml --fixture=vote-with-mentions
+go run cmd/post_fixture/main.go --contacts=data/zurich-city/contacts.yaml --fixture=vote-with-mentions
 
 # Cleanup all test posts (will delete all posts made by the test accounts)
 go run cmd/cleanup_posts/main.go

@@ -1,8 +1,10 @@
 package contacts
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -27,13 +29,18 @@ type ContactMapping struct {
 
 // Mapper provides name-to-contact lookups
 type Mapper struct {
-	contacts map[string]Contact
+	contacts    map[string]Contact
 	allContacts []Contact
 }
 
+// PathFor returns where a jurisdiction's curated contacts live.
+func PathFor(jurisdiction string) string {
+	return filepath.Join("data", jurisdiction, "contacts.yaml")
+}
+
 // LoadContacts loads the contact mapping from a YAML file
-func LoadContacts(filepath string) (*Mapper, error) {
-	data, err := os.ReadFile(filepath)
+func LoadContacts(path string) (*Mapper, error) {
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read contacts file: %w", err)
 	}
@@ -43,9 +50,38 @@ func LoadContacts(filepath string) (*Mapper, error) {
 		return nil, fmt.Errorf("failed to parse contacts YAML: %w", err)
 	}
 
-	// Build lookup map
-	contactMap := make(map[string]Contact)
-	for _, contact := range mapping.Contacts {
+	return newMapper(mapping.Contacts), nil
+}
+
+// LoadContactFiles merges several contacts files into one mapper, which is what
+// a channel serving more than one jurisdiction needs.
+//
+// A missing file is not an error: a jurisdiction ships before its ~180 members
+// are curated, and the correct behaviour then is to post without tagging rather
+// than not to post. Later files win on duplicate names.
+func LoadContactFiles(paths ...string) (*Mapper, error) {
+	var all []Contact
+	for _, path := range paths {
+		data, err := os.ReadFile(path)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return nil, fmt.Errorf("failed to read contacts file %s: %w", path, err)
+		}
+
+		var mapping ContactMapping
+		if err := yaml.Unmarshal(data, &mapping); err != nil {
+			return nil, fmt.Errorf("failed to parse contacts YAML %s: %w", path, err)
+		}
+		all = append(all, mapping.Contacts...)
+	}
+	return newMapper(all), nil
+}
+
+func newMapper(cs []Contact) *Mapper {
+	contactMap := make(map[string]Contact, len(cs)*2)
+	for _, contact := range cs {
 		// Store by exact name
 		contactMap[contact.Name] = contact
 
@@ -55,9 +91,9 @@ func LoadContacts(filepath string) (*Mapper, error) {
 	}
 
 	return &Mapper{
-		contacts: contactMap,
-		allContacts: mapping.Contacts,
-	}, nil
+		contacts:    contactMap,
+		allContacts: cs,
+	}
 }
 
 // GetContact looks up a contact by name (case-insensitive)
