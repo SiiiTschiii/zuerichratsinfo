@@ -115,34 +115,81 @@ func (c *Client) completeGroups(vs []votes.Vote) ([]votes.Vote, error) {
 	}
 
 	for _, affairID := range affairIDs {
-		params := url.Values{}
-		params.Set("body_key", c.bodyKey)
-		params.Set("affair_id", affairID)
-		params.Set("limit", strconv.Itoa(pageSize))
-
-		var resp votingsResponse
-		if err := c.get("/votings/", params, &resp); err != nil {
+		found, err := c.votingsForAffairDays(affairID, daysWanted[affairID], seenVote)
+		if err != nil {
 			// Non-fatal, matching the PARIS adapter: an incomplete group is
 			// better than no post, and the next run retries.
 			log.Printf("⚠️  openparldata: could not complete affair %s: %v", affairID, err)
 			continue
 		}
+		vs = append(vs, found...)
+	}
 
+	return vs, nil
+}
+
+// completionMaxPages bounds the paging below. The largest Kanton Zürich affair
+// currently has 90 votings; this leaves room for a budget debate several times
+// that without ever looping unboundedly against a third-party API.
+const completionMaxPages = 10
+
+// votingsForAffairDays returns the affair's votings that fall on one of the
+// given sitting days, marking each as seen.
+//
+// Two things this must not get wrong. The sort is set explicitly rather than
+// inherited from the API's default: the days of interest are always the most
+// recent ones, so newest-first is what makes the early exit below correct, and
+// a default that changed under us would silently truncate groups. And it pages,
+// because a single affair can carry more votings than one page holds — the
+// largest Kanton Zürich affair already has 90 — so an unpaged call would drop
+// the rest of a long debate from its post.
+func (c *Client) votingsForAffairDays(affairID string, days map[string]bool, seenVote map[string]bool) ([]votes.Vote, error) {
+	oldestWanted := ""
+	for day := range days {
+		if day != "" && (oldestWanted == "" || day < oldestWanted) {
+			oldestWanted = day
+		}
+	}
+
+	var found []votes.Vote
+	for page := 0; page < completionMaxPages; page++ {
+		params := url.Values{}
+		params.Set("body_key", c.bodyKey)
+		params.Set("affair_id", affairID)
+		params.Set("sort_by", "-date")
+		params.Set("limit", strconv.Itoa(pageSize))
+		params.Set("offset", strconv.Itoa(page*pageSize))
+
+		var resp votingsResponse
+		if err := c.get("/votings/", params, &resp); err != nil {
+			return nil, err
+		}
+
+		reachedOlder := false
 		for _, dto := range resp.Data {
-			if seenVote[dto.ExternalID] {
-				continue
-			}
 			candidate := c.toVote(dto)
-			if !daysWanted[affairID][candidate.DateString()] {
+			day := candidate.DateString()
+
+			// Newest-first, so once a result predates every day we care about,
+			// nothing later in the listing can be relevant either.
+			if oldestWanted != "" && day != "" && day < oldestWanted {
+				reachedOlder = true
+				break
+			}
+			if seenVote[dto.ExternalID] || !days[day] {
 				continue
 			}
 			seenVote[dto.ExternalID] = true
 			c.rememberVotingID(dto)
-			vs = append(vs, candidate)
+			found = append(found, candidate)
+		}
+
+		if reachedOlder || len(resp.Data) < pageSize {
+			break
 		}
 	}
 
-	return vs, nil
+	return found, nil
 }
 
 // enrich fills in the affair number and URL and the per-member votes.

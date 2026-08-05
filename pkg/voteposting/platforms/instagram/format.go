@@ -71,14 +71,13 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 	firstVote := group[0]
 
 	// Header
-	date := voteformat.FormatVoteDate(firstVote.Date)
 	title := voteformat.CleanVoteTitle(firstVote.Title)
 	if contactMapper != nil {
 		title = contactMapper.TagInstagramHandlesInText(title)
 	}
 
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("🗳️ %s | Abstimmung vom %s\n\n", voteformat.BodyLabel(group), date))
+	sb.WriteString(fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group)))
 
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
 	if len(group) == 1 {

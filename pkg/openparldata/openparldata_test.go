@@ -1,10 +1,13 @@
 package openparldata
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -542,4 +545,95 @@ func TestCompleteGroupsStaysWithinTheSittingDay(t *testing.T) {
 				got, seed.DateString())
 		}
 	}
+}
+
+// A single affair can carry more votings than one page holds — the largest
+// Kanton Zürich affair already has 90, and a budget debate could exceed 100. An
+// unpaged call would silently drop the rest of a long debate from its post.
+//
+// The early exit depends on the listing being newest-first, so the request must
+// set the sort explicitly rather than inherit whatever the API defaults to.
+func TestCompleteGroupsPagesAndStopsAtOlderVotings(t *testing.T) {
+	const (
+		wantedDay = "2026-07-06"
+		olderDay  = "2026-05-04"
+		onWanted  = 150 // more than one page
+	)
+
+	var requested []string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requested = append(requested, r.URL.RawQuery)
+
+		offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+		limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+
+		// Newest-first: the wanted day, then a long tail of older votings.
+		var all []map[string]any
+		for i := range onWanted {
+			all = append(all, votingJSON(i, wantedDay))
+		}
+		for i := range 400 {
+			all = append(all, votingJSON(1000+i, olderDay))
+		}
+
+		end := min(offset+limit, len(all))
+		if offset > len(all) {
+			offset = len(all)
+		}
+		writeJSON(w, map[string]any{"data": all[offset:end]})
+	}))
+	defer srv.Close()
+
+	c := New(testJurisdiction, "ZH")
+	c.SetBaseURL(srv.URL)
+	c.retryDelay = 0
+
+	seed := votes.Vote{
+		SourceID:     "seed",
+		Jurisdiction: testJurisdiction.Key,
+		Date:         parseDate(wantedDay),
+		Affair:       votes.Affair{ID: "42", Number: "#42"},
+	}
+
+	completed, err := c.completeGroups([]votes.Vote{seed})
+	if err != nil {
+		t.Fatalf("completeGroups: %v", err)
+	}
+
+	if got := len(completed); got != onWanted+1 {
+		t.Errorf("completed %d votes, want %d — a long debate must not be truncated at one page", got, onWanted+1)
+	}
+	for _, v := range completed {
+		if v.DateString() != wantedDay {
+			t.Errorf("pulled in a vote from %s; only %s was in play", v.DateString(), wantedDay)
+		}
+	}
+
+	// Two pages cover the 150 wanted votings; the second contains older ones,
+	// so paging must stop there rather than walking the whole affair.
+	if len(requested) != 2 {
+		t.Errorf("made %d requests, want 2 (stop as soon as results predate the day in play)", len(requested))
+	}
+	for _, q := range requested {
+		if !strings.Contains(q, "sort_by=-date") {
+			t.Errorf("request %q does not set an explicit sort; the early exit relies on newest-first", q)
+		}
+	}
+}
+
+func votingJSON(i int, day string) map[string]any {
+	return map[string]any{
+		"id":          i,
+		"external_id": fmt.Sprintf("ext-%d", i),
+		"date":        day + "T10:00:00",
+		"affair_id":   42,
+		"results_yes": 100,
+		"results_no":  20,
+		"title_de":    "Titel",
+	}
+}
+
+func writeJSON(w http.ResponseWriter, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(v)
 }

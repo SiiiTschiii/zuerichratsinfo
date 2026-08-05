@@ -2,6 +2,9 @@ package voteformat
 
 import (
 	"testing"
+	"time"
+
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 func TestCleanVoteTitle(t *testing.T) {
@@ -407,6 +410,48 @@ func TestIsDecisionConsistent(t *testing.T) {
 			if got != tt.wantConsistent {
 				t.Errorf("IsDecisionConsistent(%q, ja=%v, nein=%v) = %v, want %v",
 					tt.schlussresultat, tt.ja, tt.nein, got, tt.wantConsistent)
+			}
+		})
+	}
+}
+
+func TestPostHeadline(t *testing.T) {
+	day := time.Date(2026, 7, 6, 10, 21, 43, 0, time.UTC)
+
+	tests := []struct {
+		name  string
+		group []votes.Vote
+		want  string
+	}{
+		{
+			name:  "named body and known date",
+			group: []votes.Vote{{Body: "Kantonsrat", Date: day}},
+			want:  "Kantonsrat | Abstimmung vom 06.07.2026",
+		},
+		{
+			// Votes with an unparseable date are deliberately kept rather than
+			// discarded, so this is reachable — and "Abstimmung vom " trailing
+			// into nothing is not an acceptable way to render it.
+			name:  "unknown date drops the date clause",
+			group: []votes.Vote{{Body: "Kantonsrat"}},
+			want:  "Kantonsrat | Abstimmung",
+		},
+		{
+			name:  "unnamed body falls back to the city chamber",
+			group: []votes.Vote{{Date: day}},
+			want:  "Gemeinderat | Abstimmung vom 06.07.2026",
+		},
+		{
+			name:  "empty group",
+			group: nil,
+			want:  "Gemeinderat | Abstimmung",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := PostHeadline(tc.group); got != tc.want {
+				t.Errorf("PostHeadline = %q, want %q", got, tc.want)
 			}
 		})
 	}

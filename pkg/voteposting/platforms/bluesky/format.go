@@ -33,11 +33,10 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 	firstVote := group[0]
 
 	// Common components
-	date := voteformat.FormatVoteDate(firstVote.Date)
 	title := voteformat.CleanVoteTitle(firstVote.Title)
 
 	// --- Build root post ---
-	root := buildRootPost(group, date, title)
+	root := buildRootPost(group, title)
 
 	// --- Build reply posts ---
 	replies := buildReplyPosts(group, voteformat.LinkLine(group), voteformat.GroupLink(group))
@@ -58,8 +57,8 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 
 // buildRootPost creates the root post with header, title, result, and thread hint.
 // If the title is too long, it is truncated with "…"; replies go straight to vote details.
-func buildRootPost(group []votes.Vote, date, title string) *BlueskyPost {
-	header := fmt.Sprintf("🗳️ %s | Abstimmung vom %s\n\n", voteformat.BodyLabel(group), date)
+func buildRootPost(group []votes.Vote, title string) *BlueskyPost {
+	header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
 	threadHint := "\n\n👇 Details im Thread"
 
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand

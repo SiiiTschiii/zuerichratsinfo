@@ -255,6 +255,24 @@ func BodyLabel(group []votes.Vote) string {
 	return defaultBodyLabel
 }
 
+// PostHeadline is the first line of a post: which chamber voted, and when.
+//
+// The date clause is dropped when the date is unknown. Votes with an
+// unparseable date are deliberately kept rather than discarded — silently
+// dropping a vote is worse than posting one whose date we could not read — so
+// this case is reachable, and "Abstimmung vom " trailing into nothing is not an
+// acceptable way to render it.
+//
+// Callers prepend their own emoji, because the platforms do not agree on the
+// spacing after it and that difference is already baked into published posts.
+func PostHeadline(group []votes.Vote) string {
+	body := BodyLabel(group)
+	if len(group) == 0 || group[0].Date.IsZero() {
+		return body + " | Abstimmung"
+	}
+	return body + " | Abstimmung vom " + FormatVoteDate(group[0].Date)
+}
+
 // LinkLine returns the trailing block of a post: the link, plus the source
 // credit when the data's licence requires one.
 //

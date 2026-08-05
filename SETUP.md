@@ -116,16 +116,28 @@ go run ./cmd/check_unposted -platform x -jurisdiction zurich-canton -max-posts 1
 ```
 
 This needs the vote logs on disk. They live on the `state-log` branch, not in
-`main`:
+`main`. The branch may hold either the per-jurisdiction layout or the flat one
+it replaced, depending on whether the bot has run since the migration, so try
+both:
 
 ```bash
+git fetch origin state-log
 mkdir -p data/zurich-city
 for p in x bluesky instagram; do
-  git show origin/state-log:data/posted_votes_$p.json > data/zurich-city/posted_votes_$p.json
+  for src in data/zurich-city/posted_votes_$p.json data/posted_votes_$p.json; do
+    if git cat-file -e "FETCH_HEAD:$src" 2>/dev/null; then
+      git show "FETCH_HEAD:$src" > "data/zurich-city/posted_votes_$p.json"
+      echo "restored $p from $src"
+      break
+    fi
+  done
 done
 ```
 
-(They are gitignored, so they will not end up in a commit.)
+Checking before writing matters: a truncated or empty log reads as "nothing was
+ever posted", which is exactly the state that would re-publish history.
+
+(The logs are gitignored, so they will not end up in a commit.)
 
 ### Comparing the two data sources
 
