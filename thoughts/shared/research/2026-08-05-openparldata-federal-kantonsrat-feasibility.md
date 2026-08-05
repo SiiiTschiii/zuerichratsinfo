@@ -289,6 +289,8 @@ Vote        { SourceID, JurisdictionKey, Date, Title, Type,
 MemberVote  { Name, Party, Fraktion, Choice }
 ```
 
+This is the *eventual* shape across all three jurisdictions, not what to build first. `MeaningYes`/`MeaningNo` are federal-only and should be added with the Nationalrat adapter — the plan deliberately omits them, since no other source populates them and their federal content is currently French (§2.2), so even their type may change.
+
 Points the research settles:
 
 - **Totals must be first-class, not derived from `MemberVotes`.** Today they arrive together from PARIS; for the Kantonsrat they come from a different parse step than the member votes and *can* disagree in principle. Formatters should read `Yes/No/…` directly and treat `MemberVotes` as optional enrichment.

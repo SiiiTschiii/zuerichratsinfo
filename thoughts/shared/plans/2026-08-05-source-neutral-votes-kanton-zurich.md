@@ -44,7 +44,9 @@ The Nationalrat is explicitly **out of scope here** — it is blocked on an upst
 - **`lang_format=flat` is mandatory** on every OpenParlData call, or `*_de` fields silently return `null`.
 - **`affair_number` requires a second call** to `/v1/votings/{id}/affairs` — it is null inline on the voting.
 - **ZH has no Traktandum and no vote type.** `SelectBestTitle(traktandumTitel, geschaeftTitel)` and `Abstimmungstyp` handling must degrade rather than branch per source.
-- **Harvest lag is ~1.4 d median**, so the `maxAgeDays` guard (currently trimming votes older than N days) needs a per-jurisdiction value or Kantonsrat votes will be filtered out before posting.
+- **`maxAgeDays` is a backstop against re-posting history, not a freshness knob — and it is load-bearing for a new jurisdiction.** Dedup works by fetching the most recent N votes and subtracting whatever the vote log records. The logs do not go back to the beginning: `x` starts 2025-11-06 (637 entries), `bluesky` 2026-03-11 (282), `instagram` 2026-04-20 (126). Any vote older than a platform's log start is therefore *indistinguishable from unposted*, so when PARIS re-indexes an old vote and it re-enters the fetch window, only the 90-day age guard stops it being posted again.
+
+  For **Kanton ZH the log starts empty**, which means *every one of the 2,626 historical votings* looks unposted. `maxAgeDays` is the only thing standing between first run and a mass-post. It must be set before the jurisdiction is enabled, not after — and the first run should be dry, then seeded. This is a bigger deal than the ~1.4 d harvest lag that originally motivated making the value per-jurisdiction (the lag only sets the *lower* bound; it must exceed ~4.2 d worst case).
 - **The post budget is enforced by a counter on the platform *instance*.** `postsThisRun` increments in `Post()` and gates `shouldContinue` ([x/platform.go:114-115](pkg/voteposting/platforms/x/platform.go#L114)); `MaxPostsPerRun()` is only consulted directly on the dry-run path ([prepare.go:158](pkg/voteposting/prepare.go#L158)). So the budget is already per-instance, and the fix is **construction, not config**: build one platform instance per *channel* and reuse it across all that channel's jurisdictions, and the existing counter shares the allowance correctly. Build one per jurisdiction — the obvious shape for a per-jurisdiction loop — and the counter resets, silently doubling hourly volume on `@zuerichratsinfo`. This is the single easiest thing to get wrong in Phase 3.
 
 ## Desired End State
@@ -68,9 +70,19 @@ The Nationalrat is explicitly **out of scope here** — it is blocked on an upst
 - **No switch of Stadt Zürich to OpenParlData.** PARIS stays canonical — it is faster and OPD merely re-serves it.
 - **No contacts curation for the 180 Kantonsrat members.** That is the dominant human cost and belongs in its own task; Phase 5 ships with tagging disabled for ZH.
 - **No new social accounts.** Kantonsrat uses the existing ones; no second credential set is provisioned here.
+- **No federal-only fields in the domain model.** `MeaningYes`/`MeaningNo` are added when the Nationalrat adapter is built. Adding them now would mean shipping fields no source populates, no formatter reads, and no test covers — and the research shows their federal content is currently French anyway, so their eventual shape may not even be a plain string pair.
 - **No repo split and no repo rename.** Splitting would duplicate the whole imagegen/platforms/voteposting stack, and Instagram hosting is pinned to this repository. Renaming would break the Go module path, clone URLs, badges and `IG_REPO_NAME` for no gain.
 - **No decision on which accounts serve federal or other cantons.** The channel model supports separate accounts; the policy is deliberately deferred (see Open Questions).
 - **No changes to image layout or platform credentials.** Post copy changes only to the minimum needed to label the body (see Phase 5).
+
+## Prerequisite: land [PR #43](https://github.com/SiiiTschiii/zuerichratsinfo/pull/43) first
+
+[#43](https://github.com/SiiiTschiii/zuerichratsinfo/pull/43) moves vote-log persistence off `main` onto an isolated `state-log` branch, because the new required-PR ruleset on `main` blocks the bot's push. It should merge **before Phase 3**, for two reasons beyond its own merit:
+
+1. **It rewrites the exact workflow block Phase 3 edits.** Today's `git add data/posted_votes_*.json` + `git pull --rebase` + `git push` is replaced by `STATE_BRANCH` / `STATE_FILES` and a `git worktree`. Phase 3 changing those paths first would guarantee a conflict, and #43 is the smaller, already-reviewed change.
+2. **Its copy step flattens paths.** `cp $STATE_FILES "$worktree/data/"` collapses any directory structure, so once logs live at `data/<jurisdiction>/posted_votes_<platform>.json`, two jurisdictions' logs land on top of each other in the state branch. Phase 3 must therefore update `STATE_FILES` **and** switch the copy to something path-preserving (`rsync -R`, or `cp --parents`, or per-file `install -D`). Sequencing them the other way risks silently merging vote logs — which would look like votes being re-posted.
+
+Note the breakage #43 fixes is **latent, not active**: bot runs are currently succeeding, because the Gemeinderat has been in summer recess since 2026-07-08 and `git diff --staged --quiet ||` short-circuits when there is nothing to commit. The failure fires on the next real post — which, without #43, would be the first Kantonsrat post.
 
 ## Implementation Approach
 
@@ -113,7 +125,6 @@ type Vote struct {
 
     Affair       Affair
     MemberVotes  []MemberVote  // optional enrichment
-    MeaningYes, MeaningNo string // optional, federal only
 }
 
 type MemberVote struct { Name, Party, Fraktion, Choice string }
@@ -180,8 +191,8 @@ Give vote logs and config a jurisdiction dimension, introduce the channel concep
 - `votelog.getLogFilePath` → `data/<jurisdiction>/posted_votes_<platform>.json`; `Load`/`New`/`NewNoOp` take a jurisdiction key.
 - **Migrate existing logs**: `git mv data/posted_votes_{x,bluesky,instagram}.json data/zurich-city/`. Dedup IDs are unchanged, so no re-posting.
 - `contacts` — `git mv data/contacts.yaml data/zurich-city/contacts.yaml` and resolve `data/<jurisdiction>/contacts.yaml`. One rule, no fallback.
-- `maxAgeDays` becomes per-jurisdiction (city keeps its current value; ZH needs headroom for the ~1.4 d median, ~4.2 d worst-case lag).
-- Update `.github/workflows/bot.yml` — the `git add data/posted_votes_*.json` step must follow the new paths (a glob over `data/*/posted_votes_*.json` avoids editing it per jurisdiction).
+- `maxAgeDays` becomes per-jurisdiction. City keeps **90**. ZH needs a value above the ~4.2 d worst-case harvest lag but small enough to bound the first-run backlog — see the seeding step in Phase 5.
+- Update `.github/workflows/bot.yml` (post-#43): widen `STATE_FILES` to `data/*/posted_votes_*.json` so it needs no edit per jurisdiction, and **replace the flattening `cp $STATE_FILES "$worktree/data/"` with a path-preserving copy** — otherwise both jurisdictions' logs collide in the state branch. Same for the restore step.
 
 **Channels:**
 
@@ -205,7 +216,7 @@ type Channel struct {
 - A dry run for `zurich-city` reports **zero** unposted votes for already-posted history — proof the migration preserved dedup.
 - **Volume is unchanged for the city**: with only `zurich-city` active, a dry run posts exactly as many groups as before the change.
 - A test with two jurisdictions in one channel and a budget of N posts **N groups total**, not 2N, ordered oldest-first.
-- CI workflow commits logs to the new paths.
+- CI workflow round-trips logs to the `state-log` branch at the new nested paths, with **no collision** between jurisdictions — verified by a manual run with two jurisdictions configured.
 
 ---
 
@@ -243,10 +254,12 @@ Register the jurisdiction and enable posting, with the completeness gate active 
 
 ### Changes Required
 
-- Register `zurich-canton` (`body_key=ZH`, 180 seats, `maxAgeDays` sized for the lag) and add it to the `zurich` channel alongside `zurich-city`.
-- `data/zurich-canton/posted_votes_*.json` — start empty.
-- **Label the body in every post.** With both jurisdictions on one account, a reader must not mistake a Kantonsrat vote for a Gemeinderat one. Minimum: a distinct prefix/emoji in the root post and a distinct accent colour in the generated image. `imagegen.SelectColor` currently keys on `GeschaeftGrNr` — give it a jurisdiction input so the two bodies are visually separable.
-- Update `README.md`: the project description, the "What It Does" section and the platform table all say *Zurich City Council* today.
+- Register `zurich-canton` (`body_key=ZH`, 180 seats) and add it to the `zurich` channel alongside `zurich-city`.
+- **Seed the vote log before the first live run.** The log starts empty and ZH has 2,626 historical votings, all of which read as unposted. Set `maxAgeDays` for ZH first, then do a dry run to confirm the candidate set is the handful of votes you actually intend to post, then mark everything older as posted (a small `cmd/seed_votelog`, or commit a pre-populated log). Do not let the first real run discover this.
+- **Make the jurisdiction evident in every post, text and image.** With both bodies on one account, a reader must not mistake a Kantonsrat vote for a Gemeinderat one. The *requirement* is fixed; the *design* is explicitly open to iterate — candidates include a text prefix or emoji in the root post, a body name line, a distinct image accent colour, or a header band in the image. `imagegen.SelectColor` currently keys only on `GeschaeftGrNr` ([imagegen.go:55](pkg/imagegen/imagegen.go#L55)), so it needs a jurisdiction input for any colour-based option.
+- **Local dry-run comparison is the design loop**, not a one-off check: render both jurisdictions side by side via `cmd/generate_vote_post` and `cmd/generate_vote_image`, review, adjust, repeat. Ensure both commands take a jurisdiction argument so this is a single command per side.
+- Update `README.md` — it currently describes a *Zurich City Council* bot throughout: the one-line description, the "What It Does" section, the `pkg/zurichapi` data-source paragraph, and the platform table (whose per-platform counts are Stadt-Zürich contacts only). It should state both jurisdictions covered, and which data source backs each.
+- Update the **account bios/descriptions** on X, Bluesky and Instagram once the first Kantonsrat posts are live, so the profile matches what the feed now contains.
 - Consider whether `PRIVACY.md` needs to mention the second data source (OpenParlData) — it currently describes PARIS only.
 - **Completeness gate**: when `IsBreakdownComplete` is false, post totals only and log a warning; never post a partial Fraktion breakdown.
 - **Degradation**: no Traktandum → subtitle empty; no `Type` → omit the vote-type line.
@@ -258,7 +271,7 @@ Register the jurisdiction and enable posting, with the completeness gate active 
 
 - Dry run against live `ZH` produces well-formed posts for the most recent sitting, with a correct Fraktion breakdown matching the research figures for voting 104481 (SVP 44/0/3, SP 0/35/1, …).
 - Completeness gate exercised by a fixture with dropped member votes.
-- A Kantonsrat post and a Gemeinderat post placed side by side are **unambiguously distinguishable** without reading the vote title.
+- A Kantonsrat post and a Gemeinderat post rendered side by side locally are **unambiguously distinguishable** without reading the vote title — reviewed by the project owner, iterating on the design until it reads right. This gates enabling the jurisdiction, not merging the phase.
 - Combined hourly volume on the shared account is checked against a busy week (a Monday Kantonsrat sitting plus a Gemeinderat sitting) before the Action runs unattended.
 - First real post reviewed manually before the Action is enabled unattended.
 
@@ -280,6 +293,9 @@ Register the jurisdiction and enable posting, with the completeness gate active 
 - **Kanton ZH ships before the Nationalrat**, reversing the earlier doc's ordering — federal needs a French-text workaround, a classifier robust to a 37%-null `Subject`, and an editorial policy; ZH needs none of these.
 - **The completeness gate stays despite never triggering on current ZH data.** It is cheap, and Stadt Bern's `Präsidium`→`abstention` off-by-one shows the failure mode is real elsewhere.
 - **Ship ZH without tagging** rather than delaying the jurisdiction on 180 rows of contact curation.
+- **Defer federal-only model fields.** Build for the two jurisdictions actually shipping; add `MeaningYes`/`MeaningNo` with the adapter that populates them.
+- **Seed the ZH vote log before first run.** With an empty log, `maxAgeDays` is the only guard against posting 2,626 historical votings — too much to rest on one config value.
+- **The jurisdiction-labelling design is deliberately unspecified.** The requirement is fixed; the visual treatment is settled by local dry-run iteration, not decided up front on paper.
 - **Kantonsrat posts to the existing accounts.** "Zürich Ratsinfo" is geographically accurate for the Kantonsrat, the audiences overlap almost completely, volume is modest (8–13 votings per Monday sitting, fewer after grouping), and it costs no new X Premium subscription and no new credential set — while growing the existing following rather than starting from zero.
 - **One platform instance per channel.** Rate limits and audience fatigue are properties of an account, not of a jurisdiction. The existing `postsThisRun` counter already enforces this correctly *provided* the instance is shared — so this is a construction rule, not a new config surface.
 - **Shared budgets are spent oldest-first**, preserving today's backlog behaviour and preventing one jurisdiction from starving the other.
