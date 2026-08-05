@@ -114,21 +114,33 @@ Ranked by data quality for a vote bot; all carry the full non-data cost (new acc
 
 ## Open Questions / To Verify (blocked in this session)
 
-> **Update 2026-08-05**: items 1–3 of the recommendation list were investigated in depth in
+> **Update 2026-08-05**: items 1–3 of the recommendation list were investigated in depth, then
+> **verified against the live APIs**, in
 > [2026-08-05-openparldata-federal-kantonsrat-feasibility.md](2026-08-05-openparldata-federal-kantonsrat-feasibility.md).
-> Summary of what changed: OpenParlData's `votings` **does** carry `results_yes/no/abstention/absent`
-> and its `votes` carry the Fraktion, so **both Kantonsrat ZH and the Nationalrat clear feature parity**.
-> Kantonsrat ZH vote data exists but is **PDF-derived with fuzzy name matching** (already maintained
-> upstream — no PDF parsing needed in this project, but a completeness check is required).
-> **Stadt Zürich is the only one of 50 indexed Swiss cities with vote data in OpenParlData**, so the
-> "other Swiss cities" branch below is effectively empty at the vote level. The remaining open items
-> are live-data questions (volume, lag, quality), listed at the end of that document.
+> That document supersedes this one wherever they disagree. In brief:
+>
+> - OpenParlData's `votings` carries `results_yes/no/abstention/absent` and its `votes` carry the
+>   Fraktion, so **Kantonsrat ZH clears feature parity** — and measured better than expected:
+>   40/40 votings reconcile exactly against their member votes.
+> - **The Nationalrat is blocked** on an upstream data-quality bug (German OData feed returns French
+>   for `Subject`/`MeaningYes`/`MeaningNo`), not on data availability.
+> - **Two** Swiss cities have vote data, not one: Zürich (`261`) and **Bern** (`351`). Bern does not
+>   clear the parity bar as-is — `person_parliamentary_group_name_de` is null for all 80 members —
+>   but `person_party_de` is fully populated. The "other Swiss cities" branch is still nearly empty
+>   at the vote level, just not quite as empty as first concluded.
+> - Cantonal coverage is **22 of 26**, not 24 — **NE and VD are also missing**, which matters for any
+>   later Romandie ambition.
+>
+> Method note worth carrying forward: the first pass inferred coverage from OpenParlData's ETL
+> pipeline files, and **three of its conclusions were wrong** — the repository describes pipelines
+> that exist, not pipelines whose output actually reaches the API. Prefer live queries.
 
 This session's sandbox egress policy blocked direct API calls (only web search was available), so the following need hands-on verification from a normal network:
 
-- [x] OpenParlData: does `/votings` contain per-member ballots for Kantonsrat ZH / Stadt Zürich / Bund? — **yes for all three** (schema + per-parliament ETL verified 2026-08-05); freshness/rate limits still open
-- [x] Kantonsrat ZH: is there a machine-readable Abstimmungen source? — **not first-party**; OpenParlData scrapes the `AR*` Abstimmungsresultat PDFs and exposes structured totals + member votes
-- [ ] ws.parlament.ch OData: confirm `Voting` publication lag during sessions; current Ständerat name-list rules
+- [x] OpenParlData: does `/votings` contain per-member ballots for Kantonsrat ZH / Stadt Zürich / Bund? — **yes for all three**, confirmed by live query 2026-08-05; harvest lag measured at ~1.5 days
+- [x] Kantonsrat ZH: is there a machine-readable Abstimmungen source? — **not first-party**; OpenParlData derives it from the `AR*` Abstimmungsresultat PDFs, but the output reconciles exactly (40/40) and is usable as-is
+- [x] ws.parlament.ch OData: `Voting` lag and Ständerat rules — checked; **Ständerat stays out of scope for v1** (name lists published only for a subset of votes by design)
+- [ ] OpenParlData rate limits / uptime SLA — **nothing published**, no `RateLimit-*` headers; ask the maintainers before depending on it for an hourly Action
 - [ ] Basel-Stadt dataset 100186: field structure, historical depth, Opendatasoft rate limits
 - [ ] Kanton Bern i14y dataset KTBE-APM0002162: per-member or aggregate?
 - [ ] parlament.ch terms of use details (attribution wording for social posts)
