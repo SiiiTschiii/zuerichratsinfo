@@ -191,3 +191,32 @@ func TestFormatFraktionBreakdown_SingleFaction(t *testing.T) {
 		t.Errorf("SP count wrong, got:\n%s", result)
 	}
 }
+
+// Roughly 1% of members are not mapped to a faction in either source. They must
+// be left out of the table rather than bucketed under an empty name — and,
+// critically, must not take the process down. Their vote still counts, because
+// the totals come from the source and are never summed from this list.
+func TestAggregateFraktionCounts_UnmappedFraktion(t *testing.T) {
+	members := []votes.MemberVote{
+		stimmabgabe("SVP", "Ja"),
+		{Name: "Unmapped Member", Choice: "Ja"},
+		{Name: "Also Unmapped", Fraktion: "   ", Choice: "Nein"},
+	}
+
+	counts := AggregateFraktionCounts(members)
+
+	if _, ok := counts[""]; ok {
+		t.Error("members without a faction must not create an empty-named row")
+	}
+	if got := len(counts); got != 2 {
+		// "   " is a distinct (if ugly) faction name; only "" is dropped.
+		t.Errorf("got %d factions, want 2", got)
+	}
+	if counts["SVP"].Counts["Ja"] != 1 {
+		t.Errorf("mapped members should still be counted, got %v", counts["SVP"].Counts)
+	}
+
+	if out := FormatFraktionBreakdown(counts); out == "" {
+		t.Error("a breakdown with unmapped members should still render")
+	}
+}

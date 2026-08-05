@@ -1,0 +1,207 @@
+package openparldata
+
+import (
+	"fmt"
+	"log"
+	"net/url"
+	"strconv"
+
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+)
+
+// Client implements votes.Source.
+var _ votes.Source = (*Client)(nil)
+
+// pageSize bounds a single request. The API accepts larger values, but paging
+// keeps individual responses small on a body with thousands of votings.
+const pageSize = 100
+
+// memberVotePageSize covers the largest chamber in one request; the Nationalrat
+// has 200 seats.
+const memberVotePageSize = 500
+
+// FetchRecent returns the most recent votings for this body, newest first.
+//
+// It deliberately does *not* fetch member votes or affair numbers. Those need
+// two further calls per voting, and almost every voting fetched here has
+// already been posted and is about to be discarded — the enrichment happens in
+// GroupByAffair, which only sees what survived dedup.
+func (c *Client) FetchRecent(limit int) ([]votes.Vote, error) {
+	if limit <= 0 {
+		return nil, nil
+	}
+
+	var out []votes.Vote
+	for offset := 0; offset < limit; offset += pageSize {
+		size := min(pageSize, limit-offset)
+
+		params := url.Values{}
+		params.Set("body_key", c.bodyKey)
+		params.Set("sort_by", "-date")
+		params.Set("limit", strconv.Itoa(size))
+		params.Set("offset", strconv.Itoa(offset))
+
+		var resp votingsResponse
+		if err := c.get("/votings/", params, &resp); err != nil {
+			return nil, err
+		}
+
+		for _, v := range resp.Data {
+			c.rememberVotingID(v)
+			out = append(out, c.toVote(v))
+		}
+
+		if len(resp.Data) < size {
+			break
+		}
+	}
+
+	return out, nil
+}
+
+// GroupByAffair enriches the given votes and groups them by business matter and
+// sitting day.
+//
+// Enrichment happens here rather than in FetchRecent because the affair number
+// is a grouping input and the member votes are only needed for what actually
+// gets posted.
+func (c *Client) GroupByAffair(vs []votes.Vote) ([][]votes.Vote, error) {
+	if len(vs) == 0 {
+		return nil, nil
+	}
+
+	complete, err := c.completeGroups(vs)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range complete {
+		if err := c.enrich(&complete[i]); err != nil {
+			return nil, err
+		}
+	}
+
+	return votes.GroupByAffairAndDate(complete), nil
+}
+
+// completeGroups fetches any other votings belonging to the same affairs, so a
+// business matter whose earlier votes fell outside the fetch window is posted
+// whole rather than truncated.
+func (c *Client) completeGroups(vs []votes.Vote) ([]votes.Vote, error) {
+	seenVote := make(map[string]bool, len(vs))
+	var affairIDs []string
+	seenAffair := make(map[string]bool)
+
+	for _, v := range vs {
+		seenVote[v.SourceID] = true
+		if v.Affair.ID != "" && !seenAffair[v.Affair.ID] {
+			seenAffair[v.Affair.ID] = true
+			affairIDs = append(affairIDs, v.Affair.ID)
+		}
+	}
+
+	for _, affairID := range affairIDs {
+		params := url.Values{}
+		params.Set("body_key", c.bodyKey)
+		params.Set("affair_id", affairID)
+		params.Set("limit", strconv.Itoa(pageSize))
+
+		var resp votingsResponse
+		if err := c.get("/votings/", params, &resp); err != nil {
+			// Non-fatal, matching the PARIS adapter: an incomplete group is
+			// better than no post, and the next run retries.
+			log.Printf("⚠️  openparldata: could not complete affair %s: %v", affairID, err)
+			continue
+		}
+
+		for _, dto := range resp.Data {
+			if seenVote[dto.ExternalID] {
+				continue
+			}
+			seenVote[dto.ExternalID] = true
+			c.rememberVotingID(dto)
+			vs = append(vs, c.toVote(dto))
+		}
+	}
+
+	return vs, nil
+}
+
+// enrich fills in the affair number and URL and the per-member votes.
+func (c *Client) enrich(v *votes.Vote) error {
+	votingID, err := c.votingID(*v)
+	if err != nil {
+		return err
+	}
+
+	affairs, err := c.fetchAffairs(votingID)
+	if err != nil {
+		// The fallback affair number keeps grouping correct, so this degrades
+		// to a post without a business number rather than to no post.
+		log.Printf("⚠️  openparldata: could not fetch affair for voting %d: %v", votingID, err)
+	} else if len(affairs) > 0 {
+		applyAffair(v, affairs[0])
+	}
+
+	members, err := c.fetchMemberVotes(votingID)
+	if err != nil {
+		// Totals are reported independently, so a post without the Fraktion
+		// breakdown is still correct — just less detailed.
+		log.Printf("⚠️  openparldata: could not fetch member votes for voting %d: %v", votingID, err)
+		return nil
+	}
+	v.MemberVotes = members
+	return nil
+}
+
+// votingID recovers the numeric API id for a vote.
+//
+// The neutral model keys on the source's stable external id, because that is
+// what the vote log stores and what survives across API generations. The
+// numeric id is an internal handle needed only to address the sub-resources, so
+// the client remembers it from the listing that produced the vote and only
+// falls back to a lookup if that memory is missing.
+func (c *Client) votingID(v votes.Vote) (int64, error) {
+	if id, ok := c.votingIDs[v.SourceID]; ok {
+		return id, nil
+	}
+
+	params := url.Values{}
+	params.Set("body_key", c.bodyKey)
+	params.Set("external_id", v.SourceID)
+	params.Set("limit", "1")
+
+	var resp votingsResponse
+	if err := c.get("/votings/", params, &resp); err != nil {
+		return 0, err
+	}
+	if len(resp.Data) == 0 {
+		return 0, fmt.Errorf("openparldata: no voting with external_id %q", v.SourceID)
+	}
+	c.rememberVotingID(resp.Data[0])
+	return resp.Data[0].ID, nil
+}
+
+func (c *Client) fetchAffairs(votingID int64) ([]affairDTO, error) {
+	var resp affairsResponse
+	if err := c.get(fmt.Sprintf("/votings/%d/affairs", votingID), nil, &resp); err != nil {
+		return nil, err
+	}
+	return resp.Data, nil
+}
+
+func (c *Client) fetchMemberVotes(votingID int64) ([]votes.MemberVote, error) {
+	params := url.Values{}
+	params.Set("limit", strconv.Itoa(memberVotePageSize))
+
+	var resp votesResponse
+	if err := c.get(fmt.Sprintf("/votings/%d/votes", votingID), params, &resp); err != nil {
+		return nil, err
+	}
+
+	out := make([]votes.MemberVote, 0, len(resp.Data))
+	for _, m := range resp.Data {
+		out = append(out, toMemberVote(m))
+	}
+	return out, nil
+}

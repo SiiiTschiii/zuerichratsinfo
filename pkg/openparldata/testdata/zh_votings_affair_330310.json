@@ -1,0 +1,49 @@
+{
+ "data": [
+  {
+   "id": 104475,
+   "external_id": "5CCCB55D-A98F-3FA8-8BFC-92FC50BA868D",
+   "body_key": "ZH",
+   "date": "2026-07-06T07:32:09",
+   "affair_id": 330310,
+   "results_yes": 171,
+   "results_no": 0,
+   "results_abstention": 0,
+   "results_absent": 9,
+   "decision": null,
+   "title_de": "Nachtragskredite für das Jahr 2026, I. Sammelvorlage",
+   "affair_title_de": "Nachtragskredite für das Jahr 2026, I. Sammelvorlage",
+   "type_de": null,
+   "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=237b1123-59e4-4ef2-b28e-64480da28d54&segmentUid=9230de42-eff7-42bb-b702-6a9dde1c93ae"
+  },
+  {
+   "id": 104478,
+   "external_id": "D69EBF9F-E899-C678-8C0A-E4A3A302E2DA",
+   "body_key": "ZH",
+   "date": "2026-07-06T07:31:03",
+   "affair_id": 330310,
+   "results_yes": 144,
+   "results_no": 28,
+   "results_abstention": 1,
+   "results_absent": 7,
+   "decision": null,
+   "title_de": "Nachtragskredite für das Jahr 2026, I. Sammelvorlage",
+   "affair_title_de": "Nachtragskredite für das Jahr 2026, I. Sammelvorlage",
+   "type_de": null,
+   "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=237b1123-59e4-4ef2-b28e-64480da28d54&segmentUid=ecf9d0d4-4bfa-465a-8b7e-f7fdf264be47"
+  }
+ ],
+ "meta": {
+  "offset": 0,
+  "limit": 100,
+  "total_records": 2,
+  "total_pages": 1,
+  "current_page": 1,
+  "has_more": false,
+  "next_page": null,
+  "prev_page": null,
+  "first_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=330310&lang_format=flat&offset=0&limit=100",
+  "last_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=330310&lang_format=flat&offset=0&limit=100",
+  "self": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=330310&limit=100&lang_format=flat"
+ }
+}

@@ -1,0 +1,1457 @@
+{
+ "data": [
+  {
+   "id": 44206447,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Ulrich Pfister",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206438,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Christoph Fischbach",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44206429,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Karin Fehr Thoma",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44206420,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Felix Hoesch",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44206411,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Josef Widler",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44206402,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Raffaela Fehr",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44206393,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Pia Ackermann",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44206384,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Thomas Schweizer",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44206375,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Urs Wegmann",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206366,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Davide Loss",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44206357,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Nicola Siegrist",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44206348,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Judith Anna Stofer",
+   "person_party_de": "AL",
+   "person_parliamentary_group_name_de": "Fraktion AL"
+  },
+  {
+   "id": 44206339,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Nicole Wyss",
+   "person_party_de": "AL",
+   "person_parliamentary_group_name_de": "Fraktion AL"
+  },
+  {
+   "id": 44206330,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "André Bender",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206321,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Stephan Hegetschweiler",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44206312,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Hanspeter Hugentobler",
+   "person_party_de": "EVP",
+   "person_parliamentary_group_name_de": "Fraktion EVP"
+  },
+  {
+   "id": 44206303,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Roland Kappeler",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44206294,
+   "vote": "absent",
+   "vote_display_de": "Abwesend",
+   "person_fullname": "Thomas Lamprecht",
+   "person_party_de": "EDU",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206285,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sonja Rueff-Frenkel",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44206276,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Susanne Brunner",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206267,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Marc Bourgeois",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44206258,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Ronald Alder",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44206249,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Ueli Bamert",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206240,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Monica Sanesi Muri",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44206231,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Claudia Hollenstein",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44206222,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Alexander Jäger",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44206213,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Jacqueline Hofer",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206204,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Doris Meier",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44206195,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "David John Galeuchet",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44206186,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sandra Bienek",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44206177,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Benno Scherrer",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44206168,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Domenik Ledergerber",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206159,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Leandra Columberg",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44206150,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Marcel Suter",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206141,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Rafael Mörgeli",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44206132,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Ruth Büchi-Vögeli",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206123,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Christoph Marty",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206114,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Walter Staub",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44206105,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Karl Heinz Meyer",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206096,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Stephan Weber",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44206087,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Elisabeth Pflugshaupt",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206078,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Marion Matter",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206069,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sarah Fuchs",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44206060,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Daniela Sun-Güller",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44206051,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Rochus Burtscher",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206042,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Angie Romero",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44206033,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Brigitte Röösli",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44206024,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Manuel Sahli",
+   "person_party_de": "AL",
+   "person_parliamentary_group_name_de": "Fraktion AL"
+  },
+  {
+   "id": 44206015,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Alexander Seiler",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44206006,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Silvia Rigoni",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205997,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Andreas Hasler",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205988,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Mandy Abou Shoak",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205979,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Paul Mayer",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205970,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Bernhard im Oberdorf",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44205961,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Isabel Garcia",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205952,
+   "vote": "absent",
+   "vote_display_de": "Abwesend",
+   "person_fullname": "Tumasch Mischol",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205943,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Marc Bochsler",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205934,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Markus Schaaf",
+   "person_party_de": "EVP",
+   "person_parliamentary_group_name_de": "Fraktion EVP"
+  },
+  {
+   "id": 44205925,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Tina Deplazes",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44205916,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Selma L'Orange Seigo",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205907,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Roger Cadonau",
+   "person_party_de": "EDU",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205898,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sabine Arnold",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205889,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Florian Heer",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205880,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Andrea Gisler",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205871,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Renato Pfeffer-Becker",
+   "person_party_de": "EVP",
+   "person_parliamentary_group_name_de": "Fraktion EVP"
+  },
+  {
+   "id": 44205862,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Kurt Altenburger",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205853,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Kathrin Wydler",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44205844,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Benjamin Krähenmann",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205835,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Martina Novak",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205826,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Jonas Pfister",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205817,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Alexia Bischof",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44205808,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sibylle Jüttner",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205799,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Birgit Tognella-Geertsen",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205790,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Edith Häusler",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205781,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Ruth Ackermann",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44205772,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "René Truninger",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205763,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sibylle Marti",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205754,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Christian Pfaller",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205745,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Marzena Kopp",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44205736,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Daniel Heierli",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205727,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sascha Ullmann",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205718,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "René Isler",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205709,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Thomas Huber",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205700,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sylvie Matter",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205691,
+   "vote": "absent",
+   "vote_display_de": "Abwesend",
+   "person_fullname": "Romaine Rogenmoser",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205682,
+   "vote": "absent",
+   "vote_display_de": "Abwesend",
+   "person_fullname": "Barbara Franzen",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205673,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Wilma Willi",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205664,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Alan David Sangines",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205655,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Simon Vlk",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205646,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Jeannette Wibmer",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44205637,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Roman Schmid",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205628,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "David Garcia Nuñez",
+   "person_party_de": "AL",
+   "person_parliamentary_group_name_de": "Fraktion AL"
+  },
+  {
+   "id": 44205619,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Linda Camenisch",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205610,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Walter Honegger",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205601,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Viviane Kägi",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205592,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Roger Schmutz",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205583,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Tobias Weidmann",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205574,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Christa Stünzi",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205565,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Michael Bänninger",
+   "person_party_de": "EVP",
+   "person_parliamentary_group_name_de": "Fraktion EVP"
+  },
+  {
+   "id": 44205556,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Jonas Erni",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205547,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Susanna Lisibach",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": null
+  },
+  {
+   "id": 44205538,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Renata Grünenfelder",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205529,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Yiea Wey Te",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205520,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Markus Bärtschiger",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205511,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Mario Senn",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205502,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Lorenz Habicher",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205493,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Martin Huber",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205484,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Carmen Marty Fässler",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205475,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Urs Waser",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205466,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Priska Lötscher",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205457,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Daniel Rensch",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205448,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Monika Wicki",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205439,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Nick Glättli",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205430,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Dieter Kläy",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205421,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Jean-Daniel Strub",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205412,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Paul von Euw",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205403,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Roger Schmidinger",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205394,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Lejla Salihu",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205385,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Stefan Schmid",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205376,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Cristina Cortellini",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205367,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Monika Keller",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205358,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Anita Borer",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205349,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Beatrice Derrer",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205340,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Corinne Hoss-Blatter",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205331,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Gianna Berger",
+   "person_party_de": "AL",
+   "person_parliamentary_group_name_de": "Fraktion AL"
+  },
+  {
+   "id": 44205322,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Gabi Petri",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205313,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Pierre Dalcher",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205304,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Priska Hänni-Mathis",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44205295,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Tobias Infortuna",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205286,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Andreas Juchli",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205277,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Donato Flavio Scognamiglio",
+   "person_party_de": "EVP",
+   "person_parliamentary_group_name_de": "Fraktion EVP"
+  },
+  {
+   "id": 44205268,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Patricia Bernet",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205259,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Barbara Grüter",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205250,
+   "vote": "absent",
+   "vote_display_de": "Abwesend",
+   "person_fullname": "Philipp Müller",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205241,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Nadia Koch",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205232,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Advije Delihasani-Ajdari",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205223,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Daniel Wäfler",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205214,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Thomas Anwander",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44205205,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Martin Steiner",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205196,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Ivo Hasler",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205187,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Claudia Frei",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205178,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Roland Scheck",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205169,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Livia Knüsel",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205160,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Benjamin Walder",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205151,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Fabian Müller",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205142,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Stefanie Huber",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205133,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Marion Schmid",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205124,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Andrea Grossen-Aerni",
+   "person_party_de": "EVP",
+   "person_parliamentary_group_name_de": "Fraktion EVP"
+  },
+  {
+   "id": 44205115,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Reto Agosti",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44205106,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Gabriel Mäder",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205097,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Jasmin Pokerschnig",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205088,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Jeannette Büsser",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205079,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Christina Zurfluh Fraefel",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205070,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Ursula Junker",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205061,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Urs Glättli",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44205052,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Dimitri Witzig",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44205043,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Peter Schick",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205034,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Markus Bopp",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205025,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Andreas Keiser",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44205016,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Nadja Wirth",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44205007,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sonja Gehrig",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44204998,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Claudio Zihlmann",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44204989,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Thomas Forrer",
+   "person_party_de": "Grüne",
+   "person_parliamentary_group_name_de": "Fraktion Grüne"
+  },
+  {
+   "id": 44204980,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Jörg Kündig",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44204971,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Beat Habegger",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44204962,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Chantal Galladé",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  },
+  {
+   "id": 44204953,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Manuela Tremonte",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44204944,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Luisa Schwegler",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44204935,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Andreas Daurù",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44204926,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Michael Biber",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44204917,
+   "vote": "absent",
+   "vote_display_de": "Abwesend",
+   "person_fullname": "Janine Vannaz",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44204908,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Sandra Bossert",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44204899,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Hans Egli",
+   "person_party_de": "EDU",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44204890,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Tamara Fakhreddine",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44204881,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Claudia Bodmer-Furrer",
+   "person_party_de": "Die Mitte",
+   "person_parliamentary_group_name_de": "Fraktion Die Mitte"
+  },
+  {
+   "id": 44204872,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Patrick Walder",
+   "person_party_de": "SVP",
+   "person_parliamentary_group_name_de": "Fraktion SVP"
+  },
+  {
+   "id": 44204863,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Astrid Furrer",
+   "person_party_de": "FDP",
+   "person_parliamentary_group_name_de": "Fraktion FDP"
+  },
+  {
+   "id": 44204854,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Daniel Sommer",
+   "person_party_de": "EVP",
+   "person_parliamentary_group_name_de": "Fraktion EVP"
+  },
+  {
+   "id": 44204845,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Stephanie Hugentobler",
+   "person_party_de": "SP",
+   "person_parliamentary_group_name_de": "Fraktion SP"
+  },
+  {
+   "id": 44204836,
+   "vote": "yes",
+   "vote_display_de": "Ja",
+   "person_fullname": "Beat Hauser",
+   "person_party_de": "GLP",
+   "person_parliamentary_group_name_de": "Fraktion Grünliberale"
+  }
+ ],
+ "meta": {
+  "offset": 0,
+  "limit": 500,
+  "total_records": 180,
+  "total_pages": 1,
+  "current_page": 1,
+  "has_more": false,
+  "next_page": null,
+  "prev_page": null,
+  "first_page": "https://api.openparldata.ch/v1/votings/104476/votes?offset=0&limit=500",
+  "last_page": "https://api.openparldata.ch/v1/votings/104476/votes?offset=0&limit=500",
+  "self": "https://api.openparldata.ch/v1/votings/104476/votes?offset=0&limit=500"
+ }
+}
