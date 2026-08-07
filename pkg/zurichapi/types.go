@@ -2,22 +2,40 @@ package zurichapi
 
 import "encoding/xml"
 
+// KontaktGremium represents a council member or group in the Geschaeft context
+type KontaktGremium struct {
+	OBJGUID string `xml:"OBJ_GUID,attr"`
+	Name    string `xml:"Name"`
+	Partei  string `xml:"Partei"`
+}
+
+// Aufgabe represents a process step (Ablaufschritt) in a Geschaeft
+type Aufgabe struct {
+	AblaufschrittName string `xml:"AblaufschrittName"`
+	FristBis          struct {
+		Start string `xml:"Start"`
+	} `xml:"FristBis"`
+}
+
 // Geschaeft represents a council business/matter from the Zurich city council
 type Geschaeft struct {
+	OBJGUID          string `xml:"OBJ_GUID,attr"`
 	GRNr             string `xml:"GRNr"`
 	Titel            string `xml:"Titel"`
 	Geschaeftsart    string `xml:"Geschaeftsart"`
 	Geschaeftsstatus string `xml:"Geschaeftsstatus"`
+	Dringlich        bool   `xml:"Dringlich"`
+	PendentBei       string `xml:"PendentBei"`
 	Beginn           struct {
 		Start string `xml:"Start"`
 		Text  string `xml:"Text"`
 	} `xml:"Beginn"`
 	Erstunterzeichner struct {
-		KontaktGremium struct {
-			Name   string `xml:"Name"`
-			Partei string `xml:"Partei"`
-		} `xml:"KontaktGremium"`
+		KontaktGremium KontaktGremium `xml:"KontaktGremium"`
 	} `xml:"Erstunterzeichner"`
+	Mitunterzeichner         []KontaktGremium `xml:"Mitunterzeichner>KontaktGremium"`
+	AnzahlMitunterzeichnende *int             `xml:"AnzahlMitunterzeichnende"`
+	Ablaufschritte           []Aufgabe        `xml:"Ablaufschritte>Aufgabe"`
 }
 
 // GeschaeftSearchResponse represents the XML response from the geschaeft API

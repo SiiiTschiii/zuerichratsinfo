@@ -151,7 +151,55 @@ func NewNoOp(platform Platform) *VoteLog {
 	}
 }
 
-// getLogFilePath returns the file path for a platform's log
+// getLogFilePath returns the file path for a platform's vote log
 func getLogFilePath(platform Platform) string {
 	return fmt.Sprintf("data/posted_votes_%s.json", platform)
+}
+
+// getGeschaeftLogFilePath returns the file path for a platform's geschaeft log
+func getGeschaeftLogFilePath(platform Platform) string {
+	return fmt.Sprintf("data/posted_geschaefte_%s.json", platform)
+}
+
+// LoadGeschaeftLog loads a posted-geschaefte log for the specified platform.
+// The log is stored separately from the votes log, under posted_geschaefte_*.json.
+// If the file doesn't exist, returns an empty log.
+func LoadGeschaeftLog(platform Platform) (*VoteLog, error) {
+	fp := getGeschaeftLogFilePath(platform)
+
+	log := &VoteLog{
+		Platform: platform,
+		Votes:    []VoteEntry{},
+		filepath: fp,
+		index:    make(map[string]VoteEntry),
+	}
+
+	if _, err := os.Stat(fp); os.IsNotExist(err) {
+		return log, nil
+	}
+
+	data, err := os.ReadFile(fp)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read geschaeft log file: %w", err)
+	}
+
+	if err := json.Unmarshal(data, log); err != nil {
+		return nil, fmt.Errorf("failed to parse geschaeft log file: %w", err)
+	}
+
+	for _, entry := range log.Votes {
+		log.index[entry.ID] = entry
+	}
+
+	return log, nil
+}
+
+// NewEmptyGeschaeftLog creates an empty geschaeft log for a platform.
+func NewEmptyGeschaeftLog(platform Platform) *VoteLog {
+	return &VoteLog{
+		Platform: platform,
+		Votes:    []VoteEntry{},
+		filepath: getGeschaeftLogFilePath(platform),
+		index:    make(map[string]VoteEntry),
+	}
 }

@@ -38,6 +38,31 @@ func (c *Client) FetchLatestGeschaeft() (*Geschaeft, error) {
 	return &resp.Hits[0].Geschaeft, nil
 }
 
+// FetchRecentGeschaefte fetches the n most recent Geschäfte from the Zurich council API,
+// sorted by Beginn date descending. All Geschaeftsarten are included; callers should
+// filter by Geschaeftsart as needed.
+func (c *Client) FetchRecentGeschaefte(limit int) ([]Geschaeft, error) {
+	url := fmt.Sprintf("%s/searchdetails?q=beginn_start%%20%%3E%%20%%222024-01-01%%2000:00:00%%22%%20sortBy%%20beginn_start/sort.descending&l=de-CH&s=1&m=%d",
+		GeschaeftBaseURL, limit)
+
+	body, err := c.makeRequest(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp GeschaeftSearchResponse
+	if err := xml.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("failed to parse XML response: %w", err)
+	}
+
+	geschaefte := make([]Geschaeft, len(resp.Hits))
+	for i, hit := range resp.Hits {
+		geschaefte[i] = hit.Geschaeft
+	}
+
+	return geschaefte, nil
+}
+
 // FetchAllKontakte fetches all contacts from the Zurich council API
 func (c *Client) FetchAllKontakte() ([]Kontakt, error) {
 	url := KontaktBaseURL + "/searchdetails?q=seq>0&l=de-CH"
