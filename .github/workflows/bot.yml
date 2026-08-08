@@ -102,10 +102,11 @@ jobs:
           MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
           MAX_VOTE_AGE_DAYS_ZURICH_CITY: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CITY }}
           MAX_VOTE_AGE_DAYS_ZURICH_CANTON: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CANTON }}
-          # Per-body kill switch. Unset means the code default applies — the
-          # city posts, the canton does not. Setting one to "false" pauses that
-          # body without touching the other or the schedule, which is the only
-          # way to stop one chamber when its source publishes something wrong.
+          # Per-body switch. Nothing posts unless its variable is "true", so a
+          # lost or misspelled variable stops the run rather than changing what
+          # gets published. Setting one to "false" pauses that body without
+          # touching the other or the schedule, which is the only way to stop
+          # one chamber when its source publishes something wrong.
           JURISDICTION_ZURICH_CITY_ENABLED: ${{ vars.JURISDICTION_ZURICH_CITY_ENABLED }}
           JURISDICTION_ZURICH_CANTON_ENABLED: ${{ vars.JURISDICTION_ZURICH_CANTON_ENABLED }}
         run: go run main.go

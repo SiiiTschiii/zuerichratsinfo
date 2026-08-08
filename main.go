@@ -42,6 +42,7 @@ func main() {
 
 	hasErrors := false
 	anyPlatformConfigured := false
+	anyJurisdictionEnabled := false
 
 	for _, channel := range config.Channels() {
 		// Only jurisdictions explicitly cleared to post. A newly registered
@@ -56,6 +57,7 @@ func main() {
 			log.Printf("⚠️  Channel %q: no enabled jurisdictions, skipping", channel.Key)
 			continue
 		}
+		anyJurisdictionEnabled = true
 
 		plats := buildPlatforms(channel, jurisdictions)
 		if len(plats) == 0 {
@@ -71,8 +73,15 @@ func main() {
 		}
 	}
 
+	// Distinguish the two ways a run can end up with nothing to do. They have
+	// different causes and different fixes, and reporting the wrong one sends
+	// whoever is debugging into the credentials when the switch is the problem.
+	if !anyJurisdictionEnabled {
+		log.Fatalf("No jurisdiction is enabled. Nothing posts unless its switch is set: %s. Known jurisdictions: %v.",
+			"JURISDICTION_<JURISDICTION>_ENABLED=true", config.JurisdictionKeys())
+	}
 	if !anyPlatformConfigured {
-		log.Fatal("No platform credentials configured for any channel. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky, or IG_USER_ID/IG_ACCESS_TOKEN/GITHUB_TOKEN/IG_REPO_OWNER/IG_REPO_NAME for Instagram.")
+		log.Fatal("No platform credentials configured for any channel. Set <CHANNEL>_X_API_KEY/<CHANNEL>_X_API_SECRET/<CHANNEL>_X_ACCESS_TOKEN/<CHANNEL>_X_ACCESS_SECRET for X, <CHANNEL>_BLUESKY_HANDLE/<CHANNEL>_BLUESKY_PASSWORD for Bluesky, or <CHANNEL>_IG_USER_ID/<CHANNEL>_IG_ACCESS_TOKEN/<CHANNEL>_GITHUB_TOKEN/<CHANNEL>_IG_REPO_OWNER/<CHANNEL>_IG_REPO_NAME for Instagram.")
 	}
 
 	if hasErrors {

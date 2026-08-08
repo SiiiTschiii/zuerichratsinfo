@@ -97,39 +97,60 @@ func TestEveryJurisdictionHasASource(t *testing.T) {
 	}
 }
 
-// The enabled flag is a per-body kill switch: it must be able to stop one
-// chamber without touching the other, and an unset variable must leave the
-// shipped default alone rather than reading as "off".
-func TestJurisdictionEnabledSwitch(t *testing.T) {
-	city, err := LookupJurisdiction("zurich-city")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !city.Enabled {
-		t.Error("Stadt Zürich should be enabled by default")
-	}
-	canton, _ := LookupJurisdiction(ZurichCantonKey)
-	if canton.Enabled {
-		t.Error("Kanton Zürich should ship disabled")
-	}
-
-	// An unset variable arrives as an empty string from the workflow.
-	t.Setenv("JURISDICTION_ZURICH_CITY_ENABLED", "")
-	if j, _ := LookupJurisdiction("zurich-city"); !j.Enabled {
-		t.Error("an unset switch must not disable a body")
+// Nothing posts unless its switch is explicitly on.
+//
+// The two mistakes are not symmetric: a body that should post and does not is a
+// visible gap, while a body that should not post and does has already published
+// to a public account. So an absent or unreadable variable has to mean off.
+func TestNoJurisdictionPostsByDefault(t *testing.T) {
+	for _, key := range JurisdictionKeys() {
+		j, err := LookupJurisdiction(key)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if j.Enabled {
+			t.Errorf("%s is enabled without its variable being set", key)
+		}
 	}
 
-	// A malformed value must not silently flip anything either.
-	t.Setenv("JURISDICTION_ZURICH_CITY_ENABLED", "yes please")
+	// An unset variable arrives from the workflow as an empty string, and a
+	// misspelled value is not a licence to publish.
+	for _, raw := range []string{"", "yes please", "TRUE-ish", "0.5"} {
+		t.Setenv("JURISDICTION_ZURICH_CITY_ENABLED", raw)
+		if j, _ := LookupJurisdiction("zurich-city"); j.Enabled {
+			t.Errorf("%q enabled the city; only an explicit true should", raw)
+		}
+	}
+
+	// Values Go's parser accepts as true all work, so the variable can be
+	// written the way each platform spells it.
+	for _, raw := range []string{"true", "TRUE", "True", "1", "t"} {
+		t.Setenv("JURISDICTION_ZURICH_CITY_ENABLED", raw)
+		if j, _ := LookupJurisdiction("zurich-city"); !j.Enabled {
+			t.Errorf("%q should have enabled the city", raw)
+		}
+	}
+}
+
+// Each body is switched independently — that is what makes it usable to pause
+// one chamber whose source has published something wrong.
+func TestJurisdictionsSwitchIndependently(t *testing.T) {
+	t.Setenv("JURISDICTION_ZURICH_CITY_ENABLED", "true")
+	t.Setenv("JURISDICTION_ZURICH_CANTON_ENABLED", "false")
+
 	if j, _ := LookupJurisdiction("zurich-city"); !j.Enabled {
-		t.Error("an unparseable switch must fall back to the default")
+		t.Error("the city should be enabled")
+	}
+	if j, _ := LookupJurisdiction(ZurichCantonKey); j.Enabled {
+		t.Error("the canton should be disabled")
 	}
 
 	t.Setenv("JURISDICTION_ZURICH_CITY_ENABLED", "false")
+	t.Setenv("JURISDICTION_ZURICH_CANTON_ENABLED", "true")
+
 	if j, _ := LookupJurisdiction("zurich-city"); j.Enabled {
 		t.Error("the city should be pausable on its own")
 	}
-	t.Setenv("JURISDICTION_ZURICH_CANTON_ENABLED", "true")
 	if j, _ := LookupJurisdiction(ZurichCantonKey); !j.Enabled {
 		t.Error("pausing the city must not affect the canton")
 	}

@@ -39,13 +39,15 @@ type Jurisdiction struct {
 	// NewSource builds the adapter that fetches this body's votes.
 	NewSource func() votes.Source
 
-	// Enabled decides whether the scheduled run posts this body.
+	// Enabled decides whether the scheduled run posts this body. It defaults to
+	// false for every jurisdiction and is turned on with
+	// JURISDICTION_<KEY>_ENABLED, e.g. JURISDICTION_ZURICH_CITY_ENABLED=true.
 	//
-	// It exists so shipping the code and going live are separate decisions. A
-	// new jurisdiction needs its vote log seeded and its first posts reviewed
-	// by a human before it runs unattended, and neither of those is something
-	// merging a pull request should trigger. Override with
-	// JURISDICTION_<KEY>_ENABLED, e.g. JURISDICTION_ZURICH_CANTON_ENABLED=true.
+	// Off by default because the consequence of the two mistakes is not
+	// symmetric: a body that should post and does not is a visible gap someone
+	// notices, while a body that should not post and does has already published
+	// to a public account. Losing the variable stops the run with a non-zero
+	// exit rather than quietly changing what gets published.
 	//
 	// Dry-run tools ignore this: previewing a body is exactly what you do
 	// before enabling it.
@@ -72,7 +74,6 @@ var jurisdictions = map[string]Jurisdiction{
 		Jurisdiction: zurichapi.Jurisdiction,
 		MaxAgeDays:   90,
 		NewSource:    func() votes.Source { return zurichapi.NewClient() },
-		Enabled:      true,
 	},
 	ZurichCantonKey: {
 		Jurisdiction: zurichCanton,
@@ -86,9 +87,6 @@ var jurisdictions = map[string]Jurisdiction{
 		NewSource: func() votes.Source {
 			return openparldata.New(zurichCanton, zurichCantonBodyKey)
 		},
-		// Off until the first posts have been reviewed; see the pull request
-		// for the go-live steps.
-		Enabled: false,
 	},
 }
 

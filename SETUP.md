@@ -182,14 +182,16 @@ go run cmd/cleanup_posts/main.go --platform=bluesky
 
 ```bash
 source .env.test
-SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go
+JURISDICTION_ZURICH_CITY_ENABLED=true SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go
 ```
+
+No jurisdiction posts unless its `JURISDICTION_<KEY>_ENABLED` variable is `true`, so the switch has to be set here too.
 
 **Regression workflow** (after formatting or posting changes):
 
 1. `go test ./...` — automated unit tests, including the golden snapshot below
 2. `source .env.test && go run cmd/post_fixture/main.go --fixture=all` — manual fixture verification
-3. `source .env.test && SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go` — manual live vote verification
+3. `source .env.test && JURISDICTION_ZURICH_CITY_ENABLED=true SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go` — manual live vote verification
 
 ### Golden Snapshot
 
