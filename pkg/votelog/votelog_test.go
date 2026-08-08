@@ -114,21 +114,7 @@ func TestMarkMultipleVotes_SimulatingGroupPost(t *testing.T) {
 }
 
 func TestSaveAndLoad(t *testing.T) {
-	// Create temp directory for test
-	tmpDir := t.TempDir()
-	oldWd, _ := os.Getwd()
-	defer func() { _ = os.Chdir(oldWd) }()
-
-	// Create data directory in temp location
-	dataDir := filepath.Join(tmpDir, "data")
-	if err := os.MkdirAll(dataDir, 0755); err != nil {
-		t.Fatal(err)
-	}
-
-	// Change to temp directory
-	if err := os.Chdir(tmpDir); err != nil {
-		t.Fatal(err)
-	}
+	defer setupTempDir(t)()
 
 	// Create and save log
 	log := NewEmpty(testJurisdiction, PlatformX)
@@ -183,18 +169,7 @@ func TestLoad_NonExistentFile(t *testing.T) {
 }
 
 func TestPersistenceAcrossMultipleSaves(t *testing.T) {
-	tmpDir := t.TempDir()
-	oldWd, _ := os.Getwd()
-	defer func() { _ = os.Chdir(oldWd) }()
-
-	dataDir := filepath.Join(tmpDir, "data")
-	if err := os.MkdirAll(dataDir, 0755); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.Chdir(tmpDir); err != nil {
-		t.Fatal(err)
-	}
+	defer setupTempDir(t)()
 
 	// First save
 	log1 := NewEmpty(testJurisdiction, PlatformX)
