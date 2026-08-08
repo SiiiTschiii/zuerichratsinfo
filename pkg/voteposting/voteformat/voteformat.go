@@ -238,12 +238,6 @@ func GroupLink(group []votes.Vote) string {
 	return group[0].SourceURL
 }
 
-// defaultBodyLabel is used when a source did not name the body. It is the Stadt
-// Zürich chamber because that is the only jurisdiction whose posts predate the
-// Body field; a post with a wrong-but-plausible label would be worse than this
-// only if some other body could reach here, and none can.
-const defaultBodyLabel = "Gemeinderat"
-
 // BodyLabel returns the chamber name to put in a post header.
 //
 // Several bodies post to one account, so this is what tells a reader whether
@@ -252,7 +246,7 @@ func BodyLabel(group []votes.Vote) string {
 	if len(group) > 0 && group[0].Body != "" {
 		return group[0].Body
 	}
-	return defaultBodyLabel
+	return ""
 }
 
 // PostHeadline is the first line of a post: which chamber voted, and when.
@@ -267,10 +261,14 @@ func BodyLabel(group []votes.Vote) string {
 // spacing after it and that difference is already baked into published posts.
 func PostHeadline(group []votes.Vote) string {
 	body := BodyLabel(group)
-	if len(group) == 0 || group[0].Date.IsZero() {
-		return body + " | Abstimmung"
+	prefix := ""
+	if body != "" {
+		prefix = body + " | "
 	}
-	return body + " | Abstimmung vom " + FormatVoteDate(group[0].Date)
+	if len(group) == 0 || group[0].Date.IsZero() {
+		return prefix + "Abstimmung"
+	}
+	return prefix + "Abstimmung vom " + FormatVoteDate(group[0].Date)
 }
 
 // LinkLine returns the trailing block of a post: the link, plus the source

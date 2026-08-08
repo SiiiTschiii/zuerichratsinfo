@@ -15,7 +15,7 @@ const JurisdictionKey = "zurich-city"
 var Jurisdiction = votes.Jurisdiction{
 	Key:       JurisdictionKey,
 	Name:      "Gemeinderat Stadt Zürich",
-	ShortName: "Gemeinderat",
+	ShortName: "Gemeinderat ZH",
 	Seats:     125,
 }
 

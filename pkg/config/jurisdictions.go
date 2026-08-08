@@ -61,7 +61,7 @@ const ZurichCantonKey = "zurich-canton"
 var zurichCanton = votes.Jurisdiction{
 	Key:       ZurichCantonKey,
 	Name:      "Kantonsrat Zürich",
-	ShortName: "Kantonsrat",
+	ShortName: "Kantonsrat ZH",
 	Seats:     180,
 }
 

@@ -169,6 +169,7 @@ func TestFormatVoteThread_SingleVoteStructure(t *testing.T) {
 	group := []votes.Vote{
 		{
 			SourceID:   "struct-guid-1",
+			Body:       "Gemeinderat ZH",
 			Title:      "Weisung: Testvorlage",
 			Date:       testfixtures.MustDate("2026-01-15"),
 			Decision:   "angenommen",
@@ -188,7 +189,7 @@ func TestFormatVoteThread_SingleVoteStructure(t *testing.T) {
 
 	// Root contains header, title, thread hint
 	root := thread[0].Text
-	if !strings.Contains(root, "Gemeinderat") {
+	if !strings.Contains(root, "Gemeinderat ZH") {
 		t.Error("root should contain header")
 	}
 	if !strings.Contains(root, "Testvorlage") {

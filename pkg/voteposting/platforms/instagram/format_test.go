@@ -37,7 +37,7 @@ func TestFormatCarousel_SingleVote(t *testing.T) {
 
 	// Caption must contain key parts
 	for _, part := range []string{
-		"🗳️ Gemeinderat",
+		"🗳️ Gemeinderat ZH",
 		"Angenommen",
 		"✅",
 		"📊",
