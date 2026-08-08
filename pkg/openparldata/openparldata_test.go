@@ -300,9 +300,6 @@ func TestAffairNumberIsFetched(t *testing.T) {
 	if got := groups[0][0].Affair.Number; got != "207/2026" {
 		t.Errorf("Affair.Number = %q, want 207/2026", got)
 	}
-	if got := groups[0][0].GroupURL; !strings.Contains(got, "kantonsrat.zh.ch") {
-		t.Errorf("GroupURL = %q; a group should link to the affair page", got)
-	}
 	if got := groups[0][0].Affair.URL; !strings.Contains(got, "kantonsrat.zh.ch") {
 		t.Errorf("Affair.URL = %q", got)
 	}

@@ -482,7 +482,7 @@ func KantonsratVote() []votes.Vote {
 		No:           intPtr(87),
 		Abstention:   intPtr(0),
 		Absent:       intPtr(10),
-		SourceURL:    "https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4",
+		SourceURL:    "https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4&segmentUid=e815525c-45ef-475e-a2db-3f644e0f0c0b",
 		// OpenParlData is CC BY 4.0; the credit is a licence obligation, so it
 		// must actually appear in the rendered post.
 		Attribution: "Source: OpenParlData.ch",

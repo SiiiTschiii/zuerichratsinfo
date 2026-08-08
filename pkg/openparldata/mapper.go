@@ -64,8 +64,12 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 	if v.AffairID != nil {
 		out.Affair.ID = strconv.FormatInt(*v.AffairID, 10)
 	}
-	// Until the affair is fetched, the vote's own page is the best link for
-	// either shape.
+	// The vote's own page is the link for both the single and the group shape.
+	//
+	// On Kanton Zürich every vote of one agenda item shares an agendaItemUid,
+	// so this page lists the whole group's votes with their tallies and name
+	// lists, while the segmentUid lands the reader on this particular one.
+	// That is the same thing the Stadt Zürich agenda-item link does.
 	out.GroupURL = out.SourceURL
 
 	return out
@@ -84,9 +88,20 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 	}
 	if u := deref(a.URLExternalDe); u != "" {
 		v.Affair.URL = u
-		// A group of votes on one business matter is best summarised by the
-		// affair page; these bodies publish no agenda-item page.
-		v.GroupURL = u
+
+		// The affair page is deliberately *not* the link a post carries. It
+		// lists the business matter's documents and a prose summary, but no
+		// vote tally and no name list — a reader following it cannot check the
+		// numbers in the post, which is the whole point of publishing a link.
+		//
+		// The vote's own page can. It is only a fallback here, for a vote the
+		// source gave no URL of its own.
+		if v.SourceURL == "" {
+			v.SourceURL = u
+		}
+		if v.GroupURL == "" {
+			v.GroupURL = u
+		}
 	}
 }
 
