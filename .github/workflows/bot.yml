@@ -11,6 +11,16 @@ on:
   # push:
   #   branches: [ main ]
 
+# One run at a time. Every run pushes the vote log to the same state branch from
+# a worktree branched at fetch time, and the push is not forced — so if a slow
+# run overlapped the next one, the second push would be rejected, that run would
+# lose its record of what it had just posted, and the votes would be published
+# again on the next run. Queue rather than cancel: a run that has already posted
+# must still be allowed to write down that it did.
+concurrency:
+  group: bot
+  cancel-in-progress: false
+
 jobs:
   post-update:
     runs-on: ubuntu-latest
