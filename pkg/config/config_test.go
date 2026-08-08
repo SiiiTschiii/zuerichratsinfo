@@ -96,3 +96,41 @@ func TestEveryJurisdictionHasASource(t *testing.T) {
 		}
 	}
 }
+
+// The enabled flag is a per-body kill switch: it must be able to stop one
+// chamber without touching the other, and an unset variable must leave the
+// shipped default alone rather than reading as "off".
+func TestJurisdictionEnabledSwitch(t *testing.T) {
+	city, err := LookupJurisdiction("zurich-city")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !city.Enabled {
+		t.Error("Stadt Zürich should be enabled by default")
+	}
+	canton, _ := LookupJurisdiction(ZurichCantonKey)
+	if canton.Enabled {
+		t.Error("Kanton Zürich should ship disabled")
+	}
+
+	// An unset variable arrives as an empty string from the workflow.
+	t.Setenv("JURISDICTION_ZURICH_CITY_ENABLED", "")
+	if j, _ := LookupJurisdiction("zurich-city"); !j.Enabled {
+		t.Error("an unset switch must not disable a body")
+	}
+
+	// A malformed value must not silently flip anything either.
+	t.Setenv("JURISDICTION_ZURICH_CITY_ENABLED", "yes please")
+	if j, _ := LookupJurisdiction("zurich-city"); !j.Enabled {
+		t.Error("an unparseable switch must fall back to the default")
+	}
+
+	t.Setenv("JURISDICTION_ZURICH_CITY_ENABLED", "false")
+	if j, _ := LookupJurisdiction("zurich-city"); j.Enabled {
+		t.Error("the city should be pausable on its own")
+	}
+	t.Setenv("JURISDICTION_ZURICH_CANTON_ENABLED", "true")
+	if j, _ := LookupJurisdiction(ZurichCantonKey); !j.Enabled {
+		t.Error("pausing the city must not affect the canton")
+	}
+}
