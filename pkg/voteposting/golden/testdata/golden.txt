@@ -2,7 +2,7 @@
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Postulat von Reto Brüesch @Z7f3a94241 (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
 
@@ -24,7 +24,7 @@ Grüne 0/0/0/2
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Postulat von Reto Brüesch @Z7f3a94241 (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
 
@@ -46,12 +46,12 @@ Grüne 0/0/0/2
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Postulat von Reto Brüesch (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
 
 👇 Details im Thread
-[mention] zri-testbot-7f3a.bsky.social @ 78-91
+[mention] zri-testbot-7f3a.bsky.social @ 81-94
 
 [post 1]
 📊 90 Ja | 30 Nein | 0 Enth. | 5 Abw.
@@ -71,7 +71,7 @@ Grüne 0/0/0/2
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Postulat von Reto Brüesch @zueri835 (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
 
@@ -93,7 +93,7 @@ Grüne 0/0/0/2
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ❌ Abgelehnt: Motion von Liv Mahrer @Z7f3a94241 (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
 
@@ -115,7 +115,7 @@ AL 0/5/0/0
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ❌ Abgelehnt: Motion von Liv Mahrer @Z7f3a94241 (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
 
@@ -137,12 +137,12 @@ AL 0/5/0/0
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ❌ Abgelehnt: Motion von Liv Mahrer (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
 
 👇 Details im Thread
-[mention] zri-testbot-7f3a.bsky.social @ 75-85
+[mention] zri-testbot-7f3a.bsky.social @ 78-88
 
 [post 1]
 📊 20 Ja | 95 Nein | 5 Enth. | 5 Abw.
@@ -162,7 +162,7 @@ AL 0/5/0/0
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Motion von Liv Mahrer @zueri835 (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
 
@@ -184,10 +184,10 @@ AL 0/5/0/0
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Dringlicherklärung
-✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kultu…
+✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Ku…
 
 👇 Details im Thread
 
@@ -207,7 +207,7 @@ Die Mitte 7/0/0/0
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Dringlicherklärung
 ✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kulturanbietenden bei der Suche nach Lokalitäten
@@ -230,10 +230,10 @@ Die Mitte 7/0/0/0
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Dringlicherklärung
-✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kulturanbietenden bei der Suche nach Lok…
+✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kulturanbietenden bei der Suche nach…
 
 👇 Details im Thread
 
@@ -255,7 +255,7 @@ Die Mitte 7/0/0/0
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Dringlicherklärung
 Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kulturanbietenden bei der Suche nach Lokalitäten
@@ -278,9 +278,9 @@ Die Mitte 7/0/0/0
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdi…
+✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unteri…
 
 👇 Details im Thread
 
@@ -300,7 +300,7 @@ AL 0/2/0/1
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdischer Durchmesserlinie und ergänzenden Massnahmen zur Verbesserung der Verkehrsinfrastruktur im Grossraum Zürich inklusive der notwendigen Anpassungen an die bestehende urbane Planung
 
@@ -322,9 +322,9 @@ AL 0/2/0/1
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdischer Durchmesserlinie und ergänzend…
+✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdischer Durchmesserlinie und ergänz…
 
 👇 Details im Thread
 
@@ -346,7 +346,7 @@ AL 0/2/0/1
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdischer Durchmesserlinie und ergänzenden Massnahmen zur Verbesserung der Verkehrsinfrastruktur im Grossraum Zürich inklusive der notwendigen Anpassungen an die bestehende urbane Planung
 
@@ -368,7 +368,7 @@ AL 0/2/0/1
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung
 
@@ -405,7 +405,7 @@ AL 0/8/0/1
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung
 
@@ -440,7 +440,7 @@ AL 0/8/0/1
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung
 
@@ -478,7 +478,7 @@ AL 0/8/0/1
 ---- Instagram ----
 [images] 3
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung
 
@@ -512,7 +512,7 @@ AL 0/8/0/1
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Postulat von Max Müller @Z7f3a94241 (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
 
@@ -534,7 +534,7 @@ AL 0/2/0/1
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Postulat von Max Müller @Z7f3a94241 (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
 
@@ -556,12 +556,12 @@ AL 0/2/0/1
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Postulat von Max Müller (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
 
 👇 Details im Thread
-[mention] zri-testbot-7f3a.bsky.social @ 78-89
+[mention] zri-testbot-7f3a.bsky.social @ 81-92
 
 [post 1]
 📊 80 Ja | 35 Nein | 5 Enth. | 5 Abw.
@@ -581,7 +581,7 @@ AL 0/2/0/1
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Postulat von Max Müller @zueri835 (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
 
@@ -603,7 +603,7 @@ AL 0/2/0/1
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht
 
@@ -743,7 +743,7 @@ AL 0/3/0/1
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht
 
@@ -875,7 +875,7 @@ AL 0/3/0/1
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht
 
@@ -1017,7 +1017,7 @@ AL 0/3/0/1
 ---- Instagram ----
 [images] 10
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Totalrevision der Bau- und Zonenordnung der Stadt Zürich, Anpassungen an das übergeordnete Recht
 
@@ -1132,8 +1132,7 @@ AL 0/3/0/1
 ✅ Angenommen: Ziffer J
 📊 89 Ja | 21 Nein | 5 Enthaltung | 10 Abwesend
 
-🏛️ Fraktionen (Ja/Nein/Enth/Abw):
-SP…
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):…
 ℹ️ Gekürzt – weitere Teilabstimmungen im Link.
 🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
 
@@ -1141,7 +1140,7 @@ SP…
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Postulat von Anna Graff @Z7f3a94241 (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
 
@@ -1163,7 +1162,7 @@ AL 0/0/0/1
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Postulat von Anna Graff @Z7f3a94241 (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
 
@@ -1185,12 +1184,12 @@ AL 0/0/0/1
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 ✅ Angenommen: Postulat von Anna Graff (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
 
 👇 Details im Thread
-[mention] zri-testbot-7f3a.bsky.social @ 78-88
+[mention] zri-testbot-7f3a.bsky.social @ 81-91
 
 [post 1]
 📊 80 Ja | 30 Nein | 5 Enth. | 10 Abw.
@@ -1210,7 +1209,7 @@ AL 0/0/0/1
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Postulat von Anna Graff @zueri835 (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
 
@@ -1232,7 +1231,7 @@ AL 0/0/0/1
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 04.03.2026
+🗳️  Gemeinderat ZH | Abstimmung vom 04.03.2026
 
 Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots
 
@@ -1254,7 +1253,7 @@ AL 0/8/0/1
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 04.03.2026
+🗳️  Gemeinderat ZH | Abstimmung vom 04.03.2026
 
 Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots
 
@@ -1276,7 +1275,7 @@ AL 0/8/0/1
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 04.03.2026
+🗳️ Gemeinderat ZH | Abstimmung vom 04.03.2026
 
 Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots
 
@@ -1300,7 +1299,7 @@ AL 0/8/0/1
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 04.03.2026
+🗳️ Gemeinderat ZH | Abstimmung vom 04.03.2026
 
 Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots
 
@@ -1321,7 +1320,7 @@ AL 0/8/0/1
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 25.02.2026
+🗳️  Gemeinderat ZH | Abstimmung vom 25.02.2026
 
 Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen
 
@@ -1358,7 +1357,7 @@ AL 0/0/5/1
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 25.02.2026
+🗳️  Gemeinderat ZH | Abstimmung vom 25.02.2026
 
 Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen
 
@@ -1393,7 +1392,7 @@ AL 0/0/5/1
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 25.02.2026
+🗳️ Gemeinderat ZH | Abstimmung vom 25.02.2026
 
 Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen
 
@@ -1432,7 +1431,7 @@ AL 0/0/5/1
 ---- Instagram ----
 [images] 3
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 25.02.2026
+🗳️ Gemeinderat ZH | Abstimmung vom 25.02.2026
 
 Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen
 
@@ -1466,7 +1465,7 @@ AL 0/0/5/1
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 26.11.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 26.11.2025
 
 ❌ Abgelehnt: Postulat von Reto Brüesch @Z7f3a94241 (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
 
@@ -1488,7 +1487,7 @@ AL 0/0/0/1
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 26.11.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 26.11.2025
 
 ❌ Abgelehnt: Postulat von Reto Brüesch @Z7f3a94241 (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
 
@@ -1510,12 +1509,12 @@ AL 0/0/0/1
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 26.11.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 26.11.2025
 
 ❌ Abgelehnt: Postulat von Reto Brüesch (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
 
 👇 Details im Thread
-[mention] zri-testbot-7f3a.bsky.social @ 77-90
+[mention] zri-testbot-7f3a.bsky.social @ 80-93
 
 [post 1]
 📊 21 Ja | 38 Nein | 56 Enth. | 10 Abw.
@@ -1535,7 +1534,7 @@ AL 0/0/0/1
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 26.11.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 26.11.2025
 
 Postulat von Reto Brüesch @zueri835 (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
 
@@ -1557,7 +1556,7 @@ AL 0/0/0/1
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Kantonsrat | Abstimmung vom 06.07.2026
+🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026
 
 ❌ Abgelehnt: Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich
 
@@ -1583,7 +1582,7 @@ Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Kantonsrat | Abstimmung vom 06.07.2026
+🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026
 
 ❌ Abgelehnt: Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich
 
@@ -1607,7 +1606,7 @@ Source: OpenParlData.ch
 
 ---- Bluesky ----
 [post 0]
-🗳️ Kantonsrat | Abstimmung vom 06.07.2026
+🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026
 
 ❌ Abgelehnt: Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich
 
@@ -1635,7 +1634,7 @@ Source: OpenParlData.ch
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Kantonsrat | Abstimmung vom 06.07.2026
+🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026
 
 Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich
 
@@ -1659,7 +1658,7 @@ Source: OpenParlData.ch
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Kantonsrat | Abstimmung vom 15.06.2026
+🗳️  Kantonsrat ZH | Abstimmung vom 15.06.2026
 
 Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
 
@@ -1741,7 +1740,7 @@ Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Kantonsrat | Abstimmung vom 15.06.2026
+🗳️  Kantonsrat ZH | Abstimmung vom 15.06.2026
 
 Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
 
@@ -1818,7 +1817,7 @@ Source: OpenParlData.ch
 
 ---- Bluesky ----
 [post 0]
-🗳️ Kantonsrat | Abstimmung vom 15.06.2026
+🗳️ Kantonsrat ZH | Abstimmung vom 15.06.2026
 
 Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
 
@@ -1901,7 +1900,7 @@ Source: OpenParlData.ch
 ---- Instagram ----
 [images] 6
 [caption]
-🗳️ Kantonsrat | Abstimmung vom 15.06.2026
+🗳️ Kantonsrat ZH | Abstimmung vom 15.06.2026
 
 Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
 
@@ -1977,9 +1976,9 @@ Source: OpenParlData.ch
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktan…
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Trak…
 
 👇 Details im Thread
 
@@ -2127,9 +2126,9 @@ AL 0/3/0/1
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Gemeinderat | Abstimmung vom 15.06.2025
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Tr…
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes…
 
 👇 Details im Thread
 
@@ -2268,9 +2267,9 @@ AL 0/3/0/1
 
 ---- Bluesky ----
 [post 0]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr…
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum S…
 
 👇 Details im Thread
 
@@ -2420,9 +2419,9 @@ AL 0/3/0/1
 ---- Instagram ----
 [images] 10
 [caption]
-🗳️ Gemeinderat | Abstimmung vom 15.06.2025
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktan…
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Trak…
 ℹ️ Gekürzt – weitere Teilabstimmungen im Link.
 🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
 

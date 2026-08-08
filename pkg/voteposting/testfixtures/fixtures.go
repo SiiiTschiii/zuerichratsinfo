@@ -131,7 +131,7 @@ func base(guid, title, grNr string) votes.Vote {
 	return votes.Vote{
 		SourceID:     objGUID,
 		Jurisdiction: "zurich-city",
-		Body:         "Gemeinderat",
+		Body:         "Gemeinderat ZH",
 		SessionID:    sitzungGUID,
 		Date:         sitzungDate,
 		Title:        title,
@@ -473,7 +473,7 @@ func KantonsratVote() []votes.Vote {
 	v := votes.Vote{
 		SourceID:     "EBA24B53-B404-3BCB-9A1B-4E7E01C1ACAC",
 		Jurisdiction: "zurich-canton",
-		Body:         "Kantonsrat",
+		Body:         "Kantonsrat ZH",
 		Date:         time.Date(2026, 7, 6, 10, 21, 43, 0, time.UTC),
 		Sequence:     "1783333303",
 		Title:        title,
@@ -551,7 +551,7 @@ func KantonsratMultiVote() []votes.Vote {
 		v := votes.Vote{
 			SourceID:     sv.id,
 			Jurisdiction: "zurich-canton",
-			Body:         "Kantonsrat",
+			Body:         "Kantonsrat ZH",
 			Date:         at,
 			Sequence:     fmt.Sprintf("%d", at.Unix()),
 			Title:        title,

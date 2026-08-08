@@ -19,6 +19,7 @@ func intPtr(i int) *int {
 func sampleVote(title, result string, ja, nein, enth, abw int) votes.Vote {
 	return votes.Vote{
 		SourceID:   "vote-guid-1",
+		Body:       "Gemeinderat ZH",
 		Title:      title,
 		SessionID:  "sitzung-guid-1",
 		Date:       testfixtures.MustDate("2025-06-15"),
@@ -60,7 +61,7 @@ func TestFormatVoteThread_SingleVote(t *testing.T) {
 	root := thread[0]
 	// Root must contain header, result, title, and thread hint
 	for _, part := range []string{
-		"🗳️ Gemeinderat",
+		"🗳️ Gemeinderat ZH",
 		"Abstimmung vom 15.06.2025",
 		"✅",
 		"Angenommen",
@@ -139,7 +140,7 @@ func TestFormatVoteThread_VeryLongTitle(t *testing.T) {
 	if !strings.Contains(root.Text, "…") {
 		t.Errorf("expected truncation ellipsis in root for long title\nFull root:\n%s", root.Text)
 	}
-	if !strings.Contains(root.Text, "🗳️ Gemeinderat") {
+	if !strings.Contains(root.Text, "🗳️ Gemeinderat ZH") {
 		t.Errorf("root missing header\n%s", root.Text)
 	}
 	if !strings.Contains(root.Text, "👇 Details im Thread") {

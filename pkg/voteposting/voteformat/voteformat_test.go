@@ -425,26 +425,26 @@ func TestPostHeadline(t *testing.T) {
 	}{
 		{
 			name:  "named body and known date",
-			group: []votes.Vote{{Body: "Kantonsrat", Date: day}},
-			want:  "Kantonsrat | Abstimmung vom 06.07.2026",
+			group: []votes.Vote{{Body: "Kantonsrat ZH", Date: day}},
+			want:  "Kantonsrat ZH | Abstimmung vom 06.07.2026",
 		},
 		{
 			// Votes with an unparseable date are deliberately kept rather than
 			// discarded, so this is reachable — and "Abstimmung vom " trailing
 			// into nothing is not an acceptable way to render it.
 			name:  "unknown date drops the date clause",
-			group: []votes.Vote{{Body: "Kantonsrat"}},
-			want:  "Kantonsrat | Abstimmung",
+			group: []votes.Vote{{Body: "Kantonsrat ZH"}},
+			want:  "Kantonsrat ZH | Abstimmung",
 		},
 		{
-			name:  "unnamed body falls back to the city chamber",
+			name:  "unnamed body omits the chamber",
 			group: []votes.Vote{{Date: day}},
-			want:  "Gemeinderat | Abstimmung vom 06.07.2026",
+			want:  "Abstimmung vom 06.07.2026",
 		},
 		{
 			name:  "empty group",
 			group: nil,
-			want:  "Gemeinderat | Abstimmung",
+			want:  "Abstimmung",
 		},
 	}
 
