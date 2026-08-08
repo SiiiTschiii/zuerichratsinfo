@@ -96,9 +96,9 @@ go run ./cmd/generate_vote_image -out out/images
 go run ./cmd/generate_vote_image -fixture kantonsrat-vote -platform instagram -out out/images
 ```
 
-Open `out/images/` to compare. Each card carries the chamber name in the
-top-left corner, and background colour is keyed on jurisdiction plus business
-number.
+Open `out/images/` to compare. Each card carries a full-width band naming the
+chamber in that body's colour, over a background keyed on jurisdiction plus
+business number.
 
 Fixture names come from `pkg/voteposting/testfixtures` — `single-vote-angenommen`,
 `multi-vote-group`, `auswahl-vote`, `kantonsrat-vote`, and others; an unknown

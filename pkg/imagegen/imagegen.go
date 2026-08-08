@@ -54,8 +54,8 @@ var palette = []color.RGBA{
 // Hashing the whole string gives votes with the same trailing-number residue
 // but a different year or prefix different colours. The jurisdiction is part of
 // the key so that two bodies posting to one account do not land on the same
-// colour for the same-numbered business — colour is a weak signal on its own,
-// which is why the card also carries the body name.
+// colour for the same-numbered business. The background is decoration; which
+// body voted is carried by the band.
 func SelectColor(jurisdiction, affairNumber string) color.RGBA {
 	seed := jurisdiction + "|" + affairNumber
 
@@ -315,6 +315,7 @@ type fontSet struct {
 	regular     font.Face // goregular 36
 	small       font.Face // goregular 28
 	boldHeading font.Face // gobold 48 (= statNum, shared)
+	bandLabel   font.Face // gobold 44 (body band)
 
 	emojiRegular font.Face // notoEmoji 36
 	emojiSmall   font.Face // notoEmoji 28
@@ -354,6 +355,9 @@ func loadFontSet() (*fontSet, error) {
 	if fs.small, err = load(goregular.TTF, 28); err != nil {
 		return nil, fmt.Errorf("small font: %w", err)
 	}
+	if fs.bandLabel, err = load(gobold.TTF, 44); err != nil {
+		return nil, fmt.Errorf("bandLabel font: %w", err)
+	}
 	fs.boldHeading = fs.statNum // same face, gobold 48
 
 	if fs.emojiRegular, err = load(notoEmojiTTF, 36); err != nil {
@@ -375,20 +379,22 @@ func loadFontSet() (*fontSet, error) {
 // renderCombinedCard renders a single image with visual hierarchy:
 // large verdict, bold title, dashboard stats, and grouped party breakdown.
 func renderCombinedCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
+	inset := bandInset(*v)
+
 	// Dry run to measure content height
-	dry := newCursor(0, imgHeight)
+	dry := newCursor(inset, imgHeight)
 	_, _, err := layoutCombinedCard(nil, dry, v, bg, fonts)
 	if err != nil {
 		return nil, err
 	}
 
-	// Real run with centered offset
-	startY := (imgHeight - dry.contentHeight()) / 2
-	if startY < padding {
-		startY = padding
+	// Real run, centred in the space the band leaves
+	startY := inset + (imgHeight-inset-dry.contentHeight())/2
+	if startY < inset+padding {
+		startY = inset + padding
 	}
 	img := newImage(bg)
-	drawBodyCaption(img, fonts.small, v.Body, bg)
+	drawBodyBand(img, fonts.bandLabel, *v)
 
 	cur := newCursor(startY, imgHeight)
 	_, _, err = layoutCombinedCard(img, cur, v, bg, fonts)
@@ -497,20 +503,6 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
 
 	return titleFace, titleLines, nil
-}
-
-// drawBodyCaption writes which chamber voted into the top-left corner.
-//
-// Both Zurich bodies post to the same account, so without this a reader has no
-// way to tell a cantonal vote from a city one. It is drawn in the corner rather
-// than in the flow so it costs no vertical space and cannot reflow a card that
-// has already been measured.
-func drawBodyCaption(img *image.RGBA, face font.Face, body string, bg color.RGBA) {
-	if img == nil || body == "" {
-		return
-	}
-	baseline := padding + face.Metrics().Ascent.Ceil()
-	drawShadowedText(img, face, nil, padding, baseline, body, bg)
 }
 
 // statCol holds a value/label pair for dashboard-style stat columns.
@@ -715,16 +707,18 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 }
 
 func renderTitleCard(group []votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
+	inset := bandInset(group[0])
+
 	// Dry run to measure content height
-	dry := newCursor(0, imgHeight)
+	dry := newCursor(inset, imgHeight)
 	layoutTitleCard(nil, dry, group, bg, fonts)
 
-	startY := (imgHeight - dry.contentHeight()) / 2
-	if startY < padding {
-		startY = padding
+	startY := inset + (imgHeight-inset-dry.contentHeight())/2
+	if startY < inset+padding {
+		startY = inset + padding
 	}
 	img := newImage(bg)
-	drawBodyCaption(img, fonts.small, group[0].Body, bg)
+	drawBodyBand(img, fonts.bandLabel, group[0])
 
 	cur := newCursor(startY, imgHeight)
 	layoutTitleCard(img, cur, group, bg, fonts)
@@ -798,17 +792,19 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 }
 
 func renderResultCard(v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) ([]byte, error) {
+	inset := bandInset(*v)
+
 	// Dry run to measure content height
-	dry := newCursor(0, imgHeight)
+	dry := newCursor(inset, imgHeight)
 	layoutResultCard(nil, dry, v, bg, fonts, idx, total)
 
-	// Real run with centered offset
-	startY := (imgHeight - dry.contentHeight()) / 2
-	if startY < padding {
-		startY = padding
+	// Real run, centred in the space the band leaves
+	startY := inset + (imgHeight-inset-dry.contentHeight())/2
+	if startY < inset+padding {
+		startY = inset + padding
 	}
 	img := newImage(bg)
-	drawBodyCaption(img, fonts.small, v.Body, bg)
+	drawBodyBand(img, fonts.bandLabel, *v)
 	cur := newCursor(startY, imgHeight)
 	layoutResultCard(img, cur, v, bg, fonts, idx, total)
 
@@ -821,7 +817,7 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 		if badge != "" {
 			badgeW := font.MeasureString(fonts.small, badge).Ceil()
 			badgeX := imgWidth - padding - badgeW
-			badgeY := padding + fonts.small.Metrics().Ascent.Ceil()
+			badgeY := bandInset(*v) + padding + fonts.small.Metrics().Ascent.Ceil()
 			drawShadowedText(img, fonts.small, nil, badgeX, badgeY, badge, bg)
 		}
 	}
