@@ -223,5 +223,3 @@ func TestRoundTrip_FullCarouselFlow(t *testing.T) {
 		t.Errorf("expected media_99, got %s", mediaID)
 	}
 }
-
-

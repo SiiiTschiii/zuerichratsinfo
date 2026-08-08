@@ -52,14 +52,6 @@ type Vote struct {
 	// Date is the sitting date. The zero value means the source supplied a date
 	// that could not be parsed; callers must treat that as "unknown", not "old".
 	Date time.Time
-	// DateIsExact reports whether Date carries this vote's own timestamp rather
-	// than only the day it was taken.
-	//
-	// It decides whether the time of day can tell two votes of one sitting
-	// apart. PARIS reports midnight for every vote of a sitting, so showing a
-	// time there would label them all identically and imply a precision the
-	// source does not have; OpenParlData timestamps each vote to the second.
-	DateIsExact bool
 
 	// Title is the headline text, already resolved between competing source
 	// fields (see zurichapi.ToVote). Still needs presentation cleanup.

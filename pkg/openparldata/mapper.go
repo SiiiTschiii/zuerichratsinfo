@@ -55,11 +55,9 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 		Jurisdiction: c.jurisdiction.Key,
 		Body:         c.jurisdiction.ShortName,
 		Date:         date,
-		// OpenParlData timestamps each vote to the second. That is what orders
-		// votes within a sitting, and — for bodies that publish no per-vote
-		// title — the only thing that tells them apart.
-		DateIsExact: hasTimeOfDay(date),
-		Sequence:    sequenceFromDate(date),
+		// OpenParlData has no per-sitting sequence number, but its timestamps
+		// are second-precision, so they order votes within a sitting exactly.
+		Sequence: sequenceFromDate(date),
 
 		Title:    title,
 		Subtitle: subtitle,
@@ -86,12 +84,7 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 	if v.AffairID != nil {
 		out.Affair.ID = strconv.FormatInt(*v.AffairID, 10)
 	}
-	// The vote's own page is the link for both the single and the group shape.
-	//
-	// On Kanton Zürich every vote of one agenda item shares an agendaItemUid,
-	// so this page lists the whole group's votes with their tallies and name
-	// lists, while the segmentUid lands the reader on this particular one.
-	// That is the same thing the Stadt Zürich agenda-item link does.
+	// Provisional until the affair is fetched, which replaces it.
 	out.GroupURL = out.SourceURL
 
 	return out
@@ -111,18 +104,22 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 	if u := deref(a.URLExternalDe); u != "" {
 		v.Affair.URL = u
 
-		// The affair page is deliberately *not* the link a post carries. It
-		// lists the business matter's documents and a prose summary, but no
-		// vote tally and no name list — a reader following it cannot check the
-		// numbers in the post, which is the whole point of publishing a link.
+		// A post covering several votes links to the parliament's own Geschäft
+		// page rather than to any one vote.
 		//
-		// The vote's own page can. It is only a fallback here, for a vote the
-		// source gave no URL of its own.
+		// It is not the page where a tally is easiest to read — that is the
+		// vote's own archive page, and this one gives the totals in prose with
+		// a name list for only some votes. It is chosen for what a published
+		// link has to survive: it is the canton's own permalink, keyed by the
+		// Geschäft id, on the parliament's own domain, and it carries the
+		// documents, committee reports and every step of the business. A link
+		// that rots or points at a third party in a year cannot be repaired
+		// after the fact; a number that takes one more click can.
+		v.GroupURL = u
+
+		// A vote the source gave no page of its own still needs somewhere to go.
 		if v.SourceURL == "" {
 			v.SourceURL = u
-		}
-		if v.GroupURL == "" {
-			v.GroupURL = u
 		}
 	}
 }
@@ -208,16 +205,6 @@ func parseDate(s string) time.Time {
 		}
 	}
 	return time.Time{}
-}
-
-// hasTimeOfDay reports whether a timestamp carries a clock rather than just a
-// date. A source that gives only a day parses to midnight.
-func hasTimeOfDay(t time.Time) bool {
-	if t.IsZero() {
-		return false
-	}
-	h, m, sec := t.Clock()
-	return h != 0 || m != 0 || sec != 0
 }
 
 func sequenceFromDate(t time.Time) string {

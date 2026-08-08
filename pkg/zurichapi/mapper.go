@@ -48,9 +48,6 @@ func ToVote(a Abstimmung) votes.Vote {
 		SessionID:    a.SitzungGuid,
 		Sequence:     a.SEQ,
 		Date:         parseSitzungDatum(a.SitzungDatum),
-		// PARIS publishes the sitting's date, identical for every vote in it —
-		// not the moment each vote was taken.
-		DateIsExact: false,
 
 		Title:    SelectBestTitle(a.TraktandumTitel, a.GeschaeftTitel),
 		Subtitle: a.Abstimmungstitel,

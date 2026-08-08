@@ -518,14 +518,15 @@ func KantonsratVote() []votes.Vote {
 // KantonsratMultiVote is the real 15.06.2026 Glattalbahn group: two substantive
 // votes interleaved with three Ausgabenbremse (spending-brake) quorum votes.
 //
-// It is here because it is the shape that reads worst. Kanton Zürich publishes
-// no per-vote title, so the entries can only be told apart by time; and the
-// quorum votes show a lopsided 129:0 with ~51 absent, which looks like
-// near-unanimous agreement when it is really a procedural vote the opposition
-// sits out. OpenParlData does not label them — it populates type_de as
-// Normal/Quorum for Stadt Zürich but leaves it null for the canton — so the
-// distinction is not ours to make up. Keeping the case in the snapshot means a
-// future fix can be seen working.
+// It is here because it is the shape that reads worst, and the snapshot should
+// show that honestly. Kanton Zürich publishes no per-vote title, so the entries
+// can only be numbered; and the quorum votes show a lopsided 129:0 with ~51
+// "Abwesend", which reads as near-unanimous agreement when it is really a
+// procedural vote most of the opposition sits out. Both gaps are upstream:
+// OpenParlData populates type_de as Normal/Quorum for Stadt Zürich but leaves
+// it null for the canton, and collapses "nicht abgestimmt" into "absent".
+// Neither is ours to invent, so this case stays visible until the source fixes
+// it.
 func KantonsratMultiVote() []votes.Vote {
 	const title = "Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten"
 	const agendaItem = "https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13"
@@ -552,7 +553,6 @@ func KantonsratMultiVote() []votes.Vote {
 			Jurisdiction: "zurich-canton",
 			Body:         "Kantonsrat",
 			Date:         at,
-			DateIsExact:  true,
 			Sequence:     fmt.Sprintf("%d", at.Unix()),
 			Title:        title,
 			Decision:     "Ja",
@@ -561,7 +561,7 @@ func KantonsratMultiVote() []votes.Vote {
 			Abstention:   intPtr(sv.enth),
 			Absent:       intPtr(sv.abw),
 			SourceURL:    agendaItem + "&segmentUid=" + sv.segment,
-			GroupURL:     agendaItem + "&segmentUid=" + sv.segment,
+			GroupURL:     "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2",
 			Attribution:  "Source: OpenParlData.ch",
 			Affair: votes.Affair{
 				Number: "6031",

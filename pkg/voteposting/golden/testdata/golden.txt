@@ -1666,7 +1666,7 @@ Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Obj
 👇 Details im Thread
 
 [post 1]
-✅ Abstimmung 11:29
+✅ Abstimmung 1
 📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1680,7 +1680,7 @@ EVP 7/0/0/0
 AL 5/0/0/0
 
 [post 2]
-✅ Abstimmung 11:30
+✅ Abstimmung 2
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1694,7 +1694,7 @@ EVP 7/0/0/0
 AL 5/0/0/0
 
 [post 3]
-✅ Abstimmung 11:40
+✅ Abstimmung 3
 📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1708,7 +1708,7 @@ EVP 7/0/0/0
 AL 5/0/0/0
 
 [post 4]
-✅ Abstimmung 11:41
+✅ Abstimmung 4
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1722,7 +1722,7 @@ EVP 7/0/0/0
 AL 5/0/0/0
 
 [post 5]
-✅ Abstimmung 11:42
+✅ Abstimmung 5
 📊 128 Ja | 0 Nein | 0 Enthaltung | 52 Abwesend
 
 [post 6]
@@ -1736,8 +1736,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-[post 7]
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
@@ -1749,7 +1748,7 @@ Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Obj
 👇 Details im Thread
 
 [post 1]
-✅ Abstimmung 11:29
+✅ Abstimmung 1
 📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1762,7 +1761,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 11:30
+✅ Abstimmung 2
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1775,7 +1774,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 11:40
+✅ Abstimmung 3
 📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1788,7 +1787,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 11:41
+✅ Abstimmung 4
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1801,7 +1800,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 11:42
+✅ Abstimmung 5
 📊 128 Ja | 0 Nein | 0 Enthaltung | 52 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1814,7 +1813,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
 Source: OpenParlData.ch
 
 ---- Bluesky ----
@@ -1826,7 +1825,7 @@ Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Obj
 👇 Details im Thread
 
 [post 1]
-✅ Abstimmung 11:29
+✅ Abstimmung 1
 📊 130 Ja | 44 Nein | 0 Enth. | 6 Abw.
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1839,7 +1838,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 11:30
+✅ Abstimmung 2
 📊 129 Ja | 0 Nein | 0 Enth. | 51 Abw.
 
 [post 2]
@@ -1853,7 +1852,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 11:40
+✅ Abstimmung 3
 📊 129 Ja | 44 Nein | 0 Enth. | 7 Abw.
 
 [post 3]
@@ -1867,7 +1866,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 11:41
+✅ Abstimmung 4
 📊 129 Ja | 0 Nein | 0 Enth. | 51 Abw.
 
 [post 4]
@@ -1881,7 +1880,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 11:42
+✅ Abstimmung 5
 📊 128 Ja | 0 Nein | 0 Enth. | 52 Abw.
 
 [post 5]
@@ -1895,10 +1894,9 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-[post 6]
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:5 ByteEnd:134} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e DID: Tag:}]}
+[facet] {Index:{ByteStart:164 ByteEnd:250} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2 DID: Tag:}]}
 
 ---- Instagram ----
 [images] 6
@@ -1907,7 +1905,7 @@ Source: OpenParlData.ch
 
 Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
 
-✅ Angenommen: Abstimmung 11:29
+✅ Angenommen: Abstimmung 1
 📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1920,7 +1918,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Angenommen: Abstimmung 11:30
+✅ Angenommen: Abstimmung 2
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1933,7 +1931,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Angenommen: Abstimmung 11:40
+✅ Angenommen: Abstimmung 3
 📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1946,7 +1944,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Angenommen: Abstimmung 11:41
+✅ Angenommen: Abstimmung 4
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1959,7 +1957,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Angenommen: Abstimmung 11:42
+✅ Angenommen: Abstimmung 5
 📊 128 Ja | 0 Nein | 0 Enthaltung | 52 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1972,7 +1970,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
 Source: OpenParlData.ch
 
 ################ FIXTURE instagram-long-multi-vote-truncation ################

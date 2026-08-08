@@ -291,24 +291,22 @@ func LinkLine(group []votes.Vote) string {
 	return out
 }
 
-// SubVoteLabel names one vote inside a multi-vote group, so a reader can tell
-// the entries of a thread apart.
+// SubVoteLabel names one vote inside a multi-vote group, so the entries of a
+// thread can be told apart.
 //
-// Sources vary in how much help they give. Stadt Zürich titles each vote
-// ("Schlussabstimmung über die Dispositivziffer 1"). Kanton Zürich publishes no
-// per-vote title at all — its title field repeats the business matter — so the
-// time of day is the only thing distinguishing them, and it is worth showing
-// because the official archive lists the sitting's votes chronologically: the
-// time tells a reader which entry to open.
+// Stadt Zürich titles each vote ("Schlussabstimmung über die Dispositivziffer
+// 1"). Kanton Zürich publishes no per-vote title at all — its title field
+// repeats the business matter — so those groups fall back to an ordinal, which
+// says only that these are different votes.
 //
-// Falling back to an ordinal is the last resort. It says nothing except that
-// these are different votes.
+// An earlier version used the time of day instead, on the theory that it would
+// help a reader find the vote in the official archive. It did not: the link
+// already lands on the right place, and a clock reading is no more meaningful
+// to a reader than a number. Better to be plainly uninformative than to look
+// informative and not be.
 func SubVoteLabel(v votes.Vote, index int) string {
 	if title := CleanVoteSubtitle(v.Subtitle); title != "" {
 		return title
-	}
-	if v.DateIsExact {
-		return "Abstimmung " + v.Date.Format("15:04")
 	}
 	return fmt.Sprintf("Abstimmung %d", index+1)
 }
