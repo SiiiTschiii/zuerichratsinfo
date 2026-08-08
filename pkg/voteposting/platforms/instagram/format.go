@@ -96,10 +96,7 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 
 		if len(group) > 1 {
 			// Multi-vote: include subtitle
-			voteTitle := voteformat.CleanVoteSubtitle(vote.Subtitle)
-			if voteTitle == "" {
-				voteTitle = fmt.Sprintf("Abstimmung %d", i+1)
-			}
+			voteTitle := voteformat.SubVoteLabel(vote, i)
 			if voteformat.IsAuswahlVote(counts) {
 				sb.WriteString(voteTitle)
 			} else {

@@ -142,10 +142,7 @@ func buildReplyPosts(group []votes.Vote, linkLine, linkURL string) []*BlueskyPos
 			entry.WriteString(voteformat.FormatVoteCounts(counts))
 		} else {
 			// Multi-vote: subtitle + counts
-			voteTitle := voteformat.CleanVoteSubtitle(vote.Subtitle)
-			if voteTitle == "" {
-				voteTitle = fmt.Sprintf("Abstimmung %d", i+1)
-			}
+			voteTitle := voteformat.SubVoteLabel(vote, i)
 			if voteformat.IsAuswahlVote(counts) {
 				// Auswahl: no ✅/❌ prefix
 				entry.WriteString(fmt.Sprintf("%s\n", voteTitle))

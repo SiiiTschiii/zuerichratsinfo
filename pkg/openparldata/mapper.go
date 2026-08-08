@@ -12,6 +12,26 @@ import (
 // dateLayouts are the timestamp shapes OpenParlData has been observed to return.
 var dateLayouts = []string{"2006-01-02T15:04:05", time.RFC3339, "2006-01-02"}
 
+// bodyLocation is the wall clock every body this adapter serves actually sits by.
+//
+// OpenParlData publishes timestamps in UTC with no zone marker, while the
+// official archives and any reader use local time: a vote the Kantonsrat's own
+// archive lists at 11:29 arrives here as 09:29. Posts have to agree with the
+// archive they link to, or the time in a post sends a reader to the wrong entry
+// — and a vote taken late in a sitting would otherwise be grouped under the
+// previous day.
+var bodyLocation = loadBodyLocation()
+
+func loadBodyLocation() *time.Location {
+	loc, err := time.LoadLocation("Europe/Zurich")
+	if err != nil {
+		// Falls back to a fixed winter offset rather than silently reverting to
+		// UTC, which would be an hour further out for half the year.
+		return time.FixedZone("CET", 60*60)
+	}
+	return loc
+}
+
 // toVote maps a voting to the neutral model, without the member votes and
 // affair number that need further calls (see Client.enrich).
 func (c *Client) toVote(v votingDTO) votes.Vote {
@@ -35,9 +55,11 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 		Jurisdiction: c.jurisdiction.Key,
 		Body:         c.jurisdiction.ShortName,
 		Date:         date,
-		// OpenParlData has no per-session sequence number, but its timestamps
-		// are second-precision, so they order votes within a sitting exactly.
-		Sequence: sequenceFromDate(date),
+		// OpenParlData timestamps each vote to the second. That is what orders
+		// votes within a sitting, and — for bodies that publish no per-vote
+		// title — the only thing that tells them apart.
+		DateIsExact: hasTimeOfDay(date),
+		Sequence:    sequenceFromDate(date),
 
 		Title:    title,
 		Subtitle: subtitle,
@@ -182,10 +204,20 @@ func parseDate(s string) time.Time {
 	s = strings.TrimSpace(s)
 	for _, layout := range dateLayouts {
 		if t, err := time.Parse(layout, s); err == nil {
-			return t
+			return t.In(bodyLocation)
 		}
 	}
 	return time.Time{}
+}
+
+// hasTimeOfDay reports whether a timestamp carries a clock rather than just a
+// date. A source that gives only a day parses to midnight.
+func hasTimeOfDay(t time.Time) bool {
+	if t.IsZero() {
+		return false
+	}
+	h, m, sec := t.Clock()
+	return h != 0 || m != 0 || sec != 0
 }
 
 func sequenceFromDate(t time.Time) string {

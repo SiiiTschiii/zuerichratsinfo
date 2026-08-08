@@ -13,6 +13,9 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+	// Embeds the IANA zone database, so resolving Europe/Zurich does not depend
+	// on the host having tzdata installed. Vote times are published to readers.
+	_ "time/tzdata"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )

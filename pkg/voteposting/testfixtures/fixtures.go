@@ -515,6 +515,97 @@ func KantonsratVote() []votes.Vote {
 	return []votes.Vote{v}
 }
 
+// KantonsratMultiVote is the real 15.06.2026 Glattalbahn group: two substantive
+// votes interleaved with three Ausgabenbremse (spending-brake) quorum votes.
+//
+// It is here because it is the shape that reads worst. Kanton Zürich publishes
+// no per-vote title, so the entries can only be told apart by time; and the
+// quorum votes show a lopsided 129:0 with ~51 absent, which looks like
+// near-unanimous agreement when it is really a procedural vote the opposition
+// sits out. OpenParlData does not label them — it populates type_de as
+// Normal/Quorum for Stadt Zürich but leaves it null for the canton — so the
+// distinction is not ours to make up. Keeping the case in the snapshot means a
+// future fix can be seen working.
+func KantonsratMultiVote() []votes.Vote {
+	const title = "Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten"
+	const agendaItem = "https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13"
+
+	type sub struct {
+		id                  string
+		hour, minute        int
+		segment             string
+		ja, nein, enth, abw int
+	}
+	subs := []sub{
+		{"C73B20F8-BE10-9CC8-70BA-B3510FCBA125", 11, 29, "95cfdd0d-453d-467b-9e57-6e1afddb766e", 130, 44, 0, 6},
+		{"1E159CE0-5FF2-6550-3DD8-6AC38D15BECC", 11, 30, "fc47bda1-dbb3-447f-bd3e-ce1d95ccea59", 129, 0, 0, 51},
+		{"D8C48612-302B-0CEB-C7C7-A8474CDD2C21", 11, 40, "94915e31-5be7-41db-911e-123f216f9ee9", 129, 44, 0, 7},
+		{"A8D4D59E-0756-D4F6-AE63-D6CCAD573A79", 11, 41, "c3422c5f-3dac-495d-855c-d26552ef5601", 129, 0, 0, 51},
+		{"5D0CFBDB-1691-F36C-1C75-48CE4002036C", 11, 42, "aa6d241e-bfdc-4ca1-beea-236337c16f0e", 128, 0, 0, 52},
+	}
+
+	var group []votes.Vote
+	for _, sv := range subs {
+		at := time.Date(2026, 6, 15, sv.hour, sv.minute, 0, 0, time.UTC)
+		v := votes.Vote{
+			SourceID:     sv.id,
+			Jurisdiction: "zurich-canton",
+			Body:         "Kantonsrat",
+			Date:         at,
+			DateIsExact:  true,
+			Sequence:     fmt.Sprintf("%d", at.Unix()),
+			Title:        title,
+			Decision:     "Ja",
+			Yes:          intPtr(sv.ja),
+			No:           intPtr(sv.nein),
+			Abstention:   intPtr(sv.enth),
+			Absent:       intPtr(sv.abw),
+			SourceURL:    agendaItem + "&segmentUid=" + sv.segment,
+			GroupURL:     agendaItem + "&segmentUid=" + sv.segment,
+			Attribution:  "Source: OpenParlData.ch",
+			Affair: votes.Affair{
+				Number: "6031",
+				Title:  title,
+				ID:     "247676",
+				URL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2",
+			},
+		}
+		v.MemberVotes = kantonsratRoster(sv.ja, sv.nein, sv.abw)
+		group = append(group, v)
+	}
+	return group
+}
+
+// kantonsratRoster spreads a tally across the chamber's factions in roughly
+// their real proportions. Exact per-faction figures are not the point here —
+// the group exists to exercise labelling and layout — but the total must match
+// the reported counts or the completeness gate would drop the breakdown.
+func kantonsratRoster(ja, nein, abw int) []votes.MemberVote {
+	shares := []struct {
+		name string
+		size int
+	}{
+		{"SVP", 47}, {"SP", 36}, {"FDP", 30}, {"Grünliberale", 23},
+		{"Grüne", 19}, {"Die Mitte", 12}, {"EVP", 7}, {"AL", 5},
+	}
+
+	var out []votes.MemberVote
+	remaining := map[string]int{"Ja": ja, "Nein": nein, "Abwesend": abw}
+	order := []string{"Nein", "Abwesend", "Ja"}
+
+	for _, f := range shares {
+		seats := f.size
+		for _, choice := range order {
+			for seats > 0 && remaining[choice] > 0 {
+				out = append(out, votes.MemberVote{Fraktion: f.name, Choice: choice})
+				remaining[choice]--
+				seats--
+			}
+		}
+	}
+	return out
+}
+
 // FixtureNames returns fixture names in definition order.
 var FixtureNames = []string{
 	"single-vote-angenommen",
@@ -529,6 +620,7 @@ var FixtureNames = []string{
 	"mixed-multi-vote",
 	"postulat-with-grnr-prefix",
 	"kantonsrat-vote",
+	"kantonsrat-multi-vote",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
@@ -546,5 +638,6 @@ func AllFixtures() map[string][]votes.Vote {
 		"mixed-multi-vote":                MixedMultiVote(),
 		"postulat-with-grnr-prefix":       PostulatWithGrNrPrefix(),
 		"kantonsrat-vote":                 KantonsratVote(),
+		"kantonsrat-multi-vote":           KantonsratMultiVote(),
 	}
 }

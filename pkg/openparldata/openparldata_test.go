@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
@@ -633,4 +634,50 @@ func votingJSON(i int, day string) map[string]any {
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(v)
+}
+
+// OpenParlData publishes timestamps in UTC with no zone marker, while the
+// Kantonsrat's own archive lists them in local time: a vote the archive shows
+// at 11:29 arrives here as 09:29. Posts carry that time so a reader can find
+// the vote in the archive, so being an hour or two out is worse than showing
+// nothing — it sends them to the wrong entry.
+func TestDatesAreConvertedToLocalTime(t *testing.T) {
+	tests := []struct {
+		name, apiDate, wantLocal string
+	}{
+		// Verified against the archive's own segment timestamps.
+		{"summer, CEST is UTC+2", "2026-06-15T09:29:12", "11:29"},
+		{"winter, CET is UTC+1", "2026-02-23T16:16:46", "17:16"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := parseDate(tc.apiDate)
+			if got.Format("15:04") != tc.wantLocal {
+				t.Errorf("parseDate(%q) renders %q, want %q", tc.apiDate, got.Format("15:04"), tc.wantLocal)
+			}
+			// The instant itself must not move; only the wall clock it is read in.
+			if !got.UTC().Equal(mustParseUTC(t, tc.apiDate)) {
+				t.Errorf("parseDate(%q) changed the instant to %v", tc.apiDate, got.UTC())
+			}
+		})
+	}
+}
+
+// A vote taken late in a sitting must not be grouped under the previous day,
+// which is what reading a local evening as UTC would do.
+func TestLateVoteKeepsItsSittingDay(t *testing.T) {
+	v := parseDate("2026-06-15T22:30:00") // 00:30 next day, Zurich
+	if got := v.Format("2006-01-02 15:04"); got != "2026-06-16 00:30" {
+		t.Errorf("got %q; the conversion should carry the vote into the next local day", got)
+	}
+}
+
+func mustParseUTC(t *testing.T, s string) time.Time {
+	t.Helper()
+	parsed, err := time.Parse("2006-01-02T15:04:05", s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return parsed
 }

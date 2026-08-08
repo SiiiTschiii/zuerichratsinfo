@@ -826,9 +826,9 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 		}
 	}
 
-	// Subtitle if present (for multi-vote groups)
-	if v.Subtitle != "" {
-		sub := voteformat.CleanVoteSubtitle(v.Subtitle)
+	// Heading naming this vote within the group. Without it the cards of a
+	// group whose source publishes no per-vote title are indistinguishable.
+	if sub := voteformat.SubVoteLabel(*v, idx-1); sub != "" {
 		maxTextWidth := imgWidth - 2*padding
 		subLines := wrapText(fonts.boldHeading, sub, maxTextWidth)
 		for _, line := range subLines {
@@ -885,11 +885,10 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 }
 
 func formatSummaryLine(index int, vote votes.Vote) (string, bool) {
-	if vote.Subtitle == "" {
+	subtitle := voteformat.SubVoteLabel(vote, index-1)
+	if subtitle == "" {
 		return "", false
 	}
-
-	subtitle := voteformat.CleanVoteSubtitle(vote.Subtitle)
 	subtitle = truncateWithEllipsis(subtitle, summarySubtitleMaxRunes)
 
 	counts := voteformat.CountsOf(vote)

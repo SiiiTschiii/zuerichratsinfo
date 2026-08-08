@@ -1655,6 +1655,326 @@ AL 0/5/0/0
 🔗 https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4&segmentUid=e815525c-45ef-475e-a2db-3f644e0f0c0b
 Source: OpenParlData.ch
 
+################ FIXTURE kantonsrat-multi-vote ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Kantonsrat | Abstimmung vom 15.06.2026
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+👇 Details im Thread
+
+[post 1]
+✅ Abstimmung 11:29
+📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 33/0/0/3
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+[post 2]
+✅ Abstimmung 11:30
+📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+[post 3]
+✅ Abstimmung 11:40
+📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+[post 4]
+✅ Abstimmung 11:41
+📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+[post 5]
+✅ Abstimmung 11:42
+📊 128 Ja | 0 Nein | 0 Enthaltung | 52 Abwesend
+
+[post 6]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 31/0/0/5
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+[post 7]
+🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
+Source: OpenParlData.ch
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Kantonsrat | Abstimmung vom 15.06.2026
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+👇 Details im Thread
+
+[post 1]
+✅ Abstimmung 11:29
+📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 33/0/0/3
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 11:30
+📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 11:40
+📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 11:41
+📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 11:42
+📊 128 Ja | 0 Nein | 0 Enthaltung | 52 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 31/0/0/5
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
+Source: OpenParlData.ch
+
+---- Bluesky ----
+[post 0]
+🗳️ Kantonsrat | Abstimmung vom 15.06.2026
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+👇 Details im Thread
+
+[post 1]
+✅ Abstimmung 11:29
+📊 130 Ja | 44 Nein | 0 Enth. | 6 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 33/0/0/3
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 11:30
+📊 129 Ja | 0 Nein | 0 Enth. | 51 Abw.
+
+[post 2]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 11:40
+📊 129 Ja | 44 Nein | 0 Enth. | 7 Abw.
+
+[post 3]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 11:41
+📊 129 Ja | 0 Nein | 0 Enth. | 51 Abw.
+
+[post 4]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 11:42
+📊 128 Ja | 0 Nein | 0 Enth. | 52 Abw.
+
+[post 5]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 31/0/0/5
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+[post 6]
+🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
+Source: OpenParlData.ch
+[facet] {Index:{ByteStart:5 ByteEnd:134} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e DID: Tag:}]}
+
+---- Instagram ----
+[images] 6
+[caption]
+🗳️ Kantonsrat | Abstimmung vom 15.06.2026
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+✅ Angenommen: Abstimmung 11:29
+📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 33/0/0/3
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Angenommen: Abstimmung 11:30
+📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Angenommen: Abstimmung 11:40
+📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Angenommen: Abstimmung 11:41
+📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 32/0/0/4
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Angenommen: Abstimmung 11:42
+📊 128 Ja | 0 Nein | 0 Enthaltung | 52 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/0/0/47
+SP 31/0/0/5
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
+Source: OpenParlData.ch
+
 ################ FIXTURE instagram-long-multi-vote-truncation ################
 
 ---- X (limit 280) ----
