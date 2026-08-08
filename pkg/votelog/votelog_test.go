@@ -307,3 +307,39 @@ func TestLoad_NoLegacyFallbackForOtherJurisdictions(t *testing.T) {
 		t.Errorf("expected an empty log for a jurisdiction with no history, got %d entries", log.Count())
 	}
 }
+
+// The migration to the per-jurisdiction layout has to complete on a run, not on
+// a post. Save is otherwise only reached after something is published, so a
+// council in recess would leave the logs in the old layout — and the
+// transitional handling in the CI workflow with them — until it next sits.
+func TestLoad_ReportsTheLegacyPathItMigratedFrom(t *testing.T) {
+	defer setupTempDir(t)()
+
+	legacy := filepath.Join("data", "posted_votes_x.json")
+	if err := os.WriteFile(legacy, []byte(`{"platform":"x","votes":[{"id":"old","posted_at":"2025-11-06T10:00:00Z"}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	log, err := Load("zurich-city", PlatformX)
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	if got := log.LoadedFromLegacyPath(); got != legacy {
+		t.Errorf("LoadedFromLegacyPath = %q, want %q", got, legacy)
+	}
+
+	// Reading from its own path is not a migration.
+	if err := log.Save(); err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+	again, err := Load("zurich-city", PlatformX)
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	if got := again.LoadedFromLegacyPath(); got != "" {
+		t.Errorf("LoadedFromLegacyPath = %q after migrating, want empty", got)
+	}
+	if !again.IsPosted("old") {
+		t.Error("the migrated log lost its history")
+	}
+}

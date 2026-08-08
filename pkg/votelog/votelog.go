@@ -40,6 +40,7 @@ type VoteLog struct {
 	filepath     string               // not exported, internal use
 	index        map[string]VoteEntry // for fast lookup
 	noOp         bool                 // when true, all votes are treated as unposted
+	legacyPath   string               // set when loaded from the pre-jurisdiction path
 }
 
 // Load reads a jurisdiction's log for one platform.
@@ -76,6 +77,7 @@ func Load(jurisdiction string, platform Platform) (*VoteLog, error) {
 		log.Printf("ℹ️  %s/%s: reading legacy vote log %s; it will be written to %s",
 			jurisdiction, platform, legacy, path)
 		readFrom = legacy
+		vl.legacyPath = legacy
 	}
 
 	data, err := os.ReadFile(readFrom)
@@ -92,6 +94,7 @@ func Load(jurisdiction string, platform Platform) (*VoteLog, error) {
 	vl.Jurisdiction = jurisdiction
 	vl.Platform = platform
 	vl.filepath = path
+	vl.legacyPath = legacyPathIfUsed(readFrom, path)
 
 	for _, entry := range vl.Votes {
 		vl.index[entry.ID] = entry
@@ -158,6 +161,26 @@ func (l *VoteLog) Save() error {
 // Count returns the number of posted votes
 func (l *VoteLog) Count() int {
 	return len(l.Votes)
+}
+
+// LoadedFromLegacyPath returns the pre-jurisdiction path this log was read
+// from, or "" when it was read from its own.
+//
+// Callers use it to finish the migration on the next run rather than on the
+// next post. Save is otherwise only reached after something is published, so a
+// council in recess would leave the logs in the old layout indefinitely — and
+// the transitional handling in the workflow with them.
+func (l *VoteLog) LoadedFromLegacyPath() string {
+	return l.legacyPath
+}
+
+// legacyPathIfUsed reports the source path when it differs from where the log
+// will be written.
+func legacyPathIfUsed(readFrom, writeTo string) string {
+	if readFrom == writeTo {
+		return ""
+	}
+	return readFrom
 }
 
 // NewEmpty creates an empty vote log (useful for testing or when we want to show all votes)
