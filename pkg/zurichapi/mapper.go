@@ -16,7 +16,6 @@ var Jurisdiction = votes.Jurisdiction{
 	Key:       JurisdictionKey,
 	Name:      "Gemeinderat Stadt Zürich",
 	ShortName: "Gemeinderat ZH",
-	Seats:     125,
 }
 
 // ToVote converts a PARIS Abstimmung into the source-neutral model.

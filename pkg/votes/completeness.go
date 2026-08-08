@@ -23,20 +23,12 @@ func (v Vote) TotalRecorded() (int, bool) {
 // plausible-looking table, so publishing one would silently understate a
 // faction rather than fail visibly. When it returns false, post the totals only.
 //
-// seats is the chamber size and is used only as an upper bound: more recorded
-// members than seats means the data is broken in a different way. It is
-// deliberately *not* an equality check, because a chamber with a vacant seat
-// legitimately records fewer members than it has seats.
-//
 // A vote with no MemberVotes at all is not "incomplete": some sources publish
 // totals without name lists, and such posts are correct as far as they go.
 // Callers skip the breakdown for those anyway — there is nothing to aggregate.
-func IsBreakdownComplete(v Vote, seats int) bool {
+func IsBreakdownComplete(v Vote) bool {
 	if len(v.MemberVotes) == 0 {
 		return true
-	}
-	if seats > 0 && len(v.MemberVotes) > seats {
-		return false
 	}
 	total, reported := v.TotalRecorded()
 	return !reported || len(v.MemberVotes) == total

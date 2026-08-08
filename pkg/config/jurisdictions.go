@@ -62,7 +62,6 @@ var zurichCanton = votes.Jurisdiction{
 	Key:       ZurichCantonKey,
 	Name:      "Kantonsrat Zürich",
 	ShortName: "Kantonsrat ZH",
-	Seats:     180,
 }
 
 // zurichCantonBodyKey is the canton's body_key in OpenParlData.

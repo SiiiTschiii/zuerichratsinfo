@@ -21,7 +21,6 @@ var testJurisdiction = votes.Jurisdiction{
 	Key:       "zurich-canton",
 	Name:      "Kantonsrat Zürich",
 	ShortName: "Kantonsrat",
-	Seats:     180,
 }
 
 // newTestClient serves recorded responses so the suite never touches the live
@@ -276,7 +275,7 @@ func TestEnrichmentPopulatesFraktionBreakdown(t *testing.T) {
 	if sum, _ := v.TotalRecorded(); sum != 180 {
 		t.Errorf("reported totals sum to %d, want 180", sum)
 	}
-	if !votes.IsBreakdownComplete(v, testJurisdiction.Seats) {
+	if !votes.IsBreakdownComplete(v) {
 		t.Error("a full member list against matching totals should pass the completeness gate")
 	}
 }

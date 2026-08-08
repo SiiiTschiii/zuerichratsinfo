@@ -20,8 +20,6 @@ type Jurisdiction struct {
 	// ShortName labels posts, e.g. "Gemeinderat". Kept separate from Name so
 	// post copy stays short while logs and config stay unambiguous.
 	ShortName string
-	// Seats is the number of members, used by the completeness gate.
-	Seats int
 }
 
 // Vote is a single recorded vote in a parliamentary body.

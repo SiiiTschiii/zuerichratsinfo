@@ -73,7 +73,7 @@ func PrepareVoteGroups(
 		}
 	}
 
-	applyCompletenessGate(groups, src.Jurisdiction().Seats)
+	applyCompletenessGate(groups)
 
 	return groups, nil
 }
@@ -89,16 +89,16 @@ func PrepareVoteGroups(
 // This lives here rather than in the adapters so every source is held to the
 // same bar, and here rather than in the formatters so the decision is made once
 // instead of once per platform.
-func applyCompletenessGate(groups [][]votes.Vote, seats int) {
+func applyCompletenessGate(groups [][]votes.Vote) {
 	for _, group := range groups {
 		for i := range group {
 			v := &group[i]
-			if votes.IsBreakdownComplete(*v, seats) {
+			if votes.IsBreakdownComplete(*v) {
 				continue
 			}
 			total, _ := v.TotalRecorded()
-			log.Printf("⚠️  %s: %d member votes for reported totals of %d (%d seats) — posting totals only, without the Fraktion breakdown",
-				v.SourceID, len(v.MemberVotes), total, seats)
+			log.Printf("⚠️  %s: %d member votes for reported totals of %d — posting totals only, without the Fraktion breakdown",
+				v.SourceID, len(v.MemberVotes), total)
 			v.MemberVotes = nil
 		}
 	}
