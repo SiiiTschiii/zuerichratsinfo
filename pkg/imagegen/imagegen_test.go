@@ -9,14 +9,14 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 func TestGenerateCarousel_ValidJPEG(t *testing.T) {
 	fixtures := testfixtures.AllFixtures()
-	for name, votes := range fixtures {
+	for name, group := range fixtures {
 		t.Run(name, func(t *testing.T) {
-			images, err := GenerateCarousel(votes)
+			images, err := GenerateCarousel(group)
 			if err != nil {
 				t.Fatalf("GenerateCarousel failed: %v", err)
 			}
@@ -25,10 +25,10 @@ func TestGenerateCarousel_ValidJPEG(t *testing.T) {
 			}
 			// Single vote: 1 combined image. Multi-vote: 1 title + 1 result per vote.
 			var expected int
-			if len(votes) == 1 {
+			if len(group) == 1 {
 				expected = 1
 			} else {
-				expected = 1 + len(votes)
+				expected = 1 + len(group)
 			}
 			if len(images) != expected {
 				t.Errorf("expected %d images, got %d", expected, len(images))
@@ -54,7 +54,7 @@ func TestGenerateCarousel_ValidJPEG(t *testing.T) {
 func TestGenerateCarousel_Empty(t *testing.T) {
 	_, err := GenerateCarousel(nil)
 	if err == nil {
-		t.Fatal("expected error for empty votes")
+		t.Fatal("expected error for empty group")
 	}
 }
 
@@ -64,14 +64,14 @@ func TestLayoutResultCard_WrapsLongSubtitle(t *testing.T) {
 		t.Fatalf("loadFontSet failed: %v", err)
 	}
 
-	votes := testfixtures.MultiVoteGroup()
-	shortVote := votes[0]
-	shortVote.Abstimmungstitel = "Kurz"
+	group := testfixtures.MultiVoteGroup()
+	shortVote := group[0]
+	shortVote.Subtitle = "Kurz"
 
-	longVote := votes[0]
-	longVote.Abstimmungstitel = "Änderungsantrag zur Teilrevision der Gemeindeordnung mit zusätzlichen Bestimmungen zur Stadtentwicklung und Raumplanung"
+	longVote := group[0]
+	longVote.Subtitle = "Änderungsantrag zur Teilrevision der Gemeindeordnung mit zusätzlichen Bestimmungen zur Stadtentwicklung und Raumplanung"
 
-	bg := SelectColor(shortVote.GeschaeftGrNr)
+	bg := SelectColor("zurich-city", shortVote.Affair.Number)
 
 	shortCur := newCursor(0, imgHeight)
 	layoutResultCard(nil, shortCur, &shortVote, bg, fonts, 1, 2)
@@ -91,14 +91,14 @@ func TestLayoutTitleCard_WrapsLongSummaryLine(t *testing.T) {
 	}
 
 	shortVotes := testfixtures.MultiVoteGroup()
-	shortVotes[0].Abstimmungstitel = "Einleitung"
-	shortVotes[1].Abstimmungstitel = "Schluss"
+	shortVotes[0].Subtitle = "Einleitung"
+	shortVotes[1].Subtitle = "Schluss"
 
 	longVotes := testfixtures.MultiVoteGroup()
-	longVotes[0].Abstimmungstitel = "Einleitung"
-	longVotes[1].Abstimmungstitel = "Schlussabstimmung mit zusätzlichen Bestimmungen zur Neuordnung der Kompetenzen im Bereich Stadtentwicklung und Raumplanung"
+	longVotes[0].Subtitle = "Einleitung"
+	longVotes[1].Subtitle = "Schlussabstimmung mit zusätzlichen Bestimmungen zur Neuordnung der Kompetenzen im Bereich Stadtentwicklung und Raumplanung"
 
-	bg := SelectColor(shortVotes[0].GeschaeftGrNr)
+	bg := SelectColor("zurich-city", shortVotes[0].Affair.Number)
 
 	shortCur := newCursor(0, imgHeight)
 	layoutTitleCard(nil, shortCur, shortVotes, bg, fonts)
@@ -118,11 +118,11 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 	}
 
 	base := testfixtures.SingleVoteAngenommen()[0]
-	bg := SelectColor(base.GeschaeftGrNr)
+	bg := SelectColor("zurich-city", base.Affair.Number)
 
 	// Non-Schlussabstimmung Abstimmungstitel: prepended inline in front of the title.
 	withPrefix := base
-	withPrefix.Abstimmungstitel = "Dringlicherklärung"
+	withPrefix.Subtitle = "Dringlicherklärung"
 	prefixCur := newCursor(0, imgHeight)
 	_, prefixLines, err := layoutCombinedCard(nil, prefixCur, &withPrefix, bg, fonts)
 	if err != nil {
@@ -134,7 +134,7 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 
 	// Schlussabstimmung Abstimmungstitel: no prefix added.
 	schluss := base
-	schluss.Abstimmungstitel = "Schlussabstimmung"
+	schluss.Subtitle = "Schlussabstimmung"
 	schlussCur := newCursor(0, imgHeight)
 	_, schlussLines, err := layoutCombinedCard(nil, schlussCur, &schluss, bg, fonts)
 	if err != nil {
@@ -146,7 +146,7 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 
 	// Empty Abstimmungstitel: no prefix added.
 	none := base
-	none.Abstimmungstitel = ""
+	none.Subtitle = ""
 	noneCur := newCursor(0, imgHeight)
 	_, noneLines, err := layoutCombinedCard(nil, noneCur, &none, bg, fonts)
 	if err != nil {
@@ -158,16 +158,16 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 }
 
 func TestSelectColor_Deterministic(t *testing.T) {
-	c1 := SelectColor("2025/100")
-	c2 := SelectColor("2025/100")
+	c1 := SelectColor("zurich-city", "2025/100")
+	c2 := SelectColor("zurich-city", "2025/100")
 	if c1 != c2 {
 		t.Error("same input should produce same color")
 	}
 }
 
 func TestSelectColor_DifferentInputs(t *testing.T) {
-	c1 := SelectColor("2025/100")
-	c2 := SelectColor("2025/101")
+	c1 := SelectColor("zurich-city", "2025/100")
+	c2 := SelectColor("zurich-city", "2025/101")
 	// Different inputs should (usually) produce different colors
 	// This is probabilistic but with our palette it's very likely
 	if c1 == c2 {
@@ -176,9 +176,9 @@ func TestSelectColor_DifferentInputs(t *testing.T) {
 }
 
 func TestFormatSummaryLine_NumberingAndTruncation(t *testing.T) {
-	vote := zurichapi.Abstimmung{
-		Abstimmungstitel: "Antrag SP sehr lange Beschreibung mit noch mehr Details für die Übersicht auf der Titelfolie und weiteren Erläuterungen zur Kompetenzordnung im Bereich Stadtentwicklung und Raumplanung",
-		Schlussresultat:  "angenommen",
+	vote := votes.Vote{
+		Subtitle: "Antrag SP sehr lange Beschreibung mit noch mehr Details für die Übersicht auf der Titelfolie und weiteren Erläuterungen zur Kompetenzordnung im Bereich Stadtentwicklung und Raumplanung",
+		Decision: "angenommen",
 	}
 
 	line, ok := formatSummaryLine(2, vote)
@@ -195,13 +195,13 @@ func TestFormatSummaryLine_NumberingAndTruncation(t *testing.T) {
 
 func TestFormatSummaryLine_AuswahlVote(t *testing.T) {
 	intPtr := func(i int) *int { return &i }
-	vote := zurichapi.Abstimmung{
-		Abstimmungstitel: "Änderungsantrag 17",
-		Schlussresultat:  "Auswahl A",
-		AnzahlA:          intPtr(50),
-		AnzahlB:          intPtr(24),
-		AnzahlC:          intPtr(40),
-		AnzahlAbwesend:   intPtr(11),
+	vote := votes.Vote{
+		Subtitle: "Änderungsantrag 17",
+		Decision: "Auswahl A",
+		Absent:   intPtr(11),
+		ChoiceA:  intPtr(50),
+		ChoiceB:  intPtr(24),
+		ChoiceC:  intPtr(40),
 	}
 
 	line, ok := formatSummaryLine(2, vote)
@@ -241,7 +241,7 @@ func TestDrawFraktionTable_AddsRowSpacing(t *testing.T) {
 
 	startY := 100
 	cur := newCursor(startY, 600)
-	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("2025/100"), fonts.partyBold, fonts.partyNum)
+	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("zurich-city", "2025/100"), fonts.partyBold, fonts.partyNum)
 
 	rowHeight := lineHeight(fonts.partyNum)
 	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
@@ -271,7 +271,7 @@ func TestDrawFraktionTable_LimitsRowsWhenSpaceIsTight(t *testing.T) {
 
 	customImgHeight := padding + rowHeight + rowGap + maxRows*rowStride
 	cur := newCursor(0, customImgHeight)
-	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("2025/100"), fonts.partyBold, fonts.partyNum)
+	drawFraktionTable(nil, cur, fraktionCounts, SelectColor("zurich-city", "2025/100"), fonts.partyBold, fonts.partyNum)
 
 	expectedY := rowHeight + rowGap + maxRows*rowHeight + (maxRows-1)*rowGap
 	if cur.y != expectedY {

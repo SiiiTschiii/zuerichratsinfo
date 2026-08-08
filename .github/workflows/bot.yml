@@ -11,6 +11,16 @@ on:
   # push:
   #   branches: [ main ]
 
+# One run at a time. Every run pushes the vote log to the same state branch from
+# a worktree branched at fetch time, and the push is not forced — so if a slow
+# run overlapped the next one, the second push would be rejected, that run would
+# lose its record of what it had just posted, and the votes would be published
+# again on the next run. Queue rather than cancel: a run that has already posted
+# must still be allowed to write down that it did.
+concurrency:
+  group: bot
+  cancel-in-progress: false
+
 jobs:
   post-update:
     runs-on: ubuntu-latest
@@ -22,7 +32,9 @@ jobs:
       # Keeping it off `main` lets this Action update state without tripping
       # the pull request ruleset / branch protection on the primary branch.
       STATE_BRANCH: state-log
-      STATE_FILES: "data/posted_votes_x.json data/posted_votes_bluesky.json data/posted_votes_instagram.json"
+      # Vote logs live at data/<jurisdiction>/posted_votes_<platform>.json.
+      # Globbing means adding a jurisdiction needs no edit here.
+      STATE_FILES: "data/*/posted_votes_*.json"
 
     steps:
       - name: Checkout code
@@ -50,10 +62,13 @@ jobs:
 
           echo "State branch '$STATE_BRANCH' found; restoring vote logs from it."
           git fetch origin "$STATE_BRANCH"
-          if ! git checkout FETCH_HEAD -- $STATE_FILES; then
-            echo "::error::'$STATE_BRANCH' is missing one or more of: $STATE_FILES"
+
+          if ! git checkout FETCH_HEAD -- "$STATE_FILES"; then
+            echo "::error::'$STATE_BRANCH' contains no vote logs matching $STATE_FILES."
             exit 1
           fi
+          echo "Restored:"
+          find data -name 'posted_votes_*.json' | sort
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -65,23 +80,35 @@ jobs:
 
       - name: Run bot
         env:
-          X_API_KEY: ${{ secrets.X_API_KEY }}
-          X_API_SECRET: ${{ secrets.X_API_SECRET }}
-          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
-          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
-          BLUESKY_HANDLE: ${{ vars.BLUESKY_HANDLE }}
-          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
-          IG_USER_ID: ${{ secrets.IG_USER_ID }}
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
-          GITHUB_TOKEN: ${{ github.token }}
-          IG_REPO_OWNER: SiiiTschiii
-          IG_REPO_NAME: zuerichratsinfo
+          # Platform credentials and limits are scoped to a channel — one set
+          # of accounts serving one or more jurisdictions. The prefix is the
+          # channel key, so a second channel is purely additive.
+          ZURICH_X_API_KEY: ${{ secrets.ZURICH_X_API_KEY }}
+          ZURICH_X_API_SECRET: ${{ secrets.ZURICH_X_API_SECRET }}
+          ZURICH_X_ACCESS_TOKEN: ${{ secrets.ZURICH_X_ACCESS_TOKEN }}
+          ZURICH_X_ACCESS_SECRET: ${{ secrets.ZURICH_X_ACCESS_SECRET }}
+          ZURICH_BLUESKY_HANDLE: ${{ vars.ZURICH_BLUESKY_HANDLE }}
+          ZURICH_BLUESKY_PASSWORD: ${{ secrets.ZURICH_BLUESKY_PASSWORD }}
+          ZURICH_IG_USER_ID: ${{ secrets.ZURICH_IG_USER_ID }}
+          ZURICH_IG_ACCESS_TOKEN: ${{ secrets.ZURICH_IG_ACCESS_TOKEN }}
+          ZURICH_GITHUB_TOKEN: ${{ github.token }}
+          ZURICH_IG_REPO_OWNER: SiiiTschiii
+          ZURICH_IG_REPO_NAME: zuerichratsinfo
+          ZURICH_X_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_X_MAX_POSTS_PER_RUN }}
+          ZURICH_X_MAX_CHARS: ${{ vars.ZURICH_X_MAX_CHARS }}
+          ZURICH_BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_BLUESKY_MAX_POSTS_PER_RUN }}
+          ZURICH_IG_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_IG_MAX_POSTS_PER_RUN }}
+
           MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
-          MAX_VOTE_AGE_DAYS: ${{ vars.MAX_VOTE_AGE_DAYS }}
-          X_MAX_POSTS_PER_RUN: ${{ vars.X_MAX_POSTS_PER_RUN }}
-          X_MAX_CHARS: ${{ vars.X_MAX_CHARS }}
-          BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.BLUESKY_MAX_POSTS_PER_RUN }}
-          IG_MAX_POSTS_PER_RUN: ${{ vars.IG_MAX_POSTS_PER_RUN }}
+          MAX_VOTE_AGE_DAYS_ZURICH_CITY: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CITY }}
+          MAX_VOTE_AGE_DAYS_ZURICH_CANTON: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CANTON }}
+          # Per-body switch. Nothing posts unless its variable is "true", so a
+          # lost or misspelled variable stops the run rather than changing what
+          # gets published. Setting one to "false" pauses that body without
+          # touching the other or the schedule, which is the only way to stop
+          # one chamber when its source publishes something wrong.
+          JURISDICTION_ZURICH_CITY_ENABLED: ${{ vars.JURISDICTION_ZURICH_CITY_ENABLED }}
+          JURISDICTION_ZURICH_CANTON_ENABLED: ${{ vars.JURISDICTION_ZURICH_CANTON_ENABLED }}
         run: go run main.go
 
       # Runs even when the bot itself fails, so a partial run still records what
@@ -99,10 +126,13 @@ jobs:
           worktree="$(mktemp -d)"
           git worktree add -B "$STATE_BRANCH" "$worktree" "origin/$STATE_BRANCH"
 
-          mkdir -p "$worktree/data"
-          cp $STATE_FILES "$worktree/data/"
+          # --parents preserves data/<jurisdiction>/, without which two
+          # jurisdictions' logs would overwrite each other in the state branch
+          # and votes would look unposted on the next run.
+          mapfile -t state_files < <(find data -name 'posted_votes_*.json' | sort)
+          cp --parents "${state_files[@]}" "$worktree/"
 
-          git -C "$worktree" add -- $STATE_FILES
+          git -C "$worktree" add -- data
           if git -C "$worktree" diff --staged --quiet; then
             echo "No vote log changes to commit."
           else

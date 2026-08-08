@@ -1,0 +1,6 @@
+{
+ "data": [
+ {"affair_id": 334189, "affair_title_de": "Rechenschaftsbericht Verwaltungsgericht 2025", "body_key": "ZH", "date": "2026-07-06T13:02:33", "decision": null, "external_id": "9C1C869E-FA17-89D0-DDEE-3C0BC5223821", "id": 104491, "results_absent": 10, "results_abstention": 0, "results_no": 0, "results_yes": 170, "title_de": "Rechenschaftsbericht Verwaltungsgericht 2025", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=d8c93b11-6c74-4b4a-87b2-19e7f6a02b23&segmentUid=ccc9ed1c-e8b5-4fa6-90a9-a651ceb79700"}
+ ],
+ "meta": {"offset": 0, "limit": 100, "total_records": 1, "total_pages": 1, "current_page": 1, "has_more": false, "next_page": null, "prev_page": null, "first_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=334189&lang_format=flat&offset=0&limit=100", "last_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=334189&lang_format=flat&offset=0&limit=100", "self": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=334189&limit=100&lang_format=flat"}
+}

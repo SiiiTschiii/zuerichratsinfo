@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"gopkg.in/yaml.v3"
 )
 
@@ -26,7 +27,7 @@ type Contact struct {
 }
 
 func main() {
-	contactsPath := "data/contacts.yaml"
+	contactsPath := contacts.PathFor("zurich-city")
 	data, err := os.ReadFile(contactsPath)
 	if err != nil {
 		log.Fatalf("Failed to read contacts.yaml: %v", err)

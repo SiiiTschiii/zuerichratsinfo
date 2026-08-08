@@ -1,0 +1,11 @@
+# Social media handles for members of the Kantonsrat Zürich.
+#
+# Deliberately empty: the 180 members have not been curated yet, and curating
+# them is the dominant human cost of adding a jurisdiction — it is not a reason
+# to hold back the votes themselves. Until entries appear here, Kantonsrat posts
+# simply name politicians without tagging them.
+#
+# The schema matches data/zurich-city/contacts.yaml. Add entries as they are
+# verified; the tagger picks them up with no code change.
+version: "1.0"
+contacts: []

@@ -1,0 +1,6 @@
+{
+ "data": [
+ {"affair_id": 331418, "affair_title_de": "Tätigkeitsbericht der Finanzkontrolle des Kantons Zürich über das Jahr 2025", "body_key": "ZH", "date": "2026-07-06T13:54:03", "decision": null, "external_id": "384F0C84-545C-C0BE-496E-4172BC25E31E", "id": 104490, "results_absent": 13, "results_abstention": 0, "results_no": 0, "results_yes": 167, "title_de": "Tätigkeitsbericht der Finanzkontrolle des Kantons Zürich über das Jahr 2025", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4&segmentUid=e815525c-45ef-475e-a2db-3f644e0f0c0b"}
+ ],
+ "meta": {"offset": 0, "limit": 100, "total_records": 1, "total_pages": 1, "current_page": 1, "has_more": false, "next_page": null, "prev_page": null, "first_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=331418&lang_format=flat&offset=0&limit=100", "last_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=331418&lang_format=flat&offset=0&limit=100", "self": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=331418&limit=100&lang_format=flat"}
+}

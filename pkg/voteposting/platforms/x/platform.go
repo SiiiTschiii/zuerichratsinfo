@@ -6,8 +6,8 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/xapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
 
 // XContent represents formatted content for X/Twitter
@@ -69,8 +69,8 @@ func (p *XPlatform) SetMaxChars(n int) {
 }
 
 // Format formats a group of votes into X-specific content
-func (p *XPlatform) Format(votes []zurichapi.Abstimmung) (platforms.Content, error) {
-	thread := FormatVoteThread(votes, p.contactMapper, p.maxChars)
+func (p *XPlatform) Format(group []votes.Vote) (platforms.Content, error) {
+	thread := FormatVoteThread(group, p.contactMapper, p.maxChars)
 	return &XContent{thread: thread}, nil
 }
 

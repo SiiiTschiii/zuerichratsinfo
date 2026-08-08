@@ -1,6 +1,6 @@
 package platforms
 
-import "github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+import "github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 
 // Content represents platform-specific formatted content
 type Content interface {
@@ -11,7 +11,7 @@ type Content interface {
 // Platform represents a social media platform that can post vote content
 type Platform interface {
 	// Format converts vote groups into platform-specific content
-	Format(votes []zurichapi.Abstimmung) (Content, error)
+	Format(group []votes.Vote) (Content, error)
 
 	// Post publishes content to the platform
 	// Returns shouldContinue=false if posting limit is reached

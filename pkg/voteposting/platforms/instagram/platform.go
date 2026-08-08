@@ -9,7 +9,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 const (
@@ -102,8 +102,8 @@ func NewInstagramPlatformWithCredentials(igUserID, accessToken, githubToken, rep
 }
 
 // Format formats a group of votes into Instagram-specific content (carousel images + caption).
-func (p *InstagramPlatform) Format(votes []zurichapi.Abstimmung) (platforms.Content, error) {
-	return FormatCarouselWithContacts(votes, p.contactMapper)
+func (p *InstagramPlatform) Format(group []votes.Vote) (platforms.Content, error) {
+	return FormatCarouselWithContacts(group, p.contactMapper)
 }
 
 // SetContactMapper configures mapped contacts for @mention tagging in generated captions.

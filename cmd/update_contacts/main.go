@@ -19,6 +19,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 	"gopkg.in/yaml.v3"
 )
@@ -37,7 +38,7 @@ type ContactMapping struct {
 	Contacts []Contact `yaml:"contacts"`
 }
 
-const contactsFile = "data/contacts.yaml"
+var contactsFile = contacts.PathFor("zurich-city")
 
 func main() {
 	fmt.Println("📥 Fetching contacts from Zurich API...")

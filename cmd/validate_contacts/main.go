@@ -156,7 +156,7 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 			if strings.ToLower(curr) < strings.ToLower(prev) {
 				errors = append(errors, ValidationError{
 					ContactName: curr,
-					Message:     fmt.Sprintf("Contact is out of alphabetical order (comes after '%s'). Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/contacts.yaml", prev),
+					Message:     fmt.Sprintf("Contact is out of alphabetical order (comes after '%s'). Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/zurich-city/contacts.yaml", prev),
 				})
 			}
 		}
@@ -386,7 +386,7 @@ func checkPlatformOrderInFile(filepath string, contactName string, skipOrderChec
 		if platformsInFile[i] != sortedPlatforms[i] {
 			return &ValidationError{
 				ContactName: contactName,
-				Message:     "Platforms are not in alphabetical order. Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/contacts.yaml",
+				Message:     "Platforms are not in alphabetical order. Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/zurich-city/contacts.yaml",
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 # Platform Stats Command
 
-This command analyzes the [contacts.yaml](../../data/contacts.yaml) file and automatically updates the "Supported Platforms" table in the main README.
+This command analyzes the [contacts.yaml](../../data/zurich-city/contacts.yaml) file and automatically updates the "Supported Platforms" table in the main README.
 
 ## Usage
 

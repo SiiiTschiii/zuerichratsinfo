@@ -7,7 +7,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 // maxCaptionChars is Instagram's caption character limit.
@@ -34,19 +34,19 @@ func (c *InstagramContent) String() string {
 }
 
 // FormatCarousel generates carousel images and builds the caption text for an Instagram post.
-func FormatCarousel(votes []zurichapi.Abstimmung) (*InstagramContent, error) {
-	return FormatCarouselWithContacts(votes, nil)
+func FormatCarousel(group []votes.Vote) (*InstagramContent, error) {
+	return FormatCarouselWithContacts(group, nil)
 }
 
 // FormatCarouselWithContacts generates carousel images and builds the caption text for an Instagram post,
 // including mapped Instagram @mentions where supported by the title text.
-func FormatCarouselWithContacts(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) (*InstagramContent, error) {
-	if len(votes) == 0 {
+func FormatCarouselWithContacts(group []votes.Vote, contactMapper *contacts.Mapper) (*InstagramContent, error) {
+	if len(group) == 0 {
 		return nil, fmt.Errorf("no votes provided")
 	}
 
 	// Generate carousel images
-	images, err := imagegen.GenerateCarousel(votes)
+	images, err := imagegen.GenerateCarousel(group)
 	if err != nil {
 		return nil, fmt.Errorf("generating carousel images: %w", err)
 	}
@@ -57,7 +57,7 @@ func FormatCarouselWithContacts(votes []zurichapi.Abstimmung, contactMapper *con
 	}
 
 	// Build caption text
-	caption := buildCaption(votes, contactMapper)
+	caption := buildCaption(group, contactMapper)
 
 	return &InstagramContent{
 		Images:  images,
@@ -67,23 +67,21 @@ func FormatCarouselWithContacts(votes []zurichapi.Abstimmung, contactMapper *con
 
 // buildCaption creates the caption text for an Instagram carousel post.
 // Includes vote details (similar to X/Bluesky thread text flattened) + vote page link.
-func buildCaption(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) string {
-	firstVote := votes[0]
+func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
+	firstVote := group[0]
 
 	// Header
-	date := voteformat.FormatVoteDate(firstVote.SitzungDatum)
-	title := voteformat.SelectBestTitle(firstVote.TraktandumTitel, firstVote.GeschaeftTitel)
-	title = voteformat.CleanVoteTitle(title)
+	title := voteformat.CleanVoteTitle(firstVote.Title)
 	if contactMapper != nil {
 		title = contactMapper.TagInstagramHandlesInText(title)
 	}
 
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date))
+	sb.WriteString(fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group)))
 
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
-	if len(votes) == 1 {
-		if prefix := voteformat.SingleVoteSubtitlePrefix(votes[0].Abstimmungstitel); prefix != "" {
+	if len(group) == 1 {
+		if prefix := voteformat.SingleVoteSubtitlePrefix(group[0].Subtitle); prefix != "" {
 			sb.WriteString(prefix)
 			sb.WriteString("\n")
 		}
@@ -93,32 +91,25 @@ func buildCaption(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) 
 	sb.WriteString("\n\n")
 
 	// Vote details for each vote
-	for i, vote := range votes {
-		counts := voteformat.VoteCounts{
-			Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
-			Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
-			A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
-		}
+	for i, vote := range group {
+		counts := voteformat.CountsOf(vote)
 
-		if len(votes) > 1 {
+		if len(group) > 1 {
 			// Multi-vote: include subtitle
-			voteTitle := voteformat.CleanVoteSubtitle(vote.Abstimmungstitel)
-			if voteTitle == "" {
-				voteTitle = fmt.Sprintf("Abstimmung %d", i+1)
-			}
+			voteTitle := voteformat.SubVoteLabel(vote, i)
 			if voteformat.IsAuswahlVote(counts) {
 				sb.WriteString(voteTitle)
 			} else {
-				emoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
-				result := voteformat.GetVoteResultText(vote.Schlussresultat)
+				emoji := voteformat.GetVoteResultEmoji(vote.Decision)
+				result := voteformat.GetVoteResultText(vote.Decision)
 				sb.WriteString(fmt.Sprintf("%s %s: %s", emoji, result, voteTitle))
 			}
 			sb.WriteString("\n")
 		} else {
 			// Single vote: result line
 			if !voteformat.IsAuswahlVote(counts) {
-				emoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
-				result := voteformat.GetVoteResultText(vote.Schlussresultat)
+				emoji := voteformat.GetVoteResultEmoji(vote.Decision)
+				result := voteformat.GetVoteResultText(vote.Decision)
 				sb.WriteString(fmt.Sprintf("%s %s\n", emoji, result))
 			}
 		}
@@ -127,8 +118,8 @@ func buildCaption(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) 
 		sb.WriteString("\n")
 
 		// Fraktion breakdown
-		if stimmabgaben := vote.Stimmabgaben.Stimmabgabe; len(stimmabgaben) > 0 {
-			fraktionCounts := voteformat.AggregateFraktionCounts(stimmabgaben)
+		if len(vote.MemberVotes) > 0 {
+			fraktionCounts := voteformat.AggregateFraktionCounts(vote.MemberVotes)
 			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
 				sb.WriteString("\n")
 				sb.WriteString(breakdown)
@@ -136,27 +127,17 @@ func buildCaption(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) 
 			}
 		}
 
-		if i < len(votes)-1 {
+		if i < len(group)-1 {
 			sb.WriteString("\n")
 		}
 	}
 
-	// Link
-	var link string
-	if voteformat.IsGenericAntragTitle(firstVote.TraktandumTitel) {
-		link = voteformat.GenerateGeschaeftLink(firstVote.GeschaeftGuid)
-	} else if len(votes) > 1 {
-		link = voteformat.GenerateTraktandumLink(firstVote.SitzungGuid, firstVote.TraktandumGuid)
-	} else {
-		link = voteformat.GenerateVoteLink(firstVote.OBJGUID)
-	}
-
-	return buildCaptionWithPreservedLink(sb.String(), link)
+	return buildCaptionWithPreservedLink(sb.String(), voteformat.LinkLine(group))
 }
 
-func buildCaptionWithPreservedLink(body, link string) string {
+func buildCaptionWithPreservedLink(body, linkBlock string) string {
 	body = strings.TrimRight(body, "\n")
-	linkLine := fmt.Sprintf("🔗 %s", link)
+	linkLine := strings.TrimLeft(linkBlock, "\n")
 	caption := body + "\n\n" + linkLine
 
 	// Truncate if over Instagram's character limit

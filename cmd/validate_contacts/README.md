@@ -1,6 +1,6 @@
 # Validate Contacts Script
 
-This script validates the `data/contacts.yaml` file to ensure:
+This script validates the `data/zurich-city/contacts.yaml` file to ensure:
 
 1. **Valid YAML syntax** - The file must be parseable YAML
 2. **Supported platforms** - Only allowed platforms: x, facebook, instagram, linkedin, bluesky, tiktok
@@ -16,7 +16,7 @@ This script validates the `data/contacts.yaml` file to ensure:
 Run the validation script directly:
 
 ```bash
-go run cmd/validate_contacts/main.go data/contacts.yaml
+go run cmd/validate_contacts/main.go data/zurich-city/contacts.yaml
 ```
 
 Or use the Makefile:
@@ -35,14 +35,14 @@ make validate-contacts
 ### Successful validation
 
 ```bash
-$ go run cmd/validate_contacts/main.go data/contacts.yaml
+$ go run cmd/validate_contacts/main.go data/zurich-city/contacts.yaml
 ✅ Validation successful! contacts.yaml is valid.
 ```
 
 ### Failed validation
 
 ```bash
-$ go run cmd/validate_contacts/main.go data/contacts.yaml
+$ go run cmd/validate_contacts/main.go data/zurich-city/contacts.yaml
 ❌ Validation failed with 2 error(s):
 
 1. Contact 'John Doe', platform 'x', URL 'www.x.com/johndoe': URL must use http or https scheme, got:

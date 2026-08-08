@@ -7,7 +7,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 // maxGraphemes is the Bluesky post character limit (graphemes)
@@ -25,33 +25,21 @@ type BlueskyPost struct {
 //
 // Root post contains: header, title, result (single vote), thread hint
 // Replies contain: vote details (counts per vote), link
-func FormatVoteThread(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapper) []*BlueskyPost {
-	if len(votes) == 0 {
+func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*BlueskyPost {
+	if len(group) == 0 {
 		return nil
 	}
 
-	firstVote := votes[0]
+	firstVote := group[0]
 
 	// Common components
-	date := voteformat.FormatVoteDate(firstVote.SitzungDatum)
-	title := voteformat.SelectBestTitle(firstVote.TraktandumTitel, firstVote.GeschaeftTitel)
-	title = voteformat.CleanVoteTitle(title)
-
-	// Generate and shorten the link
-	var link string
-	if voteformat.IsGenericAntragTitle(firstVote.TraktandumTitel) {
-		link = voteformat.GenerateGeschaeftLink(firstVote.GeschaeftGuid)
-	} else if len(votes) > 1 {
-		link = voteformat.GenerateTraktandumLink(firstVote.SitzungGuid, firstVote.TraktandumGuid)
-	} else {
-		link = voteformat.GenerateVoteLink(firstVote.OBJGUID)
-	}
+	title := voteformat.CleanVoteTitle(firstVote.Title)
 
 	// --- Build root post ---
-	root := buildRootPost(votes, date, title)
+	root := buildRootPost(group, title)
 
 	// --- Build reply posts ---
-	replies := buildReplyPosts(votes, link)
+	replies := buildReplyPosts(group, voteformat.LinkLine(group), voteformat.GroupLink(group))
 
 	thread := make([]*BlueskyPost, 0, 1+len(replies))
 	thread = append(thread, root)
@@ -69,30 +57,26 @@ func FormatVoteThread(votes []zurichapi.Abstimmung, contactMapper *contacts.Mapp
 
 // buildRootPost creates the root post with header, title, result, and thread hint.
 // If the title is too long, it is truncated with "…"; replies go straight to vote details.
-func buildRootPost(votes []zurichapi.Abstimmung, date, title string) *BlueskyPost {
-	header := fmt.Sprintf("🗳️ Gemeinderat | Abstimmung vom %s\n\n", date)
+func buildRootPost(group []votes.Vote, title string) *BlueskyPost {
+	header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
 	threadHint := "\n\n👇 Details im Thread"
 
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
 	var subtitlePrefix string
-	if len(votes) == 1 {
-		subtitlePrefix = voteformat.SingleVoteSubtitlePrefix(votes[0].Abstimmungstitel)
+	if len(group) == 1 {
+		subtitlePrefix = voteformat.SingleVoteSubtitlePrefix(group[0].Subtitle)
 	}
 
 	var body string
-	if len(votes) == 1 {
+	if len(group) == 1 {
 		// Single vote: include result in root (unless it's an Auswahl A/B/C vote)
-		vote := votes[0]
-		counts := voteformat.VoteCounts{
-			Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
-			Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
-			A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
-		}
+		vote := group[0]
+		counts := voteformat.CountsOf(vote)
 		if voteformat.IsAuswahlVote(counts) {
 			body = title
 		} else {
-			resultEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
-			result := voteformat.GetVoteResultText(vote.Schlussresultat)
+			resultEmoji := voteformat.GetVoteResultEmoji(vote.Decision)
+			result := voteformat.GetVoteResultText(vote.Decision)
 			body = fmt.Sprintf("%s %s: %s", resultEmoji, result, title)
 		}
 		if subtitlePrefix != "" {
@@ -112,20 +96,16 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string) *BlueskyPos
 			overhead += graphemeLen(subtitlePrefix) + 1 // +1 for "\n"
 		}
 		available := maxGraphemes - overhead
-		if len(votes) == 1 {
-			vote := votes[0]
-			counts := voteformat.VoteCounts{
-				Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
-				Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
-				A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
-			}
+		if len(group) == 1 {
+			vote := group[0]
+			counts := voteformat.CountsOf(vote)
 			if voteformat.IsAuswahlVote(counts) {
 				title = truncateText(title, available)
 				body = title
 			} else {
 				// Truncate after "✅ Angenommen: " prefix
-				resultEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
-				result := voteformat.GetVoteResultText(vote.Schlussresultat)
+				resultEmoji := voteformat.GetVoteResultEmoji(vote.Decision)
+				result := voteformat.GetVoteResultText(vote.Decision)
 				prefix := fmt.Sprintf("%s %s: ", resultEmoji, result)
 				titleAvailable := available - graphemeLen(prefix)
 				if titleAvailable > 0 {
@@ -148,34 +128,26 @@ func buildRootPost(votes []zurichapi.Abstimmung, date, title string) *BlueskyPos
 // buildReplyPosts creates reply posts with vote details and link.
 // Packs as many vote entries as fit into each reply (≤300 graphemes).
 // The link is appended to the last reply.
-func buildReplyPosts(votes []zurichapi.Abstimmung, link string) []*BlueskyPost {
-	linkLine := fmt.Sprintf("\n\n🔗 %s", link)
+func buildReplyPosts(group []votes.Vote, linkLine, linkURL string) []*BlueskyPost {
 
 	// Build individual vote entry strings
 	var entries []string
 
-	for i, vote := range votes {
+	for i, vote := range group {
 		var entry strings.Builder
 
-		counts := voteformat.VoteCounts{
-			Ja: vote.AnzahlJa, Nein: vote.AnzahlNein,
-			Enthaltung: vote.AnzahlEnthaltung, Abwesend: vote.AnzahlAbwesend,
-			A: vote.AnzahlA, B: vote.AnzahlB, C: vote.AnzahlC, D: vote.AnzahlD, E: vote.AnzahlE,
-		}
-		if len(votes) == 1 {
+		counts := voteformat.CountsOf(vote)
+		if len(group) == 1 {
 			// Single vote: just the counts
 			entry.WriteString(voteformat.FormatVoteCounts(counts))
 		} else {
 			// Multi-vote: subtitle + counts
-			voteTitle := voteformat.CleanVoteSubtitle(vote.Abstimmungstitel)
-			if voteTitle == "" {
-				voteTitle = fmt.Sprintf("Abstimmung %d", i+1)
-			}
+			voteTitle := voteformat.SubVoteLabel(vote, i)
 			if voteformat.IsAuswahlVote(counts) {
 				// Auswahl: no ✅/❌ prefix
 				entry.WriteString(fmt.Sprintf("%s\n", voteTitle))
 			} else {
-				voteEmoji := voteformat.GetVoteResultEmoji(vote.Schlussresultat)
+				voteEmoji := voteformat.GetVoteResultEmoji(vote.Decision)
 				entry.WriteString(fmt.Sprintf("%s %s\n", voteEmoji, voteTitle))
 			}
 			entry.WriteString(voteformat.FormatVoteCounts(counts))
@@ -184,8 +156,8 @@ func buildReplyPosts(votes []zurichapi.Abstimmung, link string) []*BlueskyPost {
 		entries = append(entries, entry.String())
 
 		// Add Fraktion breakdown as separate entry
-		if stimmabgaben := vote.Stimmabgaben.Stimmabgabe; len(stimmabgaben) > 0 {
-			fraktionCounts := voteformat.AggregateFraktionCounts(stimmabgaben)
+		if len(vote.MemberVotes) > 0 {
+			fraktionCounts := voteformat.AggregateFraktionCounts(vote.MemberVotes)
 			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
 				entries = append(entries, breakdown)
 			}
@@ -233,11 +205,10 @@ func buildReplyPosts(votes []zurichapi.Abstimmung, link string) []*BlueskyPost {
 	if len(currentEntries) > 0 {
 		body := strings.Join(currentEntries, "\n\n")
 		if graphemeLen(body+linkLine) <= maxGraphemes {
-			replies = append(replies, makePost(body+linkLine, link))
+			replies = append(replies, makePost(body+linkLine, linkURL))
 		} else {
 			replies = append(replies, makePost(body, ""))
-			linkOnly := fmt.Sprintf("🔗 %s", link)
-			replies = append(replies, makePost(linkOnly, link))
+			replies = append(replies, makePost(strings.TrimLeft(linkLine, "\n"), linkURL))
 		}
 	}
 

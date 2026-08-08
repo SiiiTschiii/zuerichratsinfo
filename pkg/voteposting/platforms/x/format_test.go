@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 // allThreadText joins all post texts in a thread for simple Contains assertions.
@@ -20,22 +20,23 @@ func allThreadText(thread []*XPost) string {
 func TestFormatVoteThread_PreservesPostulatMotion(t *testing.T) {
 	tests := []struct {
 		name          string
-		votes         []zurichapi.Abstimmung
+		group         []votes.Vote
 		expectedParts []string
 	}{
 		{
 			name: "Single vote with Postulat in title",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:          "test-guid-1",
-					GeschaeftGrNr:    "2025/100",
-					TraktandumTitel:  "2025/100 Postulat von Reto Brüesch (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche",
-					SitzungDatum:     "2025-11-26",
-					Schlussresultat:  "abgelehnt",
-					AnzahlJa:         intPtr(21),
-					AnzahlNein:       intPtr(38),
-					AnzahlEnthaltung: intPtr(56),
-					AnzahlAbwesend:   intPtr(10),
+					SourceID:   "test-guid-1",
+					Title:      "2025/100 Postulat von Reto Brüesch (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche",
+					Date:       testfixtures.MustDate("2025-11-26"),
+					Decision:   "abgelehnt",
+					Yes:        intPtr(21),
+					No:         intPtr(38),
+					Abstention: intPtr(56),
+					Absent:     intPtr(10),
+					SourceURL:  testfixtures.VoteURL("test-guid-1"),
+					Affair:     votes.Affair{Number: "2025/100"},
 				},
 			},
 			expectedParts: []string{
@@ -46,17 +47,18 @@ func TestFormatVoteThread_PreservesPostulatMotion(t *testing.T) {
 		},
 		{
 			name: "Single vote with Motion in title",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:          "test-guid-2",
-					GeschaeftGrNr:    "2025/200",
-					TraktandumTitel:  "2025/200 Motion von Liv Mahrer (SP) vom 05.02.2025: Festsetzung der Selnaustrasse",
-					SitzungDatum:     "2025-11-26",
-					Schlussresultat:  "angenommen",
-					AnzahlJa:         intPtr(90),
-					AnzahlNein:       intPtr(30),
-					AnzahlEnthaltung: intPtr(0),
-					AnzahlAbwesend:   intPtr(5),
+					SourceID:   "test-guid-2",
+					Title:      "2025/200 Motion von Liv Mahrer (SP) vom 05.02.2025: Festsetzung der Selnaustrasse",
+					Date:       testfixtures.MustDate("2025-11-26"),
+					Decision:   "angenommen",
+					Yes:        intPtr(90),
+					No:         intPtr(30),
+					Abstention: intPtr(0),
+					Absent:     intPtr(5),
+					SourceURL:  testfixtures.VoteURL("test-guid-2"),
+					Affair:     votes.Affair{Number: "2025/200"},
 				},
 			},
 			expectedParts: []string{
@@ -69,7 +71,7 @@ func TestFormatVoteThread_PreservesPostulatMotion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			thread := FormatVoteThread(tt.votes, nil, DefaultMaxChars)
+			thread := FormatVoteThread(tt.group, nil, DefaultMaxChars)
 			full := allThreadText(thread)
 			t.Logf("Full output:\n%s", full)
 
@@ -85,22 +87,23 @@ func TestFormatVoteThread_PreservesPostulatMotion(t *testing.T) {
 func TestFormatVoteThread_AuswahlVote(t *testing.T) {
 	tests := []struct {
 		name             string
-		votes            []zurichapi.Abstimmung
+		group            []votes.Vote
 		shouldContain    []string
 		shouldNotContain []string
 	}{
 		{
 			name: "Single Auswahl vote — no result prefix",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:         "auswahl-guid-1",
-					TraktandumTitel: "Weisung: Jugendwohnkredit 2025",
-					SitzungDatum:    "2026-03-04",
-					Schlussresultat: "Auswahl A",
-					AnzahlAbwesend:  intPtr(10),
-					AnzahlA:         intPtr(74),
-					AnzahlB:         intPtr(28),
-					AnzahlC:         intPtr(13),
+					SourceID:  "auswahl-guid-1",
+					Title:     "Weisung: Jugendwohnkredit 2025",
+					Date:      testfixtures.MustDate("2026-03-04"),
+					Decision:  "Auswahl A",
+					Absent:    intPtr(10),
+					ChoiceA:   intPtr(74),
+					ChoiceB:   intPtr(28),
+					ChoiceC:   intPtr(13),
+					SourceURL: testfixtures.VoteURL("auswahl-guid-1"),
 				},
 			},
 			shouldContain:    []string{"📊 A: 74 | B: 28 | C: 13 | Abwesend 10", "Jugendwohnkredit"},
@@ -108,28 +111,30 @@ func TestFormatVoteThread_AuswahlVote(t *testing.T) {
 		},
 		{
 			name: "Multi vote with Auswahl entry — no emoji before subtitle",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:          "guid-ja-nein",
-					TraktandumTitel:  "Weisung: BZO",
-					Abstimmungstitel: "Änderungsantrag 9",
-					SitzungDatum:     "2026-02-25",
-					Schlussresultat:  "angenommen",
-					AnzahlJa:         intPtr(62),
-					AnzahlNein:       intPtr(51),
-					AnzahlEnthaltung: intPtr(0),
-					AnzahlAbwesend:   intPtr(12),
+					SourceID:   "guid-ja-nein",
+					Title:      "Weisung: BZO",
+					Subtitle:   "Änderungsantrag 9",
+					Date:       testfixtures.MustDate("2026-02-25"),
+					Decision:   "angenommen",
+					Yes:        intPtr(62),
+					No:         intPtr(51),
+					Abstention: intPtr(0),
+					Absent:     intPtr(12),
+					SourceURL:  testfixtures.VoteURL("guid-ja-nein"),
 				},
 				{
-					OBJGUID:          "guid-auswahl",
-					TraktandumTitel:  "Weisung: BZO",
-					Abstimmungstitel: "Änderungsantrag 17, 1. Abstimmung",
-					SitzungDatum:     "2026-02-25",
-					Schlussresultat:  "Auswahl A",
-					AnzahlAbwesend:   intPtr(11),
-					AnzahlA:          intPtr(50),
-					AnzahlB:          intPtr(24),
-					AnzahlC:          intPtr(40),
+					SourceID:  "guid-auswahl",
+					Title:     "Weisung: BZO",
+					Subtitle:  "Änderungsantrag 17, 1. Abstimmung",
+					Date:      testfixtures.MustDate("2026-02-25"),
+					Decision:  "Auswahl A",
+					Absent:    intPtr(11),
+					ChoiceA:   intPtr(50),
+					ChoiceB:   intPtr(24),
+					ChoiceC:   intPtr(40),
+					SourceURL: testfixtures.VoteURL("guid-auswahl"),
 				},
 			},
 			shouldContain: []string{
@@ -143,7 +148,7 @@ func TestFormatVoteThread_AuswahlVote(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			thread := FormatVoteThread(tt.votes, nil, DefaultMaxChars)
+			thread := FormatVoteThread(tt.group, nil, DefaultMaxChars)
 			full := allThreadText(thread)
 			t.Logf("Full output:\n%s", full)
 			for _, part := range tt.shouldContain {
@@ -161,20 +166,21 @@ func TestFormatVoteThread_AuswahlVote(t *testing.T) {
 }
 
 func TestFormatVoteThread_SingleVoteStructure(t *testing.T) {
-	votes := []zurichapi.Abstimmung{
+	group := []votes.Vote{
 		{
-			OBJGUID:          "struct-guid-1",
-			TraktandumTitel:  "Weisung: Testvorlage",
-			SitzungDatum:     "2026-01-15",
-			Schlussresultat:  "angenommen",
-			AnzahlJa:         intPtr(80),
-			AnzahlNein:       intPtr(30),
-			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:   intPtr(10),
+			SourceID:   "struct-guid-1",
+			Title:      "Weisung: Testvorlage",
+			Date:       testfixtures.MustDate("2026-01-15"),
+			Decision:   "angenommen",
+			Yes:        intPtr(80),
+			No:         intPtr(30),
+			Abstention: intPtr(5),
+			Absent:     intPtr(10),
+			SourceURL:  testfixtures.VoteURL("struct-guid-1"),
 		},
 	}
 
-	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
 
 	if len(thread) < 2 {
 		t.Fatalf("expected root + at least 1 reply, got %d posts", len(thread))
@@ -200,32 +206,34 @@ func TestFormatVoteThread_SingleVoteStructure(t *testing.T) {
 }
 
 func TestFormatVoteThread_MultiVoteStructure(t *testing.T) {
-	votes := []zurichapi.Abstimmung{
+	group := []votes.Vote{
 		{
-			OBJGUID:          "multi-guid-1",
-			TraktandumTitel:  "Weisung: Grosses Projekt",
-			Abstimmungstitel: "Antrag 1",
-			SitzungDatum:     "2026-01-15",
-			Schlussresultat:  "angenommen",
-			AnzahlJa:         intPtr(60),
-			AnzahlNein:       intPtr(40),
-			AnzahlEnthaltung: intPtr(10),
-			AnzahlAbwesend:   intPtr(15),
+			SourceID:   "multi-guid-1",
+			Title:      "Weisung: Grosses Projekt",
+			Subtitle:   "Antrag 1",
+			Date:       testfixtures.MustDate("2026-01-15"),
+			Decision:   "angenommen",
+			Yes:        intPtr(60),
+			No:         intPtr(40),
+			Abstention: intPtr(10),
+			Absent:     intPtr(15),
+			SourceURL:  testfixtures.VoteURL("multi-guid-1"),
 		},
 		{
-			OBJGUID:          "multi-guid-2",
-			TraktandumTitel:  "Weisung: Grosses Projekt",
-			Abstimmungstitel: "Antrag 2",
-			SitzungDatum:     "2026-01-15",
-			Schlussresultat:  "abgelehnt",
-			AnzahlJa:         intPtr(30),
-			AnzahlNein:       intPtr(70),
-			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:   intPtr(20),
+			SourceID:   "multi-guid-2",
+			Title:      "Weisung: Grosses Projekt",
+			Subtitle:   "Antrag 2",
+			Date:       testfixtures.MustDate("2026-01-15"),
+			Decision:   "abgelehnt",
+			Yes:        intPtr(30),
+			No:         intPtr(70),
+			Abstention: intPtr(5),
+			Absent:     intPtr(20),
+			SourceURL:  testfixtures.VoteURL("multi-guid-2"),
 		},
 	}
 
-	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
 
 	if len(thread) < 2 {
 		t.Fatalf("expected root + at least 1 reply, got %d posts", len(thread))
@@ -251,20 +259,21 @@ func TestFormatVoteThread_MultiVoteStructure(t *testing.T) {
 }
 
 func TestFormatVoteThread_LinkPlacement(t *testing.T) {
-	votes := []zurichapi.Abstimmung{
+	group := []votes.Vote{
 		{
-			OBJGUID:          "link-guid-1",
-			TraktandumTitel:  "Weisung: Linktest",
-			SitzungDatum:     "2026-01-15",
-			Schlussresultat:  "angenommen",
-			AnzahlJa:         intPtr(80),
-			AnzahlNein:       intPtr(30),
-			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:   intPtr(10),
+			SourceID:   "link-guid-1",
+			Title:      "Weisung: Linktest",
+			Date:       testfixtures.MustDate("2026-01-15"),
+			Decision:   "angenommen",
+			Yes:        intPtr(80),
+			No:         intPtr(30),
+			Abstention: intPtr(5),
+			Absent:     intPtr(10),
+			SourceURL:  testfixtures.VoteURL("link-guid-1"),
 		},
 	}
 
-	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
 
 	// Link must NOT be in root
 	if strings.Contains(thread[0].Text, "🔗") {
@@ -281,20 +290,21 @@ func TestFormatVoteThread_LinkPlacement(t *testing.T) {
 func TestFormatVoteThread_RootTruncation(t *testing.T) {
 	// Create a vote with a very long title that exceeds DefaultMaxChars
 	longTitle := strings.Repeat("A", DefaultMaxChars+500)
-	votes := []zurichapi.Abstimmung{
+	group := []votes.Vote{
 		{
-			OBJGUID:          "trunc-guid-1",
-			TraktandumTitel:  longTitle,
-			SitzungDatum:     "2026-01-15",
-			Schlussresultat:  "angenommen",
-			AnzahlJa:         intPtr(80),
-			AnzahlNein:       intPtr(30),
-			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:   intPtr(10),
+			SourceID:   "trunc-guid-1",
+			Title:      longTitle,
+			Date:       testfixtures.MustDate("2026-01-15"),
+			Decision:   "angenommen",
+			Yes:        intPtr(80),
+			No:         intPtr(30),
+			Abstention: intPtr(5),
+			Absent:     intPtr(10),
+			SourceURL:  testfixtures.VoteURL("trunc-guid-1"),
 		},
 	}
 
-	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
 
 	root := thread[0].Text
 	if len(root) > DefaultMaxChars {
@@ -308,7 +318,7 @@ func TestFormatVoteThread_RootTruncation(t *testing.T) {
 func TestFormatVoteThread_EmptyVotes(t *testing.T) {
 	thread := FormatVoteThread(nil, nil, DefaultMaxChars)
 	if thread != nil {
-		t.Errorf("expected nil for empty votes, got %d posts", len(thread))
+		t.Errorf("expected nil for empty group, got %d posts", len(thread))
 	}
 }
 
@@ -318,8 +328,8 @@ func intPtr(i int) *int {
 }
 
 func TestFormatVoteThread_SingleVoteWithFraktion(t *testing.T) {
-	votes := testfixtures.SingleVoteAngenommen()
-	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+	group := testfixtures.SingleVoteAngenommen()
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
 
 	full := allThreadText(thread)
 	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
@@ -354,13 +364,13 @@ func TestFormatVoteThread_SingleVoteWithFraktion(t *testing.T) {
 }
 
 func TestFormatVoteThread_MultiVoteWithFraktion(t *testing.T) {
-	votes := testfixtures.MultiVoteGroup()
-	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+	group := testfixtures.MultiVoteGroup()
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
 
 	full := allThreadText(thread)
 	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
 
-	// Each of the 2 votes should have its own Fraktion entry
+	// Each of the 2 group should have its own Fraktion entry
 	count := strings.Count(full, "🏛️ Fraktionen")
 	if count != 2 {
 		t.Errorf("expected 2 Fraktion breakdown entries, got %d", count)
@@ -376,24 +386,23 @@ func TestFormatVoteThread_MultiVoteWithFraktion(t *testing.T) {
 
 func TestFormatVoteThread_NoStimmabgaben(t *testing.T) {
 	// Use a vote with no Stimmabgaben to test the no-Fraktion path
-	votes := []zurichapi.Abstimmung{
+	group := []votes.Vote{
 		{
-			OBJGUID:          "objguid-nostimm",
-			SitzungGuid:      "sitzung-nostimm",
-			TraktandumGuid:   "trakt-nostimm",
-			GeschaeftGuid:    "geschaeft-nostimm",
-			SitzungDatum:     "2025-06-15",
-			TraktandumTitel:  "Test ohne Stimmabgaben",
-			GeschaeftTitel:   "Test ohne Stimmabgaben",
-			GeschaeftGrNr:    "2025/999",
-			Schlussresultat:  "abgelehnt",
-			AnzahlJa:         intPtr(20),
-			AnzahlNein:       intPtr(95),
-			AnzahlEnthaltung: intPtr(5),
-			AnzahlAbwesend:   intPtr(5),
+			SourceID:   "objguid-nostimm",
+			Title:      "Test ohne Stimmabgaben",
+			SessionID:  "sitzung-nostimm",
+			Date:       testfixtures.MustDate("2025-06-15"),
+			Decision:   "abgelehnt",
+			Yes:        intPtr(20),
+			No:         intPtr(95),
+			Abstention: intPtr(5),
+			Absent:     intPtr(5),
+			SourceURL:  testfixtures.VoteURL("objguid-nostimm"),
+			GroupURL:   testfixtures.TraktandumURL("sitzung-nostimm", "trakt-nostimm"),
+			Affair:     votes.Affair{Number: "2025/999", Title: "Test ohne Stimmabgaben", ID: "geschaeft-nostimm", URL: testfixtures.GeschaeftURL("geschaeft-nostimm")},
 		},
 	}
-	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
 
 	full := allThreadText(thread)
 	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
@@ -404,8 +413,8 @@ func TestFormatVoteThread_NoStimmabgaben(t *testing.T) {
 }
 
 func TestFormatVoteThread_AuswahlWithFraktion(t *testing.T) {
-	votes := testfixtures.AuswahlVote()
-	thread := FormatVoteThread(votes, nil, DefaultMaxChars)
+	group := testfixtures.AuswahlVote()
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
 
 	full := allThreadText(thread)
 	t.Logf("Full thread (%d posts):\n%s", len(thread), full)
@@ -426,23 +435,24 @@ func TestFormatVoteThread_AuswahlWithFraktion(t *testing.T) {
 func TestFormatVoteThread_SingleVoteSubtitlePrefix(t *testing.T) {
 	tests := []struct {
 		name             string
-		votes            []zurichapi.Abstimmung
+		group            []votes.Vote
 		shouldContain    []string
 		shouldNotContain []string
 	}{
 		{
 			name: "Single vote non-Schlussabstimmung prepends Abstimmungsgegenstand",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:           "test-guid-dring",
-					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
-					Abstimmungstitel:  "2026_0244 Dringlicherklärung",
-					SitzungDatum:      "2026-05-27",
-					Schlussresultat:   "angenommen",
-					AnzahlJa:          intPtr(66),
-					AnzahlNein:        intPtr(0),
-					AnzahlEnthaltung:  intPtr(0),
-					AnzahlAbwesend:    intPtr(59),
+					SourceID:   "test-guid-dring",
+					Title:      "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Subtitle:   "2026_0244 Dringlicherklärung",
+					Date:       testfixtures.MustDate("2026-05-27"),
+					Decision:   "angenommen",
+					Yes:        intPtr(66),
+					No:         intPtr(0),
+					Abstention: intPtr(0),
+					Absent:     intPtr(59),
+					SourceURL:  testfixtures.VoteURL("test-guid-dring"),
 				},
 			},
 			shouldContain:    []string{"Dringlicherklärung\n"},
@@ -450,17 +460,18 @@ func TestFormatVoteThread_SingleVoteSubtitlePrefix(t *testing.T) {
 		},
 		{
 			name: "Single vote Schlussabstimmung does NOT prepend",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:           "test-guid-schluss",
-					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
-					Abstimmungstitel:  "2026_0244 Schlussabstimmung",
-					SitzungDatum:      "2026-05-27",
-					Schlussresultat:   "angenommen",
-					AnzahlJa:          intPtr(66),
-					AnzahlNein:        intPtr(0),
-					AnzahlEnthaltung:  intPtr(0),
-					AnzahlAbwesend:    intPtr(59),
+					SourceID:   "test-guid-schluss",
+					Title:      "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Subtitle:   "2026_0244 Schlussabstimmung",
+					Date:       testfixtures.MustDate("2026-05-27"),
+					Decision:   "angenommen",
+					Yes:        intPtr(66),
+					No:         intPtr(0),
+					Abstention: intPtr(0),
+					Absent:     intPtr(59),
+					SourceURL:  testfixtures.VoteURL("test-guid-schluss"),
 				},
 			},
 			shouldContain:    []string{},
@@ -468,25 +479,26 @@ func TestFormatVoteThread_SingleVoteSubtitlePrefix(t *testing.T) {
 		},
 		{
 			name: "Single vote empty Abstimmungstitel does NOT prepend",
-			votes: []zurichapi.Abstimmung{
+			group: []votes.Vote{
 				{
-					OBJGUID:           "test-guid-empty",
-					TraktandumTitel:   "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
-					Abstimmungstitel:  "",
-					SitzungDatum:      "2026-05-27",
-					Schlussresultat:   "angenommen",
-					AnzahlJa:          intPtr(66),
-					AnzahlNein:        intPtr(0),
-					AnzahlEnthaltung:  intPtr(0),
-					AnzahlAbwesend:    intPtr(59),
+					SourceID:   "test-guid-empty",
+					Title:      "2026/244 Motion von Dr. Jonas Keller (SP): Erhalt Konzertlokale",
+					Subtitle:   "",
+					Date:       testfixtures.MustDate("2026-05-27"),
+					Decision:   "angenommen",
+					Yes:        intPtr(66),
+					No:         intPtr(0),
+					Abstention: intPtr(0),
+					Absent:     intPtr(59),
+					SourceURL:  testfixtures.VoteURL("test-guid-empty"),
 				},
 			},
 			shouldContain:    []string{},
 			shouldNotContain: []string{"\n\n\n"},
 		},
 		{
-			name: "Multi-vote does NOT prepend subtitle to root",
-			votes: testfixtures.MultiVoteGroup(),
+			name:             "Multi-vote does NOT prepend subtitle to root",
+			group:            testfixtures.MultiVoteGroup(),
 			shouldContain:    []string{},
 			shouldNotContain: []string{},
 		},
@@ -494,7 +506,7 @@ func TestFormatVoteThread_SingleVoteSubtitlePrefix(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			thread := FormatVoteThread(tt.votes, nil, DefaultMaxChars)
+			thread := FormatVoteThread(tt.group, nil, DefaultMaxChars)
 			root := thread[0].Text
 			t.Logf("Root post:\n%s", root)
 

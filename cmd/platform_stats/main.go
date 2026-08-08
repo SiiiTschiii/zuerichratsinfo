@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sort"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"gopkg.in/yaml.v3"
 )
 
@@ -32,7 +33,7 @@ type PlatformStat struct {
 
 func main() {
 	// Read contacts.yaml
-	data, err := os.ReadFile("data/contacts.yaml")
+	data, err := os.ReadFile(contacts.PathFor("zurich-city"))
 	if err != nil {
 		log.Fatalf("Error reading contacts.yaml: %v", err)
 	}
@@ -153,4 +154,3 @@ func updateREADME(stats map[string]int, totalContacts int) {
 	}
 	fmt.Fprintf(os.Stderr, "  Total contacts: %d\n\n", totalContacts)
 }
-

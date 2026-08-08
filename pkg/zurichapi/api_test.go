@@ -2,9 +2,12 @@ package zurichapi
 
 import (
 	"fmt"
-	"sort"
 	"strconv"
 	"testing"
+
+	// Aliased because this file uses "votes" as a local variable name
+	// throughout for slices of Abstimmung.
+	votemodel "github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 // Helper function to create test votes
@@ -41,8 +44,8 @@ func createTestVoteWithTraktandum(guid, geschaeftGrNr, traktandumGuid, sitzungDa
 	}
 }
 
-// TestGroupAbstimmungenByGeschaeft_Grouping tests the core grouping logic
-func TestGroupAbstimmungenByGeschaeft_Grouping(t *testing.T) {
+// TestGroupByAffair_Grouping tests the core grouping logic
+func TestGroupByAffair_Grouping(t *testing.T) {
 	tests := []struct {
 		name           string
 		votes          []Abstimmung
@@ -135,63 +138,9 @@ func TestGroupAbstimmungenByGeschaeft_Grouping(t *testing.T) {
 	}
 }
 
-// groupVotesOnly is a helper that does pure grouping without API calls
-// This extracts the core grouping logic for testing
-func groupVotesOnly(votes []Abstimmung) [][]Abstimmung {
-	if len(votes) == 0 {
-		return nil
-	}
-
-	// Build a map keyed by "GeschaeftGrNr|SitzungDatum"
-	groupMap := make(map[string][]Abstimmung)
-
-	for _, vote := range votes {
-		// Extract just the date part (YYYY-MM-DD) from SitzungDatum
-		date := vote.SitzungDatum
-		if len(date) > 10 {
-			date = date[:10]
-		}
-
-		key := vote.GeschaeftGrNr + "|" + date
-		groupMap[key] = append(groupMap[key], vote)
-	}
-
-	// Sort votes within each group by SEQ (ascending) to preserve Sitzung chronological order
-	for key := range groupMap {
-		votes := groupMap[key]
-		sort.Slice(votes, func(i, j int) bool {
-			seqI, _ := strconv.Atoi(votes[i].SEQ)
-			seqJ, _ := strconv.Atoi(votes[j].SEQ)
-			return seqI < seqJ
-		})
-		groupMap[key] = votes
-	}
-
-	// Convert map to slice of groups, preserving the order of first occurrence
-	seen := make(map[string]bool)
-	var groups [][]Abstimmung
-
-	for _, vote := range votes {
-		date := vote.SitzungDatum
-		if len(date) > 10 {
-			date = date[:10]
-		}
-		key := vote.GeschaeftGrNr + "|" + date
-
-		if !seen[key] {
-			seen[key] = true
-			groups = append(groups, groupMap[key])
-		}
-	}
-
-	// Sort groups by their minimum SEQ value (oldest first)
-	sort.Slice(groups, func(i, j int) bool {
-		minSeqI, _ := strconv.Atoi(groups[i][0].SEQ) // First vote in group is already sorted to be oldest
-		minSeqJ, _ := strconv.Atoi(groups[j][0].SEQ)
-		return minSeqI < minSeqJ
-	})
-
-	return groups
+// groupVotesOnly groups without the API calls that complete partial groups.
+func groupVotesOnly(votes []Abstimmung) [][]votemodel.Vote {
+	return votemodel.GroupByAffairAndDate(ToVotes(votes))
 }
 
 // TestGroupByTraktandumGuid tests that votes are grouped by GeschaeftGrNr+Date
@@ -261,7 +210,7 @@ func TestVoteOrderingBySEQ(t *testing.T) {
 		name        string
 		votes       []Abstimmung
 		description string
-		verify      func(t *testing.T, groups [][]Abstimmung)
+		verify      func(t *testing.T, groups [][]votemodel.Vote)
 	}{
 		{
 			name: "Votes within same Geschäft ordered by SEQ ascending",
@@ -272,7 +221,7 @@ func TestVoteOrderingBySEQ(t *testing.T) {
 				createTestVoteWithSEQ("vote1", "2025/369", "5209024", "2025-12-03", "Abstimmung 1"),
 			},
 			description: "Multiple votes for same Geschäft should be sorted by SEQ ascending (chronological)",
-			verify: func(t *testing.T, groups [][]Abstimmung) {
+			verify: func(t *testing.T, groups [][]votemodel.Vote) {
 				if len(groups) != 1 {
 					t.Fatalf("Expected 1 group, got %d", len(groups))
 				}
@@ -281,8 +230,8 @@ func TestVoteOrderingBySEQ(t *testing.T) {
 					t.Fatalf("Expected 3 votes in group, got %d", len(group))
 				}
 				// Check SEQ order is ascending (chronological)
-				if group[0].SEQ != "5209024" || group[1].SEQ != "5209059" || group[2].SEQ != "5209122" {
-					t.Errorf("Votes not in SEQ ascending order: %s, %s, %s", group[0].SEQ, group[1].SEQ, group[2].SEQ)
+				if group[0].Sequence != "5209024" || group[1].Sequence != "5209059" || group[2].Sequence != "5209122" {
+					t.Errorf("Votes not in SEQ ascending order: %s, %s, %s", group[0].Sequence, group[1].Sequence, group[2].Sequence)
 				}
 			},
 		},
@@ -297,7 +246,7 @@ func TestVoteOrderingBySEQ(t *testing.T) {
 				createTestVoteWithSEQ("vote2", "2022/260", "5209024", "2025-12-03", "Werft Wollishofen"),
 			},
 			description: "Multiple Geschäfte should be reversed so oldest (lowest SEQ) posts first",
-			verify: func(t *testing.T, groups [][]Abstimmung) {
+			verify: func(t *testing.T, groups [][]votemodel.Vote) {
 				if len(groups) != 5 {
 					t.Fatalf("Expected 5 groups, got %d", len(groups))
 				}
@@ -307,8 +256,8 @@ func TestVoteOrderingBySEQ(t *testing.T) {
 					if len(group) == 0 {
 						t.Fatalf("Group %d is empty", i)
 					}
-					if group[0].SEQ != expectedOrder[i] {
-						t.Errorf("Group %d: expected SEQ %s, got %s", i, expectedOrder[i], group[0].SEQ)
+					if group[0].Sequence != expectedOrder[i] {
+						t.Errorf("Group %d: expected SEQ %s, got %s", i, expectedOrder[i], group[0].Sequence)
 					}
 				}
 			},
@@ -323,24 +272,24 @@ func TestVoteOrderingBySEQ(t *testing.T) {
 				createTestVoteWithSEQ("v3", "2022/260", "5209024", "2025-12-03", "Oldest"),
 			},
 			description: "Mixed scenario with multiple groups and votes",
-			verify: func(t *testing.T, groups [][]Abstimmung) {
+			verify: func(t *testing.T, groups [][]votemodel.Vote) {
 				if len(groups) != 3 {
 					t.Fatalf("Expected 3 groups, got %d", len(groups))
 				}
 				// First group should be 2022/260 (oldest)
-				if groups[0][0].GeschaeftGrNr != "2022/260" {
-					t.Errorf("First group should be 2022/260, got %s", groups[0][0].GeschaeftGrNr)
+				if groups[0][0].Affair.Number != "2022/260" {
+					t.Errorf("First group should be 2022/260, got %s", groups[0][0].Affair.Number)
 				}
 				// Last group should be 2025/250 (newest)
-				if groups[2][0].GeschaeftGrNr != "2025/250" {
-					t.Errorf("Last group should be 2025/250, got %s", groups[2][0].GeschaeftGrNr)
+				if groups[2][0].Affair.Number != "2025/250" {
+					t.Errorf("Last group should be 2025/250, got %s", groups[2][0].Affair.Number)
 				}
 				// Within 2025/250 group, votes should be SEQ ascending
 				if len(groups[2]) != 2 {
 					t.Fatalf("Expected 2 votes in 2025/250 group, got %d", len(groups[2]))
 				}
-				if groups[2][0].SEQ != "5209212" || groups[2][1].SEQ != "5209213" {
-					t.Errorf("2025/250 votes not in SEQ order: %s, %s", groups[2][0].SEQ, groups[2][1].SEQ)
+				if groups[2][0].Sequence != "5209212" || groups[2][1].Sequence != "5209213" {
+					t.Errorf("2025/250 votes not in SEQ order: %s, %s", groups[2][0].Sequence, groups[2][1].Sequence)
 				}
 			},
 		},
@@ -403,7 +352,7 @@ func TestEnsureCompleteGroupLogic(t *testing.T) {
 	}
 }
 
-// TestGroupAbstimmungenByGeschaeft_AllGroupsComplete is a regression test for
+// TestGroupByAffair_AllGroupsComplete is a regression test for
 // a bug where only the last (oldest) group's Traktandum was checked for
 // completeness. With the fix (ensureAllGroupsComplete), all Geschäfte are
 // completed at the session level: for each unique SitzungGuid, all votes for
@@ -416,7 +365,7 @@ func TestEnsureCompleteGroupLogic(t *testing.T) {
 //
 // Fake SitzungGuids (empty string) are used so the API returns no results — the test
 // verifies that all groups are correctly formed and preserved, not just the last one.
-func TestGroupAbstimmungenByGeschaeft_AllGroupsComplete(t *testing.T) {
+func TestGroupByAffair_AllGroupsComplete(t *testing.T) {
 	client := NewClient()
 
 	// Three groups: C (oldest, SEQ 100), B (middle, SEQ 200), A (newest, SEQ 300-301).
@@ -429,9 +378,9 @@ func TestGroupAbstimmungenByGeschaeft_AllGroupsComplete(t *testing.T) {
 		{OBJGUID: "c1", GeschaeftGrNr: "2025/100", TraktandumGuid: "nonexistent-trak-c", SitzungDatum: "2025-12-03", SEQ: "100"},
 	}
 
-	groups, err := client.GroupAbstimmungenByGeschaeft(votes)
+	groups, err := client.GroupByAffair(ToVotes(votes))
 	if err != nil {
-		t.Fatalf("GroupAbstimmungenByGeschaeft failed: %v", err)
+		t.Fatalf("GroupByAffair failed: %v", err)
 	}
 
 	// All 3 groups must be present — the non-last groups must not be dropped
@@ -441,14 +390,14 @@ func TestGroupAbstimmungenByGeschaeft_AllGroupsComplete(t *testing.T) {
 
 	// Groups should be ordered oldest first (ascending max SEQ):
 	// C (max SEQ 100) → B (max SEQ 200) → A (max SEQ 301)
-	if groups[0][0].GeschaeftGrNr != "2025/100" {
-		t.Errorf("Expected first group to be 2025/100 (oldest), got %s", groups[0][0].GeschaeftGrNr)
+	if groups[0][0].Affair.Number != "2025/100" {
+		t.Errorf("Expected first group to be 2025/100 (oldest), got %s", groups[0][0].Affair.Number)
 	}
-	if groups[1][0].GeschaeftGrNr != "2025/200" {
-		t.Errorf("Expected second group to be 2025/200, got %s", groups[1][0].GeschaeftGrNr)
+	if groups[1][0].Affair.Number != "2025/200" {
+		t.Errorf("Expected second group to be 2025/200, got %s", groups[1][0].Affair.Number)
 	}
-	if groups[2][0].GeschaeftGrNr != "2025/300" {
-		t.Errorf("Expected third group to be 2025/300 (newest), got %s", groups[2][0].GeschaeftGrNr)
+	if groups[2][0].Affair.Number != "2025/300" {
+		t.Errorf("Expected third group to be 2025/300 (newest), got %s", groups[2][0].Affair.Number)
 	}
 
 	// No duplicates should have been introduced (fake SitzungGuids return nothing from API)
@@ -461,8 +410,8 @@ func TestGroupAbstimmungenByGeschaeft_AllGroupsComplete(t *testing.T) {
 	}
 }
 
-// TestGroupAbstimmungenByGeschaeft_DateSorting tests that groups are sorted by date first
-func TestGroupAbstimmungenByGeschaeft_DateSorting(t *testing.T) {
+// TestGroupByAffair_DateSorting tests that groups are sorted by date first
+func TestGroupByAffair_DateSorting(t *testing.T) {
 	client := NewClient() // Use NewClient() to get a properly initialized client
 
 	// Create votes from different dates with different TraktandumGuids to avoid API calls
@@ -477,9 +426,9 @@ func TestGroupAbstimmungenByGeschaeft_DateSorting(t *testing.T) {
 	votes[1].TraktandumGuid = "trak-2"
 	votes[2].TraktandumGuid = "trak-3"
 
-	groups, err := client.GroupAbstimmungenByGeschaeft(votes)
+	groups, err := client.GroupByAffair(ToVotes(votes))
 	if err != nil {
-		t.Fatalf("GroupAbstimmungenByGeschaeft failed: %v", err)
+		t.Fatalf("GroupByAffair failed: %v", err)
 	}
 
 	if len(groups) != 3 {
@@ -487,9 +436,9 @@ func TestGroupAbstimmungenByGeschaeft_DateSorting(t *testing.T) {
 	}
 
 	// Verify order: Dec 10 should come before Dec 11
-	date1 := groups[0][0].SitzungDatum[:10]
-	date2 := groups[1][0].SitzungDatum[:10]
-	date3 := groups[2][0].SitzungDatum[:10]
+	date1 := groups[0][0].DateString()[:10]
+	date2 := groups[1][0].DateString()[:10]
+	date3 := groups[2][0].DateString()[:10]
 
 	if date1 != "2025-12-10" {
 		t.Errorf("First group should be from 2025-12-10, got %s", date1)
@@ -502,8 +451,8 @@ func TestGroupAbstimmungenByGeschaeft_DateSorting(t *testing.T) {
 	}
 }
 
-// TestGroupAbstimmungenByGeschaeft_MaxSEQSorting tests that groups are sorted by max SEQ within same date
-func TestGroupAbstimmungenByGeschaeft_MaxSEQSorting(t *testing.T) {
+// TestGroupByAffair_MaxSEQSorting tests that groups are sorted by max SEQ within same date
+func TestGroupByAffair_MaxSEQSorting(t *testing.T) {
 	client := NewClient()
 
 	// Create multiple groups on the same date with different SEQ ranges
@@ -524,9 +473,9 @@ func TestGroupAbstimmungenByGeschaeft_MaxSEQSorting(t *testing.T) {
 		votes[i].TraktandumGuid = fmt.Sprintf("trak-%d", i)
 	}
 
-	groups, err := client.GroupAbstimmungenByGeschaeft(votes)
+	groups, err := client.GroupByAffair(ToVotes(votes))
 	if err != nil {
-		t.Fatalf("GroupAbstimmungenByGeschaeft failed: %v", err)
+		t.Fatalf("GroupByAffair failed: %v", err)
 	}
 
 	if len(groups) != 3 {
@@ -534,9 +483,9 @@ func TestGroupAbstimmungenByGeschaeft_MaxSEQSorting(t *testing.T) {
 	}
 
 	// Extract last SEQ from each group
-	lastSeq1, _ := strconv.Atoi(groups[0][len(groups[0])-1].SEQ)
-	lastSeq2, _ := strconv.Atoi(groups[1][len(groups[1])-1].SEQ)
-	lastSeq3, _ := strconv.Atoi(groups[2][len(groups[2])-1].SEQ)
+	lastSeq1, _ := strconv.Atoi(groups[0][len(groups[0])-1].Sequence)
+	lastSeq2, _ := strconv.Atoi(groups[1][len(groups[1])-1].Sequence)
+	lastSeq3, _ := strconv.Atoi(groups[2][len(groups[2])-1].Sequence)
 
 	// Verify order: groups should be ordered by their last (max) SEQ
 	if lastSeq1 != 80 {
@@ -550,20 +499,20 @@ func TestGroupAbstimmungenByGeschaeft_MaxSEQSorting(t *testing.T) {
 	}
 
 	// Verify the GeschaeftGrNr order matches the SEQ order
-	if groups[0][0].GeschaeftGrNr != "2025/575" {
-		t.Errorf("First group should be 2025/575 (max SEQ 80), got %s", groups[0][0].GeschaeftGrNr)
+	if groups[0][0].Affair.Number != "2025/575" {
+		t.Errorf("First group should be 2025/575 (max SEQ 80), got %s", groups[0][0].Affair.Number)
 	}
-	if groups[1][0].GeschaeftGrNr != "2025/391" {
-		t.Errorf("Second group should be 2025/391 (max SEQ 200), got %s", groups[1][0].GeschaeftGrNr)
+	if groups[1][0].Affair.Number != "2025/391" {
+		t.Errorf("Second group should be 2025/391 (max SEQ 200), got %s", groups[1][0].Affair.Number)
 	}
-	if groups[2][0].GeschaeftGrNr != "2025/600" {
-		t.Errorf("Third group should be 2025/600 (max SEQ 300), got %s", groups[2][0].GeschaeftGrNr)
+	if groups[2][0].Affair.Number != "2025/600" {
+		t.Errorf("Third group should be 2025/600 (max SEQ 300), got %s", groups[2][0].Affair.Number)
 	}
 }
 
-// TestGroupAbstimmungenByGeschaeft_BudgetScenario tests the real-world budget scenario
+// TestGroupByAffair_BudgetScenario tests the real-world budget scenario
 // where votes span multiple days and should be grouped correctly
-func TestGroupAbstimmungenByGeschaeft_BudgetScenario(t *testing.T) {
+func TestGroupByAffair_BudgetScenario(t *testing.T) {
 	client := NewClient()
 
 	// Simulate budget 2025/391 votes across two days
@@ -586,9 +535,9 @@ func TestGroupAbstimmungenByGeschaeft_BudgetScenario(t *testing.T) {
 		votes[i].TraktandumGuid = fmt.Sprintf("trak-%d", i)
 	}
 
-	groups, err := client.GroupAbstimmungenByGeschaeft(votes)
+	groups, err := client.GroupByAffair(ToVotes(votes))
 	if err != nil {
-		t.Fatalf("GroupAbstimmungenByGeschaeft failed: %v", err)
+		t.Fatalf("GroupByAffair failed: %v", err)
 	}
 
 	// Should have 3 groups:
@@ -600,27 +549,27 @@ func TestGroupAbstimmungenByGeschaeft_BudgetScenario(t *testing.T) {
 	}
 
 	// First group: Dec 10 budget
-	if groups[0][0].SitzungDatum[:10] != "2025-12-10" {
-		t.Errorf("First group should be from Dec 10, got %s", groups[0][0].SitzungDatum[:10])
+	if groups[0][0].DateString()[:10] != "2025-12-10" {
+		t.Errorf("First group should be from Dec 10, got %s", groups[0][0].DateString()[:10])
 	}
-	if groups[0][0].GeschaeftGrNr != "2025/391" {
-		t.Errorf("First group should be 2025/391, got %s", groups[0][0].GeschaeftGrNr)
+	if groups[0][0].Affair.Number != "2025/391" {
+		t.Errorf("First group should be 2025/391, got %s", groups[0][0].Affair.Number)
 	}
 
 	// Second group: Dec 11 postulat (finished before budget last vote)
-	if groups[1][0].SitzungDatum[:10] != "2025-12-11" {
-		t.Errorf("Second group should be from Dec 11, got %s", groups[1][0].SitzungDatum[:10])
+	if groups[1][0].DateString()[:10] != "2025-12-11" {
+		t.Errorf("Second group should be from Dec 11, got %s", groups[1][0].DateString()[:10])
 	}
-	if groups[1][0].GeschaeftGrNr != "2025/575" {
-		t.Errorf("Second group should be 2025/575, got %s", groups[1][0].GeschaeftGrNr)
+	if groups[1][0].Affair.Number != "2025/575" {
+		t.Errorf("Second group should be 2025/575, got %s", groups[1][0].Affair.Number)
 	}
 
 	// Third group: Dec 11 budget (last because max SEQ is highest)
-	if groups[2][0].SitzungDatum[:10] != "2025-12-11" {
-		t.Errorf("Third group should be from Dec 11, got %s", groups[2][0].SitzungDatum[:10])
+	if groups[2][0].DateString()[:10] != "2025-12-11" {
+		t.Errorf("Third group should be from Dec 11, got %s", groups[2][0].DateString()[:10])
 	}
-	if groups[2][0].GeschaeftGrNr != "2025/391" {
-		t.Errorf("Third group should be 2025/391, got %s", groups[2][0].GeschaeftGrNr)
+	if groups[2][0].Affair.Number != "2025/391" {
+		t.Errorf("Third group should be 2025/391, got %s", groups[2][0].Affair.Number)
 	}
 
 	// Verify the Dec 11 budget group contains all 3 votes

@@ -18,56 +18,71 @@ const (
 	PlatformMastodon  Platform = "mastodon"
 )
 
+// dataDir is the root the logs live under, relative to the working directory.
+const dataDir = "data"
+
 // VoteEntry represents a single posted vote
 type VoteEntry struct {
 	ID       string    `json:"id"`
 	PostedAt time.Time `json:"posted_at"`
 }
 
-// VoteLog tracks posted votes for a specific platform
+// VoteLog tracks posted votes for one jurisdiction on one platform.
+//
+// The pairing matters: dedup is per account *and* per body, because a vote
+// posted to X has not thereby been posted to Bluesky, and two jurisdictions
+// sharing an account still keep separate histories.
 type VoteLog struct {
-	Platform Platform             `json:"platform"`
-	Votes    []VoteEntry          `json:"votes"`
-	filepath string               // not exported, internal use
-	index    map[string]VoteEntry // for fast lookup
-	noOp     bool                 // when true, all votes are treated as unposted
+	Jurisdiction string               `json:"jurisdiction,omitempty"`
+	Platform     Platform             `json:"platform"`
+	Votes        []VoteEntry          `json:"votes"`
+	filepath     string               // not exported, internal use
+	index        map[string]VoteEntry // for fast lookup
+	noOp         bool                 // when true, all votes are treated as unposted
 }
 
-// Load loads a vote log for the specified platform
-// If the file doesn't exist, returns an empty log
-func Load(platform Platform) (*VoteLog, error) {
-	filepath := getLogFilePath(platform)
+// Load reads a jurisdiction's log for one platform.
+//
+// A missing file yields an empty log with no error, which reads as "nothing was
+// ever posted". That is the correct behaviour for a genuinely new jurisdiction
+// and a dangerous one for an existing jurisdiction whose log went missing — see
+// the workflow's restore step, which treats a missing state branch as fatal for
+// exactly this reason.
+func Load(jurisdiction string, platform Platform) (*VoteLog, error) {
+	path := LogFilePath(jurisdiction, platform)
 
-	log := &VoteLog{
-		Platform: platform,
-		Votes:    []VoteEntry{},
-		filepath: filepath,
-		index:    make(map[string]VoteEntry),
+	vl := &VoteLog{
+		Jurisdiction: jurisdiction,
+		Platform:     platform,
+		Votes:        []VoteEntry{},
+		filepath:     path,
+		index:        make(map[string]VoteEntry),
 	}
 
-	// Check if file exists
-	if _, err := os.Stat(filepath); os.IsNotExist(err) {
-		// File doesn't exist, return empty log
-		return log, nil
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return vl, nil
 	}
 
-	// Read file
-	data, err := os.ReadFile(filepath)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read log file: %w", err)
 	}
 
-	// Parse JSON
-	if err := json.Unmarshal(data, log); err != nil {
+	if err := json.Unmarshal(data, vl); err != nil {
 		return nil, fmt.Errorf("failed to parse log file: %w", err)
 	}
 
-	// Build index for fast lookup
-	for _, entry := range log.Votes {
-		log.index[entry.ID] = entry
+	// The stored file may predate the jurisdiction field, and its path is
+	// authoritative either way.
+	vl.Jurisdiction = jurisdiction
+	vl.Platform = platform
+	vl.filepath = path
+
+	for _, entry := range vl.Votes {
+		vl.index[entry.ID] = entry
 	}
 
-	return log, nil
+	return vl, nil
 }
 
 // IsPosted checks if a vote has been posted
@@ -131,27 +146,31 @@ func (l *VoteLog) Count() int {
 }
 
 // NewEmpty creates an empty vote log (useful for testing or when we want to show all votes)
-func NewEmpty(platform Platform) *VoteLog {
+func NewEmpty(jurisdiction string, platform Platform) *VoteLog {
 	return &VoteLog{
-		Platform: platform,
-		Votes:    []VoteEntry{},
-		filepath: getLogFilePath(platform),
-		index:    make(map[string]VoteEntry),
+		Jurisdiction: jurisdiction,
+		Platform:     platform,
+		Votes:        []VoteEntry{},
+		filepath:     LogFilePath(jurisdiction, platform),
+		index:        make(map[string]VoteEntry),
 	}
 }
 
 // NewNoOp creates a no-op vote log that treats all votes as unposted
 // and discards all mark/save operations. Used for manual e2e testing.
-func NewNoOp(platform Platform) *VoteLog {
+func NewNoOp(jurisdiction string, platform Platform) *VoteLog {
 	return &VoteLog{
-		Platform: platform,
-		Votes:    []VoteEntry{},
-		index:    make(map[string]VoteEntry),
-		noOp:     true,
+		Jurisdiction: jurisdiction,
+		Platform:     platform,
+		Votes:        []VoteEntry{},
+		index:        make(map[string]VoteEntry),
+		noOp:         true,
 	}
 }
 
-// getLogFilePath returns the file path for a platform's log
-func getLogFilePath(platform Platform) string {
-	return fmt.Sprintf("data/posted_votes_%s.json", platform)
+// LogFilePath returns where a jurisdiction's log for a platform is stored.
+// The nesting is what lets the CI workflow round-trip every jurisdiction's
+// logs with one glob instead of an entry per jurisdiction.
+func LogFilePath(jurisdiction string, platform Platform) string {
+	return filepath.Join(dataDir, jurisdiction, fmt.Sprintf("posted_votes_%s.json", platform))
 }

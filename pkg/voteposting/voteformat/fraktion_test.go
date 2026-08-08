@@ -4,19 +4,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
-func stimmabgabe(fraktion, verhalten string) zurichapi.Stimmabgabe {
-	return zurichapi.Stimmabgabe{
-		Fraktion:             fraktion,
-		Abstimmungsverhalten: verhalten,
+func stimmabgabe(fraktion, verhalten string) votes.MemberVote {
+	return votes.MemberVote{
+		Fraktion: fraktion,
+		Choice:   verhalten,
 	}
 }
 
-// repeat creates n copies of a Stimmabgabe.
-func repeat(s zurichapi.Stimmabgabe, n int) []zurichapi.Stimmabgabe {
-	out := make([]zurichapi.Stimmabgabe, n)
+// repeat creates n copies of a member vote.
+func repeat(s votes.MemberVote, n int) []votes.MemberVote {
+	out := make([]votes.MemberVote, n)
 	for i := range out {
 		out[i] = s
 	}
@@ -24,7 +24,7 @@ func repeat(s zurichapi.Stimmabgabe, n int) []zurichapi.Stimmabgabe {
 }
 
 func TestAggregateFraktionCounts(t *testing.T) {
-	stimmabgaben := []zurichapi.Stimmabgabe{
+	stimmabgaben := []votes.MemberVote{
 		stimmabgabe("SP", "Ja"),
 		stimmabgabe("SP", "Ja"),
 		stimmabgabe("SP", "Abwesend"),
@@ -53,7 +53,7 @@ func TestAggregateFraktionCounts(t *testing.T) {
 
 func TestFormatFraktionBreakdown_JaNein(t *testing.T) {
 	// Realistic 7-faction Ja/Nein vote (79 Ja / 29 Nein / 0 Enth / 17 Abw = 125 total)
-	var stimmabgaben []zurichapi.Stimmabgabe
+	var stimmabgaben []votes.MemberVote
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "Ja"), 32)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "Abwesend"), 5)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("Grüne", "Ja"), 17)...)
@@ -106,7 +106,7 @@ func TestFormatFraktionBreakdown_JaNein(t *testing.T) {
 }
 
 func TestFormatFraktionBreakdown_Auswahl(t *testing.T) {
-	var stimmabgaben []zurichapi.Stimmabgabe
+	var stimmabgaben []votes.MemberVote
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "A"), 20)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "B"), 10)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("SP", "Abwesend"), 5)...)
@@ -157,7 +157,7 @@ func TestFormatFraktionBreakdown_Empty(t *testing.T) {
 
 func TestFormatFraktionBreakdown_TieBreaking(t *testing.T) {
 	// Two factions with same total — should be sorted alphabetically
-	var stimmabgaben []zurichapi.Stimmabgabe
+	var stimmabgaben []votes.MemberVote
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("Zebra", "Ja"), 10)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("Alpha", "Ja"), 10)...)
 
@@ -189,5 +189,34 @@ func TestFormatFraktionBreakdown_SingleFaction(t *testing.T) {
 	}
 	if !strings.Contains(result, "SP 5") {
 		t.Errorf("SP count wrong, got:\n%s", result)
+	}
+}
+
+// Roughly 1% of members are not mapped to a faction in either source. They must
+// be left out of the table rather than bucketed under an empty name — and,
+// critically, must not take the process down. Their vote still counts, because
+// the totals come from the source and are never summed from this list.
+func TestAggregateFraktionCounts_UnmappedFraktion(t *testing.T) {
+	members := []votes.MemberVote{
+		stimmabgabe("SVP", "Ja"),
+		{Name: "Unmapped Member", Choice: "Ja"},
+		{Name: "Also Unmapped", Fraktion: "   ", Choice: "Nein"},
+	}
+
+	counts := AggregateFraktionCounts(members)
+
+	if _, ok := counts[""]; ok {
+		t.Error("members without a faction must not create an empty-named row")
+	}
+	if got := len(counts); got != 2 {
+		// "   " is a distinct (if ugly) faction name; only "" is dropped.
+		t.Errorf("got %d factions, want 2", got)
+	}
+	if counts["SVP"].Counts["Ja"] != 1 {
+		t.Errorf("mapped members should still be counted, got %v", counts["SVP"].Counts)
+	}
+
+	if out := FormatFraktionBreakdown(counts); out == "" {
+		t.Error("a breakdown with unmapped members should still render")
 	}
 }

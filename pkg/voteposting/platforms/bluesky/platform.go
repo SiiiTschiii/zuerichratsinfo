@@ -8,7 +8,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 // BlueskyContent implements platforms.Content for Bluesky
@@ -89,8 +89,8 @@ func (p *BlueskyPlatform) ensureSession() error {
 }
 
 // Format formats a group of votes into a Bluesky thread
-func (p *BlueskyPlatform) Format(votes []zurichapi.Abstimmung) (platforms.Content, error) {
-	thread := FormatVoteThread(votes, p.contactMapper)
+func (p *BlueskyPlatform) Format(group []votes.Vote) (platforms.Content, error) {
+	thread := FormatVoteThread(group, p.contactMapper)
 	return &BlueskyContent{thread: thread}, nil
 }
 

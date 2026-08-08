@@ -6,8 +6,28 @@ import (
 	"testing"
 )
 
+// testJurisdiction stands in for a real body, so the path layout is exercised
+// alongside the log contents.
+const testJurisdiction = "zurich-city"
+
+// setupTempDir runs the test in a scratch working directory with a data/
+// directory, since log paths are relative to the working directory.
+// The returned function restores the previous directory.
+func setupTempDir(t *testing.T) func() {
+	t.Helper()
+	tmpDir := t.TempDir()
+	oldWd, _ := os.Getwd()
+	if err := os.MkdirAll(filepath.Join(tmpDir, "data"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatal(err)
+	}
+	return func() { _ = os.Chdir(oldWd) }
+}
+
 func TestNewEmpty(t *testing.T) {
-	log := NewEmpty(PlatformX)
+	log := NewEmpty(testJurisdiction, PlatformX)
 
 	if log.Platform != PlatformX {
 		t.Errorf("Expected platform X, got %s", log.Platform)
@@ -23,7 +43,7 @@ func TestNewEmpty(t *testing.T) {
 }
 
 func TestMarkAsPosted(t *testing.T) {
-	log := NewEmpty(PlatformX)
+	log := NewEmpty(testJurisdiction, PlatformX)
 
 	log.MarkAsPosted("vote1")
 	log.MarkAsPosted("vote2")
@@ -42,7 +62,7 @@ func TestMarkAsPosted(t *testing.T) {
 }
 
 func TestMarkAsPosted_NoDuplicates(t *testing.T) {
-	log := NewEmpty(PlatformX)
+	log := NewEmpty(testJurisdiction, PlatformX)
 
 	log.MarkAsPosted("vote1")
 	log.MarkAsPosted("vote1")
@@ -58,7 +78,7 @@ func TestMarkAsPosted_NoDuplicates(t *testing.T) {
 }
 
 func TestIsPosted(t *testing.T) {
-	log := NewEmpty(PlatformX)
+	log := NewEmpty(testJurisdiction, PlatformX)
 
 	log.MarkAsPosted("vote1")
 
@@ -72,7 +92,7 @@ func TestIsPosted(t *testing.T) {
 }
 
 func TestMarkMultipleVotes_SimulatingGroupPost(t *testing.T) {
-	log := NewEmpty(PlatformX)
+	log := NewEmpty(testJurisdiction, PlatformX)
 
 	// Simulate posting a group of 3 votes (like a Geschäft with multiple votes)
 	voteGroup := []string{"vote1", "vote2", "vote3"}
@@ -94,24 +114,10 @@ func TestMarkMultipleVotes_SimulatingGroupPost(t *testing.T) {
 }
 
 func TestSaveAndLoad(t *testing.T) {
-	// Create temp directory for test
-	tmpDir := t.TempDir()
-	oldWd, _ := os.Getwd()
-	defer func() { _ = os.Chdir(oldWd) }()
-
-	// Create data directory in temp location
-	dataDir := filepath.Join(tmpDir, "data")
-	if err := os.MkdirAll(dataDir, 0755); err != nil {
-		t.Fatal(err)
-	}
-
-	// Change to temp directory
-	if err := os.Chdir(tmpDir); err != nil {
-		t.Fatal(err)
-	}
+	defer setupTempDir(t)()
 
 	// Create and save log
-	log := NewEmpty(PlatformX)
+	log := NewEmpty(testJurisdiction, PlatformX)
 	log.MarkAsPosted("vote1")
 	log.MarkAsPosted("vote2")
 	log.MarkAsPosted("vote3")
@@ -121,7 +127,7 @@ func TestSaveAndLoad(t *testing.T) {
 	}
 
 	// Load log
-	loadedLog, err := Load(PlatformX)
+	loadedLog, err := Load(testJurisdiction, PlatformX)
 	if err != nil {
 		t.Fatalf("Failed to load log: %v", err)
 	}
@@ -148,7 +154,7 @@ func TestLoad_NonExistentFile(t *testing.T) {
 	}
 
 	// Load should return empty log without error
-	log, err := Load(PlatformX)
+	log, err := Load(testJurisdiction, PlatformX)
 	if err != nil {
 		t.Fatalf("Expected no error for non-existent file, got: %v", err)
 	}
@@ -163,21 +169,10 @@ func TestLoad_NonExistentFile(t *testing.T) {
 }
 
 func TestPersistenceAcrossMultipleSaves(t *testing.T) {
-	tmpDir := t.TempDir()
-	oldWd, _ := os.Getwd()
-	defer func() { _ = os.Chdir(oldWd) }()
-
-	dataDir := filepath.Join(tmpDir, "data")
-	if err := os.MkdirAll(dataDir, 0755); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.Chdir(tmpDir); err != nil {
-		t.Fatal(err)
-	}
+	defer setupTempDir(t)()
 
 	// First save
-	log1 := NewEmpty(PlatformX)
+	log1 := NewEmpty(testJurisdiction, PlatformX)
 	log1.MarkAsPosted("vote1")
 	log1.MarkAsPosted("vote2")
 	if err := log1.Save(); err != nil {
@@ -185,7 +180,7 @@ func TestPersistenceAcrossMultipleSaves(t *testing.T) {
 	}
 
 	// Second save (simulating a new run adding more votes)
-	log2, err := Load(PlatformX)
+	log2, err := Load(testJurisdiction, PlatformX)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -196,7 +191,7 @@ func TestPersistenceAcrossMultipleSaves(t *testing.T) {
 	}
 
 	// Load and verify all votes are there
-	log3, err := Load(PlatformX)
+	log3, err := Load(testJurisdiction, PlatformX)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -214,7 +209,7 @@ func TestPersistenceAcrossMultipleSaves(t *testing.T) {
 }
 
 func TestNewNoOp(t *testing.T) {
-	log := NewNoOp(PlatformX)
+	log := NewNoOp(testJurisdiction, PlatformX)
 
 	// IsPosted always returns false
 	log.MarkAsPosted("vote1") // should be a no-op
@@ -233,8 +228,11 @@ func TestNewNoOp(t *testing.T) {
 	}
 }
 
-func TestGetLogFilePath_Instagram(t *testing.T) {
-	if got, want := getLogFilePath(PlatformInstagram), "data/posted_votes_instagram.json"; got != want {
+func TestLogFilePath(t *testing.T) {
+	if got, want := LogFilePath("zurich-city", PlatformInstagram), "data/zurich-city/posted_votes_instagram.json"; got != want {
+		t.Errorf("expected %q, got %q", want, got)
+	}
+	if got, want := LogFilePath("zurich-canton", PlatformX), "data/zurich-canton/posted_votes_x.json"; got != want {
 		t.Errorf("expected %q, got %q", want, got)
 	}
 }

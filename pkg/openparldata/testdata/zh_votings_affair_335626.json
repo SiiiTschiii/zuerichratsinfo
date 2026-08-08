@@ -1,0 +1,6 @@
+{
+ "data": [
+ {"affair_id": 335626, "affair_title_de": "Wahl Abteilungspräsidium Baurekursgericht (BRG) für Claude Reinhardt", "body_key": "ZH", "date": "2026-07-06T06:37:04", "decision": null, "external_id": "12EA0792-5A74-64B8-8415-C51F54F5A215", "id": 104473, "results_absent": 6, "results_abstention": 0, "results_no": 0, "results_yes": 174, "title_de": "Wahl Abteilungspräsidium Baurekursgericht (BRG) für Claude Reinhardt", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=44c1fb41-bba2-4850-b442-107c51386332&segmentUid=5d575267-6310-457b-acd5-e12048e184fa"}
+ ],
+ "meta": {"offset": 0, "limit": 100, "total_records": 1, "total_pages": 1, "current_page": 1, "has_more": false, "next_page": null, "prev_page": null, "first_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335626&lang_format=flat&offset=0&limit=100", "last_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335626&lang_format=flat&offset=0&limit=100", "self": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335626&limit=100&lang_format=flat"}
+}

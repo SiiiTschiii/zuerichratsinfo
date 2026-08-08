@@ -1,0 +1,6 @@
+{
+ "data": [
+ {"affair_id": 335152, "affair_title_de": "Rechenschaftsbericht Obergericht 2025", "body_key": "ZH", "date": "2026-07-06T12:47:58", "decision": null, "external_id": "2CCF795B-A9CD-E8AF-3C66-9B52F16473EA", "id": 104489, "results_absent": 9, "results_abstention": 0, "results_no": 0, "results_yes": 171, "title_de": "Rechenschaftsbericht Obergericht 2025", "type_de": null, "url_external_de": "https://zh.recapp.ch/shareparl?agendaItemUid=04a1953e-65ea-4de5-87c9-ba44af38f3f6&segmentUid=8b5cf971-b001-480f-a821-e4656c585543"}
+ ],
+ "meta": {"offset": 0, "limit": 100, "total_records": 1, "total_pages": 1, "current_page": 1, "has_more": false, "next_page": null, "prev_page": null, "first_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335152&lang_format=flat&offset=0&limit=100", "last_page": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335152&lang_format=flat&offset=0&limit=100", "self": "https://api.openparldata.ch/v1/votings/?body_key=ZH&affair_id=335152&limit=100&lang_format=flat"}
+}

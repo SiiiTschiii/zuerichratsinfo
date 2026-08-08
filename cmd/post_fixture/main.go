@@ -14,7 +14,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 type namedPlatform struct {
@@ -70,11 +70,11 @@ func main() {
 	sort.Strings(fixtureNames)
 
 	for _, name := range fixtureNames {
-		votes := fixtures[name]
+		group := fixtures[name]
 		for _, p := range plats {
 			fmt.Printf("\n━━━ %s / %s ━━━\n", p.name, name)
 
-			content, err := p.plat.Format(votes)
+			content, err := p.plat.Format(group)
 			if err != nil {
 				log.Printf("Format error (%s / %s): %v", p.name, name, err)
 				continue
@@ -132,9 +132,9 @@ func validatePlatform(platform string, creds platformCredentials) {
 }
 
 // resolveFixtures loads the requested fixture(s) from the test fixture map.
-func resolveFixtures(fixture string) map[string][]zurichapi.Abstimmung {
+func resolveFixtures(fixture string) map[string][]votes.Vote {
 	if fixture == "instagram-long-multi-vote-truncation" {
-		return map[string][]zurichapi.Abstimmung{
+		return map[string][]votes.Vote{
 			fixture: testfixtures.InstagramLongMultiVoteTruncation(),
 		}
 	}
@@ -145,7 +145,7 @@ func resolveFixtures(fixture string) map[string][]zurichapi.Abstimmung {
 		return allFixtures
 	}
 
-	votes, ok := allFixtures[fixture]
+	group, ok := allFixtures[fixture]
 	if !ok {
 		var names []string
 		for k := range allFixtures {
@@ -155,7 +155,7 @@ func resolveFixtures(fixture string) map[string][]zurichapi.Abstimmung {
 		sort.Strings(names)
 		log.Fatalf("Unknown fixture %q. Available: %v", fixture, names)
 	}
-	return map[string][]zurichapi.Abstimmung{fixture: votes}
+	return map[string][]votes.Vote{fixture: group}
 }
 
 // buildPlatforms constructs the list of platforms to post to based on flags and credentials.

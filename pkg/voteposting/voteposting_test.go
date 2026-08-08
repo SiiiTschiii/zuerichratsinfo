@@ -9,8 +9,11 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
+
+const testJurisdiction = "zurich-city"
 
 // setupTempDir creates a temp directory for tests and changes to it
 // Returns a cleanup function that should be deferred
@@ -50,7 +53,7 @@ func (c *MockContent) String() string {
 	return c.text
 }
 
-func (p *MockPlatform) Format(votes []zurichapi.Abstimmung) (platforms.Content, error) {
+func (p *MockPlatform) Format(group []votes.Vote) (platforms.Content, error) {
 	p.formatCalls++
 	return &MockContent{text: "mock post"}, nil
 }
@@ -72,51 +75,52 @@ func (p *MockPlatform) Name() string {
 	return "Mock"
 }
 
-// Test helper to create test votes with a non-zero Ja count so they pass
+// Test helper to create test group with a non-zero Ja count so they pass
 // validateGroupCounts (all-zero counts are treated as unsupported vote types).
-func createVote(guid, geschaeft, date string) zurichapi.Abstimmung {
+func createVote(guid, affair, date string) votes.Vote {
 	ja := 100
-	return zurichapi.Abstimmung{
-		OBJGUID:       guid,
-		GeschaeftGrNr: geschaeft,
-		SitzungDatum:  date,
-		AnzahlJa:      &ja,
+	return votes.Vote{
+		SourceID:     guid,
+		Jurisdiction: testJurisdiction,
+		Date:         testfixtures.MustDate(date),
+		Yes:          &ja,
+		Affair:       votes.Affair{Number: affair},
 	}
 }
 
 func TestFilterUnpostedVotes(t *testing.T) {
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 	voteLog.MarkAsPosted("vote1")
 	voteLog.MarkAsPosted("vote3")
 
-	votes := []zurichapi.Abstimmung{
+	group := []votes.Vote{
 		createVote("vote1", "2025/369", "2025-11-19"),
 		createVote("vote2", "2025/370", "2025-11-19"),
 		createVote("vote3", "2025/371", "2025-11-19"),
 		createVote("vote4", "2025/372", "2025-11-19"),
 	}
 
-	unposted := filterUnpostedVotes(votes, voteLog)
+	unposted := filterUnpostedVotes(group, voteLog)
 
 	if len(unposted) != 2 {
-		t.Errorf("Expected 2 unposted votes, got %d", len(unposted))
+		t.Errorf("Expected 2 unposted group, got %d", len(unposted))
 	}
 
-	if unposted[0].OBJGUID != "vote2" || unposted[1].OBJGUID != "vote4" {
+	if unposted[0].SourceID != "vote2" || unposted[1].SourceID != "vote4" {
 		t.Errorf("Expected vote2 and vote4, got %v", unposted)
 	}
 }
 
 func TestPostToPlatform_DryRun(t *testing.T) {
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
-	groups := [][]zurichapi.Abstimmung{
+	groups := [][]votes.Vote{
 		{createVote("vote1", "2025/369", "2025-11-19")},
 		{createVote("vote2", "2025/370", "2025-11-19")},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, true)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -146,14 +150,14 @@ func TestPostToPlatform_RealPosting(t *testing.T) {
 	defer setupTempDir(t)()
 
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
-	groups := [][]zurichapi.Abstimmung{
+	groups := [][]votes.Vote{
 		{createVote("vote1", "2025/369", "2025-11-19")},
 		{createVote("vote2", "2025/370", "2025-11-19"), createVote("vote3", "2025/370", "2025-11-19")},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -172,14 +176,14 @@ func TestPostToPlatform_RealPosting(t *testing.T) {
 		t.Errorf("Expected 2 post calls, got %d", mockPlatform.postCalls)
 	}
 
-	// All 3 votes should be marked as posted
+	// All 3 group should be marked as posted
 	if voteLog.Count() != 3 {
-		t.Errorf("Expected 3 votes in log, got %d", voteLog.Count())
+		t.Errorf("Expected 3 group in log, got %d", voteLog.Count())
 	}
 
-	// Check specific votes are logged
+	// Check specific group are logged
 	if !voteLog.IsPosted("vote1") || !voteLog.IsPosted("vote2") || !voteLog.IsPosted("vote3") {
-		t.Error("Not all votes were marked as posted")
+		t.Error("Not all group were marked as posted")
 	}
 }
 
@@ -188,16 +192,16 @@ func TestPostToPlatform_LimitRespected(t *testing.T) {
 
 	// Platform that stops after 2 posts
 	mockPlatform := &MockPlatform{maxPosts: 2}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
-	groups := [][]zurichapi.Abstimmung{
+	groups := [][]votes.Vote{
 		{createVote("vote1", "2025/369", "2025-11-19")},
 		{createVote("vote2", "2025/370", "2025-11-19")},
 		{createVote("vote3", "2025/371", "2025-11-19")},
 		{createVote("vote4", "2025/372", "2025-11-19")},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -211,22 +215,22 @@ func TestPostToPlatform_LimitRespected(t *testing.T) {
 		t.Errorf("Expected 2 post calls, got %d", mockPlatform.postCalls)
 	}
 
-	// Only first 2 votes should be logged
+	// Only first 2 group should be logged
 	if voteLog.Count() != 2 {
-		t.Errorf("Expected 2 votes in log, got %d", voteLog.Count())
+		t.Errorf("Expected 2 group in log, got %d", voteLog.Count())
 	}
 }
 
 func TestPostToPlatform_ErrorHandling(t *testing.T) {
 	// Platform that fails on posting
 	mockPlatform := &MockPlatform{maxPosts: 10, shouldFailPost: true}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
-	groups := [][]zurichapi.Abstimmung{
+	groups := [][]votes.Vote{
 		{createVote("vote1", "2025/369", "2025-11-19")},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 
 	// Should return error
 	if err == nil {
@@ -245,45 +249,45 @@ func TestPostToPlatform_ErrorHandling(t *testing.T) {
 }
 
 func TestFilterUnpostedVotes_AllPosted(t *testing.T) {
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 	voteLog.MarkAsPosted("vote1")
 	voteLog.MarkAsPosted("vote2")
 
-	votes := []zurichapi.Abstimmung{
+	group := []votes.Vote{
 		createVote("vote1", "2025/369", "2025-11-19"),
 		createVote("vote2", "2025/370", "2025-11-19"),
 	}
 
-	unposted := filterUnpostedVotes(votes, voteLog)
+	unposted := filterUnpostedVotes(group, voteLog)
 
 	if len(unposted) != 0 {
-		t.Errorf("Expected 0 unposted votes when all are posted, got %d", len(unposted))
+		t.Errorf("Expected 0 unposted group when all are posted, got %d", len(unposted))
 	}
 }
 
 func TestFilterUnpostedVotes_NonePosted(t *testing.T) {
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
-	votes := []zurichapi.Abstimmung{
+	group := []votes.Vote{
 		createVote("vote1", "2025/369", "2025-11-19"),
 		createVote("vote2", "2025/370", "2025-11-19"),
 		createVote("vote3", "2025/371", "2025-11-19"),
 	}
 
-	unposted := filterUnpostedVotes(votes, voteLog)
+	unposted := filterUnpostedVotes(group, voteLog)
 
 	if len(unposted) != 3 {
-		t.Errorf("Expected 3 unposted votes, got %d", len(unposted))
+		t.Errorf("Expected 3 unposted group, got %d", len(unposted))
 	}
 }
 
 func TestPostToPlatform_EmptyGroups(t *testing.T) {
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
-	groups := [][]zurichapi.Abstimmung{}
+	groups := [][]votes.Vote{}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -301,10 +305,10 @@ func TestPostToPlatform_AllVotesInGroupAreLogged(t *testing.T) {
 	defer setupTempDir(t)()
 
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
-	// Create a group with 5 votes (simulating a complex Geschäft)
-	groups := [][]zurichapi.Abstimmung{
+	// Create a group with 5 group (simulating a complex Geschäft)
+	groups := [][]votes.Vote{
 		{
 			createVote("vote1", "2025/179", "2025-11-19"),
 			createVote("vote2", "2025/179", "2025-11-19"),
@@ -314,7 +318,7 @@ func TestPostToPlatform_AllVotesInGroupAreLogged(t *testing.T) {
 		},
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -324,9 +328,9 @@ func TestPostToPlatform_AllVotesInGroupAreLogged(t *testing.T) {
 		t.Errorf("Expected 1 group posted, got %d", posted)
 	}
 
-	// All 5 votes should be logged
+	// All 5 group should be logged
 	if voteLog.Count() != 5 {
-		t.Errorf("Expected 5 votes logged, got %d", voteLog.Count())
+		t.Errorf("Expected 5 group logged, got %d", voteLog.Count())
 	}
 
 	// Verify each specific vote is logged
@@ -342,23 +346,23 @@ func TestPostToPlatform_MultipleGroupsAllVotesLogged(t *testing.T) {
 	defer setupTempDir(t)()
 
 	mockPlatform := &MockPlatform{maxPosts: 10}
-	voteLog := votelog.NewEmpty(votelog.PlatformX)
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
 	// Multiple groups with varying sizes
-	groups := [][]zurichapi.Abstimmung{
+	groups := [][]votes.Vote{
 		{createVote("vote1", "2025/369", "2025-11-19")}, // 1 vote
 		{
 			createVote("vote2", "2025/370", "2025-11-19"),
 			createVote("vote3", "2025/370", "2025-11-19"),
-		}, // 2 votes
+		}, // 2 group
 		{
 			createVote("vote4", "2025/179", "2025-11-19"),
 			createVote("vote5", "2025/179", "2025-11-19"),
 			createVote("vote6", "2025/179", "2025-11-19"),
-		}, // 3 votes
+		}, // 3 group
 	}
 
-	posted, err := PostToPlatform(groups, mockPlatform, voteLog, false)
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -368,9 +372,9 @@ func TestPostToPlatform_MultipleGroupsAllVotesLogged(t *testing.T) {
 		t.Errorf("Expected 3 groups posted, got %d", posted)
 	}
 
-	// All 6 votes should be logged (1+2+3)
+	// All 6 group should be logged (1+2+3)
 	if voteLog.Count() != 6 {
-		t.Errorf("Expected 6 votes logged, got %d", voteLog.Count())
+		t.Errorf("Expected 6 group logged, got %d", voteLog.Count())
 	}
 
 	// Verify each specific vote is logged
