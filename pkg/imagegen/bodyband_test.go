@@ -72,7 +72,9 @@ func TestCardContentClearsBand(t *testing.T) {
 	}
 }
 
-// bandPixel samples the band of a group's first rendered card.
+// bandPixel samples the band of a group's first rendered card, above the
+// centred label so that a change in font metrics cannot move text under the
+// sample point.
 func bandPixel(t *testing.T, group []votes.Vote) color.RGBA {
 	t.Helper()
 	images, err := GenerateCarousel(group)
@@ -83,7 +85,7 @@ func bandPixel(t *testing.T, group []votes.Vote) color.RGBA {
 	if err != nil {
 		t.Fatalf("decoding JPEG: %v", err)
 	}
-	r, g, b, _ := img.At(20, bandHeight/2).RGBA()
+	r, g, b, _ := img.At(20, 12).RGBA()
 	return color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), 0xFF}
 }
 

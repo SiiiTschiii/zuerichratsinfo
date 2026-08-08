@@ -78,7 +78,9 @@ func drawBodyBand(img *image.RGBA, face font.Face, v votes.Vote) {
 	drawTrackedText(img, face, x, baseline, label, bandTracking, color.White)
 }
 
-// measureTracked returns the width of s drawn with extra spacing between glyphs.
+// measureTracked returns the width of s drawn with extra spacing between
+// glyphs. font.MeasureString already accounts for kerning, which is why
+// drawTrackedText has to reapply it.
 func measureTracked(face font.Face, s string, tracking int) int {
 	w := font.MeasureString(face, s).Ceil()
 	if n := len([]rune(s)); n > 1 {
@@ -88,10 +90,19 @@ func measureTracked(face font.Face, s string, tracking int) int {
 }
 
 // drawTrackedText draws s one glyph at a time, adding tracking between them.
+//
+// Drawing per glyph means the kerning font.Drawer would apply within a single
+// DrawString has to be applied by hand. Without it the drawn label is wider
+// than measureTracked reports and the centring drifts by that difference.
 func drawTrackedText(img *image.RGBA, face font.Face, x, y int, s string, tracking int, fg color.Color) {
 	d := &font.Drawer{Dst: img, Src: image.NewUniform(fg), Face: face, Dot: fixed.P(x, y)}
+	first := true
+	var prev rune
 	for _, r := range s {
+		if !first {
+			d.Dot.X += face.Kern(prev, r) + fixed.I(tracking)
+		}
 		d.DrawString(string(r))
-		d.Dot.X += fixed.I(tracking)
+		prev, first = r, false
 	}
 }
