@@ -86,9 +86,6 @@ func TestEveryJurisdictionHasASource(t *testing.T) {
 		if j.NewSource == nil {
 			t.Errorf("%s has no source constructor", key)
 		}
-		if j.Seats <= 0 {
-			t.Errorf("%s has no seat count; the completeness gate needs one", key)
-		}
 		// An unbounded age guard on a jurisdiction whose log may be empty is
 		// how a first run posts years of history at once.
 		if j.MaxAgeDays <= 0 {

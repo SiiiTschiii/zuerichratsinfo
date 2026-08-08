@@ -69,59 +69,45 @@ func TestIsBreakdownComplete(t *testing.T) {
 	}
 
 	tests := []struct {
-		name  string
-		vote  Vote
-		seats int
-		want  bool
+		name string
+		vote Vote
+		want bool
 	}{
 		{
-			name:  "member votes match totals",
-			vote:  Vote{Yes: intPtr(90), No: intPtr(30), Abstention: intPtr(0), Absent: intPtr(5), MemberVotes: members(125)},
-			seats: 125,
-			want:  true,
+			name: "member votes match totals",
+			vote: Vote{Yes: intPtr(90), No: intPtr(30), Abstention: intPtr(0), Absent: intPtr(5), MemberVotes: members(125)},
+			want: true,
 		},
 		{
-			name:  "member votes truncated",
-			vote:  Vote{Yes: intPtr(90), No: intPtr(30), Abstention: intPtr(0), Absent: intPtr(5), MemberVotes: members(100)},
-			seats: 125,
-			want:  false,
+			name: "member votes truncated",
+			vote: Vote{Yes: intPtr(90), No: intPtr(30), Abstention: intPtr(0), Absent: intPtr(5), MemberVotes: members(100)},
+			want: false,
 		},
 		{
-			name:  "no member votes at all is not incomplete",
-			vote:  Vote{Yes: intPtr(90), No: intPtr(30)},
-			seats: 125,
-			want:  true,
+			name: "no member votes at all is not incomplete",
+			vote: Vote{Yes: intPtr(90), No: intPtr(30)},
+			want: true,
 		},
 		{
-			name:  "no totals reported, nothing to contradict",
-			vote:  Vote{MemberVotes: members(120)},
-			seats: 125,
-			want:  true,
+			name: "no totals reported, nothing to contradict",
+			vote: Vote{MemberVotes: members(120)},
+			want: true,
 		},
 		{
-			// A vacant seat is normal; it must not suppress the breakdown.
-			name:  "fewer members than seats but consistent with totals",
-			vote:  Vote{Yes: intPtr(80), No: intPtr(44), MemberVotes: members(124)},
-			seats: 125,
-			want:  true,
+			name: "member count below former chamber size but consistent with totals",
+			vote: Vote{Yes: intPtr(80), No: intPtr(44), MemberVotes: members(124)},
+			want: true,
 		},
 		{
-			name:  "more members than seats",
-			vote:  Vote{MemberVotes: members(200)},
-			seats: 125,
-			want:  false,
-		},
-		{
-			name:  "auswahl totals",
-			vote:  Vote{ChoiceA: intPtr(74), ChoiceB: intPtr(28), ChoiceC: intPtr(13), Absent: intPtr(10), MemberVotes: members(125)},
-			seats: 125,
-			want:  true,
+			name: "auswahl totals",
+			vote: Vote{ChoiceA: intPtr(74), ChoiceB: intPtr(28), ChoiceC: intPtr(13), Absent: intPtr(10), MemberVotes: members(125)},
+			want: true,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := IsBreakdownComplete(tc.vote, tc.seats); got != tc.want {
+			if got := IsBreakdownComplete(tc.vote); got != tc.want {
 				t.Errorf("IsBreakdownComplete = %v, want %v", got, tc.want)
 			}
 		})

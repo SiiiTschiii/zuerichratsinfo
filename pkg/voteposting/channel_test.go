@@ -143,7 +143,7 @@ func TestCompletenessGate(t *testing.T) {
 		v := base
 		v.MemberVotes = members(125, "SP", "Ja")
 
-		groups := prepare(t, v, 125)
+		groups := prepare(t, v)
 		if got := len(groups[0][0].MemberVotes); got != 125 {
 			t.Errorf("kept %d member votes, want all 125", got)
 		}
@@ -153,7 +153,7 @@ func TestCompletenessGate(t *testing.T) {
 		v := base
 		v.MemberVotes = members(90, "SP", "Ja") // totals say 125
 
-		groups := prepare(t, v, 125)
+		groups := prepare(t, v)
 		if got := len(groups[0][0].MemberVotes); got != 0 {
 			t.Errorf("kept %d member votes; a partial breakdown must not be posted", got)
 		}
@@ -161,19 +161,19 @@ func TestCompletenessGate(t *testing.T) {
 
 	t.Run("a source with no member list at all is untouched", func(t *testing.T) {
 		// Totals-only data is correct as far as it goes; there is nothing to gate.
-		groups := prepare(t, base, 125)
+		groups := prepare(t, base)
 		if groups[0][0].MemberVotes != nil {
 			t.Error("expected no member votes")
 		}
 	})
 }
 
-func prepare(t *testing.T, v votes.Vote, seats int) [][]votes.Vote {
+func prepare(t *testing.T, v votes.Vote) [][]votes.Vote {
 	t.Helper()
 	defer setupTempDir(t)()
 
 	src := stubSource{
-		jurisdiction: votes.Jurisdiction{Key: testJurisdiction, Seats: seats},
+		jurisdiction: votes.Jurisdiction{Key: testJurisdiction},
 		fetched:      []votes.Vote{v},
 	}
 	groups, err := PrepareVoteGroups(src, votelog.NewEmpty(testJurisdiction, votelog.PlatformX), 10, 0)
