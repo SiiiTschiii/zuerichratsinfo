@@ -181,17 +181,6 @@ func runChannelPlatform(
 			}
 			fmt.Printf("Loaded %s/%s vote log: %d votes already posted\n", j.Key, p.displayName, vl.Count())
 
-			// Finish the move to the per-jurisdiction layout now rather than
-			// when this platform next publishes something. Save is otherwise
-			// only reached after a post, so a council in recess would leave
-			// the logs — and the workflow's transitional handling — in the old
-			// layout for as long as the recess lasts.
-			if legacy := vl.LoadedFromLegacyPath(); legacy != "" {
-				if err := vl.Save(); err != nil {
-					log.Fatalf("Error migrating %s/%s vote log from %s: %v", j.Key, p.displayName, legacy, err)
-				}
-				fmt.Printf("Migrated %s/%s vote log from %s\n", j.Key, p.displayName, legacy)
-			}
 		}
 		logs[j.Key] = vl
 

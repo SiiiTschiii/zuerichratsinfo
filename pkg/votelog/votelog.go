@@ -3,7 +3,6 @@ package votelog
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -40,7 +39,6 @@ type VoteLog struct {
 	filepath     string               // not exported, internal use
 	index        map[string]VoteEntry // for fast lookup
 	noOp         bool                 // when true, all votes are treated as unposted
-	legacyPath   string               // set when loaded from the pre-jurisdiction path
 }
 
 // Load reads a jurisdiction's log for one platform.
@@ -61,26 +59,11 @@ func Load(jurisdiction string, platform Platform) (*VoteLog, error) {
 		index:        make(map[string]VoteEntry),
 	}
 
-	readFrom := path
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		// Fall back to the pre-jurisdiction flat layout, so a run that happens
-		// before the stored logs are moved does not read as an empty history
-		// and re-post everything inside the age guard. Writes always go to the
-		// new path, so the first save completes the migration.
-		legacy := legacyLogFilePath(jurisdiction, platform)
-		if legacy == "" {
-			return vl, nil
-		}
-		if _, err := os.Stat(legacy); os.IsNotExist(err) {
-			return vl, nil
-		}
-		log.Printf("ℹ️  %s/%s: reading legacy vote log %s; it will be written to %s",
-			jurisdiction, platform, legacy, path)
-		readFrom = legacy
-		vl.legacyPath = legacy
+		return vl, nil
 	}
 
-	data, err := os.ReadFile(readFrom)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read log file: %w", err)
 	}
@@ -94,7 +77,6 @@ func Load(jurisdiction string, platform Platform) (*VoteLog, error) {
 	vl.Jurisdiction = jurisdiction
 	vl.Platform = platform
 	vl.filepath = path
-	vl.legacyPath = legacyPathIfUsed(readFrom, path)
 
 	for _, entry := range vl.Votes {
 		vl.index[entry.ID] = entry
@@ -163,26 +145,6 @@ func (l *VoteLog) Count() int {
 	return len(l.Votes)
 }
 
-// LoadedFromLegacyPath returns the pre-jurisdiction path this log was read
-// from, or "" when it was read from its own.
-//
-// Callers use it to finish the migration on the next run rather than on the
-// next post. Save is otherwise only reached after something is published, so a
-// council in recess would leave the logs in the old layout indefinitely — and
-// the transitional handling in the workflow with them.
-func (l *VoteLog) LoadedFromLegacyPath() string {
-	return l.legacyPath
-}
-
-// legacyPathIfUsed reports the source path when it differs from where the log
-// will be written.
-func legacyPathIfUsed(readFrom, writeTo string) string {
-	if readFrom == writeTo {
-		return ""
-	}
-	return readFrom
-}
-
 // NewEmpty creates an empty vote log (useful for testing or when we want to show all votes)
 func NewEmpty(jurisdiction string, platform Platform) *VoteLog {
 	return &VoteLog{
@@ -211,17 +173,4 @@ func NewNoOp(jurisdiction string, platform Platform) *VoteLog {
 // logs with one glob instead of an entry per jurisdiction.
 func LogFilePath(jurisdiction string, platform Platform) string {
 	return filepath.Join(dataDir, jurisdiction, fmt.Sprintf("posted_votes_%s.json", platform))
-}
-
-// legacyJurisdiction is the one jurisdiction whose logs predate the
-// per-jurisdiction layout and therefore have a flat path to fall back to.
-const legacyJurisdiction = "zurich-city"
-
-// legacyLogFilePath returns the pre-jurisdiction path for a log, or "" when the
-// jurisdiction never had one.
-func legacyLogFilePath(jurisdiction string, platform Platform) string {
-	if jurisdiction != legacyJurisdiction {
-		return ""
-	}
-	return filepath.Join(dataDir, fmt.Sprintf("posted_votes_%s.json", platform))
 }

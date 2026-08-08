@@ -23,10 +23,8 @@ jobs:
       # the pull request ruleset / branch protection on the primary branch.
       STATE_BRANCH: state-log
       # Vote logs live at data/<jurisdiction>/posted_votes_<platform>.json.
-      # Globbing both layouts means adding a jurisdiction needs no edit here,
-      # and a run during the migration still finds the pre-jurisdiction files.
-      STATE_GLOB_NESTED: "data/*/posted_votes_*.json"
-      STATE_GLOB_LEGACY: "data/posted_votes_*.json"
+      # Globbing means adding a jurisdiction needs no edit here.
+      STATE_FILES: "data/*/posted_votes_*.json"
 
     steps:
       - name: Checkout code
@@ -55,18 +53,12 @@ jobs:
           echo "State branch '$STATE_BRANCH' found; restoring vote logs from it."
           git fetch origin "$STATE_BRANCH"
 
-          # Either layout may be present, so a missing match is not itself an
-          # error — but ending up with no logs at all is.
-          git checkout FETCH_HEAD -- "$STATE_GLOB_NESTED" || true
-          git checkout FETCH_HEAD -- "$STATE_GLOB_LEGACY" || true
-
-          restored="$(find data -name 'posted_votes_*.json' 2>/dev/null | sort)"
-          if [ -z "$restored" ]; then
-            echo "::error::'$STATE_BRANCH' contains no vote logs matching $STATE_GLOB_NESTED or $STATE_GLOB_LEGACY."
+          if ! git checkout FETCH_HEAD -- "$STATE_FILES"; then
+            echo "::error::'$STATE_BRANCH' contains no vote logs matching $STATE_FILES."
             exit 1
           fi
           echo "Restored:"
-          echo "$restored"
+          find data -name 'posted_votes_*.json' | sort
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -123,20 +115,6 @@ jobs:
           # and votes would look unposted on the next run.
           mapfile -t state_files < <(find data -name 'posted_votes_*.json' | sort)
           cp --parents "${state_files[@]}" "$worktree/"
-
-          # Once a jurisdiction's log exists at the nested path, drop the flat
-          # one it was migrated from so the state branch has a single copy.
-          for nested in "${state_files[@]}"; do
-            case "$nested" in
-              data/*/posted_votes_*.json)
-                legacy="data/$(basename "$nested")"
-                if [ -e "$worktree/$legacy" ]; then
-                  echo "Migrated $legacy -> $nested; removing the flat copy."
-                  git -C "$worktree" rm --quiet -- "$legacy"
-                fi
-                ;;
-            esac
-          done
 
           git -C "$worktree" add -- data
           if git -C "$worktree" diff --staged --quiet; then
