@@ -24,7 +24,7 @@ The only data published by this bot is publicly available council vote records, 
 - **Gemeinderat Stadt Zürich** — the [City of Zurich PARIS API](https://opendatazurich.github.io/paris-api/)
 - **Kantonsrat Zürich** — [OpenParlData](https://api.openparldata.ch), published under CC BY 4.0 and credited on every post that uses it
 
-Both include names of elected council members acting in their official public capacity. No data about members of the public is fetched, stored or published.
+Both include names of elected council members acting in their official public capacity.
 
 ## Social Media Platforms
 

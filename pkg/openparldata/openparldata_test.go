@@ -681,3 +681,32 @@ func mustParseUTC(t *testing.T, s string) time.Time {
 	}
 	return parsed
 }
+
+// Votes are grouped on business number plus sitting day, so a vote with no
+// business number would join every other such vote of that day into a single
+// post claiming they are one matter. 47 Kanton Zürich votings have no
+// affair_id, eight of them on one day.
+func TestVotesWithoutAnAffairDoNotGroupTogether(t *testing.T) {
+	c := New(testJurisdiction, "ZH")
+
+	sameDay := func(externalID string) votes.Vote {
+		return c.toVote(votingDTO{
+			ExternalID: externalID,
+			Date:       "2025-11-24T10:00:00",
+			AffairID:   nil,
+		})
+	}
+
+	a, b := sameDay("AAA-111"), sameDay("BBB-222")
+
+	if a.Affair.Number == "" || b.Affair.Number == "" {
+		t.Fatal("a vote with no affair must still carry a grouping number")
+	}
+	if a.Affair.Number == b.Affair.Number {
+		t.Fatalf("both votes got grouping number %q; unrelated votes would be posted as one matter", a.Affair.Number)
+	}
+
+	if groups := votes.GroupByAffairAndDate([]votes.Vote{a, b}); len(groups) != 2 {
+		t.Errorf("got %d group(s), want 2 — these votes have nothing to do with each other", len(groups))
+	}
+}

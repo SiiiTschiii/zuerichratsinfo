@@ -21,13 +21,6 @@ type Channel struct {
 	// Jurisdictions are posted to this channel's accounts, in this order.
 	// Order breaks ties when several are equally old.
 	Jurisdictions []string
-
-	// UsesLegacyEnv lets this channel fall back to the original unprefixed
-	// variable names (X_API_KEY rather than ZURICH_X_API_KEY), so the existing
-	// deployment keeps working untouched. Exactly one channel may set it:
-	// without that restriction, a new channel missing a secret would silently
-	// post to the first channel's account.
-	UsesLegacyEnv bool
 }
 
 // channels is the configured set. Only one exists today; the model is N-channel
@@ -41,7 +34,6 @@ var channels = []Channel{
 		// existing accounts rather than needing a new credential set and a
 		// second X Premium subscription.
 		Jurisdictions: []string{"zurich-city", ZurichCantonKey},
-		UsesLegacyEnv: true,
 	},
 }
 
@@ -52,29 +44,20 @@ func Channels() []Channel {
 	return out
 }
 
-// Env reads a channel-scoped environment variable, e.g. Env("X_API_KEY") reads
-// ZURICH_X_API_KEY. Channels marked UsesLegacyEnv fall back to the unprefixed
-// name; others deliberately do not, so a missing secret is an empty value
-// rather than another channel's credential.
+// Env reads a channel-scoped environment variable: Env("X_API_KEY") on the
+// "zurich" channel reads ZURICH_X_API_KEY.
+//
+// Every name is prefixed, with no fallback to an unprefixed one. A channel
+// missing a secret must come up empty rather than silently borrowing another
+// channel's credentials and posting to the wrong account.
 func (c Channel) Env(name string) string {
-	if v := os.Getenv(envKey(c.Key) + "_" + name); v != "" {
-		return v
-	}
-	if c.UsesLegacyEnv {
-		return os.Getenv(name)
-	}
-	return ""
+	return os.Getenv(envKey(c.Key) + "_" + name)
 }
 
 // EnvInt is Env for integer settings, returning fallback when unset or unparseable.
 func (c Channel) EnvInt(name string, fallback int) int {
 	if v, ok := envInt(envKey(c.Key) + "_" + name); ok {
 		return v
-	}
-	if c.UsesLegacyEnv {
-		if v, ok := envInt(name); ok {
-			return v
-		}
 	}
 	return fallback
 }
@@ -115,20 +98,12 @@ func (c Channel) EnabledJurisdictions() ([]Jurisdiction, error) {
 func Validate() error {
 	seenChannel := make(map[string]bool)
 	seenJurisdiction := make(map[string]string)
-	legacy := ""
 
 	for _, c := range channels {
 		if seenChannel[c.Key] {
 			return fmt.Errorf("duplicate channel %q", c.Key)
 		}
 		seenChannel[c.Key] = true
-
-		if c.UsesLegacyEnv {
-			if legacy != "" {
-				return fmt.Errorf("channels %q and %q both claim the unprefixed environment variables", legacy, c.Key)
-			}
-			legacy = c.Key
-		}
 
 		if len(c.Jurisdictions) == 0 {
 			return fmt.Errorf("channel %q serves no jurisdictions", c.Key)

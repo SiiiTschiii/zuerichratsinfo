@@ -77,7 +77,7 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 
 		Affair: votes.Affair{
 			Title:  deref(v.AffairTitleDe),
-			Number: affairFallbackNumber(v.AffairID),
+			Number: groupingNumber(v.AffairID, v.ExternalID),
 		},
 	}
 
@@ -124,14 +124,21 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 	}
 }
 
-// affairFallbackNumber keeps grouping correct when the affair's human-readable
-// number cannot be fetched. Votes must not all collapse into one group just
-// because a lookup failed.
-func affairFallbackNumber(affairID *int64) string {
-	if affairID == nil {
-		return ""
+// groupingNumber is a placeholder business number, used until the /affairs call
+// supplies the real one.
+//
+// It must never be empty. Votes are grouped on business number plus sitting
+// day, so an empty value makes every such vote of one day look like the same
+// business matter: 47 Kanton Zürich votings carry no affair_id at all, eight of
+// them on 2025-11-24 alone, and those would be published as one post claiming
+// eight unrelated votes belong together.
+//
+// Without an affair the vote is its own group, so it falls back to its own id.
+func groupingNumber(affairID *int64, externalID string) string {
+	if affairID != nil {
+		return fmt.Sprintf("#%d", *affairID)
 	}
-	return fmt.Sprintf("#%d", *affairID)
+	return "#vote-" + externalID
 }
 
 // decision returns the source's outcome label, deriving one when the source

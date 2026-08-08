@@ -86,8 +86,8 @@ var jurisdictions = map[string]Jurisdiction{
 		NewSource: func() votes.Source {
 			return openparldata.New(zurichCanton, zurichCantonBodyKey)
 		},
-		// Off until the vote log is seeded and the first posts are reviewed.
-		// See the Kanton Zürich section of README.md for the launch steps.
+		// Off until the first posts have been reviewed; see the pull request
+		// for the go-live steps.
 		Enabled: false,
 	},
 }
@@ -127,17 +127,11 @@ func JurisdictionKeys() []string {
 	return keys
 }
 
-// maxAgeDays resolves the age guard for a jurisdiction. A per-jurisdiction
-// variable wins; the unprefixed legacy name is honoured for Stadt Zürich so the
-// existing repository variable keeps working.
+// maxAgeDays resolves the age guard for a jurisdiction, from
+// MAX_VOTE_AGE_DAYS_<JURISDICTION>.
 func maxAgeDays(key string, fallback int) int {
 	if v, ok := envInt("MAX_VOTE_AGE_DAYS_" + envKey(key)); ok {
 		return v
-	}
-	if key == zurichapi.JurisdictionKey {
-		if v, ok := envInt("MAX_VOTE_AGE_DAYS"); ok {
-			return v
-		}
 	}
 	return fallback
 }

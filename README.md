@@ -25,8 +25,8 @@ A civic tech bot that shares parliamentary vote results from Zurich on social me
 
 | Body                                                          | Data source                                              | Status                        | Tagging               |
 | ------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------- | --------------------- |
-| **Gemeinderat Stadt Zürich** (125 seats)                       | [PARIS API](pkg/zurichapi/README.md), City of Zurich      | ✅ Live                        | ✅ 132 curated contacts |
-| **Kantonsrat Zürich** (180 seats)                              | [OpenParlData](https://api.openparldata.ch/documentation) | 🟡 Implemented, not yet enabled | ❌ Not yet curated      |
+| **Gemeinderat Stadt Zürich** (125 seats)                       | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 132 curated contacts |
+| **Kantonsrat Zürich** (180 seats)                              | [OpenParlData](https://api.openparldata.ch/documentation) | 🟡 Implemented, not yet enabled | ❌ Not yet curated |
 
 Both bodies post to the same accounts. Every post names which chamber voted, in
 the text and on the image, so the two are never confused.
@@ -46,49 +46,10 @@ _Platforms are sorted by coverage. Counts include both Gemeinderäte and Stadtr�
 
 ## What It Does
 
-- **Automated Vote Posts**: Shares vote results (Abstimmungen) with the full per-faction breakdown. Timing depends on when each source publishes: the [PARIS API](pkg/zurichapi/README.md) typically 5–7 days after a city vote — the same data behind [gemeinderat-zuerich.ch](https://www.gemeinderat-zuerich.ch/sitzungen/termine/?navid=968842968842) — and OpenParlData within a few days of a cantonal one.
+- **Automated Vote Posts**: Shares vote results (Abstimmungen) with the full per-faction breakdown. Timing depends on when each source publishes: the [PARIS API](https://opendatazurich.github.io/paris-api/) typically 5–7 days after a city vote — the same data behind [gemeinderat-zuerich.ch](https://www.gemeinderat-zuerich.ch/sitzungen/termine/?navid=968842968842) — and OpenParlData within a few days of a cantonal one.
 - **Politician Tagging**: Automatically tags mentioned politicians using their social media accounts when available in our mapping
   - _Example: "Postulat von Ivo Bieri @ivo_bieri (SP) und Liv Mahrer @LivMahrer (SP)..."_
 - **Social Media Mapping**: Curates an extensive mapping of Zurich politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok) - see [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml)
-
-### Enabling Kanton Zürich
-
-The Kantonsrat is implemented but ships switched off, because two things have to
-happen first and neither is something merging code should trigger.
-
-1. **Seed the vote log.** A new jurisdiction's log is empty, and an empty log
-   means "nothing was ever posted" — so all 2,626 historical Kantonsrat votes
-   read as unposted. Seeding records them as posted so the bot starts from the
-   next real vote:
-
-   ```
-   go run ./cmd/seed_votelog -jurisdiction zurich-canton -n 200          # report only
-   go run ./cmd/seed_votelog -jurisdiction zurich-canton -n 200 -write   # write the logs
-   ```
-
-   Commit the resulting `data/zurich-canton/posted_votes_*.json` to the
-   `state-log` branch, which is where the workflow reads them from.
-
-2. **Review the first posts.** Render both bodies side by side and check a
-   reader could not mistake one for the other:
-
-   ```
-   go run ./cmd/generate_vote_post  -jurisdiction zurich-canton -n 1
-   go run ./cmd/generate_vote_image -fixture kantonsrat-vote -out out/images
-   ```
-
-Then set the repository variable `JURISDICTION_ZURICH_CANTON_ENABLED=true`.
-Until it is set, the scheduled run skips the canton entirely.
-
-Kantonsrat data comes from OpenParlData under CC BY 4.0, so those posts carry
-the credit line `Source: OpenParlData.ch`. Contacts for the 180 members are not
-curated yet, so Kantonsrat posts name politicians without tagging them; adding
-entries to `data/zurich-canton/contacts.yaml` turns tagging on with no code
-change.
-
-### Contributing to the Social Media Mapping
-
-Found an error or want to add a politician's social media account? Please [open an issue](https://github.com/SiiiTschiii/zuerichratsinfo/issues/new) or submit a pull request!
 
 ## Tech Stack
 

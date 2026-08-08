@@ -78,30 +78,29 @@ jobs:
 
       - name: Run bot
         env:
-          X_API_KEY: ${{ secrets.X_API_KEY }}
-          X_API_SECRET: ${{ secrets.X_API_SECRET }}
-          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
-          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
-          BLUESKY_HANDLE: ${{ vars.BLUESKY_HANDLE }}
-          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
-          IG_USER_ID: ${{ secrets.IG_USER_ID }}
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
-          GITHUB_TOKEN: ${{ github.token }}
-          IG_REPO_OWNER: SiiiTschiii
-          IG_REPO_NAME: zuerichratsinfo
+          # Platform credentials and limits are scoped to a channel — one set
+          # of accounts serving one or more jurisdictions. The prefix is the
+          # channel key, so a second channel is purely additive.
+          ZURICH_X_API_KEY: ${{ secrets.ZURICH_X_API_KEY }}
+          ZURICH_X_API_SECRET: ${{ secrets.ZURICH_X_API_SECRET }}
+          ZURICH_X_ACCESS_TOKEN: ${{ secrets.ZURICH_X_ACCESS_TOKEN }}
+          ZURICH_X_ACCESS_SECRET: ${{ secrets.ZURICH_X_ACCESS_SECRET }}
+          ZURICH_BLUESKY_HANDLE: ${{ vars.ZURICH_BLUESKY_HANDLE }}
+          ZURICH_BLUESKY_PASSWORD: ${{ secrets.ZURICH_BLUESKY_PASSWORD }}
+          ZURICH_IG_USER_ID: ${{ secrets.ZURICH_IG_USER_ID }}
+          ZURICH_IG_ACCESS_TOKEN: ${{ secrets.ZURICH_IG_ACCESS_TOKEN }}
+          ZURICH_GITHUB_TOKEN: ${{ github.token }}
+          ZURICH_IG_REPO_OWNER: SiiiTschiii
+          ZURICH_IG_REPO_NAME: zuerichratsinfo
+          ZURICH_X_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_X_MAX_POSTS_PER_RUN }}
+          ZURICH_X_MAX_CHARS: ${{ vars.ZURICH_X_MAX_CHARS }}
+          ZURICH_BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_BLUESKY_MAX_POSTS_PER_RUN }}
+          ZURICH_IG_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_IG_MAX_POSTS_PER_RUN }}
+
           MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
-          # Unprefixed name applies to Stadt Zürich; other jurisdictions use
-          # MAX_VOTE_AGE_DAYS_<JURISDICTION>.
-          MAX_VOTE_AGE_DAYS: ${{ vars.MAX_VOTE_AGE_DAYS }}
+          MAX_VOTE_AGE_DAYS_ZURICH_CITY: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CITY }}
           MAX_VOTE_AGE_DAYS_ZURICH_CANTON: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CANTON }}
-          # Kanton Zürich is implemented but stays off until its vote log is
-          # seeded and its first posts are reviewed. Set the repository variable
-          # to "true" to enable it; see the README.
           JURISDICTION_ZURICH_CANTON_ENABLED: ${{ vars.JURISDICTION_ZURICH_CANTON_ENABLED }}
-          X_MAX_POSTS_PER_RUN: ${{ vars.X_MAX_POSTS_PER_RUN }}
-          X_MAX_CHARS: ${{ vars.X_MAX_CHARS }}
-          BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.BLUESKY_MAX_POSTS_PER_RUN }}
-          IG_MAX_POSTS_PER_RUN: ${{ vars.IG_MAX_POSTS_PER_RUN }}
         run: go run main.go
 
       # Runs even when the bot itself fails, so a partial run still records what

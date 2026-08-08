@@ -22,47 +22,37 @@ func TestEnvKey(t *testing.T) {
 }
 
 func TestChannelEnv(t *testing.T) {
+	zurich := Channel{Key: "zurich"}
+
 	t.Setenv("ZURICH_X_API_KEY", "prefixed")
-	t.Setenv("X_API_KEY", "legacy")
-
-	legacyChannel := Channel{Key: "zurich", UsesLegacyEnv: true}
-	if got := legacyChannel.Env("X_API_KEY"); got != "prefixed" {
-		t.Errorf("a channel-scoped variable must win: got %q", got)
+	if got := zurich.Env("X_API_KEY"); got != "prefixed" {
+		t.Errorf("Env = %q, want the channel-scoped value", got)
 	}
 
+	// An unprefixed variable belongs to no channel. Honouring it would let a
+	// channel with a missing secret post to another channel's account.
 	t.Setenv("ZURICH_X_API_KEY", "")
-	if got := legacyChannel.Env("X_API_KEY"); got != "legacy" {
-		t.Errorf("the legacy channel must fall back to the unprefixed name: got %q", got)
-	}
-
-	// A second channel must never inherit the first channel's credentials —
-	// that would post to the wrong account rather than fail.
-	other := Channel{Key: "federal"}
-	if got := other.Env("X_API_KEY"); got != "" {
-		t.Errorf("a non-legacy channel must not see unprefixed credentials, got %q", got)
+	t.Setenv("X_API_KEY", "unscoped")
+	if got := zurich.Env("X_API_KEY"); got != "" {
+		t.Errorf("Env = %q, want empty — unprefixed names are not channel credentials", got)
 	}
 }
 
 func TestChannelEnvInt(t *testing.T) {
-	c := Channel{Key: "zurich", UsesLegacyEnv: true}
+	c := Channel{Key: "zurich"}
 
 	if got := c.EnvInt("X_MAX_POSTS_PER_RUN", 10); got != 10 {
 		t.Errorf("unset should give the fallback, got %d", got)
 	}
 
-	t.Setenv("X_MAX_POSTS_PER_RUN", "4")
-	if got := c.EnvInt("X_MAX_POSTS_PER_RUN", 10); got != 4 {
-		t.Errorf("legacy name should be honoured, got %d", got)
-	}
-
 	t.Setenv("ZURICH_X_MAX_POSTS_PER_RUN", "2")
 	if got := c.EnvInt("X_MAX_POSTS_PER_RUN", 10); got != 2 {
-		t.Errorf("channel-scoped name should win, got %d", got)
+		t.Errorf("channel-scoped name should be used, got %d", got)
 	}
 
 	t.Setenv("ZURICH_X_MAX_POSTS_PER_RUN", "not a number")
-	if got := c.EnvInt("X_MAX_POSTS_PER_RUN", 10); got != 4 {
-		t.Errorf("an unparseable value should be ignored, got %d", got)
+	if got := c.EnvInt("X_MAX_POSTS_PER_RUN", 10); got != 10 {
+		t.Errorf("an unparseable value should fall back, got %d", got)
 	}
 }
 
@@ -73,12 +63,6 @@ func TestMaxAgeDaysOverrides(t *testing.T) {
 	}
 	if j.MaxAgeDays != 90 {
 		t.Errorf("default city age guard = %d, want 90", j.MaxAgeDays)
-	}
-
-	// The existing repository variable must keep working for Stadt Zürich.
-	t.Setenv("MAX_VOTE_AGE_DAYS", "45")
-	if j, _ := LookupJurisdiction("zurich-city"); j.MaxAgeDays != 45 {
-		t.Errorf("legacy MAX_VOTE_AGE_DAYS ignored, got %d", j.MaxAgeDays)
 	}
 
 	t.Setenv("MAX_VOTE_AGE_DAYS_ZURICH_CITY", "7")

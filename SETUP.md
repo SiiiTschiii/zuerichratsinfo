@@ -39,11 +39,12 @@ cd zuerichratsinfo
 # Copy the example environment file
 cp .env.example .env
 
-# Edit .env and add your credentials
-X_API_KEY=your_api_key_here
-X_API_SECRET=your_api_secret_here
-X_ACCESS_TOKEN=your_access_token_here
-X_ACCESS_SECRET=your_access_secret_here
+# Edit .env and add your credentials. Platform variables are prefixed with the
+# channel key — the set of accounts they belong to.
+ZURICH_X_API_KEY=your_api_key_here
+ZURICH_X_API_SECRET=your_api_secret_here
+ZURICH_X_ACCESS_TOKEN=your_access_token_here
+ZURICH_X_ACCESS_SECRET=your_access_secret_here
 ```
 
 **Important**: Never commit your `.env` file to git! It's already in `.gitignore`.
@@ -116,28 +117,15 @@ go run ./cmd/check_unposted -platform x -jurisdiction zurich-canton -max-posts 1
 ```
 
 This needs the vote logs on disk. They live on the `state-log` branch, not in
-`main`. The branch may hold either the per-jurisdiction layout or the flat one
-it replaced, depending on whether the bot has run since the migration, so try
-both:
+`main`, and are gitignored here:
 
 ```bash
 git fetch origin state-log
 mkdir -p data/zurich-city
 for p in x bluesky instagram; do
-  for src in data/zurich-city/posted_votes_$p.json data/posted_votes_$p.json; do
-    if git cat-file -e "FETCH_HEAD:$src" 2>/dev/null; then
-      git show "FETCH_HEAD:$src" > "data/zurich-city/posted_votes_$p.json"
-      echo "restored $p from $src"
-      break
-    fi
-  done
+  git show "FETCH_HEAD:data/zurich-city/posted_votes_$p.json" > "data/zurich-city/posted_votes_$p.json"
 done
 ```
-
-Checking before writing matters: a truncated or empty log reads as "nothing was
-ever posted", which is exactly the state that would re-publish history.
-
-(The logs are gitignored, so they will not end up in a commit.)
 
 ### Comparing the two data sources
 
@@ -206,8 +194,9 @@ SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go
 ### Golden Snapshot
 
 `pkg/voteposting/golden` renders every fixture through all three platforms and
-compares the result against `testdata/golden.txt` — post text verbatim, plus a
-hash of every generated image.
+compares the result against `testdata/golden.txt`, verbatim. Generated images
+are checked separately by their properties, because JPEG bytes differ between
+CPU architectures and a byte hash would pass locally and fail in CI.
 
 A refactor that is meant to preserve behaviour must leave this file untouched;
 that is what makes the claim checkable rather than asserted. When a change is
