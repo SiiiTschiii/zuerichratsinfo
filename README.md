@@ -18,13 +18,19 @@
 
 A civic tech bot that shares parliamentary vote results from Zurich on social media and tags the politicians involved, using a curated mapping of their accounts.
 
-We built it because a healthy democracy rests on two things that are easy to lose sight of: **participation** — citizens who can actually follow and take part in the decisions that affect them — and **accountability** — what politicians actually do, from how they vote to which motions, postulates and petitions they put their name on, visible right where people already are.
+We built it because a healthy democracy rests on two things that are easy to lose sight of:
+
+- **Participation**: citizens who can actually follow and take part in the decisions that affect them.
+- **Accountability**: what politicians actually do, from how they vote to which motions, postulates and petitions they put their name on, visible right where people already are.
 
 **🇨🇭 Auf Deutsch**
 
-Ein Civic-Tech-Bot, der Abstimmungsergebnisse aus den Zürcher Parlamenten auf Social Media teilt und die beteiligten Politikerinnen und Politiker markiert — anhand einer manuell gepflegten Zuordnung ihrer Accounts.
+Ein Civic-Tech-Bot, der Abstimmungsergebnisse aus den Zürcher Parlamenten auf Social Media teilt und die beteiligten Politikerinnen und Politiker markiert, anhand einer manuell gepflegten Zuordnung ihrer Accounts.
 
-Wir haben ihn gebaut, weil eine gesunde Demokratie auf zwei Dingen beruht, die leicht aus dem Blick geraten: **Partizipation** — Bürgerinnen und Bürger, die die Entscheide, die sie betreffen, tatsächlich mitverfolgen und mitgestalten können — und **Rechenschaft** — was Politikerinnen und Politiker wirklich tun, vom Abstimmungsverhalten bis zu den Motionen, Postulaten und Petitionen, die sie mittragen, sichtbar dort, wo die Menschen ohnehin schon sind.
+Wir haben ihn gebaut, weil eine gesunde Demokratie auf zwei Dingen beruht, die leicht aus dem Blick geraten:
+
+- **Partizipation**: Bürgerinnen und Bürger, die die Entscheide, die sie betreffen, tatsächlich mitverfolgen und mitgestalten können.
+- **Rechenschaft**: was Politikerinnen und Politiker wirklich tun, vom Abstimmungsverhalten bis zu den Motionen, Postulaten und Petitionen, die sie mittragen, sichtbar dort, wo die Menschen ohnehin schon sind.
 
 ## Covered Bodies
 
@@ -49,14 +55,14 @@ the text and on the image, so the two are never confused.
 
 _"Politicians with a verified account" is how many Gemeinderat and Stadtrat members
 (9 of them Stadträte) we have manually identified and verified as being active on
-that platform, so that they can be tagged in a post — out of the 132 politicians
+that platform, so that they can be tagged in a post, out of the 132 politicians
 curated in [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml).
 Platforms are sorted by coverage. Kantonsrat members are not yet curated and so are
 not counted here._
 
 ## What It Does
 
-- **Automated Vote Posts**: Shares vote results (Abstimmungen) with the full per-faction breakdown. Timing depends on when each source publishes: the [PARIS API](https://opendatazurich.github.io/paris-api/) typically 5–7 days after a city vote — the same data behind [gemeinderat-zuerich.ch](https://www.gemeinderat-zuerich.ch/sitzungen/termine/?navid=968842968842) — and OpenParlData within a few days of a cantonal one.
+- **Automated Vote Posts**: Shares vote results (Abstimmungen) with the full per-faction breakdown. Timing depends on when each source publishes: the [PARIS API](https://opendatazurich.github.io/paris-api/) typically 5–7 days after a city vote (the same data behind [gemeinderat-zuerich.ch](https://www.gemeinderat-zuerich.ch/sitzungen/termine/?navid=968842968842)), and OpenParlData within a few days of a cantonal one.
 - **Politician Tagging**: Automatically tags mentioned politicians using their social media accounts when available in our mapping
   - _Example: "Postulat von Ivo Bieri @ivo_bieri (SP) und Liv Mahrer @LivMahrer (SP)..."_
 - **Social Media Mapping**: Curates an extensive mapping of Zurich politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok) - see [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml)
@@ -92,7 +98,7 @@ This is a non-profit civic tech project. Every contribution helps make local pol
 Special thanks to:
 
 - **[Alexander Guentert](https://github.com/alexanderguentert)** from [Open Data Zurich](https://opendatazurich.github.io) for support in integrating the Paris-API, Gemeinderat Stadt Zürich
-- **[OpenParlData](https://opendata.ch/projects/openparldata/)** for harmonised Swiss parliamentary data (CC BY 4.0), which is what makes the Kantonsrat — and any further canton — possible ([API docs](https://api.openparldata.ch))
+- **[OpenParlData](https://opendata.ch/projects/openparldata/)** for harmonised Swiss parliamentary data (CC BY 4.0), which is what makes the Kantonsrat, and any further canton, possible ([API docs](https://api.openparldata.ch))
 
 ## License
 
