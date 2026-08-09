@@ -2,6 +2,7 @@ package x
 
 import (
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -63,9 +64,8 @@ func runeWeight(r rune) int {
 // that gets a reply rejected mid-thread.
 func urlLenAt(s string, i int) int {
 	if i > 0 {
-		switch s[i-1] {
-		case ' ', '\n', '\t':
-		default:
+		prev, _ := utf8.DecodeLastRuneInString(s[:i])
+		if !isLinkBoundary(prev) {
 			return 0
 		}
 	}
@@ -76,13 +76,29 @@ func urlLenAt(s string, i int) int {
 	}
 	token := rest[:end]
 
-	if strings.HasPrefix(token, "http://") || strings.HasPrefix(token, "https://") {
-		return end
+	if !strings.HasPrefix(token, "http://") && !strings.HasPrefix(token, "https://") && !isBareDomain(token) {
+		return 0
 	}
-	if isBareDomain(token) {
-		return end
+
+	// Punctuation that ends a sentence is not part of the link X makes, so it
+	// has to be charged on its own — "…OpenParlData.ch." costs 23 plus 1, not
+	// 23. Trimming a closing paren that genuinely belongs to a URL overcharges
+	// by one instead, which is the direction this file errs in on purpose.
+	return len(strings.TrimRight(token, urlTrailingPunct))
+}
+
+// urlTrailingPunct is punctuation that ends a link rather than belonging to it.
+const urlTrailingPunct = ".,;:!?)»\"'"
+
+// isLinkBoundary reports whether a link may start after this character.
+// Opening punctuation counts: X linkifies the domain in "(OpenParlData.ch)",
+// and requiring whitespace would charge those 17 characters instead of 25.
+func isLinkBoundary(r rune) bool {
+	switch r {
+	case '(', '[', '«', '"', '\'', '‘', '“':
+		return true
 	}
-	return 0
+	return unicode.IsSpace(r)
 }
 
 // isBareDomain reports whether a token is one X would turn into a link.
@@ -99,7 +115,7 @@ func isBareDomain(token string) bool {
 	if strings.ContainsAny(host, ":@") {
 		return false
 	}
-	host = strings.TrimRight(host, ".,;:!?)»\"'")
+	host = strings.TrimRight(host, urlTrailingPunct)
 
 	labels := strings.Split(host, ".")
 	if len(labels) < 2 {
@@ -133,17 +149,32 @@ func isASCIILetter(r rune) bool {
 
 // truncateToWeighted trims s until it costs at most maxLen, returning the
 // trimmed text without any ellipsis.
+//
+// The result is re-measured rather than trusted, because cutting a string can
+// make it more expensive per character than the runes suggest: a title cut
+// through a URL leaves "https://aver", which still reads as a link and is
+// still charged 23. Estimating by rune weight and then shrinking keeps the
+// common case linear while making the guarantee hold in every case.
 func truncateToWeighted(s string, maxLen int) string {
+	if maxLen <= 0 {
+		return ""
+	}
 	if weightedLen(s) <= maxLen {
 		return s
 	}
+
 	runes := []rune(s)
+	cut := len(runes)
 	total := 0
 	for i, r := range runes {
 		total += runeWeight(r)
 		if total > maxLen {
-			return string(runes[:i])
+			cut = i
+			break
 		}
 	}
-	return s
+	for cut > 0 && weightedLen(string(runes[:cut])) > maxLen {
+		cut--
+	}
+	return string(runes[:cut])
 }

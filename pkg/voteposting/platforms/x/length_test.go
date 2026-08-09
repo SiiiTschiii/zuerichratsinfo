@@ -1,6 +1,9 @@
 package x
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestWeightedLen(t *testing.T) {
 	cases := []struct {
@@ -31,6 +34,13 @@ func TestWeightedLen(t *testing.T) {
 		{"abbreviation is not a domain", "z.B.", 4},
 		{"decimal is not a domain", "3.5", 3},
 		{"word is not a domain", "Verkehr", 7},
+		// Sentence punctuation is not part of the link X makes, so it is charged
+		// separately. Swallowing it into the flat 23 undercounts.
+		{"url followed by a comma", "https://a.ch,", urlWeightedLen + 1},
+		{"bare domain followed by a full stop", "OpenParlData.ch.", urlWeightedLen + 1},
+		{"attribution at the end of a sentence", "Source: OpenParlData.ch.", 8 + urlWeightedLen + 1},
+		{"bare domain in parentheses", "(OpenParlData.ch)", 1 + urlWeightedLen + 1},
+		{"url with a query string keeps its punctuation", "https://a.ch/x?id=1&y=2", urlWeightedLen},
 	}
 
 	for _, tc := range cases {
@@ -53,6 +63,34 @@ func TestTruncateToWeighted(t *testing.T) {
 	}
 	if got := truncateToWeighted("kurz", 99); got != "kurz" {
 		t.Errorf("truncateToWeighted() = %q, want %q", got, "kurz")
+	}
+}
+
+// The guarantee truncation exists for: whatever comes back must actually fit,
+// or a "truncated" title still overshoots and the API rejects the root post.
+//
+// Cutting a string can raise its cost per character. A title cut through a URL
+// leaves something like "https://aver", which still reads as a link and is
+// still charged 23 — more than the twelve runes it now holds.
+func TestTruncateToWeightedAlwaysFits(t *testing.T) {
+	inputs := []string{
+		"Teilrevision 2022 des kantonalen Richtplans, Kapitel 4 «Verkehr»",
+		"Details: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=6b13c255e8c94b10adfde33dede18c8c und weiter",
+		"https://averylongdomainname.example.ch/with/a/path",
+		"Quelle OpenParlData.ch, Stand 15.06.2026",
+		"🗳️ 🏛️ 📊 Abstimmung über die Änderung",
+	}
+
+	for _, in := range inputs {
+		for maxLen := 0; maxLen <= weightedLen(in)+2; maxLen++ {
+			got := truncateToWeighted(in, maxLen)
+			if cost := weightedLen(got); cost > maxLen {
+				t.Errorf("truncateToWeighted(%q, %d) = %q, which costs %d", in, maxLen, got, cost)
+			}
+			if !strings.HasPrefix(in, got) {
+				t.Errorf("truncateToWeighted(%q, %d) = %q, not a prefix", in, maxLen, got)
+			}
+		}
 	}
 }
 
