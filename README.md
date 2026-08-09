@@ -14,9 +14,6 @@
   <a href="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/bot.yml">
     <img src="https://img.shields.io/github/last-commit/SiiiTschiii/zuerichratsinfo/main?label=last%20bot%20run&logo=github" alt="Last Bot Run">
   </a>
-  <a href="https://goreportcard.com/report/github.com/siiitschiii/zuerichratsinfo">
-    <img src="https://goreportcard.com/badge/github.com/siiitschiii/zuerichratsinfo" alt="Go Report Card">
-  </a>
 </p>
 
 A civic tech bot that shares parliamentary vote results from Zurich on social media and tags the politicians involved, using a curated mapping of their accounts.
@@ -25,16 +22,16 @@ A civic tech bot that shares parliamentary vote results from Zurich on social me
 
 | Body                                                          | Data source                                              | Status                        | Tagging               |
 | ------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------- | --------------------- |
-| **Gemeinderat Stadt Zürich** (125 seats)                       | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 132 curated contacts |
-| **Kantonsrat Zürich** (180 seats)                              | [OpenParlData](https://api.openparldata.ch/documentation) | 🟡 Implemented, not yet enabled | ❌ Not yet curated |
+| **Gemeinderat Stadt Zürich**                                   | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 132 curated contacts |
+| **Kantonsrat Zürich**                                          | [OpenParlData](https://api.openparldata.ch/documentation) | ✅ Live | ❌ Not yet curated |
 
 Both bodies post to the same accounts. Every post names which chamber voted, in
 the text and on the image, so the two are never confused.
 
 ## Supported Platforms
 
-| Platform    | Status     | Gemeinderäte & Stadträte | Account                                                                              |
-| ----------- | ---------- | ------------------------ | ------------------------------------------------------------------------------------ |
+| Platform    | Status     | Politicians with a verified account | Account                                                                              |
+| ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
 | LinkedIn    | ❌ Planned | 108 | -                                                                                    |
 | Facebook    | ❌ Planned | 83 | -                                                                                    |
 | Instagram   | ✅ Active  | 92 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
@@ -42,7 +39,12 @@ the text and on the image, so the two are never confused.
 | Bluesky     | ✅ Active  | 28 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
 | TikTok      | ❌ Planned | 18 | -                                                                                    |
 
-_Platforms are sorted by coverage. Counts include both Gemeinderäte and Stadträte (9 Stadtrat members). Out of 132 total contacts in [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml). Kantonsrat members are not yet curated and so are not counted here._
+_"Politicians with a verified account" is how many Gemeinderat and Stadtrat members
+(9 of them Stadträte) we have manually identified and verified as being active on
+that platform, so that they can be tagged in a post — out of the 132 politicians
+curated in [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml).
+Platforms are sorted by coverage. Kantonsrat members are not yet curated and so are
+not counted here._
 
 ## What It Does
 
@@ -82,7 +84,7 @@ This is a non-profit civic tech project. Every contribution helps make local pol
 Special thanks to:
 
 - **[Alexander Guentert](https://github.com/alexanderguentert)** from [Open Data Zurich](https://opendatazurich.github.io) for support in integrating the Paris-API, Gemeinderat Stadt Zürich
-- **[OpenParlData](https://api.openparldata.ch)** for harmonised Swiss parliamentary data (CC BY 4.0), which is what makes the Kantonsrat — and any further canton — possible
+- **[OpenParlData](https://opendata.ch/projects/openparldata/)** for harmonised Swiss parliamentary data (CC BY 4.0), which is what makes the Kantonsrat — and any further canton — possible ([API docs](https://api.openparldata.ch))
 
 ## License
 
