@@ -18,6 +18,8 @@
 
 A civic tech bot that shares parliamentary vote results from Zurich on social media and tags the politicians involved, using a curated mapping of their accounts.
 
+We built it because a healthy democracy rests on two things that are easy to lose sight of: **participation** — citizens who can actually follow and take part in the decisions that shape their city — and **accountability** — politicians whose votes are visible, right where people already are, instead of buried in a PDF nobody reads.
+
 ## Covered Bodies
 
 | Body                                                          | Data source                                              | Status                        | Tagging               |
