@@ -32,7 +32,7 @@ func TestAggregateFraktionCounts(t *testing.T) {
 		stimmabgabe("", "Ja"), // empty Fraktion — should be omitted
 	}
 
-	counts := AggregateFraktionCounts(stimmabgaben)
+	counts := AggregateFraktionCounts(votes.Vote{MemberVotes: stimmabgaben})
 
 	if len(counts) != 2 {
 		t.Fatalf("expected 2 factions, got %d", len(counts))
@@ -68,7 +68,7 @@ func TestFormatFraktionBreakdown_JaNein(t *testing.T) {
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("AL", "Ja"), 8)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("", "Ja"), 1)...) // empty — omitted
 
-	counts := AggregateFraktionCounts(stimmabgaben)
+	counts := AggregateFraktionCounts(votes.Vote{MemberVotes: stimmabgaben})
 	result := FormatFraktionBreakdown(counts)
 
 	t.Logf("Output:\n%s", result)
@@ -114,7 +114,7 @@ func TestFormatFraktionBreakdown_Auswahl(t *testing.T) {
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("FDP", "C"), 4)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("FDP", "Abwesend"), 7)...)
 
-	counts := AggregateFraktionCounts(stimmabgaben)
+	counts := AggregateFraktionCounts(votes.Vote{MemberVotes: stimmabgaben})
 	result := FormatFraktionBreakdown(counts)
 
 	t.Logf("Output:\n%s", result)
@@ -161,7 +161,7 @@ func TestFormatFraktionBreakdown_TieBreaking(t *testing.T) {
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("Zebra", "Ja"), 10)...)
 	stimmabgaben = append(stimmabgaben, repeat(stimmabgabe("Alpha", "Ja"), 10)...)
 
-	counts := AggregateFraktionCounts(stimmabgaben)
+	counts := AggregateFraktionCounts(votes.Vote{MemberVotes: stimmabgaben})
 	result := FormatFraktionBreakdown(counts)
 
 	t.Logf("Output:\n%s", result)
@@ -178,7 +178,7 @@ func TestFormatFraktionBreakdown_TieBreaking(t *testing.T) {
 func TestFormatFraktionBreakdown_SingleFaction(t *testing.T) {
 	stimmabgaben := repeat(stimmabgabe("SP", "Ja"), 5)
 
-	counts := AggregateFraktionCounts(stimmabgaben)
+	counts := AggregateFraktionCounts(votes.Vote{MemberVotes: stimmabgaben})
 	result := FormatFraktionBreakdown(counts)
 
 	t.Logf("Output:\n%s", result)
@@ -203,7 +203,7 @@ func TestAggregateFraktionCounts_UnmappedFraktion(t *testing.T) {
 		{Name: "Also Unmapped", Fraktion: "   ", Choice: "Nein"},
 	}
 
-	counts := AggregateFraktionCounts(members)
+	counts := AggregateFraktionCounts(votes.Vote{MemberVotes: members})
 
 	if _, ok := counts[""]; ok {
 		t.Error("members without a faction must not create an empty-named row")

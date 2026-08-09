@@ -212,7 +212,7 @@ func PostToPlatform(
 			continue
 		}
 		// Validate vote counts before formatting; skip groups with unknown formats
-		if err := validateGroupCounts(group); err != nil {
+		if err := validateGroup(group); err != nil {
 			log.Printf("⚠️  Skipping group (unsupported vote type): %v", err)
 			if firstUnsupportedErr == nil {
 				firstUnsupportedErr = err
@@ -292,11 +292,23 @@ func PostToPlatform(
 	return posted, nil
 }
 
-// validateGroupCounts checks that every vote in a group has a recognisable
-// count format (standard Ja/Nein or Auswahl A-E). Returns ErrUnsupportedVoteType
-// with details if any vote is unrecognisable.
-func validateGroupCounts(group []votes.Vote) error {
+// validateGroup checks that every vote in a group is one the formatters can
+// render: a type on the handled list, and a recognisable count format (standard
+// Ja/Nein or Auswahl A-E). Returns ErrUnsupportedVoteType with details if any
+// vote fails either check.
+//
+// The type check is what catches a source starting to serve something new. The
+// count check alone would not: an attendance determination and a quorum vote
+// both look like a perfectly ordinary lopsided Ja/Nein tally, and would post
+// happily while saying something untrue about how parliament voted. Failing
+// here skips the group and surfaces an error at the end of the run, so the gap
+// is noticed rather than published.
+func validateGroup(group []votes.Vote) error {
 	for _, v := range group {
+		if !voteformat.IsHandledVoteType(v.Type) {
+			return fmt.Errorf("%w: vote %s (%q) has type %q, which no formatter handles",
+				ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)
+		}
 		if voteformat.IsUnsupportedVoteType(voteformat.CountsOf(v)) {
 			return fmt.Errorf("%w: vote %s (%q, type=%q) has all-zero counts",
 				ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)

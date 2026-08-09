@@ -19,9 +19,9 @@ type FraktionCounts struct {
 // them out of the table; they still count towards the vote totals, which are
 // reported independently.
 // The returned map contains exactly the factions present in the data.
-func AggregateFraktionCounts(memberVotes []votes.MemberVote) map[string]*FraktionCounts {
+func AggregateFraktionCounts(v votes.Vote) map[string]*FraktionCounts {
 	result := make(map[string]*FraktionCounts)
-	for _, m := range memberVotes {
+	for _, m := range v.MemberVotes {
 		if m.Fraktion == "" {
 			continue
 		}
@@ -30,21 +30,53 @@ func AggregateFraktionCounts(memberVotes []votes.MemberVote) map[string]*Fraktio
 			fc = &FraktionCounts{Counts: make(map[string]int)}
 			result[m.Fraktion] = fc
 		}
-		fc.Counts[m.Choice]++
+		fc.Counts[quorumChoice(v.Type, m.Choice)]++
 	}
 	return result
 }
 
+// Column names for a quorum vote, which does not have the usual four.
+const (
+	choiceZustimmung = "Zustimmung"
+	choiceOhne       = "ohne Zustimmung"
+)
+
+// quorumChoice renames a member's recorded choice for a quorum vote.
+//
+// A quorum vote counts supporters against a threshold and offers no Nein at
+// all, so everyone who does not support it is filed by the source under
+// "Abwesend" — including the members who were sitting in the chamber and chose
+// not to press the button. For the 15.06.2026 Ausgabenbremse the official record
+// puts that at 6 genuinely absent against 46 present and abstaining, where the
+// API reports a flat 52. "ohne Zustimmung" is true of both groups, so the table
+// stops asserting an attendance it cannot support — and stays correct whether or
+// not the source ever separates the two.
+func quorumChoice(voteType, choice string) string {
+	if strings.TrimSpace(voteType) != voteTypeQuorum {
+		return choice
+	}
+	switch choice {
+	case "Ja":
+		return choiceZustimmung
+	case "Abwesend":
+		return choiceOhne
+	}
+	return choice
+}
+
 // headerAbbrev maps Abstimmungsverhalten values to short header labels.
 var headerAbbrev = map[string]string{
-	"Enthaltung": "Enth",
-	"Abwesend":   "Abw",
+	"Enthaltung":     "Enth",
+	"Abwesend":       "Abw",
+	choiceZustimmung: "Zust.",
+	choiceOhne:       "ohne",
 }
 
 // metaValues are Abstimmungsverhalten values that always sort last in the header.
 var metaValues = map[string]bool{
 	"Enthaltung": true,
 	"Abwesend":   true,
+	choiceOhne:   true,
 }
 
 // FormatFraktionBreakdown formats the aggregated counts into the display string.
@@ -68,12 +100,15 @@ func FormatFraktionBreakdown(counts map[string]*FraktionCounts) string {
 	var primary []string
 	hasEnth := false
 	hasAbw := false
+	hasOhne := false
 	hasStandardVote := false
 	for k := range keySet {
 		if k == "Enthaltung" {
 			hasEnth = true
 		} else if k == "Abwesend" {
 			hasAbw = true
+		} else if k == choiceOhne {
+			hasOhne = true
 		} else if !metaValues[k] {
 			primary = append(primary, k)
 			if k == "Ja" || k == "Nein" {
@@ -104,6 +139,11 @@ func FormatFraktionBreakdown(counts map[string]*FraktionCounts) string {
 	}
 	if hasAbw {
 		columns = append(columns, "Abwesend")
+	}
+	// A quorum vote's non-supporters sort last for the same reason Abwesend
+	// does: it is the residual bucket, not a position anyone voted for.
+	if hasOhne {
+		columns = append(columns, choiceOhne)
 	}
 
 	// Build header legend with abbreviations.

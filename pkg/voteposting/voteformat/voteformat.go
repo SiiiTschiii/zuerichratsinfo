@@ -112,6 +112,12 @@ type VoteCounts struct {
 	Enthaltung    *int
 	Abwesend      *int
 	A, B, C, D, E *int
+
+	// Type is the source's vote-type label, carried alongside the counts
+	// because the same four numbers mean different things depending on it: a
+	// quorum vote's Nein is structurally 0 and its Abwesend is "did not
+	// support", not "was not there".
+	Type string
 }
 
 // CountsOf reads the totals off a vote. Totals are always taken from the
@@ -121,7 +127,31 @@ func CountsOf(v votes.Vote) VoteCounts {
 	return VoteCounts{
 		Ja: v.Yes, Nein: v.No, Enthaltung: v.Abstention, Abwesend: v.Absent,
 		A: v.ChoiceA, B: v.ChoiceB, C: v.ChoiceC, D: v.ChoiceD, E: v.ChoiceE,
+		Type: v.Type,
 	}
+}
+
+// HasVerdict reports whether a post may state an accepted/rejected outcome for
+// this vote. When it is false the formatters print the title and the counts and
+// claim nothing about what parliament decided.
+//
+// Two cases have no verdict to state. An Auswahl vote's outcome is "Auswahl
+// A/B/…", not accepted or rejected. And a vote whose source reports no decision
+// has none that we are entitled to publish: an outcome is never inferred from
+// the counts, because inferring it is only safe when Ja and Nein are the two
+// sides of the same question. In a quorum vote they are not — Nein is
+// structurally always 0, so every such vote would come out "Angenommen",
+// including the ones that failed to reach their threshold. That threshold is
+// not published anywhere we can read, and it differs by which procedure the
+// vote serves, which type_de does not say. So the honest rendering is silence.
+//
+// Kanton Zürich currently reports no decision at all, for any vote. If
+// OpenParlData starts populating it, verdicts return on their own.
+func HasVerdict(v votes.Vote) bool {
+	if IsAuswahlVote(CountsOf(v)) {
+		return false
+	}
+	return strings.TrimSpace(v.Decision) != ""
 }
 
 // IsAuswahlVote returns true when the vote used the A/B/C/D/E option format
@@ -135,6 +165,33 @@ func IsAuswahlVote(c VoteCounts) bool {
 		}
 	}
 	return false
+}
+
+// voteTypeQuorum is the value both sources publish for a quorum vote.
+const voteTypeQuorum = "Quorum"
+
+// formatQuorumCounts renders the summary line for a quorum vote, or "" when the
+// vote is not one.
+//
+// A quorum vote counts supporters against a threshold and has no Nein option,
+// so the standard four-part line prints "0 Nein | 0 Enth." for positions nobody
+// could have taken, and files every non-supporter under "Abwesend" — which the
+// official record shows is wrong for most of them (6 truly absent against 46
+// present and not voting, where the API reports 52).
+//
+// Two honest numbers instead: how many supported, and how many did not. Both
+// stay true whether or not the source ever separates absence from abstention,
+// and the line is shorter than the standard one, so neither platform needs a
+// shortened variant.
+func formatQuorumCounts(c VoteCounts) string {
+	if strings.TrimSpace(c.Type) != voteTypeQuorum {
+		return ""
+	}
+	if IsAuswahlVote(c) {
+		return ""
+	}
+	return fmt.Sprintf("📊 %s Zustimmungen | %s ohne Zustimmung",
+		FormatVoteCount(c.Ja), FormatVoteCount(c.Abwesend))
 }
 
 // IsUnsupportedVoteType returns true when all active voter count fields are nil or zero.
@@ -154,6 +211,9 @@ func IsUnsupportedVoteType(c VoteCounts) bool {
 // Detects Auswahl A/B/C/D votes vs standard Ja/Nein automatically.
 // Call IsUnsupportedVoteType first if you need to guard against unknown formats.
 func FormatVoteCounts(c VoteCounts) string {
+	if line := formatQuorumCounts(c); line != "" {
+		return line
+	}
 	abwesend := FormatVoteCount(c.Abwesend)
 
 	// Check if any Auswahl option has votes
@@ -180,6 +240,9 @@ func FormatVoteCounts(c VoteCounts) string {
 // FormatVoteCountsLong is like FormatVoteCounts but uses full German label names
 // ("Enthaltung", "Abwesend") suited for platforms without a tight character limit.
 func FormatVoteCountsLong(c VoteCounts) string {
+	if line := formatQuorumCounts(c); line != "" {
+		return line
+	}
 	abwesend := FormatVoteCount(c.Abwesend)
 
 	auswahlPtrs := []*int{c.A, c.B, c.C, c.D, c.E}
@@ -210,18 +273,101 @@ func IsSchlussabstimmung(abstimmungstitel string) bool {
 // to a single-vote post, or "" if no prefix should be added.
 // A prefix is added only when: the Abstimmungstitel is non-empty AND does not
 // contain "Schlussabstimmung" (case-insensitive).
-func SingleVoteSubtitlePrefix(abstimmungstitel string) string {
+//
+// The vote type is appended when it is one worth naming, so a lone quorum vote
+// carries the label too — that case needs it most, since there is no sibling
+// vote beside it to make the lopsided tally look unusual.
+func SingleVoteSubtitlePrefix(v votes.Vote) string {
+	return joinTypeLabel(singleVoteSubtitle(v.Subtitle), v.Type)
+}
+
+func singleVoteSubtitle(abstimmungstitel string) string {
 	if abstimmungstitel == "" {
 		return ""
 	}
 	if IsSchlussabstimmung(abstimmungstitel) {
 		return ""
 	}
-	cleaned := CleanVoteSubtitle(abstimmungstitel)
-	if cleaned == "" {
-		return ""
+	return CleanVoteSubtitle(abstimmungstitel)
+}
+
+// typeLabels names the vote types worth surfacing to a reader, keyed by the
+// value the sources publish. PARIS (Abstimmungstyp) and OpenParlData (type_de)
+// share this vocabulary, so one table serves both bodies.
+//
+// It is an allowlist rather than a passthrough because most of the vocabulary
+// is either uninformative or already visible in the counts: "Normal" describes
+// the overwhelming majority and says nothing, and "Gleichgerichtete Anträge mit
+// 4 Optionen" restates an Auswahl vote that already renders as A/B/C/D. Only
+// types whose tally would otherwise be read wrongly earn a label.
+var typeLabels = map[string]string{
+	// A quorum vote counts supporters against a threshold and has no Nein
+	// option at all, so everyone not supporting it lands in Abwesend. Unlabelled,
+	// "129 Ja | 0 Nein | 51 Abw." reads as near-unanimous agreement rather than
+	// as a procedural vote most of the opposition deliberately sits out.
+	"Quorum": "Quorum",
+	// A knockout round between more than two competing proposals. Kanton Zürich
+	// reports these with no aggregate counts at all, so they are rejected before
+	// posting today (see IsUnsupportedVoteType); the label is here so they read
+	// correctly if that is ever fixed upstream.
+	"Cup-Abstimmung": "Cup-Abstimmung",
+}
+
+// TypeLabel returns the reader-facing label for a vote type, or "" when the
+// type does not warrant one.
+func TypeLabel(voteType string) string {
+	return typeLabels[strings.TrimSpace(voteType)]
+}
+
+// auswahlTypePrefix begins the type both sources use for multi-option votes,
+// which carry an option count in their name ("… mit 3 Optionen", "… mit 4
+// Optionen"), so the whole family has to be matched by prefix.
+const auswahlTypePrefix = "Gleichgerichtete Anträge"
+
+// handledVoteTypes are the types whose counts the formatters render correctly.
+// It is deliberately narrower than typeLabels: rendering a type correctly and
+// having a name for it are different things.
+var handledVoteTypes = map[string]bool{
+	// Ja/Nein/Enthaltung/Abwesend, the overwhelming majority.
+	"Normal": true,
+	// Supporters counted against a threshold, no Nein option.
+	"Quorum": true,
+}
+
+// IsHandledVoteType reports whether the formatters know how to render a vote of
+// this type. Callers skip anything else rather than publish it.
+//
+// This is an allowlist, and an empty type does not pass it. That is the point:
+// a type we have never seen is exactly the case where a lopsided tally is most
+// likely to be read wrongly, and refusing to post is recoverable in a way that
+// a misleading post about how parliament voted is not. Kanton Zürich still
+// serves a null type for attendance determinations (Anwesenheitsermittlung),
+// which are not political votes at all and must not be published as though they
+// were, and for the occasional genuine quorum vote.
+//
+// Cup-Abstimmung is knowingly excluded. It is a knockout round between more
+// than two proposals, and the source reports no aggregate counts for it, so
+// there is nothing correct to render yet.
+func IsHandledVoteType(voteType string) bool {
+	t := strings.TrimSpace(voteType)
+	if handledVoteTypes[t] {
+		return true
 	}
-	return cleaned
+	return strings.HasPrefix(t, auswahlTypePrefix)
+}
+
+// joinTypeLabel appends the type label to base with a separator, handling the
+// case where base is empty and the label has to stand alone.
+func joinTypeLabel(base, voteType string) string {
+	label := TypeLabel(voteType)
+	switch {
+	case label == "":
+		return base
+	case base == "":
+		return label
+	default:
+		return base + " · " + label
+	}
 }
 
 // GroupLink returns the URL a post about this group should point at: the page
@@ -308,15 +454,21 @@ func LinkLine(group []votes.Vote) string {
 // of our own numbering, and it is the only distinguishing fact the source
 // offers. It appears only where it can help: multi-vote groups from a source
 // with second-precision timestamps.
+//
+// The vote type is appended after all of that, when it is one worth naming (see
+// typeLabels). Unlike the clock it is not there to tell two votes apart, but to
+// stop a quorum vote's lopsided tally reading as near-unanimous agreement.
 func SubVoteLabel(v votes.Vote, index, groupSize int) string {
-	if title := CleanVoteSubtitle(v.Subtitle); title != "" {
-		return title
+	base := CleanVoteSubtitle(v.Subtitle)
+	if base == "" {
+		base = fmt.Sprintf("Abstimmung %d", index+1)
+		// The clock disambiguates our own ordinals, so it belongs only on them.
+		// A source that titles its votes has already done the distinguishing.
+		if groupSize > 1 && hasClockTime(v.Date) {
+			base += fmt.Sprintf(" (%s)", v.Date.Format("15:04"))
+		}
 	}
-	label := fmt.Sprintf("Abstimmung %d", index+1)
-	if groupSize > 1 && hasClockTime(v.Date) {
-		label += fmt.Sprintf(" (%s)", v.Date.Format("15:04"))
-	}
-	return label
+	return joinTypeLabel(base, v.Type)
 }
 
 // hasClockTime reports whether a date carries a time of day worth showing.

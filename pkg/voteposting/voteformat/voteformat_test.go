@@ -1,6 +1,7 @@
 package voteformat
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -316,25 +317,81 @@ func TestSingleVoteSubtitlePrefix(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
+		voteType string
 		expected string
 	}{
-		{"Dringlicherklärung with number", "2026_0244 Dringlicherklärung", "Dringlicherklärung"},
-		{"Schlussabstimmung returns empty", "2026_0244 Schlussabstimmung", ""},
-		{"empty returns empty", "", ""},
-		{"whitespace-only after strip returns empty", "  ", ""},
-		{"no number prefix", "Dringlicherklärung", "Dringlicherklärung"},
-		{"Schlussabstimmung case insensitive", "schlussabstimmung über Ziffer 1", ""},
+		{"Dringlicherklärung with number", "2026_0244 Dringlicherklärung", "", "Dringlicherklärung"},
+		{"Schlussabstimmung returns empty", "2026_0244 Schlussabstimmung", "", ""},
+		{"empty returns empty", "", "", ""},
+		{"whitespace-only after strip returns empty", "  ", "", ""},
+		{"no number prefix", "Dringlicherklärung", "", "Dringlicherklärung"},
+		{"Schlussabstimmung case insensitive", "schlussabstimmung über Ziffer 1", "", ""},
+
+		// A lone quorum vote has no sibling to make its tally look unusual, so
+		// the label has to stand on its own when the source gives no subtitle —
+		// which is exactly the Kanton Zürich case.
+		{"quorum without subtitle stands alone", "", "Quorum", "Quorum"},
+		{"quorum joins an existing subtitle", "Dringlicherklärung", "Quorum", "Dringlicherklärung · Quorum"},
+		{"quorum survives a suppressed Schlussabstimmung", "Schlussabstimmung", "Quorum", "Quorum"},
+		{"Normal adds nothing", "Dringlicherklärung", "Normal", "Dringlicherklärung"},
+		{"unknown type adds nothing", "Dringlicherklärung", "Offen", "Dringlicherklärung"},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := SingleVoteSubtitlePrefix(tt.input)
+			got := SingleVoteSubtitlePrefix(votes.Vote{Subtitle: tt.input, Type: tt.voteType})
 			if got != tt.expected {
-				t.Errorf("SingleVoteSubtitlePrefix(%q) = %q, want %q", tt.input, got, tt.expected)
+				t.Errorf("SingleVoteSubtitlePrefix(%q, type=%q) = %q, want %q",
+					tt.input, tt.voteType, got, tt.expected)
 			}
 		})
 	}
 }
+
+func TestSubVoteLabelNamesTheVoteType(t *testing.T) {
+	// The real 15.06.2026 Glattalbahn group: five votes, second-precision
+	// timestamps, no per-vote title of any kind.
+	at1130 := time.Date(2026, 6, 15, 11, 30, 0, 0, time.UTC)
+
+	tests := []struct {
+		name      string
+		subtitle  string
+		voteType  string
+		date      time.Time
+		index     int
+		groupSize int
+		expected  string
+	}{
+		// Kanton Zürich publishes no per-vote title, so the ordinal carries the
+		// label — and, in a group, the sitting time as well.
+		{"quorum on the ordinal fallback", "", "Quorum", time.Time{}, 1, 1, "Abstimmung 2 · Quorum"},
+		{"normal keeps the bare ordinal", "", "Normal", time.Time{}, 0, 1, "Abstimmung 1"},
+		{"missing type keeps the bare ordinal", "", "", time.Time{}, 0, 1, "Abstimmung 1"},
+
+		// The clock disambiguates the ordinal; the type qualifies the whole
+		// label. Both appear, in that order.
+		{"clock and type together", "", "Quorum", at1130, 1, 5, "Abstimmung 2 (11:30) · Quorum"},
+		{"clock without a type", "", "Normal", at1130, 0, 5, "Abstimmung 1 (11:30)"},
+
+		// Stadt Zürich titles each vote and uses the same type vocabulary. A
+		// source-supplied title needs no clock, but still takes the type.
+		{"quorum after a subtitle", "Schlussabstimmung", "Quorum", at1130, 0, 5, "Schlussabstimmung · Quorum"},
+
+		{"Auswahl types stay unlabelled", "", "Gleichgerichtete Anträge mit 4 Optionen", time.Time{}, 0, 1, "Abstimmung 1"},
+		{"cup is labelled", "", "Cup-Abstimmung", time.Time{}, 2, 1, "Abstimmung 3 · Cup-Abstimmung"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := votes.Vote{Subtitle: tt.subtitle, Type: tt.voteType, Date: tt.date}
+			if got := SubVoteLabel(v, tt.index, tt.groupSize); got != tt.expected {
+				t.Errorf("SubVoteLabel(subtitle=%q, type=%q, %d, %d) = %q, want %q",
+					tt.subtitle, tt.voteType, tt.index, tt.groupSize, got, tt.expected)
+			}
+		})
+	}
+}
+
 func intPtr(n int) *int { return &n }
 
 func TestIsDecisionConsistent(t *testing.T) {
@@ -515,5 +572,98 @@ func TestSubVoteLabel(t *testing.T) {
 				t.Errorf("SubVoteLabel = %q, want %q", got, tc.want)
 			}
 		})
+	}
+}
+
+// A vote type nobody has taught the formatters about must not reach a reader.
+// The cases below are the real ones: Kanton Zürich serves a null type for
+// attendance determinations and for the occasional genuine quorum vote, and
+// both look like ordinary lopsided Ja/Nein tallies once rendered.
+func TestIsHandledVoteType(t *testing.T) {
+	tests := []struct {
+		voteType string
+		want     bool
+	}{
+		{"Normal", true},
+		{"Quorum", true},
+		// The option count varies, so the whole family matches by prefix.
+		{"Gleichgerichtete Anträge mit 3 Optionen", true},
+		{"Gleichgerichtete Anträge mit 4 Optionen", true},
+
+		// An unset type is the case this guard exists for: it is what Kanton
+		// Zürich still serves for Anwesenheitsermittlung, which is a roll call
+		// and not a vote at all.
+		{"", false},
+		{"   ", false},
+		// Knockout rounds between more than two proposals. The source reports no
+		// aggregate counts for these, so there is nothing correct to render.
+		{"Cup-Abstimmung", false},
+		{"Something The Source Just Invented", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.voteType, func(t *testing.T) {
+			if got := IsHandledVoteType(tt.voteType); got != tt.want {
+				t.Errorf("IsHandledVoteType(%q) = %v, want %v", tt.voteType, got, tt.want)
+			}
+		})
+	}
+}
+
+// A quorum vote counts supporters against a threshold and has no Nein to cast.
+// Rendering it in the standard four-part line prints "0 Nein | 0 Enth." for
+// positions nobody could take, and files every non-supporter under "Abwesend" —
+// which the official record shows is wrong for most of them.
+func TestQuorumCountsDropThePhantomColumns(t *testing.T) {
+	// The real 15.06.2026 Ausgabenbremse: 129 supporters, 51 not.
+	quorum := VoteCounts{
+		Ja: ptr(129), Nein: ptr(0), Enthaltung: ptr(0), Abwesend: ptr(51),
+		Type: "Quorum",
+	}
+	const want = "📊 129 Zustimmungen | 51 ohne Zustimmung"
+
+	// Both platforms render the same line: it is already shorter than the
+	// standard one, so there is nothing to abbreviate for the tight limit.
+	if got := FormatVoteCounts(quorum); got != want {
+		t.Errorf("FormatVoteCounts() = %q, want %q", got, want)
+	}
+	if got := FormatVoteCountsLong(quorum); got != want {
+		t.Errorf("FormatVoteCountsLong() = %q, want %q", got, want)
+	}
+
+	// An ordinary vote is untouched, including one that happens to be lopsided.
+	normal := VoteCounts{
+		Ja: ptr(130), Nein: ptr(44), Enthaltung: ptr(0), Abwesend: ptr(6),
+		Type: "Normal",
+	}
+	if got := FormatVoteCounts(normal); !strings.Contains(got, "Nein") {
+		t.Errorf("FormatVoteCounts() dropped Nein from a Normal vote: %q", got)
+	}
+}
+
+// The faction table has the same problem as the summary line, and is fixed at
+// the aggregation step so the image renderer inherits it.
+func TestQuorumFraktionColumns(t *testing.T) {
+	v := votes.Vote{
+		Type: "Quorum",
+		MemberVotes: []votes.MemberVote{
+			{Fraktion: "SVP", Choice: "Abwesend"},
+			{Fraktion: "SVP", Choice: "Abwesend"},
+			{Fraktion: "SP", Choice: "Ja"},
+		},
+	}
+
+	got := FormatFraktionBreakdown(AggregateFraktionCounts(v))
+
+	if !strings.Contains(got, "(Zust./ohne)") {
+		t.Errorf("expected the two-column quorum header, got:\n%s", got)
+	}
+	for _, unwanted := range []string{"Nein", "Enth", "Abw"} {
+		if strings.Contains(got, unwanted) {
+			t.Errorf("quorum breakdown still names %q:\n%s", unwanted, got)
+		}
+	}
+	if !strings.Contains(got, "SVP 0/2") || !strings.Contains(got, "SP 1/0") {
+		t.Errorf("unexpected counts:\n%s", got)
 	}
 }

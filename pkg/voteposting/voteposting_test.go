@@ -75,14 +75,15 @@ func (p *MockPlatform) Name() string {
 	return "Mock"
 }
 
-// Test helper to create test group with a non-zero Ja count so they pass
-// validateGroupCounts (all-zero counts are treated as unsupported vote types).
+// Test helper to create a test group that passes validateGroup: a handled vote
+// type, and a non-zero Ja count (all-zero counts are treated as unsupported).
 func createVote(guid, affair, date string) votes.Vote {
 	ja := 100
 	return votes.Vote{
 		SourceID:     guid,
 		Jurisdiction: testJurisdiction,
 		Date:         testfixtures.MustDate(date),
+		Type:         "Normal",
 		Yes:          &ja,
 		Affair:       votes.Affair{Number: affair},
 	}
@@ -383,5 +384,45 @@ func TestPostToPlatform_MultipleGroupsAllVotesLogged(t *testing.T) {
 		if !voteLog.IsPosted(voteID) {
 			t.Errorf("Expected %s to be logged as posted", voteID)
 		}
+	}
+}
+
+// TestPostToPlatform_UnhandledVoteTypeIsNotPosted covers the case that made this
+// guard necessary: Kanton Zürich publishes Anwesenheitsermittlung (a roll call)
+// and the occasional quorum vote with no type at all, and both render as a
+// perfectly ordinary lopsided Ja/Nein tally. Nothing about the counts gives them
+// away, so only the type can stop them.
+//
+// The unhandled group must be skipped rather than posted, the handled one must
+// still go out, and the run must end in an error so the failure is noticed
+// instead of passing silently.
+func TestPostToPlatform_UnhandledVoteTypeIsNotPosted(t *testing.T) {
+	defer setupTempDir(t)()
+
+	unhandled := createVote("anwesenheit-1", "2026/1", "2026-06-15")
+	unhandled.Type = "" // what the source actually serves for a roll call
+
+	handled := createVote("normal-1", "2026/2", "2026-06-15")
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	groups := [][]votes.Vote{{unhandled}, {handled}}
+
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
+
+	if !errors.Is(err, ErrUnsupportedVoteType) {
+		t.Fatalf("expected ErrUnsupportedVoteType so the run fails visibly, got %v", err)
+	}
+	if posted != 1 {
+		t.Errorf("expected the handled group to still post, got posted=%d", posted)
+	}
+	// The skipped vote must not be logged, or it would never be retried once the
+	// type becomes renderable.
+	if voteLog.IsPosted("anwesenheit-1") {
+		t.Error("skipped vote was marked as posted; it would never be revisited")
+	}
+	if !voteLog.IsPosted("normal-1") {
+		t.Error("handled vote was not marked as posted")
 	}
 }

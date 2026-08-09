@@ -417,12 +417,12 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 
 	// Single-vote non-Schlussabstimmung: prepend the Abstimmungsgegenstand inline
 	// in front of the title (e.g. "Dringlicherklärung: Motion von …").
-	if prefix := voteformat.SingleVoteSubtitlePrefix(v.Subtitle); prefix != "" {
+	if prefix := voteformat.SingleVoteSubtitlePrefix(*v); prefix != "" {
 		title = prefix + ": " + title
 	}
 
 	// Calculate available space for title: reserve space for verdict + stats + party breakdown
-	fraktionCounts := voteformat.AggregateFraktionCounts(v.MemberVotes)
+	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 	numParties := len(fraktionCounts)
 	verdictHeight := lineHeight(fonts.verdict)
 	statsHeight := lineHeight(fonts.statNum) + lineHeight(fonts.statLabel)
@@ -455,10 +455,11 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 
 	// Verdict first: large centered emoji above the title
 	var verdictText string
-	if !isAuswahl {
-		verdictText = voteformat.GetVoteResultEmoji(v.Decision)
-	} else {
+	switch {
+	case isAuswahl:
 		verdictText = strings.ToUpper(v.Decision)
+	case voteformat.HasVerdict(*v):
+		verdictText = voteformat.GetVoteResultEmoji(v.Decision)
 	}
 	if img != nil {
 		drawCenteredText(img, fonts.verdict, fonts.emojiVerdict, cur.baseline(fonts.verdict), verdictText, bg)
@@ -843,10 +844,11 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 	// Verdict: large centered
 	isAuswahl := voteformat.IsAuswahlVote(counts)
 	var verdictText string
-	if !isAuswahl {
-		verdictText = voteformat.GetVoteResultEmoji(v.Decision)
-	} else {
+	switch {
+	case isAuswahl:
 		verdictText = strings.ToUpper(v.Decision)
+	case voteformat.HasVerdict(*v):
+		verdictText = voteformat.GetVoteResultEmoji(v.Decision)
 	}
 	if img != nil {
 		drawCenteredText(img, fonts.verdictSm, fonts.emojiVerdict, cur.baseline(fonts.verdictSm), verdictText, bg)
@@ -876,7 +878,7 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 	cur.gap(fonts.partyBold, 1.25)
 
 	// Party breakdown table
-	fraktionCounts := voteformat.AggregateFraktionCounts(v.MemberVotes)
+	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
 }
 
@@ -889,10 +891,14 @@ func formatSummaryLine(index int, vote votes.Vote, groupSize int) (string, bool)
 
 	counts := voteformat.CountsOf(vote)
 	var verdict string
-	if voteformat.IsAuswahlVote(counts) {
+	switch {
+	case voteformat.IsAuswahlVote(counts):
 		verdict = auswahlResultLabel(vote.Decision)
-	} else {
+	case voteformat.HasVerdict(vote):
 		verdict = voteformat.GetVoteResultEmoji(vote.Decision)
+	}
+	if verdict == "" {
+		return fmt.Sprintf("%d. %s", index, subtitle), true
 	}
 	return fmt.Sprintf("%d. %s %s", index, verdict, subtitle), true
 }

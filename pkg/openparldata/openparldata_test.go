@@ -137,42 +137,49 @@ func TestFetchRecent(t *testing.T) {
 	}
 }
 
-// Kanton Zürich never populates `decision`, so it has to come from the counts —
-// and in the same vocabulary the formatters already render.
-func TestDecisionIsDerivedWhenAbsent(t *testing.T) {
+// Kanton Zürich populates `decision` for no vote at all, and we do not invent
+// one. Deriving it from Ja vs Nein looks safe and is not: in a quorum vote Nein
+// is structurally always 0, so every one of them derived as "Ja", including
+// those that fell short of their threshold. The posts now state the counts and
+// no outcome.
+func TestDecisionIsNeverDerived(t *testing.T) {
 	c, _ := newTestClient(t)
 
 	vs, err := c.FetchRecent(12)
 	if err != nil {
 		t.Fatalf("FetchRecent: %v", err)
 	}
-
-	var accepted, rejected int
-	for _, v := range vs {
-		switch v.Decision {
-		case "Ja":
-			accepted++
-			if *v.Yes <= *v.No {
-				t.Errorf("%s derived Ja with Yes=%d No=%d", v.SourceID, *v.Yes, *v.No)
-			}
-		case "Nein":
-			rejected++
-			if *v.Yes > *v.No {
-				t.Errorf("%s derived Nein with Yes=%d No=%d", v.SourceID, *v.Yes, *v.No)
-			}
-		default:
-			t.Errorf("%s has no decision", v.SourceID)
-		}
-
-		// A derived decision must never contradict the counts, or the
-		// consistency check in PrepareVoteGroups aborts the whole run.
-		if !voteformat.IsDecisionConsistent(v.Decision, v.Yes, v.No) {
-			t.Errorf("%s: derived decision %q contradicts its counts", v.SourceID, v.Decision)
-		}
+	if len(vs) == 0 {
+		t.Fatal("fixture returned no votes")
 	}
 
-	if accepted == 0 || rejected == 0 {
-		t.Errorf("fixture should cover both outcomes, got %d accepted and %d rejected", accepted, rejected)
+	for _, v := range vs {
+		if v.Decision != "" {
+			t.Errorf("%s: decision %q was invented; the source reports none",
+				v.SourceID, v.Decision)
+		}
+		// An absent decision must not read as a rejection downstream.
+		if voteformat.HasVerdict(v) {
+			t.Errorf("%s: renders a verdict despite the source reporting none", v.SourceID)
+		}
+		// An empty decision must never trip the consistency gate, which would
+		// abort the whole run rather than merely omit an outcome line.
+		if !voteformat.IsDecisionConsistent(v.Decision, v.Yes, v.No) {
+			t.Errorf("%s: empty decision treated as inconsistent with its counts", v.SourceID)
+		}
+	}
+}
+
+// A source that does report an outcome keeps it — this is the Stadt Zürich path
+// through the same adapter, and the reason decision() is not simply dropped.
+func TestReportedDecisionIsPreserved(t *testing.T) {
+	for _, reported := range []string{"Ja", "Nein", "Auswahl A"} {
+		t.Run(reported, func(t *testing.T) {
+			got := decision(votingDTO{Decision: &reported})
+			if got != reported {
+				t.Errorf("decision() = %q, want %q", got, reported)
+			}
+		})
 	}
 }
 
@@ -240,7 +247,7 @@ func TestEnrichmentPopulatesFraktionBreakdown(t *testing.T) {
 		t.Fatalf("got %d member votes, want 180 (the full chamber)", len(v.MemberVotes))
 	}
 
-	counts := voteformat.AggregateFraktionCounts(v.MemberVotes)
+	counts := voteformat.AggregateFraktionCounts(v)
 
 	want := map[string]map[string]int{
 		"SVP": {"Ja": 44, "Nein": 0, "Abwesend": 3},
@@ -510,9 +517,9 @@ func TestFraktionBreakdownMatchesTheParisAdapter(t *testing.T) {
 	}
 
 	parisOut := voteformat.FormatFraktionBreakdown(
-		voteformat.AggregateFraktionCounts(zurichapi.ToMemberVotes(paris)))
+		voteformat.AggregateFraktionCounts(votes.Vote{MemberVotes: zurichapi.ToMemberVotes(paris)}))
 	opdOut := voteformat.FormatFraktionBreakdown(
-		voteformat.AggregateFraktionCounts(opdMembers))
+		voteformat.AggregateFraktionCounts(votes.Vote{MemberVotes: opdMembers}))
 
 	if parisOut != opdOut {
 		t.Errorf("the same vote must render identically whichever source produced it:\n--- PARIS ---\n%s\n--- OpenParlData ---\n%s", parisOut, opdOut)
