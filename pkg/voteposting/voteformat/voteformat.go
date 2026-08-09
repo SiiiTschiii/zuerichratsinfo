@@ -289,22 +289,39 @@ func LinkLine(group []votes.Vote) string {
 	return out
 }
 
-// SubVoteLabel names one vote inside a multi-vote group, so the entries of a
-// thread can be told apart.
+// SubVoteLabel names one vote inside a group, so the entries of a thread or the
+// cards of a carousel can be told apart. groupSize is how many votes the group
+// holds; a group of one needs no such label beyond whatever title it has.
 //
 // Stadt Zürich titles each vote ("Schlussabstimmung über die Dispositivziffer
 // 1"). Kanton Zürich publishes no per-vote title at all — its title field
-// repeats the business matter — so those groups fall back to an ordinal, which
-// says only that these are different votes.
+// repeats the business matter — so those groups fall back to an ordinal plus
+// the time the vote was taken: "Abstimmung 2 (14:32)".
 //
-// An earlier version used the time of day instead, on the theory that it would
-// help a reader find the vote in the official archive. It did not: the link
-// already lands on the right place, and a clock reading is no more meaningful
-// to a reader than a number. Better to be plainly uninformative than to look
-// informative and not be.
-func SubVoteLabel(v votes.Vote, index int) string {
+// The time was tried once before and removed, on the grounds that the link
+// already lands in the right place and a clock reading means no more to a
+// reader than a number does. What that judgement did not account for is how the
+// ordinals look in practice: five cards reading "Abstimmung 1" to "Abstimmung 5"
+// above near-identical tallies give a reader nothing to hold on to, and no way
+// to tell whether the near-identical numbers are five votes or one repeated.
+// The clock is thin, but it is a fact about the sitting rather than an artefact
+// of our own numbering, and it is the only distinguishing fact the source
+// offers. It appears only where it can help: multi-vote groups from a source
+// with second-precision timestamps.
+func SubVoteLabel(v votes.Vote, index, groupSize int) string {
 	if title := CleanVoteSubtitle(v.Subtitle); title != "" {
 		return title
 	}
-	return fmt.Sprintf("Abstimmung %d", index+1)
+	label := fmt.Sprintf("Abstimmung %d", index+1)
+	if groupSize > 1 && hasClockTime(v.Date) {
+		label += fmt.Sprintf(" (%s)", v.Date.Format("15:04"))
+	}
+	return label
+}
+
+// hasClockTime reports whether a date carries a time of day worth showing.
+// PARIS supplies sitting dates at midnight, so printing "(00:00)" there would
+// invent a precision the source does not have.
+func hasClockTime(t time.Time) bool {
+	return !t.IsZero() && (t.Hour() != 0 || t.Minute() != 0)
 }

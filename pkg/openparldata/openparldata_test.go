@@ -740,3 +740,35 @@ func TestVotesWithoutAnAffairDoNotGroupTogether(t *testing.T) {
 		t.Errorf("got %d group(s), want 2 — these votes have nothing to do with each other", len(groups))
 	}
 }
+
+// The affair title and the voting title are filled in by different people and
+// disagree on typography. Comparing them literally let «Verkehr» through as a
+// subtitle against "Verkehr" as the headline, so every sub-vote of the
+// Richtplan post reprinted the headline it already carried.
+func TestSubtitleIsDroppedDespiteDifferentQuoteStyle(t *testing.T) {
+	const affair = `Teilrevision 2022 des kantonalen Richtplans, Kapitel 4 "Verkehr"`
+
+	tests := []struct {
+		name   string
+		voting string
+		want   bool
+	}{
+		{"identical", affair, true},
+		{"guillemets against straight quotes", `Teilrevision 2022 des kantonalen Richtplans, Kapitel 4 «Verkehr»`, true},
+		{"curly against straight quotes", `Teilrevision 2022 des kantonalen Richtplans, Kapitel 4 “Verkehr”`, true},
+		{"extra whitespace", `Teilrevision 2022 des  kantonalen Richtplans, Kapitel 4 "Verkehr" `, true},
+		{"different case", `teilrevision 2022 des kantonalen richtplans, kapitel 4 "verkehr"`, true},
+		// A genuinely different subtitle must survive: dropping it would lose
+		// the only per-vote information the source ever supplies.
+		{"different chapter", `Teilrevision 2022 des kantonalen Richtplans, Kapitel 5 "Verkehr"`, false},
+		{"real subtitle", "Schlussabstimmung", false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := sameHeadline(tc.voting, affair); got != tc.want {
+				t.Errorf("sameHeadline(%q, affair) = %v, want %v", tc.voting, got, tc.want)
+			}
+		})
+	}
+}

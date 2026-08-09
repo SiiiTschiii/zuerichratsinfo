@@ -456,3 +456,64 @@ func TestPostHeadline(t *testing.T) {
 		})
 	}
 }
+
+func TestSubVoteLabel(t *testing.T) {
+	timed := time.Date(2026, 6, 29, 14, 32, 11, 0, time.UTC)
+	midnight := time.Date(2026, 6, 29, 0, 0, 0, 0, time.UTC)
+
+	tests := []struct {
+		name      string
+		vote      votes.Vote
+		index     int
+		groupSize int
+		want      string
+	}{
+		{
+			name:      "a titled vote uses its own title",
+			vote:      votes.Vote{Subtitle: "Schlussabstimmung", Date: timed},
+			index:     1,
+			groupSize: 3,
+			want:      "Schlussabstimmung",
+		},
+		{
+			name:      "an untitled vote in a group falls back to ordinal and time",
+			vote:      votes.Vote{Date: timed},
+			index:     1,
+			groupSize: 3,
+			want:      "Abstimmung 2 (14:32)",
+		},
+		{
+			// A lone vote is already named by the post's own headline; a clock
+			// reading next to it distinguishes it from nothing.
+			name:      "a group of one gets no time",
+			vote:      votes.Vote{Date: timed},
+			index:     0,
+			groupSize: 1,
+			want:      "Abstimmung 1",
+		},
+		{
+			// PARIS dates are midnight. Printing "(00:00)" would claim a
+			// precision the source never supplied.
+			name:      "a date without a clock time gets no time",
+			vote:      votes.Vote{Date: midnight},
+			index:     0,
+			groupSize: 4,
+			want:      "Abstimmung 1",
+		},
+		{
+			name:      "a zero date gets no time",
+			vote:      votes.Vote{},
+			index:     2,
+			groupSize: 4,
+			want:      "Abstimmung 3",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := SubVoteLabel(tc.vote, tc.index, tc.groupSize); got != tc.want {
+				t.Errorf("SubVoteLabel = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
