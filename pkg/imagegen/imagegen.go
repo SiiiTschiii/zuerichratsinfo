@@ -769,7 +769,7 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 
 	var summaryLines []string
 	for i, sv := range group {
-		line, ok := formatSummaryLine(i+1, sv)
+		line, ok := formatSummaryLine(i+1, sv, len(group))
 		if ok {
 			summaryLines = append(summaryLines, wrapText(fonts.small, line, maxTextWidth)...)
 		}
@@ -824,7 +824,7 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 
 	// Heading naming this vote within the group. Without it the cards of a
 	// group whose source publishes no per-vote title are indistinguishable.
-	if sub := voteformat.SubVoteLabel(*v, idx-1); sub != "" {
+	if sub := voteformat.SubVoteLabel(*v, idx-1, total); sub != "" {
 		maxTextWidth := imgWidth - 2*padding
 		subLines := wrapText(fonts.boldHeading, sub, maxTextWidth)
 		for _, line := range subLines {
@@ -880,8 +880,8 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
 }
 
-func formatSummaryLine(index int, vote votes.Vote) (string, bool) {
-	subtitle := voteformat.SubVoteLabel(vote, index-1)
+func formatSummaryLine(index int, vote votes.Vote, groupSize int) (string, bool) {
+	subtitle := voteformat.SubVoteLabel(vote, index-1, groupSize)
 	if subtitle == "" {
 		return "", false
 	}

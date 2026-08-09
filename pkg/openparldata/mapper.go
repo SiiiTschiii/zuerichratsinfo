@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
@@ -43,7 +44,7 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 		// Some bodies title the voting but not the affair.
 		title, subtitle = subtitle, ""
 	}
-	if subtitle == title {
+	if sameHeadline(subtitle, title) {
 		// Kanton Zürich has no agenda-item concept and repeats the affair title
 		// as the voting title. A subtitle that restates the headline adds
 		// nothing and would render as "X: X".
@@ -104,8 +105,8 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 	if u := deref(a.URLExternalDe); u != "" {
 		v.Affair.URL = u
 
-		// A post covering several votes links to the parliament's own Geschäft
-		// page rather than to any one vote.
+		// Every post about this business links to the parliament's own Geschäft
+		// page, whether it covers one vote or five.
 		//
 		// It is not the page where a tally is easiest to read — that is the
 		// vote's own archive page, and this one gives the totals in prose with
@@ -115,12 +116,15 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 		// documents, committee reports and every step of the business. A link
 		// that rots or points at a third party in a year cannot be repaired
 		// after the fact; a number that takes one more click can.
+		//
+		// Both URLs get it, because the reason applies to both. What the source
+		// gives a single vote is a zh.recapp.ch deep link keyed by two opaque
+		// uuids — precisely the third-party link the paragraph above rules out,
+		// and letting a group of one keep it would make durability depend on how
+		// many votes a sitting happened to hold. The recapp link stays available
+		// through Affair and the source; it just does not go in a post.
 		v.GroupURL = u
-
-		// A vote the source gave no page of its own still needs somewhere to go.
-		if v.SourceURL == "" {
-			v.SourceURL = u
-		}
+		v.SourceURL = u
 	}
 }
 
@@ -134,6 +138,42 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 // eight unrelated votes belong together.
 //
 // Without an affair the vote is its own group, so it falls back to its own id.
+// sameHeadline reports whether the voting title merely restates the affair
+// title, so the subtitle can be dropped.
+//
+// The comparison cannot be literal. The two strings come from different fields
+// filled in by different people, and they disagree on typography: a Richtplan
+// item read «Verkehr» as the voting title against "Verkehr" as the affair
+// title. Nothing downstream can recover from that — the subtitle survives, and
+// every sub-vote in the post reprints the headline it already carries.
+func sameHeadline(a, b string) bool {
+	return normalizeHeadline(a) == normalizeHeadline(b)
+}
+
+// normalizeHeadline strips the differences that are typography rather than
+// meaning: quotation marks of every shape, case, and runs of whitespace.
+func normalizeHeadline(s string) string {
+	var b strings.Builder
+	b.Grow(len(s))
+	lastWasSpace := false
+	for _, r := range s {
+		switch r {
+		case '«', '»', '‹', '›', '"', '„', '“', '”', '\'', '‘', '’':
+			continue
+		}
+		if unicode.IsSpace(r) {
+			if !lastWasSpace {
+				b.WriteRune(' ')
+				lastWasSpace = true
+			}
+			continue
+		}
+		lastWasSpace = false
+		b.WriteRune(unicode.ToLower(r))
+	}
+	return strings.TrimSpace(b.String())
+}
+
 func groupingNumber(affairID *int64, externalID string) string {
 	if affairID != nil {
 		return fmt.Sprintf("#%d", *affairID)

@@ -91,9 +91,14 @@ jobs:
           ZURICH_BLUESKY_PASSWORD: ${{ secrets.ZURICH_BLUESKY_PASSWORD }}
           ZURICH_IG_USER_ID: ${{ secrets.ZURICH_IG_USER_ID }}
           ZURICH_IG_ACCESS_TOKEN: ${{ secrets.ZURICH_IG_ACCESS_TOKEN }}
-          ZURICH_GITHUB_TOKEN: ${{ github.token }}
-          ZURICH_IG_REPO_OWNER: SiiiTschiii
-          ZURICH_IG_REPO_NAME: zuerichratsinfo
+          # Instagram fetches carousel images by URL, so they are published to
+          # this repo's gh-pages branch first. The hosting repo is not a choice:
+          # github.token can only write to the repo the workflow runs in, so a
+          # variable pointing anywhere else would 403. Passing the context
+          # through means a fork hosts its own images and there is no setting to
+          # get wrong.
+          ZURICH_IMAGE_HOST_REPO: ${{ github.repository }}
+          ZURICH_IMAGE_HOST_TOKEN: ${{ github.token }}
           ZURICH_X_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_X_MAX_POSTS_PER_RUN }}
           ZURICH_X_MAX_CHARS: ${{ vars.ZURICH_X_MAX_CHARS }}
           ZURICH_BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_BLUESKY_MAX_POSTS_PER_RUN }}

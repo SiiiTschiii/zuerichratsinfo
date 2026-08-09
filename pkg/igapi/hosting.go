@@ -28,6 +28,18 @@ type ImageHoster struct {
 	apiBase     string // overridable for testing
 }
 
+// ParseRepo splits an "owner/name" repository reference, the shape GitHub uses
+// everywhere including GITHUB_REPOSITORY. Configuration carries the repo as one
+// value so it can be passed through from ${{ github.repository }} unmodified;
+// this is where it becomes the two fields the API needs.
+func ParseRepo(repo string) (owner, name string, err error) {
+	owner, name, found := strings.Cut(repo, "/")
+	if !found || owner == "" || name == "" || strings.Contains(name, "/") {
+		return "", "", fmt.Errorf("malformed repository %q: want \"owner/name\"", repo)
+	}
+	return owner, name, nil
+}
+
 // NewImageHoster creates a new GitHub Pages image hoster.
 func NewImageHoster(repoOwner, repoName, githubToken string) *ImageHoster {
 	return &ImageHoster{

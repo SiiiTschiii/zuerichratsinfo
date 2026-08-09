@@ -187,7 +187,7 @@ AL 0/5/0/0
 🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
 Dringlicherklärung
-✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Ku…
+✅ Angenommen: Motion von Dr. Jonas Keller (SP), Pascal Lamprecht (SP) und Tanja Maag (AL) vom 27.05.2026: Erhalt kleinerer bis mittlerer Konzertlokale sowie Unterstützung der Kulturanbie…
 
 👇 Details im Thread
 
@@ -280,7 +280,7 @@ Die Mitte 7/0/0/0
 [post 0]
 🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unteri…
+✅ Angenommen: Schlussabstimmung über die bereinigten Dispositivziffern zum Objektkredit von 350 Millionen Franken für das Projekt Erweiterung und Neugestaltung des Hauptbahnhofs Zürich mit unterirdischer D…
 
 👇 Details im Thread
 
@@ -387,11 +387,10 @@ GLP 14/0/0/2
 Die Mitte 12/0/0/1
 AL 0/2/0/1
 
-[post 2]
 ❌ Schlussabstimmung
 📊 40 Ja | 70 Nein | 5 Enthaltung | 10 Abwesend
 
-[post 3]
+[post 2]
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SP 0/30/2/2
 FDP 0/20/0/2
@@ -861,7 +860,6 @@ AL 0/3/0/1
 ✅ Ziffer J
 📊 89 Ja | 21 Nein | 5 Enthaltung | 10 Abwesend
 
-[post 2]
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SP 34/0/2/2
 GLP 21/0/0/2
@@ -1565,7 +1563,6 @@ AL 0/0/0/1
 [post 1]
 📊 83 Ja | 87 Nein | 0 Enthaltung | 10 Abwesend
 
-[post 2]
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SVP 44/0/0/3
 SP 0/35/0/1
@@ -1576,8 +1573,7 @@ Die Mitte 11/0/0/1
 EVP 0/6/0/1
 AL 0/5/0/0
 
-[post 3]
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4&segmentUid=e815525c-45ef-475e-a2db-3f644e0f0c0b
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
@@ -1601,7 +1597,7 @@ Die Mitte 11/0/0/1
 EVP 0/6/0/1
 AL 0/5/0/0
 
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4&segmentUid=e815525c-45ef-475e-a2db-3f644e0f0c0b
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
 Source: OpenParlData.ch
 
 ---- Bluesky ----
@@ -1626,10 +1622,9 @@ Die Mitte 11/0/0/1
 EVP 0/6/0/1
 AL 0/5/0/0
 
-[post 3]
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4&segmentUid=e815525c-45ef-475e-a2db-3f644e0f0c0b
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:5 ByteEnd:134} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4&segmentUid=e815525c-45ef-475e-a2db-3f644e0f0c0b DID: Tag:}]}
+[facet] {Index:{ByteStart:164 ByteEnd:250} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e DID: Tag:}]}
 
 ---- Instagram ----
 [images] 1
@@ -1651,7 +1646,7 @@ Die Mitte 11/0/0/1
 EVP 0/6/0/1
 AL 0/5/0/0
 
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4&segmentUid=e815525c-45ef-475e-a2db-3f644e0f0c0b
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
 Source: OpenParlData.ch
 
 ################ FIXTURE kantonsrat-multi-vote ################
@@ -1665,7 +1660,7 @@ Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Obj
 👇 Details im Thread
 
 [post 1]
-✅ Abstimmung 1
+✅ Abstimmung 1 (11:29)
 📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1679,7 +1674,7 @@ EVP 7/0/0/0
 AL 5/0/0/0
 
 [post 2]
-✅ Abstimmung 2
+✅ Abstimmung 2 (11:30)
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1693,7 +1688,7 @@ EVP 7/0/0/0
 AL 5/0/0/0
 
 [post 3]
-✅ Abstimmung 3
+✅ Abstimmung 3 (11:40)
 📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1707,7 +1702,7 @@ EVP 7/0/0/0
 AL 5/0/0/0
 
 [post 4]
-✅ Abstimmung 4
+✅ Abstimmung 4 (11:41)
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1721,7 +1716,7 @@ EVP 7/0/0/0
 AL 5/0/0/0
 
 [post 5]
-✅ Abstimmung 5
+✅ Abstimmung 5 (11:42)
 📊 128 Ja | 0 Nein | 0 Enthaltung | 52 Abwesend
 
 [post 6]
@@ -1747,7 +1742,7 @@ Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Obj
 👇 Details im Thread
 
 [post 1]
-✅ Abstimmung 1
+✅ Abstimmung 1 (11:29)
 📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1760,7 +1755,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 2
+✅ Abstimmung 2 (11:30)
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1773,7 +1768,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 3
+✅ Abstimmung 3 (11:40)
 📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1786,7 +1781,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 4
+✅ Abstimmung 4 (11:41)
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1799,7 +1794,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 5
+✅ Abstimmung 5 (11:42)
 📊 128 Ja | 0 Nein | 0 Enthaltung | 52 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1824,7 +1819,7 @@ Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Obj
 👇 Details im Thread
 
 [post 1]
-✅ Abstimmung 1
+✅ Abstimmung 1 (11:29)
 📊 130 Ja | 44 Nein | 0 Enth. | 6 Abw.
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1837,7 +1832,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 2
+✅ Abstimmung 2 (11:30)
 📊 129 Ja | 0 Nein | 0 Enth. | 51 Abw.
 
 [post 2]
@@ -1851,7 +1846,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 3
+✅ Abstimmung 3 (11:40)
 📊 129 Ja | 44 Nein | 0 Enth. | 7 Abw.
 
 [post 3]
@@ -1865,7 +1860,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 4
+✅ Abstimmung 4 (11:41)
 📊 129 Ja | 0 Nein | 0 Enth. | 51 Abw.
 
 [post 4]
@@ -1879,7 +1874,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Abstimmung 5
+✅ Abstimmung 5 (11:42)
 📊 128 Ja | 0 Nein | 0 Enth. | 52 Abw.
 
 [post 5]
@@ -1904,7 +1899,7 @@ Source: OpenParlData.ch
 
 Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
 
-✅ Angenommen: Abstimmung 1
+✅ Angenommen: Abstimmung 1 (11:29)
 📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1917,7 +1912,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Angenommen: Abstimmung 2
+✅ Angenommen: Abstimmung 2 (11:30)
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1930,7 +1925,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Angenommen: Abstimmung 3
+✅ Angenommen: Abstimmung 3 (11:40)
 📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1943,7 +1938,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Angenommen: Abstimmung 4
+✅ Angenommen: Abstimmung 4 (11:41)
 📊 129 Ja | 0 Nein | 0 Enthaltung | 51 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1956,7 +1951,7 @@ Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
 
-✅ Angenommen: Abstimmung 5
+✅ Angenommen: Abstimmung 5 (11:42)
 📊 128 Ja | 0 Nein | 0 Enthaltung | 52 Abwesend
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
@@ -1978,7 +1973,7 @@ Source: OpenParlData.ch
 [post 0]
 🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Trak…
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum…
 
 👇 Details im Thread
 
@@ -2128,7 +2123,7 @@ AL 0/3/0/1
 [post 0]
 🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes…
+Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes Trakt…
 
 👇 Details im Thread
 
@@ -2253,7 +2248,6 @@ AL 0/3/0/1
 ✅ Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
 📊 89 Ja | 21 Nein | 5 Enthaltung | 10 Abwesend
 
-[post 11]
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SP 34/0/2/2
 GLP 21/0/0/2

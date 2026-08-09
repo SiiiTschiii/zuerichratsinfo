@@ -308,8 +308,10 @@ func TestFormatVoteThread_RootTruncation(t *testing.T) {
 	thread := FormatVoteThread(group, nil, DefaultMaxChars)
 
 	root := thread[0].Text
-	if len(root) > DefaultMaxChars {
-		t.Errorf("root post exceeds DefaultMaxChars: %d > %d", len(root), DefaultMaxChars)
+	// Weighted length, not bytes: bytes are not what X enforces, and charging
+	// them made every umlaut and emoji shrink the usable post.
+	if got := weightedLen(root); got > DefaultMaxChars {
+		t.Errorf("root post exceeds DefaultMaxChars: %d > %d", got, DefaultMaxChars)
 	}
 	if !strings.Contains(root, "…") {
 		t.Error("truncated root should contain '…'")
@@ -356,10 +358,10 @@ func TestFormatVoteThread_SingleVoteWithFraktion(t *testing.T) {
 		t.Error("header should be (Ja/Nein/Enth/Abw)")
 	}
 
-	// Verify each post is within char limit
+	// Verify each post is within char limit, by X's counting rather than bytes
 	for i, post := range thread {
-		if len(post.Text) > DefaultMaxChars {
-			t.Errorf("post %d exceeds %d chars: %d\n%s", i, DefaultMaxChars, len(post.Text), post.Text)
+		if got := weightedLen(post.Text); got > DefaultMaxChars {
+			t.Errorf("post %d exceeds %d chars: %d\n%s", i, DefaultMaxChars, got, post.Text)
 		}
 	}
 }
@@ -377,10 +379,10 @@ func TestFormatVoteThread_MultiVoteWithFraktion(t *testing.T) {
 		t.Errorf("expected 2 Fraktion breakdown entries, got %d", count)
 	}
 
-	// Verify each post is within char limit
+	// Verify each post is within char limit, by X's counting rather than bytes
 	for i, post := range thread {
-		if len(post.Text) > DefaultMaxChars {
-			t.Errorf("post %d exceeds %d chars: %d\n%s", i, DefaultMaxChars, len(post.Text), post.Text)
+		if got := weightedLen(post.Text); got > DefaultMaxChars {
+			t.Errorf("post %d exceeds %d chars: %d\n%s", i, DefaultMaxChars, got, post.Text)
 		}
 	}
 }

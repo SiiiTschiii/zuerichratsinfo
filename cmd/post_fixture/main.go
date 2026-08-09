@@ -4,11 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
 	"sort"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
@@ -36,10 +37,12 @@ type platformCredentials struct {
 
 	igUserID      string
 	igAccessToken string
-	githubToken   string
-	igRepoOwner   string
-	igRepoName    string
-	igEnabled     bool
+	// The GitHub repo whose gh-pages branch serves the carousel images, and a
+	// write token for it. Not Instagram credentials — see main.go.
+	imageHostOwner string
+	imageHostName  string
+	imageHostToken string
+	igEnabled      bool
 }
 
 func main() {
@@ -47,10 +50,16 @@ func main() {
 	platform := flag.String("platform", "all", "platform to post to: x, bluesky, instagram, or all")
 	contactsFile := flag.String("contacts", filepath.Join("data", "contacts_test.yaml"), "contacts YAML file (default: test contacts with fake handles)")
 	maxChars := flag.Int("x-max-chars", x.DefaultMaxChars, "per-post character limit for X (280 for free accounts, 2000 for Premium)")
+	channelKey := flag.String("channel", config.DefaultChannelKey, fmt.Sprintf("channel whose credentials to use %v", config.ChannelKeys()))
 	flag.Parse()
 
-	creds := loadCredentials()
-	validatePlatform(*platform, creds)
+	channel, err := config.LookupChannel(*channelKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	creds := loadCredentials(channel)
+	validatePlatform(*platform, creds, channel)
 
 	// Load contacts for tagging
 	contactMapper, err := contacts.LoadContacts(*contactsFile)
@@ -93,31 +102,39 @@ func main() {
 	}
 }
 
-// loadCredentials reads platform credentials from environment variables.
-func loadCredentials() platformCredentials {
+// loadCredentials reads platform credentials for a channel, using the same
+// channel-scoped names the scheduled run reads: ZURICH_X_API_KEY and so on.
+func loadCredentials(channel config.Channel) platformCredentials {
 	c := platformCredentials{
-		xAPIKey:       os.Getenv("X_API_KEY"),
-		xAPISecret:    os.Getenv("X_API_SECRET"),
-		xAccessToken:  os.Getenv("X_ACCESS_TOKEN"),
-		xAccessSecret: os.Getenv("X_ACCESS_SECRET"),
-		bskyHandle:    os.Getenv("BLUESKY_HANDLE"),
-		bskyPassword:  os.Getenv("BLUESKY_PASSWORD"),
-		igUserID:      os.Getenv("IG_USER_ID"),
-		igAccessToken: os.Getenv("IG_ACCESS_TOKEN"),
-		githubToken:   os.Getenv("GITHUB_TOKEN"),
-		igRepoOwner:   os.Getenv("IG_REPO_OWNER"),
-		igRepoName:    os.Getenv("IG_REPO_NAME"),
+		xAPIKey:       channel.Env("X_API_KEY"),
+		xAPISecret:    channel.Env("X_API_SECRET"),
+		xAccessToken:  channel.Env("X_ACCESS_TOKEN"),
+		xAccessSecret: channel.Env("X_ACCESS_SECRET"),
+		bskyHandle:    channel.Env("BLUESKY_HANDLE"),
+		bskyPassword:  channel.Env("BLUESKY_PASSWORD"),
+		igUserID:       channel.Env("IG_USER_ID"),
+		igAccessToken:  channel.Env("IG_ACCESS_TOKEN"),
+		imageHostToken: channel.Env("IMAGE_HOST_TOKEN"),
 	}
 	c.xEnabled = c.xAPIKey != "" && c.xAPISecret != "" && c.xAccessToken != "" && c.xAccessSecret != ""
 	c.bskyEnabled = c.bskyHandle != "" && c.bskyPassword != ""
-	c.igEnabled = c.igUserID != "" && c.igAccessToken != "" && c.githubToken != "" && c.igRepoOwner != "" && c.igRepoName != ""
+
+	if repo := channel.Env("IMAGE_HOST_REPO"); repo != "" {
+		owner, name, err := igapi.ParseRepo(repo)
+		if err != nil {
+			log.Fatalf("%sIMAGE_HOST_REPO: %v", channel.EnvPrefix(), err)
+		}
+		c.imageHostOwner, c.imageHostName = owner, name
+	}
+	c.igEnabled = c.igUserID != "" && c.igAccessToken != "" && c.imageHostToken != "" && c.imageHostOwner != ""
 	return c
 }
 
 // validatePlatform checks that the selected platform has valid credentials configured.
-func validatePlatform(platform string, creds platformCredentials) {
+func validatePlatform(platform string, creds platformCredentials, channel config.Channel) {
+	prefix := channel.EnvPrefix()
 	if !creds.xEnabled && !creds.bskyEnabled && platform != "instagram" {
-		log.Fatal("No platform credentials configured. Set X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET for X, or BLUESKY_HANDLE/BLUESKY_PASSWORD for Bluesky. Instagram (stub mode without IG_USER_ID/IG_ACCESS_TOKEN, or real mode with credentials) is available via -platform instagram.")
+		log.Fatalf("No platform credentials configured for channel %q. Set %[2]sX_API_KEY/%[2]sX_API_SECRET/%[2]sX_ACCESS_TOKEN/%[2]sX_ACCESS_SECRET for X, or %[2]sBLUESKY_HANDLE/%[2]sBLUESKY_PASSWORD for Bluesky. Instagram (stub mode without %[2]sIG_USER_ID/%[2]sIG_ACCESS_TOKEN/%[2]sIMAGE_HOST_REPO/%[2]sIMAGE_HOST_TOKEN, or real mode with them) is available via -platform instagram.", channel.Key, prefix)
 	}
 
 	if platform == "x" && !creds.xEnabled {
@@ -177,8 +194,8 @@ func buildPlatforms(platform string, creds platformCredentials, contactMapper *c
 		var igPlat *instagram.InstagramPlatform
 		if creds.igEnabled {
 			igPlat = instagram.NewInstagramPlatformWithCredentials(
-				creds.igUserID, creds.igAccessToken, creds.githubToken,
-				creds.igRepoOwner, creds.igRepoName, 100,
+				creds.igUserID, creds.igAccessToken, creds.imageHostToken,
+				creds.imageHostOwner, creds.imageHostName, 100,
 			)
 			fmt.Println("📷 Instagram: real mode (credentials configured)")
 		} else {

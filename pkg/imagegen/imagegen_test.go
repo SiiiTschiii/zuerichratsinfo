@@ -181,7 +181,7 @@ func TestFormatSummaryLine_NumberingAndTruncation(t *testing.T) {
 		Decision: "angenommen",
 	}
 
-	line, ok := formatSummaryLine(2, vote)
+	line, ok := formatSummaryLine(2, vote, 3)
 	if !ok {
 		t.Fatal("expected summary line to be generated")
 	}
@@ -204,7 +204,7 @@ func TestFormatSummaryLine_AuswahlVote(t *testing.T) {
 		ChoiceC:  intPtr(40),
 	}
 
-	line, ok := formatSummaryLine(2, vote)
+	line, ok := formatSummaryLine(2, vote, 3)
 	if !ok {
 		t.Fatal("expected summary line to be generated")
 	}

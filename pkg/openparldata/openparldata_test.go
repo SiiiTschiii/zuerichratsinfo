@@ -124,6 +124,8 @@ func TestFetchRecent(t *testing.T) {
 	if *v.Yes != 167 || *v.No != 0 || *v.Abstention != 0 || *v.Absent != 13 {
 		t.Errorf("totals = %d/%d/%d/%d", *v.Yes, *v.No, *v.Abstention, *v.Absent)
 	}
+	// What the listing carries. The affair call replaces it with the canton's
+	// own permalink before anything is posted — see TestAffairURLReplacesBothURLs.
 	if !strings.HasPrefix(v.SourceURL, "https://zh.recapp.ch/") {
 		t.Errorf("SourceURL = %q", v.SourceURL)
 	}
@@ -302,6 +304,35 @@ func TestAffairNumberIsFetched(t *testing.T) {
 	}
 	if got := groups[0][0].Affair.URL; !strings.Contains(got, "kantonsrat.zh.ch") {
 		t.Errorf("Affair.URL = %q", got)
+	}
+}
+
+// Posts link to the canton's own Geschäft permalink whether they cover one vote
+// or five. The listing gives each vote a zh.recapp.ch deep link keyed by two
+// opaque uuids; publishing that for a group of one would make the durability of
+// a link depend on how many votes a sitting happened to hold.
+func TestAffairURLReplacesBothURLs(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(12)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	if !strings.Contains(vs[0].SourceURL, "zh.recapp.ch") {
+		t.Fatalf("precondition: listing SourceURL = %q, want the recapp link", vs[0].SourceURL)
+	}
+
+	groups, err := c.GroupByAffair(vs[:1])
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+
+	got := groups[0][0]
+	if !strings.Contains(got.SourceURL, "kantonsrat.zh.ch") {
+		t.Errorf("SourceURL = %q, want the Geschäft permalink", got.SourceURL)
+	}
+	if got.GroupURL != got.SourceURL {
+		t.Errorf("GroupURL = %q, SourceURL = %q; both should be the Geschäft permalink", got.GroupURL, got.SourceURL)
 	}
 }
 
@@ -707,5 +738,37 @@ func TestVotesWithoutAnAffairDoNotGroupTogether(t *testing.T) {
 
 	if groups := votes.GroupByAffairAndDate([]votes.Vote{a, b}); len(groups) != 2 {
 		t.Errorf("got %d group(s), want 2 — these votes have nothing to do with each other", len(groups))
+	}
+}
+
+// The affair title and the voting title are filled in by different people and
+// disagree on typography. Comparing them literally let «Verkehr» through as a
+// subtitle against "Verkehr" as the headline, so every sub-vote of the
+// Richtplan post reprinted the headline it already carried.
+func TestSubtitleIsDroppedDespiteDifferentQuoteStyle(t *testing.T) {
+	const affair = `Teilrevision 2022 des kantonalen Richtplans, Kapitel 4 "Verkehr"`
+
+	tests := []struct {
+		name   string
+		voting string
+		want   bool
+	}{
+		{"identical", affair, true},
+		{"guillemets against straight quotes", `Teilrevision 2022 des kantonalen Richtplans, Kapitel 4 «Verkehr»`, true},
+		{"curly against straight quotes", `Teilrevision 2022 des kantonalen Richtplans, Kapitel 4 “Verkehr”`, true},
+		{"extra whitespace", `Teilrevision 2022 des  kantonalen Richtplans, Kapitel 4 "Verkehr" `, true},
+		{"different case", `teilrevision 2022 des kantonalen richtplans, kapitel 4 "verkehr"`, true},
+		// A genuinely different subtitle must survive: dropping it would lose
+		// the only per-vote information the source ever supplies.
+		{"different chapter", `Teilrevision 2022 des kantonalen Richtplans, Kapitel 5 "Verkehr"`, false},
+		{"real subtitle", "Schlussabstimmung", false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := sameHeadline(tc.voting, affair); got != tc.want {
+				t.Errorf("sameHeadline(%q, affair) = %v, want %v", tc.voting, got, tc.want)
+			}
+		})
 	}
 }

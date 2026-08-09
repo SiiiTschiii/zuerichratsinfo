@@ -87,24 +87,27 @@ Store the Page token as `IG_ACCESS_TOKEN` in **GitHub → Settings → Secrets a
 
 ### Environment Variables
 
-| Variable          | Description                                                  |
-| ----------------- | ------------------------------------------------------------ |
-| `IG_USER_ID`      | Instagram professional account ID                            |
-| `IG_ACCESS_TOKEN` | Long-lived Page access token                                 |
-| `GITHUB_TOKEN`    | GitHub token with Contents read/write permission (see below) |
-| `IG_REPO_OWNER`   | GitHub repository owner (for image hosting)                  |
-| `IG_REPO_NAME`    | GitHub repository name (for image hosting)                   |
+Names are channel-scoped — the `zurich` channel reads `ZURICH_IG_USER_ID`.
 
-### GitHub Token
+| Variable                     | Description                                                    |
+| ---------------------------- | -------------------------------------------------------------- |
+| `<CHANNEL>_IG_USER_ID`       | Instagram professional account ID                              |
+| `<CHANNEL>_IG_ACCESS_TOKEN`  | Long-lived Page access token                                   |
+| `<CHANNEL>_IMAGE_HOST_REPO`  | `owner/name` of the repo serving the images (see below)        |
+| `<CHANNEL>_IMAGE_HOST_TOKEN` | Token with Contents read/write on that repo                    |
 
-The `GITHUB_TOKEN` needs **Contents read/write** permission on the repository to upload and clean up images on the `gh-pages` branch.
+### Image Hosting
 
-- **GitHub Actions**: The automatic `GITHUB_TOKEN` works out of the box.
-- **Local testing**: Create a **fine-grained Personal Access Token** at https://github.com/settings/tokens:
+The last two are a **GitHub** repo and a **GitHub** token, despite serving Instagram: the Graph API fetches carousel images by URL rather than accepting an upload, so each image is committed to the `gh-pages` branch of `IMAGE_HOST_REPO`, published by GitHub Pages, and deleted once the post is live.
+
+`IMAGE_HOST_TOKEN` needs **Contents read/write** on that repo.
+
+- **GitHub Actions**: the workflow passes `${{ github.repository }}` and `${{ github.token }}`. Nothing to configure — and nothing that *can* be configured, since `github.token` only has write access to the repo the workflow runs in.
+- **Local testing**: create a **fine-grained Personal Access Token** at https://github.com/settings/tokens:
   1. Click **Generate new token** → **Fine-grained token**
-  2. Set **Repository access** to **Only select repositories** → select your repo
+  2. Set **Repository access** to **Only select repositories** → select the hosting repo
   3. Under **Permissions → Repository permissions**, set **Contents** to **Read and write**
-  4. Generate and export as `GITHUB_TOKEN`
+  4. Generate and set as `<CHANNEL>_IMAGE_HOST_TOKEN`
 
 ## API Flow
 
