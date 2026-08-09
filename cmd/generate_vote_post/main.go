@@ -28,6 +28,11 @@ func main() {
 	fetchLimit := flag.Int("fetch", 35, "number of individual votes to fetch from the source")
 	platform := flag.String("platform", "", "platform to preview: x, bluesky, instagram (default: all)")
 	jurisdictionKey := flag.String("jurisdiction", "zurich-city", "jurisdiction to preview")
+	// The limit decides where the title is cut and where the thread breaks, so
+	// previewing at a different one than the account posts at answers a
+	// question nobody asked. Defaults to the free-tier 280; the live accounts
+	// run at ZURICH_X_MAX_CHARS, so pass that value to see what they would say.
+	maxChars := flag.Int("x-max-chars", x.DefaultMaxChars, "per-post character limit for X (280 free, 2000 Premium)")
 	flag.Parse()
 
 	showX := *platform == "" || strings.EqualFold(*platform, "x")
@@ -76,7 +81,9 @@ func main() {
 	}
 
 	if showX {
-		preview("X/Twitter", votelog.PlatformX, x.NewXPlatform("", "", "", "", contactMapper, *numVotes))
+		xPlatform := x.NewXPlatform("", "", "", "", contactMapper, *numVotes)
+		xPlatform.SetMaxChars(*maxChars)
+		preview("X/Twitter", votelog.PlatformX, xPlatform)
 	}
 	if showBluesky {
 		preview("Bluesky", votelog.PlatformBluesky, bluesky.NewBlueskyPlatform("", "", *numVotes, contactMapper))

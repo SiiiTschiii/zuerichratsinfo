@@ -41,10 +41,18 @@ cp .env.example .env
 
 # Edit .env and add your credentials. Platform variables are prefixed with the
 # channel key — the set of accounts they belong to.
-ZURICH_X_API_KEY=your_api_key_here
-ZURICH_X_API_SECRET=your_api_secret_here
-ZURICH_X_ACCESS_TOKEN=your_access_token_here
-ZURICH_X_ACCESS_SECRET=your_access_secret_here
+export ZURICH_X_API_KEY=your_api_key_here
+export ZURICH_X_API_SECRET=your_api_secret_here
+export ZURICH_X_ACCESS_TOKEN=your_access_token_here
+export ZURICH_X_ACCESS_SECRET=your_access_secret_here
+```
+
+Nothing in the program reads `.env` — the bot reads the environment, and the
+file is a shell script you source. Keep the `export` on every line, or `go run`
+starts with none of these set:
+
+```bash
+source .env
 ```
 
 **Important**: Never commit your `.env` file to git! It's already in `.gitignore`.
@@ -154,7 +162,10 @@ E2E tests post real content to test accounts on X and Bluesky. They verify the f
 **Setup (one-time):**
 
 1. Create test accounts on X and Bluesky (use obscure names, set to private/protected)
-2. Fill in `.env.test` with the test account credentials
+2. Fill in `.env.test` with the test account credentials, using the same
+   channel-prefixed names as `.env.example` (`ZURICH_X_API_KEY`, …). Every
+   command below resolves credentials through the channel, so unprefixed names
+   are not read anywhere.
 3. Edit `data/contacts_test.yaml` — replace placeholder handles with your test account handles
 
 **Post fixtures to test accounts:**
@@ -165,6 +176,9 @@ source .env.test
 # Post a single fixture to one platform
 go run cmd/post_fixture/main.go --fixture=single-vote-angenommen --platform=x
 go run cmd/post_fixture/main.go --fixture=multi-vote-group --platform=bluesky
+
+# Both chambers side by side — the check that a reader can tell them apart
+go run cmd/post_fixture/main.go --fixture=kantonsrat-vote --platform=bluesky
 
 # Post all fixtures to all platforms
 go run cmd/post_fixture/main.go --fixture=all
@@ -182,7 +196,7 @@ go run cmd/cleanup_posts/main.go --platform=bluesky
 
 ```bash
 source .env.test
-JURISDICTION_ZURICH_CITY_ENABLED=true SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go
+JURISDICTION_ZURICH_CITY_ENABLED=true JURISDICTION_ZURICH_CANTON_ENABLED=true SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go
 ```
 
 No jurisdiction posts unless its `JURISDICTION_<KEY>_ENABLED` variable is `true`, so the switch has to be set here too.
@@ -191,7 +205,7 @@ No jurisdiction posts unless its `JURISDICTION_<KEY>_ENABLED` variable is `true`
 
 1. `go test ./...` — automated unit tests, including the golden snapshot below
 2. `source .env.test && go run cmd/post_fixture/main.go --fixture=all` — manual fixture verification
-3. `source .env.test && JURISDICTION_ZURICH_CITY_ENABLED=true SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go` — manual live vote verification
+3. `source .env.test && JURISDICTION_ZURICH_CITY_ENABLED=true JURISDICTION_ZURICH_CANTON_ENABLED=true SKIP_VOTE_LOG=true MAX_VOTES_TO_CHECK=5 go run main.go` — manual live vote verification
 
 ### Golden Snapshot
 

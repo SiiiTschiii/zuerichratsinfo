@@ -44,6 +44,30 @@ func Channels() []Channel {
 	return out
 }
 
+// DefaultChannelKey is the channel the local tools use unless told otherwise.
+const DefaultChannelKey = "zurich"
+
+// LookupChannel returns a configured channel by key. Local tools use it so they
+// resolve credentials the same way the scheduled run does, rather than reading
+// a second, unprefixed set of names.
+func LookupChannel(key string) (Channel, error) {
+	for _, c := range channels {
+		if c.Key == key {
+			return c, nil
+		}
+	}
+	return Channel{}, fmt.Errorf("unknown channel %q", key)
+}
+
+// ChannelKeys lists every configured channel key, in order.
+func ChannelKeys() []string {
+	keys := make([]string, 0, len(channels))
+	for _, c := range channels {
+		keys = append(keys, c.Key)
+	}
+	return keys
+}
+
 // Env reads a channel-scoped environment variable: Env("X_API_KEY") on the
 // "zurich" channel reads ZURICH_X_API_KEY.
 //
@@ -51,7 +75,13 @@ func Channels() []Channel {
 // missing a secret must come up empty rather than silently borrowing another
 // channel's credentials and posting to the wrong account.
 func (c Channel) Env(name string) string {
-	return os.Getenv(envKey(c.Key) + "_" + name)
+	return os.Getenv(c.EnvPrefix() + name)
+}
+
+// EnvPrefix is the prefix Env puts in front of every name, "ZURICH_" for the
+// "zurich" channel. Tools use it to name the variable they wanted in an error.
+func (c Channel) EnvPrefix() string {
+	return envKey(c.Key) + "_"
 }
 
 // EnvInt is Env for integer settings, returning fallback when unset or unparseable.

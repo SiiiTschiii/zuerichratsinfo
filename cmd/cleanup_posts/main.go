@@ -4,31 +4,37 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/xapi"
 )
 
 func main() {
 	platform := flag.String("platform", "all", "platform to clean: x, bluesky, or all")
+	channelKey := flag.String("channel", config.DefaultChannelKey, fmt.Sprintf("channel whose credentials to use %v", config.ChannelKeys()))
 	flag.Parse()
 
 	if *platform != "all" && *platform != "x" && *platform != "bluesky" {
 		log.Fatalf("Unknown platform %q — use x, bluesky, or all", *platform)
 	}
 
+	channel, err := config.LookupChannel(*channelKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// X cleanup
 	if *platform == "all" || *platform == "x" {
-		apiKey := os.Getenv("X_API_KEY")
-		apiSecret := os.Getenv("X_API_SECRET")
-		accessToken := os.Getenv("X_ACCESS_TOKEN")
-		accessSecret := os.Getenv("X_ACCESS_SECRET")
+		apiKey := channel.Env("X_API_KEY")
+		apiSecret := channel.Env("X_API_SECRET")
+		accessToken := channel.Env("X_ACCESS_TOKEN")
+		accessSecret := channel.Env("X_ACCESS_SECRET")
 
 		if apiKey == "" || apiSecret == "" || accessToken == "" || accessSecret == "" {
 			if *platform == "x" {
-				log.Fatal("X credentials required but not set")
+				log.Fatalf("X credentials required but not set (%[1]sX_API_KEY/%[1]sX_API_SECRET/%[1]sX_ACCESS_TOKEN/%[1]sX_ACCESS_SECRET)", channel.EnvPrefix())
 			}
 			fmt.Println("Skipping X (no credentials)")
 		} else {
@@ -38,12 +44,12 @@ func main() {
 
 	// Bluesky cleanup
 	if *platform == "all" || *platform == "bluesky" {
-		handle := os.Getenv("BLUESKY_HANDLE")
-		password := os.Getenv("BLUESKY_PASSWORD")
+		handle := channel.Env("BLUESKY_HANDLE")
+		password := channel.Env("BLUESKY_PASSWORD")
 
 		if handle == "" || password == "" {
 			if *platform == "bluesky" {
-				log.Fatal("Bluesky credentials required but not set")
+				log.Fatalf("Bluesky credentials required but not set (%[1]sBLUESKY_HANDLE/%[1]sBLUESKY_PASSWORD)", channel.EnvPrefix())
 			}
 			fmt.Println("Skipping Bluesky (no credentials)")
 		} else {

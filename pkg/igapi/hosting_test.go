@@ -10,6 +10,26 @@ import (
 	"testing"
 )
 
+func TestParseRepo(t *testing.T) {
+	// The valid case is what ${{ github.repository }} and GITHUB_REPOSITORY
+	// both hand over verbatim. Every rejected case is something a hand-written
+	// .env could hold, and each has to fail loudly: a half-parsed repo would
+	// upload images to the wrong place, or to nowhere with a green run.
+	owner, name, err := ParseRepo("SiiiTschiii/zuerichratsinfo")
+	if err != nil {
+		t.Fatalf("ParseRepo() unexpected error: %v", err)
+	}
+	if owner != "SiiiTschiii" || name != "zuerichratsinfo" {
+		t.Errorf("ParseRepo() = %q, %q, want %q, %q", owner, name, "SiiiTschiii", "zuerichratsinfo")
+	}
+
+	for _, bad := range []string{"", "zuerichratsinfo", "/zuerichratsinfo", "SiiiTschiii/", "a/b/c", "/"} {
+		if _, _, err := ParseRepo(bad); err == nil {
+			t.Errorf("ParseRepo(%q) = nil error, want error", bad)
+		}
+	}
+}
+
 func TestImageHoster_PagesBaseURL(t *testing.T) {
 	h := NewImageHoster("myorg", "myrepo", "token")
 	expected := "https://myorg.github.io/myrepo"
