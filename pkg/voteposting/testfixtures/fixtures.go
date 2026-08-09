@@ -464,9 +464,13 @@ func PostulatWithGrNrPrefix() []votes.Vote {
 // answers rather than one that gets checked once by eye and then drifts.
 //
 // It also captures how cantonal data differs: no agenda item (hence no
-// subtitle), a decision derived from the counts rather than reported, a
-// business number in the canton's DD/YYYY form, and links to two different
-// hosts.
+// subtitle), a decision derived from the counts rather than reported, and a
+// business number in the canton's DD/YYYY form.
+//
+// Both URLs are the Geschäft permalink, matching what the adapter produces: the
+// canton's own page is used for a single vote as well as a group, rather than
+// the zh.recapp.ch deep link the source supplies per vote. See
+// openparldata.applyAffair.
 func KantonsratVote() []votes.Vote {
 	const title = "Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich"
 
@@ -482,7 +486,7 @@ func KantonsratVote() []votes.Vote {
 		No:           intPtr(87),
 		Abstention:   intPtr(0),
 		Absent:       intPtr(10),
-		SourceURL:    "https://zh.recapp.ch/shareparl?agendaItemUid=82166c96-87f8-4fdb-8fd7-20af55278ec4&segmentUid=e815525c-45ef-475e-a2db-3f644e0f0c0b",
+		SourceURL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e",
 		// OpenParlData is CC BY 4.0; the credit is a licence obligation, so it
 		// must actually appear in the rendered post.
 		Attribution: "Source: OpenParlData.ch",

@@ -11,7 +11,7 @@ import (
 
 // DefaultMaxChars is the X post character limit.
 // Free-tier accounts are limited to 280 characters.
-// Premium accounts can post up to 2000 (override via X_MAX_CHARS env var).
+// Premium accounts can post up to 2000 (override via <CHANNEL>_X_MAX_CHARS).
 const DefaultMaxChars = 280
 
 // XPost holds the formatted text for a single post in an X thread
@@ -86,10 +86,10 @@ func buildRootPost(group []votes.Vote, title string, charLimit int) *XPost {
 	fullText := header + body + threadHint
 
 	// Truncate title if root exceeds limit (rare, only for very long titles)
-	if len(fullText) > charLimit {
-		overhead := len(header) + len(threadHint) + len("…")
+	if weightedLen(fullText) > charLimit {
+		overhead := weightedLen(header) + weightedLen(threadHint) + weightedLen("…")
 		if subtitlePrefix != "" {
-			overhead += len(subtitlePrefix) + 1 // +1 for "\n"
+			overhead += weightedLen(subtitlePrefix) + 1 // +1 for "\n"
 		}
 		available := charLimit - overhead
 		if len(group) == 1 {
@@ -102,7 +102,7 @@ func buildRootPost(group []votes.Vote, title string, charLimit int) *XPost {
 				resultEmoji := voteformat.GetVoteResultEmoji(vote.Decision)
 				result := voteformat.GetVoteResultText(vote.Decision)
 				prefix := fmt.Sprintf("%s %s: ", resultEmoji, result)
-				titleAvailable := available - len(prefix)
+				titleAvailable := available - weightedLen(prefix)
 				if titleAvailable > 0 {
 					title = truncateText(title, titleAvailable)
 				}
@@ -166,7 +166,7 @@ func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPos
 	currentLen := 0
 
 	for i, entry := range entries {
-		entryLen := len(entry)
+		entryLen := weightedLen(entry)
 		separatorLen := 0
 		if len(currentEntries) > 0 {
 			separatorLen = 2 // "\n\n" between entries
@@ -176,7 +176,7 @@ func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPos
 		// If this is the last entry, account for the link line too.
 		extraLen := 0
 		if i == len(entries)-1 {
-			extraLen = len(linkLine)
+			extraLen = weightedLen(linkLine)
 		}
 
 		if currentLen+separatorLen+entryLen+extraLen > charLimit && len(currentEntries) > 0 {
@@ -199,7 +199,7 @@ func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPos
 	// in its own reply so the URL is never truncated.
 	if len(currentEntries) > 0 {
 		body := strings.Join(currentEntries, "\n\n")
-		if len(body+linkLine) <= charLimit {
+		if weightedLen(body+linkLine) <= charLimit {
 			replies = append(replies, &XPost{Text: body + linkLine})
 		} else {
 			replies = append(replies, &XPost{Text: body})
@@ -210,13 +210,9 @@ func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPos
 	return replies
 }
 
-// truncateText truncates a string to fit within maxLen bytes, adding "…".
+// truncateText truncates a string to X's weighted length maxLen, adding "…".
+// Callers subtract the ellipsis from maxLen themselves.
 func truncateText(s string, maxLen int) string {
-	runes := []rune(s)
-	// Approximate: trim runes until byte length fits
-	for len(string(runes)) > maxLen && len(runes) > 0 {
-		runes = runes[:len(runes)-1]
-	}
-	truncated := strings.TrimRight(string(runes), " \n")
+	truncated := strings.TrimRight(truncateToWeighted(s, maxLen), " \n")
 	return truncated + "…"
 }

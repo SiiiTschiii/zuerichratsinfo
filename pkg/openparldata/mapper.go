@@ -104,8 +104,8 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 	if u := deref(a.URLExternalDe); u != "" {
 		v.Affair.URL = u
 
-		// A post covering several votes links to the parliament's own Geschäft
-		// page rather than to any one vote.
+		// Every post about this business links to the parliament's own Geschäft
+		// page, whether it covers one vote or five.
 		//
 		// It is not the page where a tally is easiest to read — that is the
 		// vote's own archive page, and this one gives the totals in prose with
@@ -115,12 +115,15 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 		// documents, committee reports and every step of the business. A link
 		// that rots or points at a third party in a year cannot be repaired
 		// after the fact; a number that takes one more click can.
+		//
+		// Both URLs get it, because the reason applies to both. What the source
+		// gives a single vote is a zh.recapp.ch deep link keyed by two opaque
+		// uuids — precisely the third-party link the paragraph above rules out,
+		// and letting a group of one keep it would make durability depend on how
+		// many votes a sitting happened to hold. The recapp link stays available
+		// through Affair and the source; it just does not go in a post.
 		v.GroupURL = u
-
-		// A vote the source gave no page of its own still needs somewhere to go.
-		if v.SourceURL == "" {
-			v.SourceURL = u
-		}
+		v.SourceURL = u
 	}
 }
 
