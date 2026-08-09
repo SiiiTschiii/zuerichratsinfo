@@ -27,7 +27,7 @@ We built it because a healthy democracy rests on two things that are easy to los
 
 Ein Civic-Tech-Bot, der Abstimmungsergebnisse aus den Zürcher Parlamenten auf Social Media teilt und die beteiligten Politikerinnen und Politiker markiert, anhand einer manuell gepflegten Zuordnung ihrer Accounts.
 
-Wir haben ihn gebaut, weil eine gesunde Demokratie auf zwei Dingen beruht, die leicht aus dem Blick geraten:
+Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei Dingen beruht, die leicht aus dem Blick geraten:
 
 - **Partizipation**: Bürgerinnen und Bürger, die die Entscheide, die sie betreffen, tatsächlich mitverfolgen und mitgestalten können.
 - **Rechenschaft**: was Politikerinnen und Politiker wirklich tun, vom Abstimmungsverhalten bis zu den Motionen, Postulaten und Petitionen, die sie mittragen, sichtbar dort, wo die Menschen ohnehin schon sind.
