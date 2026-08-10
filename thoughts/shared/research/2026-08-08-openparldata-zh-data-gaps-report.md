@@ -488,3 +488,58 @@ would restore it.
 
 Filed separately from #178, #179 and the Cup-Abstimmung issue, which cover the same
 importer but unrelated causes.
+
+---
+
+## Reply drafted for #179
+
+Written in German, matching the maintainer's own reply. The argument rests on a
+natural experiment inside one agenda item: on 15.06.2026 two binary and three
+quorum votes were taken within ten minutes, on the same members and the same
+hardware. The binary ones record 44 Nein presses as `n`; the quorum ones have no
+`n` bucket at all. Every voting id cited was re-checked against the live API.
+
+Vielen Dank für die Übersicht der harmonisierten Werte — das beantwortet die Frage nach der Dokumentation bereits.
+
+`absent` = "keine Stimme abgegeben" ist genau die Klarstellung, um die es uns ging. Damit lügt das Feld nicht, sondern unser Label: wir haben `absent` als "Abwesend" gerendert und damit eine physische Abwesenheit behauptet, die die Daten nicht hergeben. Das haben wir auf unserer Seite korrigiert. Insofern ist der Dokumentationsteil dieses Issues aus unserer Sicht erledigt.
+
+## Zum Vorschlag, "Nicht abgestimmt" auf `no` abzubilden
+
+Hier hätten wir einen Einwand — nicht als Widerspruch, sondern weil die Daten aus unserer Sicht eher gegen die Knopfdruck-Erklärung sprechen.
+
+Im selben Traktandum vom 15.06.2026 (`agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13`) liegen zwei binäre und drei Quorumsabstimmungen, innerhalb von rund zehn Minuten, mit denselben Mitgliedern und derselben Anlage:
+
+```bash
+curl -s "https://zh.recapp.ch/viewer/api/shareparl/segments?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&ios=false&language=de" \
+  | jq -r '.[] | select(.voting != null)
+      | [.voting.voting_uid[0:8], .votingScheme,
+         ([.voting.voting_data.individual_votes[].votesByResult | to_entries[] | {k:.key,n:(.value|length)}]
+          | group_by(.k) | map(.[0].k + "=" + (map(.n)|add|tostring)) | join(" "))] | @tsv'
+```
+
+```
+C73B20F8  binary  n=44 x=6  y=130
+1E159CE0  quorum        x=51 y=129
+D8C48612  binary  n=44 x=7  y=129
+A8D4D59E  quorum        x=51 y=129
+5D0CFBDB  quorum        x=52 y=128
+```
+
+Bei den binären Abstimmungen erfasst recapp 44 Nein-Stimmen als `n`. Bei den Quorumsabstimmungen gibt es **gar keinen `n`-Bucket**. Wenn die 46 "Nicht abgestimmt" tatsächlich Nein-Knopfdrücke wären, würden wir erwarten, dass sie ebenso als `n` erscheinen — dieselben Ratsmitglieder, dieselbe Sitzung, wenige Minuten später.
+
+Auffällig ist auch das `x`: bei den binären Abstimmungen 6 bzw. 7, was der Angabe "Nicht anwesend 6" im Protokoll entspricht. Bei den Quorumsabstimmungen 51 bzw. 52, also die 6 Abwesenden plus rund 45 weitere.
+
+Eine Erklärung, die ohne Knopfdruck auskommt: **der Kantonsrat ermittelt die Anwesenheit separat.** In den Daten finden sich dafür eigene Abstimmungen — `Anwesenheitsermittlung`, `Präsenzermittlung`, `Ermittlung der Anwesenden` (z. B. votings 104473, 104477, 103981, 103982, 102615). Damit weiss das System unabhängig von einer Abstimmung, wer anwesend ist, und kann sauber unterscheiden:
+
+- **Nicht anwesend** — nicht als anwesend registriert
+- **Nicht abgestimmt** — als anwesend registriert, aber keine Stimme erfasst
+
+Das wäre inhaltlich genau die Unterscheidung, die uns interessiert, und sie wäre nicht unsinnig, sondern die politisch relevante Information: bei einer Ausgabenbremse ist das Nicht-Mitstimmen der bewusste Akt.
+
+Falls das zutrifft, würde die Abbildung auf `no` behaupten, 46 Personen hätten dagegen gestimmt — aus unserer Sicht eine andere falsche Aussage statt einer Korrektur. `absent` mit der dokumentierten Bedeutung "keine Stimme abgegeben" trifft beide Gruppen korrekt, auch wenn es die Unterscheidung nicht abbildet.
+
+## Kein Blocker für uns
+
+Unabhängig davon, wie ihr euch entscheidet: wir sind auf beide Varianten vorbereitet. Bei Quorumsabstimmungen fassen wir `no` und `absent` als "ohne Zustimmung" zusammen, weil beides "hat nicht zugestimmt" bedeutet. Die Summe stimmt also in beiden Fällen, und niemand verschwindet aus dem Beitrag.
+
+Ein kleiner Hinweis am Rande, der zu #178 gehört: die oben erwähnten Anwesenheitsermittlungen haben aktuell `type_de: null`. Sie kommen als `voting_type: 5` ohne `votingScheme`, weshalb das neue Mapping sie nicht erfasst. Für uns sind gerade sie heikel, weil sie wie eine ganz normale, sehr einseitige Ja/Nein-Abstimmung aussehen, obwohl es gar keine Sachabstimmung ist.
