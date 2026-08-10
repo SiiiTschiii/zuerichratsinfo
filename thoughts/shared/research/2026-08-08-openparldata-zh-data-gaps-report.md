@@ -494,12 +494,15 @@ importer but unrelated causes.
 ## Reply drafted for #179
 
 Written in German, matching the maintainer's own reply, and in the first person
-singular — it is one person's project and it is filed under his own account. The
-argument rests on a natural experiment inside one agenda item: on 15.06.2026 two
-binary and three quorum votes were taken within ten minutes, on the same members
-and the same hardware. The binary ones record 44 Nein presses as `n`; the quorum
+singular — it is one person's project, filed under his own account. The argument
+rests on a natural experiment inside one agenda item: on 15.06.2026 two binary
+and three quorum votes were taken within ten minutes, on the same members and
+the same hardware. The binary ones record 44 Nein presses as `n`; the quorum
 ones have no `n` bucket at all. Every voting id cited was re-checked against the
 live API.
+
+It ends by proposing that the question go to the Kantonsrat rather than be
+settled by inference, and offers to send it or leave it to OpenParlData.
 
 Vielen Dank für die Übersicht der harmonisierten Werte — das beantwortet die Frage nach der Dokumentation bereits.
 
@@ -540,8 +543,67 @@ Das wäre inhaltlich genau die Unterscheidung, die mich interessiert, und sie w�
 
 Falls das zutrifft, würde die Abbildung auf `no` behaupten, 46 Personen hätten dagegen gestimmt — aus meiner Sicht eine andere falsche Aussage statt einer Korrektur. `absent` mit der dokumentierten Bedeutung "keine Stimme abgegeben" trifft beide Gruppen korrekt, auch wenn es die Unterscheidung nicht abbildet.
 
+## Vorschlag: beim Kantonsrat nachfragen
+
+Abschliessend klären lässt sich das aus den Daten allein nicht — beide Lesarten sind mit dem vereinbar, was recapp ausliefert. Bevor die Zuordnung geändert wird, würde ich deshalb vorschlagen, direkt bei der Quelle nachzufragen. Zwei Adressen bieten sich an:
+
+- **Parlamentsdienste Kantonsrat Zürich**, sekretariat@pd.zh.ch — sie betreiben die Abstimmungsanlage und können sagen, ob bei "Nicht abgestimmt" eine Taste betätigt wurde oder nicht.
+- **Open Government Data Kanton Zürich**, info@open.zh.ch — als zweite Anlaufstelle für die Publikationsseite.
+
+Eine entsprechende Anfrage habe ich bereits formuliert: nach der Bedeutung von "Nicht abgestimmt", nach der separaten Anwesenheitserfassung und danach, ob das erforderliche Quorum irgendwo dokumentiert ist. Ich schicke sie gerne ab und melde die Antwort hier zurück. Falls ihr es sinnvoller findet, dass die Anfrage von OpenParlData aus kommt — etwa weil ihr ohnehin Kontakt habt oder weil ähnliche Fälle auch andere Kantone betreffen — überlasse ich sie euch gerne. Sagt einfach kurz Bescheid, damit wir nicht doppelt anfragen.
+
 ## Kein Blocker für mich
 
 Unabhängig davon, wie ihr euch entscheidet: ich bin auf beide Varianten vorbereitet. Bei Quorumsabstimmungen fasse ich `no` und `absent` als "ohne Zustimmung" zusammen, weil beides "hat nicht zugestimmt" bedeutet. Die Summe stimmt also in beiden Fällen, und niemand verschwindet aus dem Beitrag.
 
 Ein kleiner Hinweis am Rande, der zu #178 gehört: die oben erwähnten Anwesenheitsermittlungen haben aktuell `type_de: null`. Sie kommen als `voting_type: 5` ohne `votingScheme`, weshalb das neue Mapping sie nicht erfasst. Für mich sind gerade sie heikel, weil sie wie eine ganz normale, sehr einseitige Ja/Nein-Abstimmung aussehen, obwohl es gar keine Sachabstimmung ist.
+
+---
+
+## Enquiry drafted for the Kantonsrat
+
+Only sent if the reply above does not persuade OpenParlData to ask first. Both
+addresses were taken from the official pages, not guessed:
+
+- `sekretariat@pd.zh.ch` — Parlamentsdienste Kantonsrat Zürich, from
+  <https://www.kantonsrat.zh.ch/kontakt/>. They run the voting system, so they
+  are the ones who can say whether a button was pressed.
+- `info@open.zh.ch` — Open Government Data Kanton Zürich, from
+  <https://www.zh.ch/de/politik-staat/opendata.html>. Suggested as cc rather
+  than primary: this is a question about parliamentary procedure that happens to
+  surface in data, not the other way round.
+
+Three questions, the third of which is worth as much to us as the first: whether
+a quorum threshold is documented anywhere, and whether reaching it is recorded.
+That is the missing piece that forced cantonal posts to drop the outcome line.
+
+**An:** sekretariat@pd.zh.ch (Parlamentsdienste Kantonsrat Zürich)
+**Cc:** info@open.zh.ch (Open Government Data Kanton Zürich)
+**Betreff:** Frage zur Auswertung von Quorumsabstimmungen: "Nicht abgestimmt" vs. "Nicht anwesend"
+
+---
+
+Sehr geehrte Damen und Herren
+
+Ich betreibe [zuerichratsinfo](https://github.com/SiiiTschiii/zuerichratsinfo), ein kleines nichtkommerzielles Projekt, das Abstimmungsergebnisse des Zürcher Gemeinderats und seit Kurzem auch des Kantonsrats öffentlich aufbereitet. Die Daten beziehe ich über OpenParlData.ch, das seinerseits auf Ihre Publikationen zurückgreift.
+
+Bei den Quorumsabstimmungen bin ich auf eine Frage gestossen, die ich nicht aus den Daten allein beantworten kann, und bei der ich lieber nachfrage, als etwas Falsches zu veröffentlichen.
+
+**Konkretes Beispiel:** Abstimmung vom 15. Juni 2026, 11:42 Uhr, Geschäft "Quorum ermitteln" zur Vorlage 6031 (Glattalbahn), Protokoll `VOTE-KRZH-20260615-114232-T007-00-0020554.pdf`. Der Kopf weist aus: Quorum 128, Nicht anwesend 6, Abgestimmt 128. In der Namensliste erscheinen drei Werte: "Quorum", "Nicht abgestimmt" und "Nicht anwesend". Bei 180 Sitzen entfallen damit 46 Mitglieder auf "Nicht abgestimmt".
+
+Meine Fragen:
+
+1. **Was bedeutet "Nicht abgestimmt" bei einer Quorumsabstimmung genau?** Wurde von diesen Mitgliedern eine Taste betätigt (z. B. Nein oder Enthaltung), oder bedeutet der Eintrag, dass sie als anwesend erfasst waren, aber keine Stimme abgegeben haben?
+
+2. **Wie kommt die Unterscheidung zu "Nicht anwesend" zustande?** Wird die Anwesenheit separat ermittelt — es finden sich in den Daten eigene Vorgänge wie "Anwesenheitsermittlung", "Präsenzermittlung" und "Ermittlung der Anwesenden" — und dient diese Erfassung als Grundlage für die Zuordnung?
+
+3. **Gibt es zu einer Quorumsabstimmung ein dokumentiertes Quorum**, also einen Schwellenwert, und wird irgendwo festgehalten, ob dieser erreicht wurde? Aus dem Protokoll geht die erforderliche Stimmenzahl nicht hervor, und sie dürfte je nach Verfahren unterschiedlich sein (Ausgabenbremse gegenüber vorläufiger Unterstützung einer Einzelinitiative).
+
+**Weshalb ich frage:** Bei OpenParlData wird derzeit erwogen, "Nicht abgestimmt" künftig als Nein-Stimme zu importieren, weil die heutige Zuordnung als "abwesend" ebenfalls unbefriedigend ist. Falls die betreffenden Mitglieder aber gar keine Taste betätigt haben, würde damit veröffentlicht, 46 Personen hätten gegen die Vorlage gestimmt — was etwas anderes wäre als das, was tatsächlich geschehen ist. Gerade bei einer Ausgabenbremse ist das Nicht-Mitstimmen ja eine bewusste Entscheidung und keine blosse Abwesenheit.
+
+Bis das geklärt ist, weise ich bei Quorumsabstimmungen nur die Zahl der Zustimmungen und die Zahl derjenigen ohne Zustimmung aus und verzichte auf eine Aussage darüber, ob die Vorlage angenommen wurde.
+
+Über eine kurze Rückmeldung würde ich mich sehr freuen. Selbstverständlich können Sie mich auch gerne an die zuständige Stelle weiterverweisen.
+
+Freundliche Grüsse
+Christof Gerber
