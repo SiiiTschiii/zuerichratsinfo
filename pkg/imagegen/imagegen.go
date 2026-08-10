@@ -486,10 +486,13 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	cur.gap(fonts.statNum, 0.75)
 
 	// Stats dashboard: large numbers with small labels in columns
-	if !isAuswahl {
-		drawStandardStatsDashboard(img, cur, counts, bg, fonts.statNum, fonts.statLabel)
-	} else {
+	switch {
+	case isAuswahl:
 		drawAuswahlStatsDashboard(img, cur, counts, bg, fonts.statNum, fonts.statLabel)
+	case voteformat.IsQuorumVote(counts):
+		drawQuorumStatsDashboard(img, cur, counts, bg, fonts.statNum, fonts.statLabel)
+	default:
+		drawStandardStatsDashboard(img, cur, counts, bg, fonts.statNum, fonts.statLabel)
 	}
 
 	cur.gap(fonts.statNum, 0.75)
@@ -518,6 +521,20 @@ func drawStandardStatsDashboard(img *image.RGBA, cur *layoutCursor, counts votef
 		{voteformat.FormatVoteCount(counts.Ja), "Ja"},
 		{voteformat.FormatVoteCount(counts.Nein), "Nein"},
 		{voteformat.FormatVoteCount(counts.Enthaltung), "Enth."},
+	}
+	drawStatColumns(img, cur, cols, bg, numFace, labelFace)
+}
+
+// drawQuorumStatsDashboard draws a quorum vote's two real numbers.
+//
+// The standard dashboard is actively misleading here. It shows Ja/Nein/Enth.
+// and omits Abwesend, so a quorum vote renders as "129 / 0 / 0" — the 51
+// members who did not support it vanish from the card entirely, and the two
+// zeros are positions no one could have taken.
+func drawQuorumStatsDashboard(img *image.RGBA, cur *layoutCursor, counts voteformat.VoteCounts, bg color.RGBA, numFace, labelFace font.Face) {
+	cols := []statCol{
+		{voteformat.FormatVoteCount(counts.Ja), "Zust."},
+		{voteformat.FormatVoteCount(counts.Abwesend), "ohne"},
 	}
 	drawStatColumns(img, cur, cols, bg, numFace, labelFace)
 }
@@ -863,10 +880,13 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 	cur.gap(fonts.statNum, 0.75)
 
 	// Stats dashboard
-	if !isAuswahl {
-		drawStandardStatsDashboard(img, cur, counts, bg, fonts.statNum, fonts.statLabel)
-	} else {
+	switch {
+	case isAuswahl:
 		drawAuswahlStatsDashboard(img, cur, counts, bg, fonts.statNum, fonts.statLabel)
+	case voteformat.IsQuorumVote(counts):
+		drawQuorumStatsDashboard(img, cur, counts, bg, fonts.statNum, fonts.statLabel)
+	default:
+		drawStandardStatsDashboard(img, cur, counts, bg, fonts.statNum, fonts.statLabel)
 	}
 
 	cur.gap(fonts.statNum, 0.75)

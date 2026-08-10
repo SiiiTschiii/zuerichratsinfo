@@ -170,6 +170,12 @@ func IsAuswahlVote(c VoteCounts) bool {
 // voteTypeQuorum is the value both sources publish for a quorum vote.
 const voteTypeQuorum = "Quorum"
 
+// IsQuorumVote reports whether these counts belong to a quorum vote, which is
+// counted and rendered differently everywhere it appears.
+func IsQuorumVote(c VoteCounts) bool {
+	return strings.TrimSpace(c.Type) == voteTypeQuorum && !IsAuswahlVote(c)
+}
+
 // formatQuorumCounts renders the summary line for a quorum vote, or "" when the
 // vote is not one.
 //
@@ -184,14 +190,27 @@ const voteTypeQuorum = "Quorum"
 // and the line is shorter than the standard one, so neither platform needs a
 // shortened variant.
 func formatQuorumCounts(c VoteCounts) string {
-	if strings.TrimSpace(c.Type) != voteTypeQuorum {
+	if !IsQuorumVote(c) {
 		return ""
 	}
-	if IsAuswahlVote(c) {
-		return ""
+	// Nein is folded in rather than read as a third column. Today the source
+	// reports 0 for it on every quorum vote, but OpenParlData is considering
+	// mapping the Kantonsrat's "Nicht abgestimmt" onto no instead of absent
+	// (upstream #179). If that lands, reading only Ja and Abwesend would drop
+	// those members from the line entirely — 46 people vanishing from the
+	// 15.06.2026 Ausgabenbremse. Both buckets are "did not support", which is
+	// exactly what the label says, so summing them stays true either way.
+	ohne := deref(c.Nein) + deref(c.Abwesend)
+	return fmt.Sprintf("📊 %s Zustimmungen | %d ohne Zustimmung",
+		FormatVoteCount(c.Ja), ohne)
+}
+
+// deref reads a nullable count, treating "not reported" as zero.
+func deref(n *int) int {
+	if n == nil {
+		return 0
 	}
-	return fmt.Sprintf("📊 %s Zustimmungen | %s ohne Zustimmung",
-		FormatVoteCount(c.Ja), FormatVoteCount(c.Abwesend))
+	return *n
 }
 
 // IsUnsupportedVoteType returns true when all active voter count fields are nil or zero.

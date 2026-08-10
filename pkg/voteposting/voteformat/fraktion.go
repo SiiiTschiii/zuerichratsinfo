@@ -58,7 +58,11 @@ func quorumChoice(voteType, choice string) string {
 	switch choice {
 	case "Ja":
 		return choiceZustimmung
-	case "Abwesend":
+	// "Nein" does not occur on a quorum vote today, but upstream #179 is
+	// considering mapping the Kantonsrat's "Nicht abgestimmt" onto it. It would
+	// mean the same thing as the current bucket — did not support — so it joins
+	// it rather than opening a third column that splits one group in two.
+	case "Nein", "Abwesend":
 		return choiceOhne
 	}
 	return choice

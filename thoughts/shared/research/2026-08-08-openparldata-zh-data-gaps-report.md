@@ -11,6 +11,8 @@ upstream_tracker: https://gitlab.com/opendata.ch/openparldatach/data-infrastruct
 upstream_issues:
   - https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/178
   - https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/179
+  - https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/180
+  - https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/181
 ---
 
 # OpenParlData Kanton Zürich — importer gaps
@@ -39,8 +41,53 @@ Filing needs a GitLab account, so it is a manual step.
 | --- | --- | --- | --- |
 | A | `votings.type_de` is null for every ZH voting | [#178](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/178) | **fixed 2026-08-09** |
 | B | `results_absent` conflates "nicht abgestimmt" with "nicht anwesend" | [#179](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/179) | open |
-| C | Cup-Abstimmung has null aggregates; multi-option votes collapse under `vote` | not yet filed | — |
-| D | `decision` is null for every ZH voting, though recapp publishes `votingResult` | not yet filed | — |
+| C | Cup-Abstimmung has null aggregates; multi-option votes collapse under `vote` | [#180](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/180) | open |
+| D | `decision` is null for every ZH voting, though recapp publishes `votingResult` | [#181](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/181) | open |
+
+All four were filed on 2026-08-09. The "as filed" sections below are the text as
+submitted; each was written before the next was filed, so their closing
+cross-references name siblings without numbers.
+
+### The #179 reply, and what it changes
+
+Christian Gutknecht answered #179 on 2026-08-09 with the harmonised vocabulary
+OpenParlData uses across 26 bodies:
+
+| `vote` | meaning |
+| --- | --- |
+| `yes` / `no` / `abstention` | Ja / Nein / Enthaltung |
+| `absent` | **keine Stimme abgegeben** — *no vote cast*, not *not present* |
+| `further_option` | further option in a multiple choice |
+| `absent_excused` | excused absence (CHE only) |
+| `abstention_president` | the chair does not vote (CHE only) |
+
+Two consequences for us.
+
+**The documentation half of #179 is already answered.** `absent` means "cast no
+vote", for any reason. That is exactly the fallback the report asked for — so
+the field is not lying, *our label is*. We render it as "Abwesend", which asserts
+physical absence, on every cantonal vote and not only quorum ones. Renaming that
+column is ours to do, not upstream's.
+
+**The proposed fix would change the shape of quorum votes.** He reads the
+Kantonsrat's "Nicht abgestimmt" as the Nein button being pressed and recorded
+under a nonsensical label, and proposes mapping it to `no` rather than `absent`.
+If that lands, a quorum vote arrives as 128/46/6 instead of 128/0/52.
+
+Our rendering is now written to survive either shape: `Nein` is folded into
+"ohne Zustimmung" rather than read as a third column, so the 46 stay visible
+whichever way upstream maps them. See `formatQuorumCounts` and `quorumChoice`.
+
+**One doubt worth raising with him.** His reading is plausible but the evidence
+cuts the other way: recapp's segments payload for voting 103928 has **no `n`
+bucket at all** — 128 `y` and 52 `x`, nothing else. Had 46 members pressed Nein,
+recapp would presumably record it. A simpler explanation is that the Kantonsrat
+registers attendance separately — the `Anwesenheitsermittlung` and
+`Präsenzermittlung` records we found while investigating the residual `type_de`
+nulls do exactly that — so "Nicht anwesend" means *not registered present* and
+"Nicht abgestimmt" means *registered present, no vote recorded*, with nobody
+pressing anything. If so, mapping those 46 to `no` would assert they voted
+against, which is a different false claim rather than a fix.
 
 ### Residual gap after #178
 

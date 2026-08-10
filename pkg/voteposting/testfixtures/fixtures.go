@@ -135,10 +135,12 @@ func base(guid, title, grNr string) votes.Vote {
 		SessionID:    sitzungGUID,
 		Date:         sitzungDate,
 		Title:        title,
-		// Both sources always report a type, and a vote without one can no
-		// longer be posted at all (see voteformat.IsHandledVoteType), so a
-		// fixture without one would model a vote that cannot exist. "Normal"
-		// is the overwhelming majority; fixtures needing another set it.
+		// A vote with no type can no longer be posted at all (see
+		// voteformat.IsHandledVoteType). Such records do exist upstream —
+		// Kanton Zürich serves a null type for attendance determinations — but
+		// they are exactly what must never reach a reader, so fixtures here
+		// model postable votes. "Normal" is the overwhelming majority in both
+		// bodies; fixtures needing another set it.
 		Type:      "Normal",
 		SourceURL: VoteURL(objGUID),
 		GroupURL:  TraktandumURL(sitzungGUID, traktandumGUID),

@@ -19,7 +19,12 @@ func TestToVote_MapsAllFields(t *testing.T) {
 		GeschaeftTitel:   "Veloinfrastruktur Langstrasse",
 		GeschaeftGrNr:    "2025/100",
 		Abstimmungstitel: "Schlussabstimmung",
-		Abstimmungstyp:   "Offen",
+		// PARIS publishes Normal / Quorum / "Gleichgerichtete Anträge mit N
+		// Optionen" here — 500 sampled votes contain nothing else, and never
+		// "Offen", which is the Abstimmungsmodus (open vs. secret ballot) and a
+		// different field. The value matters now that posting refuses types no
+		// formatter handles.
+		Abstimmungstyp:   "Normal",
 		AnzahlJa:         intPtr(90),
 		AnzahlNein:       intPtr(30),
 		AnzahlEnthaltung: intPtr(0),
@@ -50,7 +55,7 @@ func TestToVote_MapsAllFields(t *testing.T) {
 	if v.Subtitle != "Schlussabstimmung" {
 		t.Errorf("Subtitle = %q", v.Subtitle)
 	}
-	if v.Type != "Offen" {
+	if v.Type != "Normal" {
 		t.Errorf("Type = %q", v.Type)
 	}
 	if v.Decision != "angenommen" {

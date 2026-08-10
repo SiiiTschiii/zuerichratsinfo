@@ -631,6 +631,18 @@ func TestQuorumCountsDropThePhantomColumns(t *testing.T) {
 		t.Errorf("FormatVoteCountsLong() = %q, want %q", got, want)
 	}
 
+	// Upstream #179 may start mapping the Kantonsrat's "Nicht abgestimmt" onto
+	// no instead of absent. Reading only Ja and Abwesend would then drop those
+	// members from the line — 46 of them on the vote above. Both buckets mean
+	// "did not support", so they are summed and the total stays whole.
+	afterUpstreamFix := VoteCounts{
+		Ja: ptr(128), Nein: ptr(46), Enthaltung: ptr(0), Abwesend: ptr(6),
+		Type: "Quorum",
+	}
+	if got := FormatVoteCounts(afterUpstreamFix); got != "📊 128 Zustimmungen | 52 ohne Zustimmung" {
+		t.Errorf("counts would lose the Nein bucket: %q", got)
+	}
+
 	// An ordinary vote is untouched, including one that happens to be lopsided.
 	normal := VoteCounts{
 		Ja: ptr(130), Nein: ptr(44), Enthaltung: ptr(0), Abwesend: ptr(6),
@@ -665,5 +677,21 @@ func TestQuorumFraktionColumns(t *testing.T) {
 	}
 	if !strings.Contains(got, "SVP 0/2") || !strings.Contains(got, "SP 1/0") {
 		t.Errorf("unexpected counts:\n%s", got)
+	}
+
+	// Same forward-compatibility concern as the summary line: a "Nein" choice
+	// joins the non-supporters instead of opening a third column that would
+	// split one group in two.
+	withNein := votes.Vote{
+		Type: "Quorum",
+		MemberVotes: []votes.MemberVote{
+			{Fraktion: "SVP", Choice: "Nein"},
+			{Fraktion: "SVP", Choice: "Abwesend"},
+			{Fraktion: "SP", Choice: "Ja"},
+		},
+	}
+	got = FormatFraktionBreakdown(AggregateFraktionCounts(withNein))
+	if !strings.Contains(got, "(Zust./ohne)") || !strings.Contains(got, "SVP 0/2") {
+		t.Errorf("a Nein choice should join the non-supporters:\n%s", got)
 	}
 }
