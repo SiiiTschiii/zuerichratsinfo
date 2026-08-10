@@ -493,19 +493,21 @@ importer but unrelated causes.
 
 ## Reply drafted for #179
 
-Written in German, matching the maintainer's own reply. The argument rests on a
-natural experiment inside one agenda item: on 15.06.2026 two binary and three
-quorum votes were taken within ten minutes, on the same members and the same
-hardware. The binary ones record 44 Nein presses as `n`; the quorum ones have no
-`n` bucket at all. Every voting id cited was re-checked against the live API.
+Written in German, matching the maintainer's own reply, and in the first person
+singular — it is one person's project and it is filed under his own account. The
+argument rests on a natural experiment inside one agenda item: on 15.06.2026 two
+binary and three quorum votes were taken within ten minutes, on the same members
+and the same hardware. The binary ones record 44 Nein presses as `n`; the quorum
+ones have no `n` bucket at all. Every voting id cited was re-checked against the
+live API.
 
 Vielen Dank für die Übersicht der harmonisierten Werte — das beantwortet die Frage nach der Dokumentation bereits.
 
-`absent` = "keine Stimme abgegeben" ist genau die Klarstellung, um die es uns ging. Damit lügt das Feld nicht, sondern unser Label: wir haben `absent` als "Abwesend" gerendert und damit eine physische Abwesenheit behauptet, die die Daten nicht hergeben. Das haben wir auf unserer Seite korrigiert. Insofern ist der Dokumentationsteil dieses Issues aus unserer Sicht erledigt.
+`absent` = "keine Stimme abgegeben" ist genau die Klarstellung, um die es mir ging. Damit lügt das Feld nicht, sondern mein Label: ich habe `absent` als "Abwesend" gerendert und damit eine physische Abwesenheit behauptet, die die Daten nicht hergeben. Das habe ich auf meiner Seite korrigiert. Insofern ist der Dokumentationsteil dieses Issues aus meiner Sicht erledigt.
 
 ## Zum Vorschlag, "Nicht abgestimmt" auf `no` abzubilden
 
-Hier hätten wir einen Einwand — nicht als Widerspruch, sondern weil die Daten aus unserer Sicht eher gegen die Knopfdruck-Erklärung sprechen.
+Hier hätte ich einen Einwand — nicht als Widerspruch, sondern weil die Daten aus meiner Sicht eher gegen die Knopfdruck-Erklärung sprechen.
 
 Im selben Traktandum vom 15.06.2026 (`agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13`) liegen zwei binäre und drei Quorumsabstimmungen, innerhalb von rund zehn Minuten, mit denselben Mitgliedern und derselben Anlage:
 
@@ -525,7 +527,7 @@ A8D4D59E  quorum        x=51 y=129
 5D0CFBDB  quorum        x=52 y=128
 ```
 
-Bei den binären Abstimmungen erfasst recapp 44 Nein-Stimmen als `n`. Bei den Quorumsabstimmungen gibt es **gar keinen `n`-Bucket**. Wenn die 46 "Nicht abgestimmt" tatsächlich Nein-Knopfdrücke wären, würden wir erwarten, dass sie ebenso als `n` erscheinen — dieselben Ratsmitglieder, dieselbe Sitzung, wenige Minuten später.
+Bei den binären Abstimmungen erfasst recapp 44 Nein-Stimmen als `n`. Bei den Quorumsabstimmungen gibt es **gar keinen `n`-Bucket**. Wenn die 46 "Nicht abgestimmt" tatsächlich Nein-Knopfdrücke wären, würde ich erwarten, dass sie ebenso als `n` erscheinen — dieselben Ratsmitglieder, dieselbe Sitzung, wenige Minuten später.
 
 Auffällig ist auch das `x`: bei den binären Abstimmungen 6 bzw. 7, was der Angabe "Nicht anwesend 6" im Protokoll entspricht. Bei den Quorumsabstimmungen 51 bzw. 52, also die 6 Abwesenden plus rund 45 weitere.
 
@@ -534,12 +536,12 @@ Eine Erklärung, die ohne Knopfdruck auskommt: **der Kantonsrat ermittelt die An
 - **Nicht anwesend** — nicht als anwesend registriert
 - **Nicht abgestimmt** — als anwesend registriert, aber keine Stimme erfasst
 
-Das wäre inhaltlich genau die Unterscheidung, die uns interessiert, und sie wäre nicht unsinnig, sondern die politisch relevante Information: bei einer Ausgabenbremse ist das Nicht-Mitstimmen der bewusste Akt.
+Das wäre inhaltlich genau die Unterscheidung, die mich interessiert, und sie wäre nicht unsinnig, sondern die politisch relevante Information: bei einer Ausgabenbremse ist das Nicht-Mitstimmen der bewusste Akt.
 
-Falls das zutrifft, würde die Abbildung auf `no` behaupten, 46 Personen hätten dagegen gestimmt — aus unserer Sicht eine andere falsche Aussage statt einer Korrektur. `absent` mit der dokumentierten Bedeutung "keine Stimme abgegeben" trifft beide Gruppen korrekt, auch wenn es die Unterscheidung nicht abbildet.
+Falls das zutrifft, würde die Abbildung auf `no` behaupten, 46 Personen hätten dagegen gestimmt — aus meiner Sicht eine andere falsche Aussage statt einer Korrektur. `absent` mit der dokumentierten Bedeutung "keine Stimme abgegeben" trifft beide Gruppen korrekt, auch wenn es die Unterscheidung nicht abbildet.
 
-## Kein Blocker für uns
+## Kein Blocker für mich
 
-Unabhängig davon, wie ihr euch entscheidet: wir sind auf beide Varianten vorbereitet. Bei Quorumsabstimmungen fassen wir `no` und `absent` als "ohne Zustimmung" zusammen, weil beides "hat nicht zugestimmt" bedeutet. Die Summe stimmt also in beiden Fällen, und niemand verschwindet aus dem Beitrag.
+Unabhängig davon, wie ihr euch entscheidet: ich bin auf beide Varianten vorbereitet. Bei Quorumsabstimmungen fasse ich `no` und `absent` als "ohne Zustimmung" zusammen, weil beides "hat nicht zugestimmt" bedeutet. Die Summe stimmt also in beiden Fällen, und niemand verschwindet aus dem Beitrag.
 
-Ein kleiner Hinweis am Rande, der zu #178 gehört: die oben erwähnten Anwesenheitsermittlungen haben aktuell `type_de: null`. Sie kommen als `voting_type: 5` ohne `votingScheme`, weshalb das neue Mapping sie nicht erfasst. Für uns sind gerade sie heikel, weil sie wie eine ganz normale, sehr einseitige Ja/Nein-Abstimmung aussehen, obwohl es gar keine Sachabstimmung ist.
+Ein kleiner Hinweis am Rande, der zu #178 gehört: die oben erwähnten Anwesenheitsermittlungen haben aktuell `type_de: null`. Sie kommen als `voting_type: 5` ohne `votingScheme`, weshalb das neue Mapping sie nicht erfasst. Für mich sind gerade sie heikel, weil sie wie eine ganz normale, sehr einseitige Ja/Nein-Abstimmung aussehen, obwohl es gar keine Sachabstimmung ist.
