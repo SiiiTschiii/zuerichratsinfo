@@ -1965,6 +1965,161 @@ AL 5/0
 🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
 Source: OpenParlData.ch
 
+################ FIXTURE kantonsrat-decision-reported ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Kantonsrat ZH | Abstimmung vom 15.06.2026
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+👇 Details im Thread
+
+[post 1]
+✅ Abstimmung 1 (11:29)
+📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 33/0/0/3
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+[post 2]
+✅ Abstimmung 2 (11:30) · Quorum
+📊 129 Zustimmungen | 51 ohne Zustimmung
+
+🏛️ Fraktionen (Zust./ohne):
+SVP 0/47
+SP 32/4
+FDP 30/0
+Grünliberale 23/0
+Grüne 19/0
+Die Mitte 12/0
+EVP 7/0
+AL 5/0
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+Source: OpenParlData.ch
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Kantonsrat ZH | Abstimmung vom 15.06.2026
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+👇 Details im Thread
+
+[post 1]
+✅ Abstimmung 1 (11:29)
+📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 33/0/0/3
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 2 (11:30) · Quorum
+📊 129 Zustimmungen | 51 ohne Zustimmung
+
+🏛️ Fraktionen (Zust./ohne):
+SVP 0/47
+SP 32/4
+FDP 30/0
+Grünliberale 23/0
+Grüne 19/0
+Die Mitte 12/0
+EVP 7/0
+AL 5/0
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+Source: OpenParlData.ch
+
+---- Bluesky ----
+[post 0]
+🗳️ Kantonsrat ZH | Abstimmung vom 15.06.2026
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+👇 Details im Thread
+
+[post 1]
+✅ Abstimmung 1 (11:29)
+📊 130 Ja | 44 Nein | 0 Enth. | 6 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 33/0/0/3
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Abstimmung 2 (11:30) · Quorum
+📊 129 Zustimmungen | 51 ohne Zustimmung
+
+[post 2]
+🏛️ Fraktionen (Zust./ohne):
+SVP 0/47
+SP 32/4
+FDP 30/0
+Grünliberale 23/0
+Grüne 19/0
+Die Mitte 12/0
+EVP 7/0
+AL 5/0
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+Source: OpenParlData.ch
+[facet] {Index:{ByteStart:126 ByteEnd:212} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2 DID: Tag:}]}
+
+---- Instagram ----
+[images] 3
+[caption]
+🗳️ Kantonsrat ZH | Abstimmung vom 15.06.2026
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+✅ Angenommen: Abstimmung 1 (11:29)
+📊 130 Ja | 44 Nein | 0 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 0/44/0/3
+SP 33/0/0/3
+FDP 30/0/0/0
+Grünliberale 23/0/0/0
+Grüne 19/0/0/0
+Die Mitte 12/0/0/0
+EVP 7/0/0/0
+AL 5/0/0/0
+
+✅ Angenommen: Abstimmung 2 (11:30) · Quorum
+📊 129 Zustimmungen | 51 ohne Zustimmung
+
+🏛️ Fraktionen (Zust./ohne):
+SVP 0/47
+SP 32/4
+FDP 30/0
+Grünliberale 23/0
+Grüne 19/0
+Die Mitte 12/0
+EVP 7/0
+AL 5/0
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+Source: OpenParlData.ch
+
 ################ FIXTURE instagram-long-multi-vote-truncation ################
 
 ---- X (limit 280) ----

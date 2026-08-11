@@ -10,6 +10,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
@@ -424,5 +425,53 @@ func TestPostToPlatform_UnhandledVoteTypeIsNotPosted(t *testing.T) {
 	}
 	if !voteLog.IsPosted("normal-1") {
 		t.Error("handled vote was not marked as posted")
+	}
+}
+
+// TestPostToPlatform_CantonCupVoteIsNotPosted covers the canton's Auswahl
+// equivalent, a Cup-Abstimmung: one knockout round between more than two
+// competing proposals.
+//
+// The real records cannot be published truthfully — every aggregate count is
+// null, and the per-member rows are duplicated 296-for-180 with 175 members
+// carrying a "Präsidium" value harmonised to abstention. Either defect alone
+// would make a post wrong; the type check catches it before the counts do.
+//
+// Both are reported upstream. This pins that until they are fixed the group is
+// skipped rather than rendered, and that the run still fails visibly.
+func TestPostToPlatform_CantonCupVoteIsNotPosted(t *testing.T) {
+	defer setupTempDir(t)()
+
+	group := testfixtures.KantonsratCupVote()
+
+	// Guard the fixture itself: if the source ever starts populating these, the
+	// reason this test passes would silently change.
+	v := group[0]
+	if v.Yes != nil || v.No != nil || v.Abstention != nil {
+		t.Fatalf("fixture should carry the null aggregates the source serves, got %v/%v/%v",
+			v.Yes, v.No, v.Abstention)
+	}
+	if voteformat.IsHandledVoteType(v.Type) {
+		t.Fatalf("Cup-Abstimmung should not be on the handled list, got type %q", v.Type)
+	}
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	posted, err := PostToPlatform([][]votes.Vote{group}, mockPlatform,
+		SingleLog(testJurisdiction, voteLog), false)
+
+	if !errors.Is(err, ErrUnsupportedVoteType) {
+		t.Fatalf("expected ErrUnsupportedVoteType so the run fails visibly, got %v", err)
+	}
+	if posted != 0 {
+		t.Errorf("a knockout round was published as an ordinary vote: posted=%d", posted)
+	}
+	if mockPlatform.formatCalls != 0 {
+		t.Errorf("the group reached the formatter: formatCalls=%d", mockPlatform.formatCalls)
+	}
+	// Not logging it is what lets it be revisited once upstream is fixed.
+	if voteLog.IsPosted(v.SourceID) {
+		t.Error("skipped vote was marked as posted; it would never be revisited")
 	}
 }

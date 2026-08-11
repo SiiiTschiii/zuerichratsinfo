@@ -602,6 +602,87 @@ func KantonsratMultiVote() []votes.Vote {
 	return group
 }
 
+// KantonsratDecisionReported is the first two votes of the same 15.06.2026
+// Glattalbahn group — one Normal, one Quorum — as they would arrive if
+// OpenParlData populated `decision` for the canton.
+//
+// Today it does not, for any cantonal vote, so posts carry the counts and state
+// no outcome (see the adapter's decision(), which never derives one). Upstream
+// issue 181 asks for the field, and recapp already publishes the answer as
+// `votingResult`, so this is a plausible near future rather than a hypothetical.
+//
+// The fixture pins what happens when it lands: the verdict returns on its own,
+// with no code change, and a quorum vote keeps its own counts rendering while
+// gaining the outcome line. The Decision values are recapp's votingResult for
+// these two segments, both "yes".
+func KantonsratDecisionReported() []votes.Vote {
+	group := KantonsratMultiVote()[:2]
+	for i := range group {
+		group[i].Decision = "Ja"
+	}
+	return group
+}
+
+// KantonsratCupVote is the real 15.12.2025 Steuerfuss vote (voting 98765), the
+// canton's equivalent of an Auswahl vote: a Cup-Abstimmung, one knockout round
+// between more than two competing proposals.
+//
+// It is here to pin that we refuse it, because the source's version of it cannot
+// be published truthfully, and for two independent reasons:
+//
+//   - Every aggregate count is null. results_yes, results_no and
+//     results_abstention are all absent while only results_absent is populated,
+//     so there is no result to render at all. Stadt Zürich populates these for
+//     the same kind of vote.
+//   - The per-member records are duplicated. The API returns 296 rows for a
+//     180-seat chamber: each of the 116 members who chose an option also appears
+//     under vote_display_de "Präsidium", harmonised to abstention — 175 members
+//     carry that value, which cannot mean what it says. The duplication is
+//     confined to Cup-Abstimmungen; Normal and Quorum votes return exactly 180.
+//
+// Both are reported upstream (issue 180). Until they are fixed the vote type is
+// off the handled list, so a group containing this is skipped and the run
+// reports it rather than publishing a knockout round as an ordinary tally.
+//
+// The member list below is deliberately short. Nothing about the refusal depends
+// on its length — the counts and the type decide it — so it carries just enough
+// to show the shape, including one member recorded twice.
+func KantonsratCupVote() []votes.Vote {
+	const title = "Steuerfuss für die Jahre 2026 und 2027"
+
+	v := votes.Vote{
+		SourceID:     "FFD3E6F2-E781-6937-515C-A54A2288E7CA",
+		Jurisdiction: "zurich-canton",
+		Body:         "Kantonsrat ZH",
+		Date:         time.Date(2025, 12, 15, 10, 30, 44, 0, time.UTC),
+		Sequence:     "1765794644",
+		Title:        title,
+		Type:         "Cup-Abstimmung",
+		// Null, exactly as served: only the absent count survives.
+		Yes: nil, No: nil, Abstention: nil,
+		Absent:      intPtr(5),
+		Decision:    "",
+		SourceURL:   "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=250382",
+		GroupURL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=250382",
+		Attribution: "Source: OpenParlData.ch",
+		Affair: votes.Affair{
+			Number: "250382",
+			Title:  title,
+			ID:     "250382",
+			URL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=250382",
+		},
+		MemberVotes: []votes.MemberVote{
+			{Name: "Astrid Furrer", Fraktion: "FDP", Choice: "Auswahl A"},
+			{Name: "Astrid Furrer", Fraktion: "FDP", Choice: "Enthaltung"},
+			{Name: "Beat Hauser", Fraktion: "Grünliberale", Choice: "Auswahl D"},
+			{Name: "Beat Hauser", Fraktion: "Grünliberale", Choice: "Enthaltung"},
+			{Name: "Ein Abwesender", Fraktion: "SP", Choice: "Abwesend"},
+		},
+	}
+
+	return []votes.Vote{v}
+}
+
 // kantonsratRoster spreads a tally across the chamber's factions in roughly
 // their real proportions. Exact per-faction figures are not the point here —
 // the group exists to exercise labelling and layout — but the total must match
@@ -647,6 +728,7 @@ var FixtureNames = []string{
 	"postulat-with-grnr-prefix",
 	"kantonsrat-vote",
 	"kantonsrat-multi-vote",
+	"kantonsrat-decision-reported",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
@@ -665,5 +747,6 @@ func AllFixtures() map[string][]votes.Vote {
 		"postulat-with-grnr-prefix":       PostulatWithGrNrPrefix(),
 		"kantonsrat-vote":                 KantonsratVote(),
 		"kantonsrat-multi-vote":           KantonsratMultiVote(),
+		"kantonsrat-decision-reported":    KantonsratDecisionReported(),
 	}
 }
