@@ -607,3 +607,61 @@ Bis das geklärt ist, weise ich bei Quorumsabstimmungen nur die Zahl der Zustimm
 
 Freundliche Grüsse
 Christof Gerber
+
+---
+
+## Comment drafted for #180 — duplicated Cup-Abstimmung records
+
+Found while building a fixture from the real Steuerfuss vote. Distinct from the
+null aggregates already reported, but on the same four records, so it goes as a
+comment rather than a fifth issue.
+
+The scope check is the part worth keeping: the duplication is confined to
+Cup-Abstimmungen. Normal and Quorum votes return exactly 180 rows for 180 seats
+with no "Präsidium" value at all, so nothing else in the cantonal data is
+affected — including everything we currently publish.
+
+Ein Nachtrag zum selben Datensatz: neben den fehlenden Summen sind bei den Cup-Abstimmungen auch die **Einzelstimmen doppelt vorhanden**.
+
+Bei voting 98765 liefert `/votes` **296 Datensätze für 180 Ratssitze**. Jedes der 116 Mitglieder, das eine Option gewählt hat, erscheint ein zweites Mal mit `vote_display_de: "Präsidium"`, harmonisiert als `abstention`. Insgesamt tragen 175 der 180 Mitglieder diesen Wert — für ein Präsidium ist das offensichtlich zu viel.
+
+```bash
+curl -s "https://api.openparldata.ch/v1/votings/98765/votes?limit=600&lang_format=flat" \
+  | jq '{records: (.data|length),
+         distinct_persons: ([.data[].person_id]|unique|length),
+         by_value: ([.data[] | .vote + " / " + (.vote_display_de|tostring)]
+                    | group_by(.) | map({(.[0]): length}) | add)}'
+```
+
+```json
+{
+  "records": 296,
+  "distinct_persons": 180,
+  "by_value": {
+    "absent / Abwesend": 5,
+    "abstention / Präsidium": 175,
+    "further_option / Auswahl D": 23,
+    "further_option / Auswahl E": 5,
+    "yes / Auswahl A": 88
+  }
+}
+```
+
+175 + 5 = 180 ergibt genau einen Datensatz pro Mitglied; 88 + 23 + 5 = 116 sind die tatsächlichen Wahlentscheide, die zusätzlich obendrauf kommen. Es sieht also aus, als würden zwei Durchgänge in dieselbe Abstimmung geschrieben.
+
+**Betroffen sind nur die Cup-Abstimmungen.** Ich habe zum Vergleich Normal- und Quorumsabstimmungen geprüft:
+
+| voting | type_de | Datensätze | verschiedene Personen | davon "Präsidium" |
+| --- | --- | --- | --- | --- |
+| 98765 | Cup-Abstimmung | 296 | 180 | 175 |
+| 98752 | Cup-Abstimmung | 291 | 180 | 175 |
+| 98762 | Cup-Abstimmung | 268 | 180 | 175 |
+| 100011 | Cup-Abstimmung | 352 | 180 | 172 |
+| 103931 | Normal | 180 | 180 | 0 |
+| 104481 | Normal | 180 | 180 | 0 |
+| 103928 | Quorum | 180 | 180 | 0 |
+| 100969 | Quorum | 180 | 180 | 0 |
+
+**Warum ich das hier anhänge und nicht separat melde:** es betrifft dieselben vier Abstimmungen wie die fehlenden Summen, und für die Weiterverwendung hängen die beiden Punkte zusammen. Selbst wenn `results_yes` und die übrigen Summen nachgeliefert würden, liessen sich aus den Einzelstimmen weiterhin keine Fraktionsauswertungen bilden: die Zahlen gehen nicht auf, und ein Grossteil der Mitglieder würde als "Enthaltung" gezählt, obwohl sie eine Option gewählt haben.
+
+Bei mir werden Cup-Abstimmungen derzeit gar nicht publiziert — der Abstimmungstyp steht auf einer Positivliste, und was nicht darauf steht, wird übersprungen und im Lauf als Fehler gemeldet. Das ist kein Drängen: die Steuerfuss-Abstimmung vom 15.12.2025 bleibt damit unberichtet, was mir lieber ist, als eine Ausmehrung als gewöhnliche Ja/Nein-Abstimmung darzustellen.
