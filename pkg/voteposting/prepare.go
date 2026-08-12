@@ -211,12 +211,12 @@ func PostToPlatform(
 		if len(group) == 0 {
 			continue
 		}
-		// Validate vote counts before formatting; skip groups with unknown formats
-		if err := validateGroupCounts(group); err != nil {
-			log.Printf("⚠️  Skipping group (unsupported vote type): %v", err)
-			if firstUnsupportedErr == nil {
-				firstUnsupportedErr = err
-			}
+		// Drop votes no formatter can render, keeping the rest of the group.
+		group, err := postableVotes(group, &firstUnsupportedErr)
+		if err != nil {
+			return posted, err
+		}
+		if len(group) == 0 {
 			continue
 		}
 
@@ -267,7 +267,8 @@ func PostToPlatform(
 				return posted, err
 			}
 
-			// Mark all votes in the group as posted
+			// Mark the posted votes. Any vote dropped above is deliberately
+			// absent from this slice, so it is retried rather than buried.
 			for _, v := range group {
 				voteLog.MarkAsPosted(v.SourceID)
 			}
@@ -292,15 +293,52 @@ func PostToPlatform(
 	return posted, nil
 }
 
-// validateGroupCounts checks that every vote in a group has a recognisable
-// count format (standard Ja/Nein or Auswahl A-E). Returns ErrUnsupportedVoteType
-// with details if any vote is unrecognisable.
-func validateGroupCounts(group []votes.Vote) error {
+// postableVotes returns the votes of a group the formatters can render, and
+// records the first rejection in firstErr so the run still ends non-zero.
+//
+// Rejection is per vote rather than per group, which matters more than it
+// sounds. Votes are grouped by business matter and sitting day, and Kanton
+// Zürich interleaves vote types freely within one business: the 15.12.2025
+// Steuerfuss item carries five ordinary Ja/Nein votes alongside three
+// Cup-Abstimmung rounds, and the 19.01.2026 Lehrpersonalgesetz item five
+// alongside one. Failing the whole group would have suppressed the tax-rate
+// decision entirely because three procedural rounds in the same business are
+// unrenderable — silently trading one unpublishable vote for five publishable
+// ones.
+//
+// The dropped vote is not logged as posted, so it returns on the next run and
+// keeps failing visibly until the source is fixed or it ages out of the window.
+func postableVotes(group []votes.Vote, firstErr *error) ([]votes.Vote, error) {
+	postable := make([]votes.Vote, 0, len(group))
 	for _, v := range group {
-		if voteformat.IsUnsupportedVoteType(voteformat.CountsOf(v)) {
-			return fmt.Errorf("%w: vote %s (%q, type=%q) has all-zero counts",
-				ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)
+		if err := validateVote(v); err != nil {
+			log.Printf("⚠️  Skipping vote (unsupported vote type): %v", err)
+			if *firstErr == nil {
+				*firstErr = err
+			}
+			continue
 		}
+		postable = append(postable, v)
+	}
+	return postable, nil
+}
+
+// validateVote checks that one vote is something the formatters can render: a
+// type on the handled list, and a recognisable count format (standard Ja/Nein
+// or Auswahl A-E).
+//
+// The type check is what catches a source starting to serve something new. The
+// count check alone would not: an attendance determination and a quorum vote
+// both look like a perfectly ordinary lopsided Ja/Nein tally, and would post
+// happily while saying something untrue about how parliament voted.
+func validateVote(v votes.Vote) error {
+	if !voteformat.IsHandledVoteType(v.Type) {
+		return fmt.Errorf("%w: vote %s (%q) has type %q, which no formatter handles",
+			ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)
+	}
+	if voteformat.IsUnsupportedVoteType(voteformat.CountsOf(v)) {
+		return fmt.Errorf("%w: vote %s (%q, type=%q) has all-zero counts",
+			ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)
 	}
 	return nil
 }

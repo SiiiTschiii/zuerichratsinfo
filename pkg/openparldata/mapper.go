@@ -181,22 +181,24 @@ func groupingNumber(affairID *int64, externalID string) string {
 	return "#vote-" + externalID
 }
 
-// decision returns the source's outcome label, deriving one when the source
-// leaves it null — which Kanton Zürich always does.
+// decision returns the source's outcome label, and nothing when the source
+// reports none — which Kanton Zürich currently always does, for every vote.
 //
-// It is deliberately expressed in the same vocabulary the formatters already
-// understand, so a derived decision renders identically to a reported one.
+// An earlier version derived one from the counts when the source left it null.
+// That is wrong, and quietly so. Comparing Ja against Nein only decides an
+// outcome when the two are the opposing sides of one question, and in a quorum
+// vote they are not: Nein is structurally always 0, because there is no Nein to
+// cast. Every cantonal quorum vote therefore derived as "Ja" — including one
+// with 41 supporters out of 180, published as "✅ Angenommen". Whether such a
+// vote passed depends on a threshold that no source we read publishes, and that
+// differs by which procedure the vote serves, which type_de does not say.
+//
+// So we report what the source reports. Downstream, voteformat.HasVerdict
+// renders the counts without an outcome line when this is empty. If
+// OpenParlData starts populating decision for the canton, verdicts return with
+// no further change here.
 func decision(v votingDTO) string {
-	if d := deref(v.Decision); d != "" {
-		return d
-	}
-	if v.ResultsYes == nil || v.ResultsNo == nil {
-		return ""
-	}
-	if *v.ResultsYes > *v.ResultsNo {
-		return "Ja"
-	}
-	return "Nein"
+	return deref(v.Decision)
 }
 
 // choiceLabels maps OpenParlData's harmonised vote values onto the German

@@ -62,14 +62,13 @@ func buildRootPost(group []votes.Vote, title string, charLimit int) *XPost {
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
 	var subtitlePrefix string
 	if len(group) == 1 {
-		subtitlePrefix = voteformat.SingleVoteSubtitlePrefix(group[0].Subtitle)
+		subtitlePrefix = voteformat.SingleVoteSubtitlePrefix(group[0])
 	}
 
 	var body string
 	if len(group) == 1 {
 		vote := group[0]
-		counts := voteformat.CountsOf(vote)
-		if voteformat.IsAuswahlVote(counts) {
+		if !voteformat.HasVerdict(vote) {
 			body = title
 		} else {
 			resultEmoji := voteformat.GetVoteResultEmoji(vote.Decision)
@@ -94,8 +93,7 @@ func buildRootPost(group []votes.Vote, title string, charLimit int) *XPost {
 		available := charLimit - overhead
 		if len(group) == 1 {
 			vote := group[0]
-			counts := voteformat.CountsOf(vote)
-			if voteformat.IsAuswahlVote(counts) {
+			if !voteformat.HasVerdict(vote) {
 				title = truncateText(title, available)
 				body = title
 			} else {
@@ -138,7 +136,7 @@ func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPos
 		} else {
 			// Multi-vote: subtitle + counts
 			voteTitle := voteformat.SubVoteLabel(vote, i, len(group))
-			if voteformat.IsAuswahlVote(counts) {
+			if !voteformat.HasVerdict(vote) {
 				// Auswahl: no ✅/❌ prefix
 				entry.WriteString(fmt.Sprintf("%s\n", voteTitle))
 			} else {
@@ -152,7 +150,7 @@ func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPos
 
 		// Add Fraktion breakdown as separate entry
 		if len(vote.MemberVotes) > 0 {
-			fraktionCounts := voteformat.AggregateFraktionCounts(vote.MemberVotes)
+			fraktionCounts := voteformat.AggregateFraktionCounts(vote)
 			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
 				entries = append(entries, breakdown)
 			}

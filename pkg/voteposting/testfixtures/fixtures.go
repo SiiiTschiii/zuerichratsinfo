@@ -135,8 +135,15 @@ func base(guid, title, grNr string) votes.Vote {
 		SessionID:    sitzungGUID,
 		Date:         sitzungDate,
 		Title:        title,
-		SourceURL:    VoteURL(objGUID),
-		GroupURL:     TraktandumURL(sitzungGUID, traktandumGUID),
+		// A vote with no type can no longer be posted at all (see
+		// voteformat.IsHandledVoteType). Such records do exist upstream —
+		// Kanton Zürich serves a null type for attendance determinations — but
+		// they are exactly what must never reach a reader, so fixtures here
+		// model postable votes. "Normal" is the overwhelming majority in both
+		// bodies; fixtures needing another set it.
+		Type:      "Normal",
+		SourceURL: VoteURL(objGUID),
+		GroupURL:  TraktandumURL(sitzungGUID, traktandumGUID),
 		Affair: votes.Affair{
 			Number: grNr,
 			Title:  title,
@@ -369,6 +376,7 @@ func AuswahlVote() []votes.Vote {
 
 	v := base("auswahl-1", title, "2025/106")
 	v.Date = date(2026, 3, 4)
+	v.Type = "Gleichgerichtete Anträge mit 3 Optionen"
 	v.Decision = "Auswahl A"
 	v.Absent = intPtr(10)
 	v.ChoiceA = intPtr(74)
@@ -411,6 +419,7 @@ func MixedMultiVote() []votes.Vote {
 
 	v2 := base("mixed-2", title, "2025/107")
 	v2.Date = date(2026, 2, 25)
+	v2.Type = "Gleichgerichtete Anträge mit 3 Optionen"
 	v2.Subtitle = "Änderungsantrag 17, 1. Abstimmung Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung"
 	v2.Decision = "Auswahl A"
 	v2.Absent = intPtr(11)
@@ -481,12 +490,17 @@ func KantonsratVote() []votes.Vote {
 		Date:         time.Date(2026, 7, 6, 10, 21, 43, 0, time.UTC),
 		Sequence:     "1783333303",
 		Title:        title,
-		Decision:     "Nein",
-		Yes:          intPtr(83),
-		No:           intPtr(87),
-		Abstention:   intPtr(0),
-		Absent:       intPtr(10),
-		SourceURL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e",
+		// "Normal" is the overwhelming majority of cantonal votes and must stay
+		// unlabelled, or the label on a quorum vote stops standing out.
+		Type: "Normal",
+		// Kanton Zürich reports no decision, and none is derived, so cantonal
+		// posts state the counts and no outcome.
+		Decision:   "",
+		Yes:        intPtr(83),
+		No:         intPtr(87),
+		Abstention: intPtr(0),
+		Absent:     intPtr(10),
+		SourceURL:  "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e",
 		// OpenParlData is CC BY 4.0; the credit is a licence obligation, so it
 		// must actually appear in the rendered post.
 		Attribution: "Source: OpenParlData.ch",
@@ -526,11 +540,15 @@ func KantonsratVote() []votes.Vote {
 // show that honestly. Kanton Zürich publishes no per-vote title, so the entries
 // can only be numbered; and the quorum votes show a lopsided 129:0 with ~51
 // "Abwesend", which reads as near-unanimous agreement when it is really a
-// procedural vote most of the opposition sits out. Both gaps are upstream:
-// OpenParlData populates type_de as Normal/Quorum for Stadt Zürich but leaves
-// it null for the canton, and collapses "nicht abgestimmt" into "absent".
-// Neither is ours to invent, so this case stays visible until the source fixes
-// it.
+// procedural vote most of the opposition sits out.
+//
+// The type is what rescues that reading, and it arrives from the source: after
+// we reported it, OpenParlData began populating type_de for the canton too, so
+// the quorum entries carry a label. The Types below are the real served values.
+//
+// One gap remains upstream and is not ours to invent: "Abwesend" still conflates
+// members who were absent with those who were present and did not vote — for
+// this vote the official record says 6 and 46, where the API says 52.
 func KantonsratMultiVote() []votes.Vote {
 	const title = "Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten"
 	const agendaItem = "https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13"
@@ -539,14 +557,15 @@ func KantonsratMultiVote() []votes.Vote {
 		id                  string
 		hour, minute        int
 		segment             string
+		voteType            string
 		ja, nein, enth, abw int
 	}
 	subs := []sub{
-		{"C73B20F8-BE10-9CC8-70BA-B3510FCBA125", 11, 29, "95cfdd0d-453d-467b-9e57-6e1afddb766e", 130, 44, 0, 6},
-		{"1E159CE0-5FF2-6550-3DD8-6AC38D15BECC", 11, 30, "fc47bda1-dbb3-447f-bd3e-ce1d95ccea59", 129, 0, 0, 51},
-		{"D8C48612-302B-0CEB-C7C7-A8474CDD2C21", 11, 40, "94915e31-5be7-41db-911e-123f216f9ee9", 129, 44, 0, 7},
-		{"A8D4D59E-0756-D4F6-AE63-D6CCAD573A79", 11, 41, "c3422c5f-3dac-495d-855c-d26552ef5601", 129, 0, 0, 51},
-		{"5D0CFBDB-1691-F36C-1C75-48CE4002036C", 11, 42, "aa6d241e-bfdc-4ca1-beea-236337c16f0e", 128, 0, 0, 52},
+		{"C73B20F8-BE10-9CC8-70BA-B3510FCBA125", 11, 29, "95cfdd0d-453d-467b-9e57-6e1afddb766e", "Normal", 130, 44, 0, 6},
+		{"1E159CE0-5FF2-6550-3DD8-6AC38D15BECC", 11, 30, "fc47bda1-dbb3-447f-bd3e-ce1d95ccea59", "Quorum", 129, 0, 0, 51},
+		{"D8C48612-302B-0CEB-C7C7-A8474CDD2C21", 11, 40, "94915e31-5be7-41db-911e-123f216f9ee9", "Normal", 129, 44, 0, 7},
+		{"A8D4D59E-0756-D4F6-AE63-D6CCAD573A79", 11, 41, "c3422c5f-3dac-495d-855c-d26552ef5601", "Quorum", 129, 0, 0, 51},
+		{"5D0CFBDB-1691-F36C-1C75-48CE4002036C", 11, 42, "aa6d241e-bfdc-4ca1-beea-236337c16f0e", "Quorum", 128, 0, 0, 52},
 	}
 
 	var group []votes.Vote
@@ -559,14 +578,17 @@ func KantonsratMultiVote() []votes.Vote {
 			Date:         at,
 			Sequence:     fmt.Sprintf("%d", at.Unix()),
 			Title:        title,
-			Decision:     "Ja",
-			Yes:          intPtr(sv.ja),
-			No:           intPtr(sv.nein),
-			Abstention:   intPtr(sv.enth),
-			Absent:       intPtr(sv.abw),
-			SourceURL:    agendaItem + "&segmentUid=" + sv.segment,
-			GroupURL:     "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2",
-			Attribution:  "Source: OpenParlData.ch",
+			Type:         sv.voteType,
+			// Empty for the same reason as KantonsratVote: the source reports
+			// no outcome for any cantonal vote.
+			Decision:    "",
+			Yes:         intPtr(sv.ja),
+			No:          intPtr(sv.nein),
+			Abstention:  intPtr(sv.enth),
+			Absent:      intPtr(sv.abw),
+			SourceURL:   agendaItem + "&segmentUid=" + sv.segment,
+			GroupURL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2",
+			Attribution: "Source: OpenParlData.ch",
 			Affair: votes.Affair{
 				Number: "6031",
 				Title:  title,
@@ -578,6 +600,87 @@ func KantonsratMultiVote() []votes.Vote {
 		group = append(group, v)
 	}
 	return group
+}
+
+// KantonsratDecisionReported is the first two votes of the same 15.06.2026
+// Glattalbahn group — one Normal, one Quorum — as they would arrive if
+// OpenParlData populated `decision` for the canton.
+//
+// Today it does not, for any cantonal vote, so posts carry the counts and state
+// no outcome (see the adapter's decision(), which never derives one). Upstream
+// issue 181 asks for the field, and recapp already publishes the answer as
+// `votingResult`, so this is a plausible near future rather than a hypothetical.
+//
+// The fixture pins what happens when it lands: the verdict returns on its own,
+// with no code change, and a quorum vote keeps its own counts rendering while
+// gaining the outcome line. The Decision values are recapp's votingResult for
+// these two segments, both "yes".
+func KantonsratDecisionReported() []votes.Vote {
+	group := KantonsratMultiVote()[:2]
+	for i := range group {
+		group[i].Decision = "Ja"
+	}
+	return group
+}
+
+// KantonsratCupVote is the real 15.12.2025 Steuerfuss vote (voting 98765), the
+// canton's equivalent of an Auswahl vote: a Cup-Abstimmung, one knockout round
+// between more than two competing proposals.
+//
+// It is here to pin that we refuse it, because the source's version of it cannot
+// be published truthfully, and for two independent reasons:
+//
+//   - Every aggregate count is null. results_yes, results_no and
+//     results_abstention are all absent while only results_absent is populated,
+//     so there is no result to render at all. Stadt Zürich populates these for
+//     the same kind of vote.
+//   - The per-member records are duplicated. The API returns 296 rows for a
+//     180-seat chamber: each of the 116 members who chose an option also appears
+//     under vote_display_de "Präsidium", harmonised to abstention — 175 members
+//     carry that value, which cannot mean what it says. The duplication is
+//     confined to Cup-Abstimmungen; Normal and Quorum votes return exactly 180.
+//
+// Both are reported upstream (issue 180). Until they are fixed the vote type is
+// off the handled list, so a group containing this is skipped and the run
+// reports it rather than publishing a knockout round as an ordinary tally.
+//
+// The member list below is deliberately short. Nothing about the refusal depends
+// on its length — the counts and the type decide it — so it carries just enough
+// to show the shape, including one member recorded twice.
+func KantonsratCupVote() []votes.Vote {
+	const title = "Steuerfuss für die Jahre 2026 und 2027"
+
+	v := votes.Vote{
+		SourceID:     "FFD3E6F2-E781-6937-515C-A54A2288E7CA",
+		Jurisdiction: "zurich-canton",
+		Body:         "Kantonsrat ZH",
+		Date:         time.Date(2025, 12, 15, 10, 30, 44, 0, time.UTC),
+		Sequence:     "1765794644",
+		Title:        title,
+		Type:         "Cup-Abstimmung",
+		// Null, exactly as served: only the absent count survives.
+		Yes: nil, No: nil, Abstention: nil,
+		Absent:      intPtr(5),
+		Decision:    "",
+		SourceURL:   "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=250382",
+		GroupURL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=250382",
+		Attribution: "Source: OpenParlData.ch",
+		Affair: votes.Affair{
+			Number: "250382",
+			Title:  title,
+			ID:     "250382",
+			URL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=250382",
+		},
+		MemberVotes: []votes.MemberVote{
+			{Name: "Astrid Furrer", Fraktion: "FDP", Choice: "Auswahl A"},
+			{Name: "Astrid Furrer", Fraktion: "FDP", Choice: "Enthaltung"},
+			{Name: "Beat Hauser", Fraktion: "Grünliberale", Choice: "Auswahl D"},
+			{Name: "Beat Hauser", Fraktion: "Grünliberale", Choice: "Enthaltung"},
+			{Name: "Ein Abwesender", Fraktion: "SP", Choice: "Abwesend"},
+		},
+	}
+
+	return []votes.Vote{v}
 }
 
 // kantonsratRoster spreads a tally across the chamber's factions in roughly
@@ -625,6 +728,7 @@ var FixtureNames = []string{
 	"postulat-with-grnr-prefix",
 	"kantonsrat-vote",
 	"kantonsrat-multi-vote",
+	"kantonsrat-decision-reported",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
@@ -643,5 +747,6 @@ func AllFixtures() map[string][]votes.Vote {
 		"postulat-with-grnr-prefix":       PostulatWithGrNrPrefix(),
 		"kantonsrat-vote":                 KantonsratVote(),
 		"kantonsrat-multi-vote":           KantonsratMultiVote(),
+		"kantonsrat-decision-reported":    KantonsratDecisionReported(),
 	}
 }

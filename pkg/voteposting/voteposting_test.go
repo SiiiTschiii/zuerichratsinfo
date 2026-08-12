@@ -10,6 +10,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
@@ -43,6 +44,9 @@ type MockPlatform struct {
 	postCalls      int
 	maxPosts       int
 	shouldFailPost bool
+	// lastGroup records what the formatter was actually handed, so tests can
+	// assert on votes dropped before formatting.
+	lastGroup []votes.Vote
 }
 
 type MockContent struct {
@@ -55,6 +59,7 @@ func (c *MockContent) String() string {
 
 func (p *MockPlatform) Format(group []votes.Vote) (platforms.Content, error) {
 	p.formatCalls++
+	p.lastGroup = group
 	return &MockContent{text: "mock post"}, nil
 }
 
@@ -75,14 +80,15 @@ func (p *MockPlatform) Name() string {
 	return "Mock"
 }
 
-// Test helper to create test group with a non-zero Ja count so they pass
-// validateGroupCounts (all-zero counts are treated as unsupported vote types).
+// Test helper to create a test group that passes validateGroup: a handled vote
+// type, and a non-zero Ja count (all-zero counts are treated as unsupported).
 func createVote(guid, affair, date string) votes.Vote {
 	ja := 100
 	return votes.Vote{
 		SourceID:     guid,
 		Jurisdiction: testJurisdiction,
 		Date:         testfixtures.MustDate(date),
+		Type:         "Normal",
 		Yes:          &ja,
 		Affair:       votes.Affair{Number: affair},
 	}
@@ -383,5 +389,142 @@ func TestPostToPlatform_MultipleGroupsAllVotesLogged(t *testing.T) {
 		if !voteLog.IsPosted(voteID) {
 			t.Errorf("Expected %s to be logged as posted", voteID)
 		}
+	}
+}
+
+// TestPostToPlatform_UnhandledVoteTypeIsNotPosted covers the case that made this
+// guard necessary: Kanton Zürich publishes Anwesenheitsermittlung (a roll call)
+// and the occasional quorum vote with no type at all, and both render as a
+// perfectly ordinary lopsided Ja/Nein tally. Nothing about the counts gives them
+// away, so only the type can stop them.
+//
+// The unhandled group must be skipped rather than posted, the handled one must
+// still go out, and the run must end in an error so the failure is noticed
+// instead of passing silently.
+func TestPostToPlatform_UnhandledVoteTypeIsNotPosted(t *testing.T) {
+	defer setupTempDir(t)()
+
+	unhandled := createVote("anwesenheit-1", "2026/1", "2026-06-15")
+	unhandled.Type = "" // what the source actually serves for a roll call
+
+	handled := createVote("normal-1", "2026/2", "2026-06-15")
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	groups := [][]votes.Vote{{unhandled}, {handled}}
+
+	posted, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false)
+
+	if !errors.Is(err, ErrUnsupportedVoteType) {
+		t.Fatalf("expected ErrUnsupportedVoteType so the run fails visibly, got %v", err)
+	}
+	if posted != 1 {
+		t.Errorf("expected the handled group to still post, got posted=%d", posted)
+	}
+	// The skipped vote must not be logged, or it would never be retried once the
+	// type becomes renderable.
+	if voteLog.IsPosted("anwesenheit-1") {
+		t.Error("skipped vote was marked as posted; it would never be revisited")
+	}
+	if !voteLog.IsPosted("normal-1") {
+		t.Error("handled vote was not marked as posted")
+	}
+}
+
+// TestPostToPlatform_CantonCupVoteIsNotPosted covers the canton's Auswahl
+// equivalent, a Cup-Abstimmung: one knockout round between more than two
+// competing proposals.
+//
+// The real records cannot be published truthfully — every aggregate count is
+// null, and the per-member rows are duplicated 296-for-180 with 175 members
+// carrying a "Präsidium" value harmonised to abstention. Either defect alone
+// would make a post wrong; the type check catches it before the counts do.
+//
+// Both are reported upstream. This pins that until they are fixed the group is
+// skipped rather than rendered, and that the run still fails visibly.
+func TestPostToPlatform_CantonCupVoteIsNotPosted(t *testing.T) {
+	defer setupTempDir(t)()
+
+	group := testfixtures.KantonsratCupVote()
+
+	// Guard the fixture itself: if the source ever starts populating these, the
+	// reason this test passes would silently change.
+	v := group[0]
+	if v.Yes != nil || v.No != nil || v.Abstention != nil {
+		t.Fatalf("fixture should carry the null aggregates the source serves, got %v/%v/%v",
+			v.Yes, v.No, v.Abstention)
+	}
+	if voteformat.IsHandledVoteType(v.Type) {
+		t.Fatalf("Cup-Abstimmung should not be on the handled list, got type %q", v.Type)
+	}
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	posted, err := PostToPlatform([][]votes.Vote{group}, mockPlatform,
+		SingleLog(testJurisdiction, voteLog), false)
+
+	if !errors.Is(err, ErrUnsupportedVoteType) {
+		t.Fatalf("expected ErrUnsupportedVoteType so the run fails visibly, got %v", err)
+	}
+	if posted != 0 {
+		t.Errorf("a knockout round was published as an ordinary vote: posted=%d", posted)
+	}
+	if mockPlatform.formatCalls != 0 {
+		t.Errorf("the group reached the formatter: formatCalls=%d", mockPlatform.formatCalls)
+	}
+	// Not logging it is what lets it be revisited once upstream is fixed.
+	if voteLog.IsPosted(v.SourceID) {
+		t.Error("skipped vote was marked as posted; it would never be revisited")
+	}
+}
+
+// TestPostToPlatform_UnpostableVoteDoesNotSuppressItsGroup is the reason
+// rejection is per vote rather than per group.
+//
+// Votes are grouped by business matter and sitting day, and Kanton Zürich
+// interleaves vote types freely inside one business. The real 15.12.2025
+// Steuerfuss item carries five ordinary Ja/Nein votes alongside three
+// Cup-Abstimmung rounds; the 19.01.2026 Lehrpersonalgesetz item five alongside
+// one. Rejecting the whole group would have suppressed the tax-rate decision
+// because three procedural rounds in the same business are unrenderable.
+func TestPostToPlatform_UnpostableVoteDoesNotSuppressItsGroup(t *testing.T) {
+	defer setupTempDir(t)()
+
+	// One business matter, one sitting day, mixed types — as the source serves it.
+	substantive := createVote("steuerfuss-normal", "250382", "2025-12-15")
+	unpostable := testfixtures.KantonsratCupVote()[0]
+	unpostable.Jurisdiction = testJurisdiction
+	unpostable.Affair.Number = "250382"
+	unpostable.Date = substantive.Date
+
+	group := []votes.Vote{substantive, unpostable}
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	posted, err := PostToPlatform([][]votes.Vote{group}, mockPlatform,
+		SingleLog(testJurisdiction, voteLog), false)
+
+	// The run still fails, so the gap is noticed...
+	if !errors.Is(err, ErrUnsupportedVoteType) {
+		t.Fatalf("expected ErrUnsupportedVoteType, got %v", err)
+	}
+	// ...but the publishable vote is published rather than lost with it.
+	if posted != 1 {
+		t.Errorf("the substantive vote was suppressed by its neighbour: posted=%d", posted)
+	}
+	if !voteLog.IsPosted("steuerfuss-normal") {
+		t.Error("substantive vote was not marked as posted")
+	}
+	// The dropped one must stay unlogged so it returns once the source is fixed.
+	if voteLog.IsPosted(unpostable.SourceID) {
+		t.Error("dropped vote was marked as posted; it would never be revisited")
+	}
+
+	// It must also not reach the formatter as part of the group.
+	if got := len(mockPlatform.lastGroup); got != 1 {
+		t.Errorf("formatter received %d votes, want only the postable one", got)
 	}
 }

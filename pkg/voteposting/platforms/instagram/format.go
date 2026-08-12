@@ -81,7 +81,7 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 
 	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
 	if len(group) == 1 {
-		if prefix := voteformat.SingleVoteSubtitlePrefix(group[0].Subtitle); prefix != "" {
+		if prefix := voteformat.SingleVoteSubtitlePrefix(group[0]); prefix != "" {
 			sb.WriteString(prefix)
 			sb.WriteString("\n")
 		}
@@ -97,7 +97,7 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 		if len(group) > 1 {
 			// Multi-vote: include subtitle
 			voteTitle := voteformat.SubVoteLabel(vote, i, len(group))
-			if voteformat.IsAuswahlVote(counts) {
+			if !voteformat.HasVerdict(vote) {
 				sb.WriteString(voteTitle)
 			} else {
 				emoji := voteformat.GetVoteResultEmoji(vote.Decision)
@@ -107,7 +107,7 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 			sb.WriteString("\n")
 		} else {
 			// Single vote: result line
-			if !voteformat.IsAuswahlVote(counts) {
+			if voteformat.HasVerdict(vote) {
 				emoji := voteformat.GetVoteResultEmoji(vote.Decision)
 				result := voteformat.GetVoteResultText(vote.Decision)
 				sb.WriteString(fmt.Sprintf("%s %s\n", emoji, result))
@@ -119,7 +119,7 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 
 		// Fraktion breakdown
 		if len(vote.MemberVotes) > 0 {
-			fraktionCounts := voteformat.AggregateFraktionCounts(vote.MemberVotes)
+			fraktionCounts := voteformat.AggregateFraktionCounts(vote)
 			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
 				sb.WriteString("\n")
 				sb.WriteString(breakdown)

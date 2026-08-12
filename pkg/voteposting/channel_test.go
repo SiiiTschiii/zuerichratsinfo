@@ -14,6 +14,7 @@ func jurisdictionVote(jurisdiction, id, affair, date string) votes.Vote {
 		SourceID:     id,
 		Jurisdiction: jurisdiction,
 		Date:         testfixtures.MustDate(date),
+		Type:         "Normal",
 		Yes:          &ja,
 		Affair:       votes.Affair{Number: affair},
 	}
@@ -135,6 +136,7 @@ func TestCompletenessGate(t *testing.T) {
 		SourceID:     "gate-1",
 		Jurisdiction: testJurisdiction,
 		Date:         testfixtures.MustDate("2026-06-01"),
+		Type:         "Normal",
 		Yes:          &ja, No: &nein, Absent: &abw,
 		Affair: votes.Affair{Number: "2026/1"},
 	}
