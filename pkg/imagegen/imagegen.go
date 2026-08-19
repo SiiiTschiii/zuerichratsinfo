@@ -436,17 +436,25 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	// Title first: bold, wrapped, centered
 	title := voteformat.CleanVoteTitle(v.Title)
 
-	// The label line, inline in front of the title (e.g. "Postulat" or
-	// "Vorlage · Dringlicherklärung").
+	// The kind of business, inline in front of the title as on the title card
+	// (e.g. "Vorlage" or "Vorlage · Dringlicherklärung").
 	if prefix := voteformat.GroupPrefixLine([]votes.Vote{*v}); prefix != "" {
 		title = prefix + ": " + title
 	}
+
+	// The ballot type sits with the counts rather than in the title, because what
+	// it explains is why they read "Zust./ohne" instead of "Ja/Nein". The
+	// multi-vote cards get it from SubVoteLabel; this is the single-vote case.
+	typeLabel := voteformat.TypeLabel(v.Type)
 
 	// Calculate available space for title: reserve space for verdict + stats + party breakdown
 	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 	numParties := len(fraktionCounts)
 	verdictHeight := lineHeight(fonts.verdict)
 	statsHeight := lineHeight(fonts.statNum) + lineHeight(fonts.statLabel)
+	if typeLabel != "" {
+		statsHeight += lineHeight(fonts.statLabel)
+	}
 	separatorHeight := lineHeight(fonts.statLabel) + lineHeight(fonts.statNum)
 	partyLineHeight := lineHeight(fonts.partyNum)
 	partyHeight := partyLineHeight + numParties*partyLineHeight
@@ -505,6 +513,14 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 		drawHLine(img, cur.y, padding, imgWidth-padding, semiWhite)
 	}
 	cur.gap(fonts.statNum, 0.75)
+
+	if typeLabel != "" {
+		if img != nil {
+			drawCenteredText(img, fonts.statLabel, nil, cur.baseline(fonts.statLabel), typeLabel, bg)
+		}
+		cur.advance(fonts.statLabel)
+		cur.gap(fonts.statLabel, 0.3)
+	}
 
 	// Stats dashboard: large numbers with small labels in columns
 	switch {

@@ -129,7 +129,12 @@ func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPos
 
 		counts := voteformat.CountsOf(vote)
 		if len(group) == 1 {
-			// Single vote: just the counts
+			// Single vote: the counts, headed by the ballot type when it is one
+			// worth naming. A lone threshold vote needs that most — there is no
+			// sibling beside it to make the lopsided tally look unusual.
+			if label := voteformat.TypeLabel(vote.Type); label != "" {
+				entry.WriteString(label + "\n")
+			}
 			entry.WriteString(voteformat.FormatVoteCountsLong(counts))
 		} else {
 			// Multi-vote: subtitle + counts

@@ -1554,7 +1554,7 @@ AL 0/0/0/1
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026
+🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026 (10:21)
 
 Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich
 
@@ -1578,7 +1578,7 @@ Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026
+🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026 (10:21)
 
 Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich
 
@@ -1602,7 +1602,7 @@ Source: OpenParlData.ch
 
 ---- Bluesky ----
 [post 0]
-🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026
+🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026 (10:21)
 
 Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich
 
@@ -1629,7 +1629,7 @@ Source: OpenParlData.ch
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026
+🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026 (10:21)
 
 Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich
 
@@ -1963,6 +1963,108 @@ EVP 7/0
 AL 5/0
 
 🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+Source: OpenParlData.ch
+
+################ FIXTURE kantonsrat-lone-quorum-vote ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Kantonsrat ZH | Abstimmung vom 15.06.2026 (11:30)
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+👇 Details im Thread
+
+[post 1]
+Quorum
+📊 129 Zustimmungen | 51 ohne Zustimmung
+
+🏛️ Fraktionen (Zust./ohne):
+SVP 0/47
+SP 32/4
+FDP 30/0
+Grünliberale 23/0
+Grüne 19/0
+Die Mitte 12/0
+EVP 7/0
+AL 5/0
+
+🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+Source: OpenParlData.ch
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Kantonsrat ZH | Abstimmung vom 15.06.2026 (11:30)
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+👇 Details im Thread
+
+[post 1]
+Quorum
+📊 129 Zustimmungen | 51 ohne Zustimmung
+
+🏛️ Fraktionen (Zust./ohne):
+SVP 0/47
+SP 32/4
+FDP 30/0
+Grünliberale 23/0
+Grüne 19/0
+Die Mitte 12/0
+EVP 7/0
+AL 5/0
+
+🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+Source: OpenParlData.ch
+
+---- Bluesky ----
+[post 0]
+🗳️ Kantonsrat ZH | Abstimmung vom 15.06.2026 (11:30)
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+👇 Details im Thread
+
+[post 1]
+Quorum
+📊 129 Zustimmungen | 51 ohne Zustimmung
+
+[post 2]
+🏛️ Fraktionen (Zust./ohne):
+SVP 0/47
+SP 32/4
+FDP 30/0
+Grünliberale 23/0
+Grüne 19/0
+Die Mitte 12/0
+EVP 7/0
+AL 5/0
+
+🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+Source: OpenParlData.ch
+[facet] {Index:{ByteStart:126 ByteEnd:255} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59 DID: Tag:}]}
+
+---- Instagram ----
+[images] 1
+[caption]
+🗳️ Kantonsrat ZH | Abstimmung vom 15.06.2026 (11:30)
+
+Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten
+
+Quorum
+📊 129 Zustimmungen | 51 ohne Zustimmung
+
+🏛️ Fraktionen (Zust./ohne):
+SVP 0/47
+SP 32/4
+FDP 30/0
+Grünliberale 23/0
+Grüne 19/0
+Die Mitte 12/0
+EVP 7/0
+AL 5/0
+
+🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
 Source: OpenParlData.ch
 
 ################ FIXTURE kantonsrat-decision-reported ################

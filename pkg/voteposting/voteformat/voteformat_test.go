@@ -314,36 +314,25 @@ func TestIsSchlussabstimmung(t *testing.T) {
 	}
 }
 
-func TestSingleVoteSubtitlePrefix(t *testing.T) {
+func TestSingleVoteSubtitle(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
-		voteType string
 		expected string
 	}{
-		{"Dringlicherklärung with number", "2026_0244 Dringlicherklärung", "", "Dringlicherklärung"},
-		{"Schlussabstimmung returns empty", "2026_0244 Schlussabstimmung", "", ""},
-		{"empty returns empty", "", "", ""},
-		{"whitespace-only after strip returns empty", "  ", "", ""},
-		{"no number prefix", "Dringlicherklärung", "", "Dringlicherklärung"},
-		{"Schlussabstimmung case insensitive", "schlussabstimmung über Ziffer 1", "", ""},
-
-		// A lone quorum vote has no sibling to make its tally look unusual, so
-		// the label has to stand on its own when the source gives no subtitle —
-		// which is exactly the Kanton Zürich case.
-		{"quorum without subtitle stands alone", "", "Quorum", "Quorum"},
-		{"quorum joins an existing subtitle", "Dringlicherklärung", "Quorum", "Dringlicherklärung · Quorum"},
-		{"quorum survives a suppressed Schlussabstimmung", "Schlussabstimmung", "Quorum", "Quorum"},
-		{"Normal adds nothing", "Dringlicherklärung", "Normal", "Dringlicherklärung"},
-		{"unknown type adds nothing", "Dringlicherklärung", "Offen", "Dringlicherklärung"},
+		{"Dringlicherklärung with number", "2026_0244 Dringlicherklärung", "Dringlicherklärung"},
+		{"Schlussabstimmung returns empty", "2026_0244 Schlussabstimmung", ""},
+		{"empty returns empty", "", ""},
+		{"whitespace-only after strip returns empty", "  ", ""},
+		{"no number prefix", "Dringlicherklärung", "Dringlicherklärung"},
+		{"Schlussabstimmung case insensitive", "schlussabstimmung über Ziffer 1", ""},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := SingleVoteSubtitlePrefix(votes.Vote{Subtitle: tt.input, Type: tt.voteType})
+			got := singleVoteSubtitle(tt.input)
 			if got != tt.expected {
-				t.Errorf("SingleVoteSubtitlePrefix(%q, type=%q) = %q, want %q",
-					tt.input, tt.voteType, got, tt.expected)
+				t.Errorf("singleVoteSubtitle(%q) = %q, want %q", tt.input, got, tt.expected)
 			}
 		})
 	}
@@ -484,7 +473,23 @@ func TestPostHeadline(t *testing.T) {
 		{
 			name:  "named body and known date",
 			group: []votes.Vote{{Body: "Kantonsrat ZH", Date: day}},
-			want:  "Kantonsrat ZH | Abstimmung vom 06.07.2026",
+			want:  "Kantonsrat ZH | Abstimmung vom 06.07.2026 (10:21)",
+		},
+		{
+			// Stadt Zürich supplies sitting dates at midnight, so a clock there
+			// would invent a precision the source does not have.
+			name:  "a midnight date carries no clock",
+			group: []votes.Vote{{Body: "Gemeinderat Zürich", Date: time.Date(2026, 7, 6, 0, 0, 0, 0, time.UTC)}},
+			want:  "Gemeinderat Zürich | Abstimmung vom 06.07.2026",
+		},
+		{
+			// A group spans several times; its entries carry them instead.
+			name: "a multi-vote group keeps the date alone",
+			group: []votes.Vote{
+				{Body: "Kantonsrat ZH", Date: day},
+				{Body: "Kantonsrat ZH", Date: day.Add(9 * time.Minute)},
+			},
+			want: "Kantonsrat ZH | Abstimmung vom 06.07.2026",
 		},
 		{
 			// Votes with an unparseable date are deliberately kept rather than
@@ -497,7 +502,7 @@ func TestPostHeadline(t *testing.T) {
 		{
 			name:  "unnamed body omits the chamber",
 			group: []votes.Vote{{Date: day}},
-			want:  "Abstimmung vom 06.07.2026",
+			want:  "Abstimmung vom 06.07.2026 (10:21)",
 		},
 		{
 			name:  "empty group",
@@ -770,9 +775,17 @@ func TestGroupPrefixLineNamesTheKindOfBusiness(t *testing.T) {
 			want:  "Vorlage",
 		},
 		{
-			name:  "the vote type joins it",
+			// The ballot type stays out: "Vorlage · Ausgabenbremse" glued a fact
+			// about the Geschäft to a fact about this ballot. It goes with the
+			// counts, which is what it explains.
+			name:  "the ballot type stays out of it",
 			group: []votes.Vote{vote("Vorlage", "", "Ausgabenbremse")},
-			want:  "Vorlage · Ausgabenbremse",
+			want:  "Vorlage",
+		},
+		{
+			name:  "the ballot type does not join a subtitle either",
+			group: []votes.Vote{vote("Vorlage", "Dringlicherklärung", "Quorum")},
+			want:  "Vorlage · Dringlicherklärung",
 		},
 		{
 			// Stadt Zürich reports no business type, so its line is unchanged.

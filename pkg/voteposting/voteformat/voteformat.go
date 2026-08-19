@@ -81,11 +81,17 @@ func GroupPrefixLine(group []votes.Vote) string {
 
 	prefix := strings.TrimSpace(group[0].Affair.Type)
 
-	// The Abstimmungsgegenstand and the vote type only identify a question
-	// within the business, which is meaningless when several votes share the
-	// post; the per-vote headings carry it there instead.
+	// The Abstimmungsgegenstand identifies a question within the business, which
+	// is meaningless when several votes share the post; the per-vote headings
+	// carry it there instead.
+	//
+	// The ballot type is deliberately absent from this line. It belongs with the
+	// counts, because what it explains is why they read "Zustimmung/ohne"
+	// instead of "Ja/Nein" — and a line reading "Vorlage · Ausgabenbremse" put
+	// two different kinds of fact side by side as though they were one, the
+	// business on the left and the ballot on the right.
 	if len(group) == 1 {
-		if sub := SingleVoteSubtitlePrefix(group[0]); sub != "" {
+		if sub := singleVoteSubtitle(group[0].Subtitle); sub != "" {
 			if prefix == "" {
 				return sub
 			}
@@ -354,18 +360,6 @@ func IsSchlussabstimmung(abstimmungstitel string) bool {
 	return strings.Contains(strings.ToLower(abstimmungstitel), "schlussabstimmung")
 }
 
-// SingleVoteSubtitlePrefix returns the cleaned Abstimmungsgegenstand text to prepend
-// to a single-vote post, or "" if no prefix should be added.
-// A prefix is added only when: the Abstimmungstitel is non-empty AND does not
-// contain "Schlussabstimmung" (case-insensitive).
-//
-// The vote type is appended when it is one worth naming, so a lone quorum vote
-// carries the label too — that case needs it most, since there is no sibling
-// vote beside it to make the lopsided tally look unusual.
-func SingleVoteSubtitlePrefix(v votes.Vote) string {
-	return joinTypeLabel(singleVoteSubtitle(v.Subtitle), v.Type)
-}
-
 func singleVoteSubtitle(abstimmungstitel string) string {
 	if abstimmungstitel == "" {
 		return ""
@@ -521,6 +515,13 @@ func BodyLabel(group []votes.Vote) string {
 
 // PostHeadline is the first line of a post: which chamber voted, and when.
 //
+// A single-vote post names the time as well, where the source knows it. The
+// post is about one moment, and without it two votes taken under the same
+// agenda item on the same day — "Mitteilungen" is the recurring case, and it
+// carries no business number, so each such vote posts on its own — produce two
+// posts a reader cannot tell apart. Multi-vote groups span several times and
+// keep the date alone; their entries carry the clock (see SubVoteLabel).
+//
 // The date clause is dropped when the date is unknown. Votes with an
 // unparseable date are deliberately kept rather than discarded — silently
 // dropping a vote is worse than posting one whose date we could not read — so
@@ -538,7 +539,11 @@ func PostHeadline(group []votes.Vote) string {
 	if len(group) == 0 || group[0].Date.IsZero() {
 		return prefix + "Abstimmung"
 	}
-	return prefix + "Abstimmung vom " + FormatVoteDate(group[0].Date)
+	headline := prefix + "Abstimmung vom " + FormatVoteDate(group[0].Date)
+	if len(group) == 1 && hasClockTime(group[0].Date) {
+		headline += fmt.Sprintf(" (%s)", group[0].Date.Format("15:04"))
+	}
+	return headline
 }
 
 // LinkLine returns the trailing block of a post: the link, plus the source

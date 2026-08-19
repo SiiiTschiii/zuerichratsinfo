@@ -105,7 +105,12 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 			}
 			sb.WriteString("\n")
 		} else {
-			// Single vote: result line
+			// Single vote: the ballot type when it is one worth naming, then the
+			// result line. A lone threshold vote needs the label most — there is
+			// no sibling beside it to make the lopsided tally look unusual.
+			if label := voteformat.TypeLabel(vote.Type); label != "" {
+				sb.WriteString(label + "\n")
+			}
 			if voteformat.HasVerdict(vote) {
 				emoji := voteformat.GetVoteResultEmoji(vote.Decision)
 				result := voteformat.GetVoteResultText(vote.Decision)

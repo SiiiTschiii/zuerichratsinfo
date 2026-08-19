@@ -121,7 +121,8 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 	base := testfixtures.SingleVoteAngenommen()[0]
 	bg := SelectColor("zurich-city", base.Affair.Number)
 
-	// Non-Schlussabstimmung Abstimmungstitel: prepended inline in front of the title.
+	// Non-Schlussabstimmung Abstimmungstitel: prepended inline in front of the
+	// title, the same way the title card does it.
 	withPrefix := base
 	withPrefix.Subtitle = "Dringlicherklärung"
 	prefixCur := newCursor(0, imgHeight)
@@ -131,6 +132,24 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 	}
 	if got := strings.Join(prefixLines, " "); !strings.HasPrefix(got, "Dringlicherklärung: ") {
 		t.Fatalf("expected title to start with %q, got %q", "Dringlicherklärung: ", got)
+	}
+
+	// The ballot type stays out of it: the card would otherwise open
+	// "Dringlicherklärung · Ausgabenbremse: …", gluing a fact about the ballot
+	// onto a fact about the business. It gets a line with the counts instead.
+	withType := withPrefix
+	withType.Type = "Ausgabenbremse"
+	typeCur := newCursor(0, imgHeight)
+	_, typeLines, err := layoutCombinedCard(nil, typeCur, &withType, bg, fonts)
+	if err != nil {
+		t.Fatalf("layoutCombinedCard failed: %v", err)
+	}
+	if got := strings.Join(typeLines, " "); strings.Contains(got, "Ausgabenbremse") {
+		t.Fatalf("expected the ballot type to stay out of the title, got %q", got)
+	}
+	if typeCur.contentHeight() <= prefixCur.contentHeight() {
+		t.Fatalf("expected the ballot type to take a line above the counts (untyped=%d, typed=%d)",
+			prefixCur.contentHeight(), typeCur.contentHeight())
 	}
 
 	// Schlussabstimmung Abstimmungstitel: no prefix added.
