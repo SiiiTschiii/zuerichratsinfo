@@ -33,10 +33,11 @@ Then enable GitHub Pages in the repo: **Settings → Pages → Source: Deploy fr
 
 ### Getting IDs
 
-Every command in this file reads its inputs from exported shell variables, so
-each one can be pasted unedited once the preceding step has run. They live in
-the current shell only, and are separate from the `ZURICH_*` variables the bot
-itself reads.
+Every block below can be pasted unedited, in order. Values that come back from
+the API are captured straight into shell variables; values that only exist on a
+web page or in a log are prompted for, so nothing needs hand-substituting.
+These variables live in the current shell only, and are separate from the
+`ZURICH_*` variables the bot itself reads.
 
 Both lookups need a user access token — generate one as in
 [step 2](#2-generate-a-short-lived-user-token) below, then export it. `read -rs`
@@ -52,25 +53,23 @@ printf 'User token: '; read -rs FB_USER_TOKEN; export FB_USER_TOKEN; echo
 curl -s "https://graph.facebook.com/v25.0/me/accounts?access_token=$FB_USER_TOKEN" | jq
 ```
 
-Export the `id` of the ZueriRatsinfo page from that list:
+Find the ZueriRatsinfo entry in that list and give it its `id`:
 
 ```bash
-export FB_PAGE_ID=1234567890123456
+printf 'Page id: '; read -r FB_PAGE_ID; export FB_PAGE_ID
 ```
 
 **Instagram User ID** — call `GET /{page-id}?fields=instagram_business_account`:
 
 ```bash
-curl -s "https://graph.facebook.com/v25.0/$FB_PAGE_ID?fields=instagram_business_account&access_token=$FB_USER_TOKEN" | jq
-# → {"instagram_business_account": {"id": "<IG_USER_ID>"}, ...}
+export IG_USER_ID=$(curl -s "https://graph.facebook.com/v25.0/$FB_PAGE_ID?fields=instagram_business_account&access_token=$FB_USER_TOKEN" | jq -r .instagram_business_account.id)
+echo "IG user id: $IG_USER_ID"
 ```
 
-That `id` is the value for `<CHANNEL>_IG_USER_ID`. Export it as well — the
-[API Flow](#api-flow) commands further down read it:
-
-```bash
-export IG_USER_ID=17841400000000000
-```
+That is the value for `<CHANNEL>_IG_USER_ID`, and the [API Flow](#api-flow)
+commands further down read it from the environment. An empty or `null` result
+means the Page has no linked professional Instagram account — rerun the `curl`
+without the `jq` pipe to see the full response.
 
 ### Access Token (never-expiring Page token)
 
@@ -96,7 +95,7 @@ Both live in the app dashboard:
 Export both:
 
 ```bash
-export FB_APP_ID=1234567890123456
+printf 'App id: ';     read -r  FB_APP_ID;     export FB_APP_ID
 printf 'App secret: '; read -rs FB_APP_SECRET; export FB_APP_SECRET; echo
 ```
 
@@ -154,11 +153,28 @@ The `access_token` field in the response is a **permanent Page token** that won'
 
 #### 5. Update the GitHub Actions secret
 
-The secret is channel-scoped, so the `zurich` channel reads
-`ZURICH_IG_ACCESS_TOKEN`:
+First confirm the token actually works — step 4 yields an empty string if no
+Page matched `FB_PAGE_ID`, and `null` if the response was an error rather than
+a token. Storing either would replace a working secret with a broken one:
 
 ```bash
-gh secret set ZURICH_IG_ACCESS_TOKEN --body "$IG_TOKEN"
+curl -s "https://graph.facebook.com/v25.0/$IG_USER_ID?fields=username&access_token=$IG_TOKEN" | jq
+```
+
+A working token returns the account's `username`. Anything else — an `error`
+object, or a complaint about the token — means go back to step 2 rather than
+storing what you have.
+
+The secret is channel-scoped, so the `zurich` channel reads
+`ZURICH_IG_ACCESS_TOKEN`. The guard refuses to write a token that step 4 failed
+to produce:
+
+```bash
+if [ -n "$IG_TOKEN" ] && [ "$IG_TOKEN" != "null" ]; then
+  gh secret set ZURICH_IG_ACCESS_TOKEN --body "$IG_TOKEN"
+else
+  echo "IG_TOKEN is empty or null — rerun step 4; existing secret left alone." >&2
+fi
 ```
 
 Or paste it by hand under **GitHub → Settings → Secrets and variables → Actions**.
@@ -196,8 +212,8 @@ These are the calls the Go client makes, written out for manual debugging. They
 read `IG_USER_ID` and `IG_TOKEN` from the environment, so export those first:
 
 ```bash
-export IG_USER_ID=17841400000000000
-printf 'Page token: '; read -rs IG_TOKEN; export IG_TOKEN; echo
+printf 'IG user id: '; read -r  IG_USER_ID; export IG_USER_ID
+printf 'Page token: '; read -rs IG_TOKEN;   export IG_TOKEN; echo
 ```
 
 ### Carousel Publishing
@@ -212,49 +228,47 @@ Images are committed to the `gh-pages` branch under `ig-images/` using the GitHu
 
 For each image, create a media container with `is_carousel_item=true`:
 
+Capture each returned id — the next step combines them:
+
 ```bash
-curl -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media" \
-  -d "image_url=https://example.github.io/repo/ig-images/img.jpg" \
+export IG_CHILD_1=$(curl -s -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media" \
+  -d "image_url=https://example.github.io/repo/ig-images/img1.jpg" \
   -d "is_carousel_item=true" \
-  -d "access_token=$IG_TOKEN"
-# → {"id": "<CONTAINER_ID>"}
+  -d "access_token=$IG_TOKEN" | jq -r .id)
+
+export IG_CHILD_2=$(curl -s -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media" \
+  -d "image_url=https://example.github.io/repo/ig-images/img2.jpg" \
+  -d "is_carousel_item=true" \
+  -d "access_token=$IG_TOKEN" | jq -r .id)
+
+echo "children: $IG_CHILD_1 $IG_CHILD_2"
 ```
 
-Export each returned container id — the next step combines them:
-
-```bash
-export IG_CHILD_1=17900000000000001
-export IG_CHILD_2=17900000000000002
-```
+A `null` id means the container was rejected; drop the `| jq -r .id` to read
+the error.
 
 #### Step 3 — Create carousel container
 
 Combine all child containers into a carousel with a caption:
 
 ```bash
-curl -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media" \
+export IG_CAROUSEL_ID=$(curl -s -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media" \
   -d "media_type=CAROUSEL" \
   -d "children=[\"$IG_CHILD_1\",\"$IG_CHILD_2\"]" \
   -d "caption=Your caption here" \
-  -d "access_token=$IG_TOKEN"
-# → {"id": "<CAROUSEL_ID>"}
-```
+  -d "access_token=$IG_TOKEN" | jq -r .id)
 
-```bash
-export IG_CAROUSEL_ID=17900000000000003
+echo "carousel: $IG_CAROUSEL_ID"
 ```
 
 #### Step 4 — Publish the carousel
 
 ```bash
-curl -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media_publish" \
+export IG_MEDIA_ID=$(curl -s -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media_publish" \
   -d "creation_id=$IG_CAROUSEL_ID" \
-  -d "access_token=$IG_TOKEN"
-# → {"id": "<MEDIA_ID>"}
-```
+  -d "access_token=$IG_TOKEN" | jq -r .id)
 
-```bash
-export IG_MEDIA_ID=17900000000000004
+echo "media: $IG_MEDIA_ID"
 ```
 
 #### Step 5 — Poll for PUBLISHED status
@@ -323,7 +337,7 @@ A healthy Page token reports `"type": "PAGE"` and `"expires_at": 0`.
 **Container status** — if `media_publish` doesn't return a media ID, check the container status:
 
 ```bash
-export IG_CONTAINER_ID=17900000000000001
+printf 'Container id: '; read -r IG_CONTAINER_ID; export IG_CONTAINER_ID
 curl -s "https://graph.facebook.com/v25.0/$IG_CONTAINER_ID?fields=status_code&access_token=$IG_TOKEN" | jq
 ```
 
