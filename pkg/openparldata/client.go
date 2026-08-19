@@ -56,6 +56,10 @@ type Client struct {
 type VoteDetail struct {
 	// Type is the vote type in the vocabulary the formatters speak.
 	Type string
+	// TypeUnqualified marks a Type the source inferred without being told the
+	// ballot type, and which must therefore not displace a type this API
+	// already carries. See mergedType.
+	TypeUnqualified bool
 	// Decision is the outcome label, e.g. "angenommen" or "abgelehnt".
 	Decision string
 }

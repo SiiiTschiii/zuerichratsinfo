@@ -92,12 +92,10 @@ func (c *Client) GroupByAffair(vs []votes.Vote) ([][]votes.Vote, error) {
 // applyDetails fills in what the configured DetailSource knows and this API
 // does not.
 //
-// The type takes precedence over type_de rather than merely filling its gaps.
-// For Kanton Zürich the API's own value is not only incomplete — whole sittings
-// arrive null — but wrong often enough to matter: in a 94-vote sample three
-// votes typed "Quorum" were ordinary Abstimmungen and one typed "Normal" was a
-// Quorumsabstimmung. The detail source is the record those values are derived
-// from, so where the two disagree it is the one to believe.
+// A type the source names takes precedence over type_de, because the source is
+// the record type_de is derived from and knows distinctions it cannot carry —
+// for Kanton Zürich the Ausgabenbremse and the attendance roll call. Where the
+// source only infers a type, type_de wins instead; see mergedType.
 //
 // A vote the source says nothing about keeps everything it already had, and a
 // source that fails entirely costs nothing but the enrichment: the pipeline
@@ -129,17 +127,33 @@ func (c *Client) applyDetails(vs []votes.Vote) {
 		if !ok {
 			continue
 		}
-		// Assigned even when empty. A vote the detail source knows but cannot
-		// label — a segment titled something nobody has mapped yet — must lose
-		// the API's type rather than keep it: that is the one case where the
-		// API's value is least likely to be right, and an empty type is what
-		// stops the vote publishing. Votes the source says nothing about never
-		// reach here.
-		vs[i].Type = d.Type
+		vs[i].Type = mergedType(vs[i].Type, d)
 		if d.Decision != "" && vs[i].Decision == "" && affairStatesItsOutcome(vs[i].Affair.Type) {
 			vs[i].Decision = d.Decision
 		}
 	}
+}
+
+// mergedType decides between the type the listing carried and the one the
+// detail source reports.
+//
+// An unqualified type is one the source inferred from a label that named no
+// ballot type, and it fills a gap rather than settling a disagreement: Kanton
+// Zürich titles the preliminary support of an Einzelinitiative plainly
+// "Abstimmung" though it is a threshold vote, and taking that at face value
+// turned voting 100969 — 41 of 180 in support — into "41 Ja | 0 Nein | 139
+// Abwesend". Ten of the 300 most recent votings are that shape.
+//
+// Everything else the source says is assigned as given, empty included. A vote
+// the source knows but cannot label — a segment titled something nobody has
+// mapped yet — must lose the API's type rather than keep it: that is the one
+// case where type_de is least likely to be right, and an empty type is what
+// stops the vote publishing.
+func mergedType(listed string, d VoteDetail) string {
+	if d.TypeUnqualified && listed != "" {
+		return listed
+	}
+	return d.Type
 }
 
 // completeGroups fetches the other votings of each affair already present, so a

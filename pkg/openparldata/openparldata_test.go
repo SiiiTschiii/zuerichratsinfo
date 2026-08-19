@@ -882,10 +882,10 @@ func TestGroupByAffairAppliesDetailTypes(t *testing.T) {
 	}
 }
 
-// TestGroupByAffairDetailTypeOverridesTheAPI pins that the detail source wins a
-// disagreement. The API's type_de is not merely incomplete for Kanton Zürich —
-// in a 94-vote sample three votes typed "Quorum" were ordinary Abstimmungen and
-// one typed "Normal" was a Quorumsabstimmung.
+// TestGroupByAffairDetailTypeOverridesTheAPI pins that a type the source names
+// wins a disagreement. It knows distinctions type_de cannot carry — an
+// Ausgabenbremse and an attendance roll call both arrive as "Normal" or
+// "Quorum" — and it is the record type_de is derived from.
 func TestGroupByAffairDetailTypeOverridesTheAPI(t *testing.T) {
 	c, _ := newTestClient(t)
 
@@ -905,6 +905,62 @@ func TestGroupByAffairDetailTypeOverridesTheAPI(t *testing.T) {
 	}
 	if found, ok := findVote(groups, vs[0].SourceID); !ok || found.Type != "Quorum" {
 		t.Errorf("the API's type won; got type %q", found.Type)
+	}
+}
+
+// TestGroupByAffairKeepsTheAPITypeOverAnUnqualifiedOne is the counterweight.
+// The archive titles most segments plainly "Abstimmung", including the
+// preliminary support of an Einzelinitiative, which is a threshold vote. Taking
+// that as "ordinary Ja/Nein" overruled a correct "Quorum" from the API and
+// would have published voting 100969 — 41 of 180 in support — as
+// "41 Ja | 0 Nein | 139 Abwesend". Ten of the 300 most recent votings are that
+// shape.
+func TestGroupByAffairKeepsTheAPITypeOverAnUnqualifiedOne(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(1)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	vs[0].Type = "Quorum"
+
+	c.WithDetails(&stubDetails{byVoting: map[string]VoteDetail{
+		vs[0].SourceID: {Type: "Normal", TypeUnqualified: true},
+	}})
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+	if found, ok := findVote(groups, vs[0].SourceID); !ok || found.Type != "Quorum" {
+		t.Errorf("a generic archive label overruled the API; got type %q", found.Type)
+	}
+}
+
+// TestGroupByAffairFillsAnEmptyTypeFromAnUnqualifiedOne is the other side of
+// the same rule: unqualified defers to a type the API has, and supplies one
+// when it has none. The 17.08.2026 sitting is exactly that case — five votes,
+// no type_de, three of them titled only "Abstimmung" — and without the fallback
+// they would stay unpublishable.
+func TestGroupByAffairFillsAnEmptyTypeFromAnUnqualifiedOne(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(1)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	vs[0].Type = ""
+
+	c.WithDetails(&stubDetails{byVoting: map[string]VoteDetail{
+		vs[0].SourceID: {Type: "Normal", TypeUnqualified: true},
+	}})
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+	if found, ok := findVote(groups, vs[0].SourceID); !ok || found.Type != "Normal" {
+		t.Errorf("the fallback type did not fill an empty type; got %q", found.Type)
 	}
 }
 
