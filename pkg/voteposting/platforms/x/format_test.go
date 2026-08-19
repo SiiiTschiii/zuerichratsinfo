@@ -1,6 +1,7 @@
 package x
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -315,6 +316,35 @@ func TestFormatVoteThread_RootTruncation(t *testing.T) {
 	}
 	if !strings.Contains(root, "…") {
 		t.Error("truncated root should contain '…'")
+	}
+}
+
+// The truncation arithmetic reserves room for the business-type line, so a root
+// that loses it is both missing the line and shorter than it was allowed to be.
+func TestFormatVoteThread_TruncatedMultiVoteRootKeepsTheBusinessType(t *testing.T) {
+	longTitle := strings.Repeat("A", DefaultMaxChars+500)
+	var group []votes.Vote
+	for i := 0; i < 2; i++ {
+		group = append(group, votes.Vote{
+			SourceID:   fmt.Sprintf("trunc-multi-%d", i),
+			Title:      longTitle,
+			Date:       testfixtures.MustDate("2026-01-15"),
+			Decision:   "angenommen",
+			Yes:        intPtr(80),
+			No:         intPtr(30),
+			Abstention: intPtr(5),
+			Absent:     intPtr(10),
+			SourceURL:  testfixtures.VoteURL(fmt.Sprintf("trunc-multi-%d", i)),
+			Affair:     votes.Affair{Type: "Vorlage"},
+		})
+	}
+
+	root := FormatVoteThread(group, nil, DefaultMaxChars)[0].Text
+	if !strings.Contains(root, "Vorlage\n") {
+		t.Errorf("truncated multi-vote root dropped the business type:\n%s", root)
+	}
+	if got := weightedLen(root); got > DefaultMaxChars {
+		t.Errorf("root post exceeds DefaultMaxChars: %d > %d", got, DefaultMaxChars)
 	}
 }
 

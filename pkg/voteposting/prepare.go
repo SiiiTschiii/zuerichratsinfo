@@ -221,10 +221,7 @@ func PostToPlatform(
 			continue
 		}
 		// Drop votes no formatter can render, keeping the rest of the group.
-		group, err := postableVotes(group, &firstUnsupportedErr)
-		if err != nil {
-			return posted, err
-		}
+		group := postableVotes(group, &firstUnsupportedErr)
 		if len(group) == 0 {
 			continue
 		}
@@ -317,7 +314,7 @@ func PostToPlatform(
 //
 // The dropped vote is not logged as posted, so it returns on the next run and
 // keeps failing visibly until the source is fixed or it ages out of the window.
-func postableVotes(group []votes.Vote, firstErr *error) ([]votes.Vote, error) {
+func postableVotes(group []votes.Vote, firstErr *error) []votes.Vote {
 	postable := make([]votes.Vote, 0, len(group))
 	for _, v := range group {
 		if err := validateVote(v); err != nil {
@@ -334,7 +331,22 @@ func postableVotes(group []votes.Vote, firstErr *error) ([]votes.Vote, error) {
 		}
 		postable = append(postable, v)
 	}
-	return postable, nil
+	return postable
+}
+
+// PostableGroups applies the posting filter without posting, so a preview shows
+// what the bot would publish rather than everything the source served. Without
+// it a preview renders the attendance roll calls that posting refuses — the
+// very votes this pipeline exists to keep off the timeline.
+func PostableGroups(groups [][]votes.Vote) [][]votes.Vote {
+	var ignored error
+	out := make([][]votes.Vote, 0, len(groups))
+	for _, group := range groups {
+		if postable := postableVotes(group, &ignored); len(postable) > 0 {
+			out = append(out, postable)
+		}
+	}
+	return out
 }
 
 // validateVote checks that one vote is something the formatters can render: a

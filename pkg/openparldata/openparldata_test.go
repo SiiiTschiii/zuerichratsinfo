@@ -433,6 +433,18 @@ func TestParseDate(t *testing.T) {
 	}
 }
 
+// A value with no time of day must not acquire one. Read as UTC and shifted
+// into the body's zone it becomes 01:00 or 02:00, and the formatters that print
+// a vote's time cannot tell that from a real clock reading.
+func TestParseDateKeepsDateOnlyValuesAtMidnight(t *testing.T) {
+	for _, in := range []string{"2026-07-06", "2026-01-06"} {
+		got := parseDate(in)
+		if h, m := got.Hour(), got.Minute(); h != 0 || m != 0 {
+			t.Errorf("parseDate(%q) = %s, want local midnight", in, got.Format(time.RFC3339))
+		}
+	}
+}
+
 func TestGet_RetriesServerErrors(t *testing.T) {
 	var attempts int
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -893,6 +905,34 @@ func TestGroupByAffairDetailTypeOverridesTheAPI(t *testing.T) {
 	}
 	if found, ok := findVote(groups, vs[0].SourceID); !ok || found.Type != "Quorum" {
 		t.Errorf("the API's type won; got type %q", found.Type)
+	}
+}
+
+// TestGroupByAffairDetailClearsAnUnreadableType pins the fail-closed half of
+// that override. A segment the archive holds but labels with something nobody
+// has mapped — a new word for a kind of ballot — arrives as an empty type. That
+// must clear the API's value rather than fall back to it: it is exactly the
+// case where type_de is least likely to be right, and an empty type is what
+// keeps the vote off the timeline until someone looks.
+func TestGroupByAffairDetailClearsAnUnreadableType(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(1)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	vs[0].Type = "Normal"
+
+	c.WithDetails(&stubDetails{byVoting: map[string]VoteDetail{
+		vs[0].SourceID: {Type: ""},
+	}})
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+	if found, ok := findVote(groups, vs[0].SourceID); !ok || found.Type != "" {
+		t.Errorf("an unreadable archive label left the vote publishable as %q", found.Type)
 	}
 }
 

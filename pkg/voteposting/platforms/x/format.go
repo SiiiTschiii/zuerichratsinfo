@@ -104,11 +104,13 @@ func buildRootPost(group []votes.Vote, title string, charLimit int) *XPost {
 				}
 				body = prefix + title
 			}
-			if subtitlePrefix != "" {
-				body = subtitlePrefix + "\n" + body
-			}
 		} else {
 			body = truncateText(title, available)
+		}
+		// Reattached for both shapes: the overhead above reserves room for it, so
+		// dropping it here shortened the post and lost the line at once.
+		if subtitlePrefix != "" {
+			body = subtitlePrefix + "\n" + body
 		}
 		fullText = header + body + threadHint
 	}

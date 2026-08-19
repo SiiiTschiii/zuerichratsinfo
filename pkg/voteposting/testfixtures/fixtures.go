@@ -623,17 +623,24 @@ func KantonsratDecisionReported() []votes.Vote {
 	return group
 }
 
-// KantonsratLoneQuorumVote is the Glattalbahn group's first Ausgabenbremse vote
-// standing on its own, which is how spending-brake votes usually arrive: the
-// 17.08.2026 Rahmenkredit Energiegesetz was a single vote posted alone.
+// KantonsratLoneQuorumVote is a spending-brake vote standing on its own, which
+// is how they usually arrive: the 17.08.2026 Rahmenkredit Energiegesetz was a
+// single vote posted alone.
 //
 // It is the case the type label matters most for and the one the group fixtures
-// cannot cover. A lone quorum vote has no sibling beside it to make 129:0 with
-// 51 "Abwesend" look unusual, and no per-vote heading either — SubVoteLabel only
-// numbers the entries of a group — so the label has to reach the reader from
-// the counts themselves, on every platform and on the card.
+// cannot cover. A lone threshold vote has no sibling beside it to make 129:0
+// with 51 "Abwesend" look unusual, and no per-vote heading either — SubVoteLabel
+// only numbers the entries of a group — so the label has to reach the reader
+// from the counts themselves, on every platform and on the card.
+//
+// The counts are the Glattalbahn group's first threshold vote; the type is set
+// to Ausgabenbremse, which is what the archive calls these ("Abstimmung
+// Ausgabenbremse"). The group fixture keeps the plainer "Quorum" it is served,
+// so both labels stay covered by the snapshot.
 func KantonsratLoneQuorumVote() []votes.Vote {
-	return KantonsratMultiVote()[1:2]
+	group := KantonsratMultiVote()[1:2]
+	group[0].Type = "Ausgabenbremse"
+	return group
 }
 
 // KantonsratCupVote is the real 15.12.2025 Steuerfuss vote (voting 98765), the

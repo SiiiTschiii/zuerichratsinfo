@@ -129,9 +129,13 @@ func (c *Client) applyDetails(vs []votes.Vote) {
 		if !ok {
 			continue
 		}
-		if d.Type != "" {
-			vs[i].Type = d.Type
-		}
+		// Assigned even when empty. A vote the detail source knows but cannot
+		// label — a segment titled something nobody has mapped yet — must lose
+		// the API's type rather than keep it: that is the one case where the
+		// API's value is least likely to be right, and an empty type is what
+		// stops the vote publishing. Votes the source says nothing about never
+		// reach here.
+		vs[i].Type = d.Type
 		if d.Decision != "" && vs[i].Decision == "" && affairStatesItsOutcome(vs[i].Affair.Type) {
 			vs[i].Decision = d.Decision
 		}

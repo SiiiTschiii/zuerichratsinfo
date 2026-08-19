@@ -99,6 +99,10 @@ func liveGroups(jurisdictionKey string, fetchLimit, numGroups int) (map[string][
 	if err != nil {
 		log.Fatalf("Error preparing votes: %v", err)
 	}
+	// PrepareVoteGroups serves everything fetched; posting is what drops the
+	// unrenderable and the deliberately unpublished. A preview that skipped this
+	// would render the attendance roll calls the bot refuses to post.
+	groups = voteposting.PostableGroups(groups)
 	if len(groups) == 0 {
 		log.Fatalf("No votes found for %s", jurisdiction.Key)
 	}
