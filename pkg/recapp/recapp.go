@@ -1,16 +1,24 @@
 // Package recapp adapts the Kantonsrat Zürich audio archive (zh.recapp.ch) to
 // the vote information OpenParlData omits.
 //
-// It exists because OpenParlData's type_de is both incomplete and unreliable
-// for Kanton Zürich. Whole sittings arrive with a null type — the 17.08.2026
-// sitting served all five of its votes that way — and the values it does serve
-// disagree with the official archive often enough to matter: in a 94-vote
-// sample, three votes typed "Quorum" were plain Abstimmungen and one typed
-// "Normal" was a Quorumsabstimmung.
+// It exists because OpenParlData's type_de is incomplete for Kanton Zürich —
+// whole sittings arrive with a null type, the 17.08.2026 sitting having served
+// all five of its votes that way — and because it cannot express two
+// distinctions the parliament makes: the Ausgabenbremse, which it folds into
+// "Quorum" or leaves as "Normal" depending on how the ballot was run, and the
+// attendance roll call, which it publishes as an ordinary voting.
 //
-// The archive is authoritative for both, because it is what OpenParlData
-// harvests from. Every vote segment carries the parliament's own label for what
-// kind of vote it was and its outcome.
+// The archive is what OpenParlData harvests from, so it fills those gaps at the
+// source: every vote segment carries the parliament's own label for what kind
+// of vote it was, and its outcome.
+//
+// It does not replace type_de wholesale. Measured over the 300 most recent ZH
+// votings on 2026-08-19, type_de agrees with the archive's votingScheme
+// wherever it is present (Normal/binary 252, Quorum/quorum 31, Cup 4), while
+// the archive's segment titles are editorial free text: 226 of them read only
+// "Abstimmung", including every vote on the preliminary support of an
+// Einzelinitiative, which is a threshold ballot. A title that names no ballot
+// type therefore adds nothing and must not overrule a type the API does carry.
 //
 // The join is exact rather than heuristic: a segment's extVotingUid is the same
 // identifier OpenParlData publishes as external_id.
@@ -58,6 +66,10 @@ type Info struct {
 	// Type is the vote type in the neutral vocabulary, or "" when the archive
 	// used a label this package does not recognise.
 	Type string
+	// TypeUnqualified marks a Type inferred from a label that names no ballot
+	// type — a bare "Abstimmung". It says a vote was held and nothing about how
+	// it was counted, so a caller holding a more specific type must keep it.
+	TypeUnqualified bool
 	// Decision is "angenommen" or "abgelehnt", or "" when the archive reports
 	// no outcome. OpenParlData leaves this null for every Kanton Zürich vote.
 	Decision string
@@ -216,9 +228,11 @@ type segment struct {
 }
 
 func (s segment) info() Info {
+	voteType, unqualified := voteTypeFromTitle(s.Title)
 	return Info{
-		Type:     voteTypeFromTitle(s.Title),
-		Decision: decisionFrom(s.VotingResult),
+		Type:            voteType,
+		TypeUnqualified: unqualified,
+		Decision:        decisionFrom(s.VotingResult),
 	}
 }
 
@@ -233,7 +247,8 @@ func decisionFrom(result string) string {
 	}
 }
 
-// voteTypeFromTitle maps the archive's label onto the neutral vocabulary.
+// voteTypeFromTitle maps the archive's label onto the neutral vocabulary, and
+// reports whether the label named a ballot type at all.
 //
 // Matching is on keywords rather than whole strings because the labels are
 // editorial free text and vary: attendance alone appears as
@@ -244,29 +259,37 @@ func decisionFrom(result string) string {
 // otherwise pass as an ordinary vote, which is the single worst outcome here —
 // a roll call published as though parliament had decided something.
 //
-// An unrecognised label maps to "", which leaves the vote unpublishable. That
-// is deliberate: a label we have never seen is exactly when a tally is most
-// likely to be read wrongly, and staying silent is recoverable where a
-// misleading post is not.
-func voteTypeFromTitle(title string) string {
+// A bare "Abstimmung" is the common case — 226 of 302 segments — and names no
+// ballot type: the Kantonsrat titles the preliminary support of an
+// Einzelinitiative that way, and it is a threshold vote. It therefore returns
+// TypeNormal as a fallback and unqualified=true, which tells the caller to
+// prefer a type it already holds. Reading it as an ordinary Ja/Nein vote is how
+// voting 100969 — an Einzelinitiative supported by 41 of 180 — would have been
+// published as "41 Ja | 0 Nein | 139 Abwesend".
+//
+// An unrecognised label maps to "" and is qualified, which leaves the vote
+// unpublishable. That is deliberate: a label we have never seen is exactly when
+// a tally is most likely to be read wrongly, and staying silent is recoverable
+// where a misleading post is not.
+func voteTypeFromTitle(title string) (voteType string, unqualified bool) {
 	t := strings.ToLower(strings.TrimSpace(title))
 	switch {
 	case t == "":
-		return ""
+		return "", false
 	case containsAny(t, "anwesen", "präsenz", "praesenz"):
-		return TypeAttendance
+		return TypeAttendance, false
 	case strings.Contains(t, "cup"):
-		return TypeCup
+		return TypeCup, false
 	// Kept apart from a plain Quorumsabstimmung, though both are counted the
 	// same way, because only this one has a name a reader recognises.
 	case strings.Contains(t, "ausgabenbremse"):
-		return TypeAusgabenbremse
+		return TypeAusgabenbremse, false
 	case strings.Contains(t, "quorum"):
-		return TypeQuorum
+		return TypeQuorum, false
 	case strings.Contains(t, "abstimmung"):
-		return TypeNormal
+		return TypeNormal, true
 	default:
-		return ""
+		return "", false
 	}
 }
 
