@@ -16,6 +16,7 @@ This package implements a Go client for posting images to Instagram using the [I
 - A **Meta Developer App** with the Instagram use case configured using **API setup with Facebook Login**
 - Permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`
 - A **GitHub repository** with a `gh-pages` branch and GitHub Pages enabled (see below)
+- [`jq`](https://jqlang.github.io/jq/) locally, for the setup commands below (`brew install jq`)
 
 ### GitHub Pages Setup
 
@@ -32,28 +33,76 @@ Then enable GitHub Pages in the repo: **Settings → Pages → Source: Deploy fr
 
 ### Getting IDs
 
-**Facebook Page ID** — call `GET /me/accounts` with a user access token:
+Every command in this file reads its inputs from exported shell variables, so
+each one can be pasted unedited once the preceding step has run. They live in
+the current shell only, and are separate from the `ZURICH_*` variables the bot
+itself reads.
+
+Both lookups need a user access token — generate one as in
+[step 2](#2-generate-a-short-lived-user-token) below, then export it. `read -rs`
+keeps it off the screen and out of your shell history:
 
 ```bash
-curl "https://graph.facebook.com/v25.0/me/accounts?access_token=<USER_TOKEN>"
+printf 'User token: '; read -rs FB_USER_TOKEN; export FB_USER_TOKEN; echo
+```
+
+**Facebook Page ID** — call `GET /me/accounts`:
+
+```bash
+curl -s "https://graph.facebook.com/v25.0/me/accounts?access_token=$FB_USER_TOKEN" | jq
+```
+
+Export the `id` of the ZueriRatsinfo page from that list:
+
+```bash
+export FB_PAGE_ID=1234567890123456
 ```
 
 **Instagram User ID** — call `GET /{page-id}?fields=instagram_business_account`:
 
 ```bash
-curl "https://graph.facebook.com/v25.0/<PAGE_ID>?fields=instagram_business_account&access_token=<USER_TOKEN>"
+curl -s "https://graph.facebook.com/v25.0/$FB_PAGE_ID?fields=instagram_business_account&access_token=$FB_USER_TOKEN" | jq
 # → {"instagram_business_account": {"id": "<IG_USER_ID>"}, ...}
+```
+
+That `id` is the value for `<CHANNEL>_IG_USER_ID`. Export it as well — the
+[API Flow](#api-flow) commands further down read it:
+
+```bash
+export IG_USER_ID=17841400000000000
 ```
 
 ### Access Token (never-expiring Page token)
 
-The bot uses a **never-expiring Page access token**. To generate one:
+The bot uses a **never-expiring Page access token**. Generating one is a chain
+— app credentials, then a short-lived user token, then a long-lived user token,
+then the Page token — and each step exports what the next one reads.
 
 #### 1. Get App ID and App Secret
 
-- Go to https://developers.facebook.com/apps/
-- Select the ZueriRatsinfo app → **Settings → Basic**
-- Copy the **App ID** and **App Secret**
+Both live in the app dashboard:
+
+1. Open <https://developers.facebook.com/apps/> and click the **ZueriRatsinfo**
+   app. The list shows each app's ID beneath its name, and the ID is also the
+   number in the dashboard URL:
+   `https://developers.facebook.com/apps/1234567890123456/dashboard/`.
+2. In the left sidebar open **App settings → Basic**. Older dashboards label
+   this **Settings → Basic**; in the newer "Use cases" layout the link sits
+   near the bottom of the sidebar.
+3. **App ID** is the first field on that page. **App Secret** is the next one,
+   masked behind a **Show** button — clicking it asks for your Facebook
+   password before revealing the value.
+
+Export both:
+
+```bash
+export FB_APP_ID=1234567890123456
+printf 'App secret: '; read -rs FB_APP_SECRET; export FB_APP_SECRET; echo
+```
+
+If the App Secret is lost rather than merely hidden, the same page can reset it
+— but a reset invalidates every other integration signed with the old secret,
+so treat that as a last resort.
 
 #### 2. Generate a short-lived User Token
 
@@ -62,26 +111,58 @@ The bot uses a **never-expiring Page access token**. To generate one:
 - Add permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`
 - Click **Generate Access Token** and authorize
 
+Copy the token it prints and export it:
+
+```bash
+printf 'Short-lived user token: '; read -rs FB_SHORT_TOKEN; export FB_SHORT_TOKEN; echo
+```
+
 #### 3. Exchange for a long-lived User Token (~60 days)
 
 ```bash
-curl "https://graph.facebook.com/v25.0/oauth/access_token?grant_type=fb_exchange_token&client_id=<APP_ID>&client_secret=<APP_SECRET>&fb_exchange_token=<SHORT_LIVED_USER_TOKEN>"
+export FB_LONG_TOKEN=$(curl -s "https://graph.facebook.com/v25.0/oauth/access_token?grant_type=fb_exchange_token&client_id=$FB_APP_ID&client_secret=$FB_APP_SECRET&fb_exchange_token=$FB_SHORT_TOKEN" | jq -r .access_token)
+```
+
+Confirm it worked — an empty or `null` value means the response carried an
+error instead of a token, so rerun the `curl` without the `jq` pipe to read it:
+
+```bash
+echo "${FB_LONG_TOKEN:0:12}…"
 ```
 
 #### 4. Get the never-expiring Page Token
 
+`GET /me/accounts` returns one entry per Page you administer. Pick the one
+matching `FB_PAGE_ID` from [Getting IDs](#getting-ids):
+
 ```bash
-curl "https://graph.facebook.com/v25.0/me/accounts?access_token=<LONG_LIVED_USER_TOKEN>"
+export IG_TOKEN=$(curl -s "https://graph.facebook.com/v25.0/me/accounts?access_token=$FB_LONG_TOKEN" | jq -r --arg page "$FB_PAGE_ID" '.data[] | select(.id == $page) | .access_token')
+```
+
+To read the whole list instead — for instance if `FB_PAGE_ID` is not set yet:
+
+```bash
+curl -s "https://graph.facebook.com/v25.0/me/accounts?access_token=$FB_LONG_TOKEN" | jq
 ```
 
 The `access_token` field in the response is a **permanent Page token** that won't expire as long as:
 
 - You remain an admin of the Facebook Page
 - App permissions are not revoked
+- The Facebook account's password does not change — that invalidates the
+  underlying session, and the Page token with it
 
 #### 5. Update the GitHub Actions secret
 
-Store the Page token as `IG_ACCESS_TOKEN` in **GitHub → Settings → Secrets and variables → Actions**.
+The secret is channel-scoped, so the `zurich` channel reads
+`ZURICH_IG_ACCESS_TOKEN`:
+
+```bash
+gh secret set ZURICH_IG_ACCESS_TOKEN --body "$IG_TOKEN"
+```
+
+Or paste it by hand under **GitHub → Settings → Secrets and variables → Actions**.
+For local runs, set the same value in `.env`.
 
 **Ref**: https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived
 
@@ -111,6 +192,14 @@ The last two are a **GitHub** repo and a **GitHub** token, despite serving Insta
 
 ## API Flow
 
+These are the calls the Go client makes, written out for manual debugging. They
+read `IG_USER_ID` and `IG_TOKEN` from the environment, so export those first:
+
+```bash
+export IG_USER_ID=17841400000000000
+printf 'Page token: '; read -rs IG_TOKEN; export IG_TOKEN; echo
+```
+
 ### Carousel Publishing
 
 Publishing a carousel is a multi-step process:
@@ -124,11 +213,18 @@ Images are committed to the `gh-pages` branch under `ig-images/` using the GitHu
 For each image, create a media container with `is_carousel_item=true`:
 
 ```bash
-curl -X POST "https://graph.facebook.com/v25.0/{ig-user-id}/media" \
+curl -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media" \
   -d "image_url=https://example.github.io/repo/ig-images/img.jpg" \
   -d "is_carousel_item=true" \
-  -d "access_token=<TOKEN>"
+  -d "access_token=$IG_TOKEN"
 # → {"id": "<CONTAINER_ID>"}
+```
+
+Export each returned container id — the next step combines them:
+
+```bash
+export IG_CHILD_1=17900000000000001
+export IG_CHILD_2=17900000000000002
 ```
 
 #### Step 3 — Create carousel container
@@ -136,27 +232,35 @@ curl -X POST "https://graph.facebook.com/v25.0/{ig-user-id}/media" \
 Combine all child containers into a carousel with a caption:
 
 ```bash
-curl -X POST "https://graph.facebook.com/v25.0/{ig-user-id}/media" \
+curl -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media" \
   -d "media_type=CAROUSEL" \
-  -d 'children=["<CHILD_1>","<CHILD_2>"]' \
+  -d "children=[\"$IG_CHILD_1\",\"$IG_CHILD_2\"]" \
   -d "caption=Your caption here" \
-  -d "access_token=<TOKEN>"
+  -d "access_token=$IG_TOKEN"
 # → {"id": "<CAROUSEL_ID>"}
+```
+
+```bash
+export IG_CAROUSEL_ID=17900000000000003
 ```
 
 #### Step 4 — Publish the carousel
 
 ```bash
-curl -X POST "https://graph.facebook.com/v25.0/{ig-user-id}/media_publish" \
-  -d "creation_id=<CAROUSEL_ID>" \
-  -d "access_token=<TOKEN>"
+curl -X POST "https://graph.facebook.com/v25.0/$IG_USER_ID/media_publish" \
+  -d "creation_id=$IG_CAROUSEL_ID" \
+  -d "access_token=$IG_TOKEN"
 # → {"id": "<MEDIA_ID>"}
+```
+
+```bash
+export IG_MEDIA_ID=17900000000000004
 ```
 
 #### Step 5 — Poll for PUBLISHED status
 
 ```bash
-curl "https://graph.facebook.com/v25.0/<CAROUSEL_ID>?fields=status_code&access_token=<TOKEN>"
+curl -s "https://graph.facebook.com/v25.0/$IG_CAROUSEL_ID?fields=status_code&access_token=$IG_TOKEN" | jq
 ```
 
 Possible values: `EXPIRED`, `ERROR`, `FINISHED`, `IN_PROGRESS`, `PUBLISHED`
@@ -171,22 +275,56 @@ After successful publishing, the hosted images are removed from the `gh-pages` b
 - An automated first comment is possible after publishing via:
 
 ```bash
-curl -X POST "https://graph.facebook.com/v25.0/<MEDIA_ID>/comments" \
+curl -X POST "https://graph.facebook.com/v25.0/$IG_MEDIA_ID/comments" \
   -d "message=..." \
-  -d "access_token=<TOKEN>"
+  -d "access_token=$IG_TOKEN"
 ```
 
 ## Rate Limits
 
 - 100 API-published posts per 24-hour rolling period
-- Check current usage: `GET /{ig-user-id}/content_publishing_limit`
+- Check current usage:
+
+```bash
+curl -s "https://graph.facebook.com/v25.0/$IG_USER_ID/content_publishing_limit?access_token=$IG_TOKEN" | jq
+```
 
 ## Troubleshooting
+
+**Token invalidated (code 190, subcode 460)** — every Graph API call fails with:
+
+```json
+{"error":{"message":"Error validating access token: The session has been invalidated because the user changed their password or Facebook has changed the session for security reasons.","type":"OAuthException","code":190,"error_subcode":460}}
+```
+
+Nothing is wrong with the code or the images — the run typically gets as far as
+uploading them to `gh-pages` before failing. The Page token derives from a
+Facebook *user* session, so changing that account's password invalidates it:
+"never-expiring" means no expiry timer, not immune to invalidation. Meta also
+invalidates sessions on its own initiative.
+
+The fix is to regenerate, starting from
+[step 2](#2-generate-a-short-lived-user-token) — the App ID and Secret from
+step 1 are unaffected — and to update `ZURICH_IG_ACCESS_TOKEN`.
+
+Neighbouring subcodes under code 190 point elsewhere: `463` is an expired
+token and `467` an invalid one, both of which suggest a *user* token was stored
+where a Page token belongs, since a Page token carries no expiry. Inspect what
+is actually stored before regenerating:
+
+```bash
+curl -s -G "https://graph.facebook.com/v25.0/debug_token" \
+  --data-urlencode "input_token=$IG_TOKEN" \
+  --data-urlencode "access_token=$FB_APP_ID|$FB_APP_SECRET" | jq
+```
+
+A healthy Page token reports `"type": "PAGE"` and `"expires_at": 0`.
 
 **Container status** — if `media_publish` doesn't return a media ID, check the container status:
 
 ```bash
-curl "https://graph.facebook.com/v25.0/<CONTAINER_ID>?fields=status_code&access_token=<TOKEN>"
+export IG_CONTAINER_ID=17900000000000001
+curl -s "https://graph.facebook.com/v25.0/$IG_CONTAINER_ID?fields=status_code&access_token=$IG_TOKEN" | jq
 ```
 
 **Page Publishing Authorization (PPA)** — if posting fails with an authorization error, the linked Facebook Page may require PPA. Complete it at [facebook.com/business](https://www.facebook.com/business/m/one-sheeters/page-publishing-authorization).
