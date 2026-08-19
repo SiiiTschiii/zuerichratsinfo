@@ -1,6 +1,7 @@
 package voteformat
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -313,36 +314,25 @@ func TestIsSchlussabstimmung(t *testing.T) {
 	}
 }
 
-func TestSingleVoteSubtitlePrefix(t *testing.T) {
+func TestSingleVoteSubtitle(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
-		voteType string
 		expected string
 	}{
-		{"Dringlicherklärung with number", "2026_0244 Dringlicherklärung", "", "Dringlicherklärung"},
-		{"Schlussabstimmung returns empty", "2026_0244 Schlussabstimmung", "", ""},
-		{"empty returns empty", "", "", ""},
-		{"whitespace-only after strip returns empty", "  ", "", ""},
-		{"no number prefix", "Dringlicherklärung", "", "Dringlicherklärung"},
-		{"Schlussabstimmung case insensitive", "schlussabstimmung über Ziffer 1", "", ""},
-
-		// A lone quorum vote has no sibling to make its tally look unusual, so
-		// the label has to stand on its own when the source gives no subtitle —
-		// which is exactly the Kanton Zürich case.
-		{"quorum without subtitle stands alone", "", "Quorum", "Quorum"},
-		{"quorum joins an existing subtitle", "Dringlicherklärung", "Quorum", "Dringlicherklärung · Quorum"},
-		{"quorum survives a suppressed Schlussabstimmung", "Schlussabstimmung", "Quorum", "Quorum"},
-		{"Normal adds nothing", "Dringlicherklärung", "Normal", "Dringlicherklärung"},
-		{"unknown type adds nothing", "Dringlicherklärung", "Offen", "Dringlicherklärung"},
+		{"Dringlicherklärung with number", "2026_0244 Dringlicherklärung", "Dringlicherklärung"},
+		{"Schlussabstimmung returns empty", "2026_0244 Schlussabstimmung", ""},
+		{"empty returns empty", "", ""},
+		{"whitespace-only after strip returns empty", "  ", ""},
+		{"no number prefix", "Dringlicherklärung", "Dringlicherklärung"},
+		{"Schlussabstimmung case insensitive", "schlussabstimmung über Ziffer 1", ""},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := SingleVoteSubtitlePrefix(votes.Vote{Subtitle: tt.input, Type: tt.voteType})
+			got := singleVoteSubtitle(tt.input)
 			if got != tt.expected {
-				t.Errorf("SingleVoteSubtitlePrefix(%q, type=%q) = %q, want %q",
-					tt.input, tt.voteType, got, tt.expected)
+				t.Errorf("singleVoteSubtitle(%q) = %q, want %q", tt.input, got, tt.expected)
 			}
 		})
 	}
@@ -393,6 +383,37 @@ func TestSubVoteLabelNamesTheVoteType(t *testing.T) {
 }
 
 func intPtr(n int) *int { return &n }
+
+// A card carries no headline, so the caption's date and time do not travel with
+// it. Two votes under a recurring agenda item produce the same picture twice
+// unless the clock is on the card itself.
+func TestCardCountsLabel(t *testing.T) {
+	at0941 := time.Date(2026, 8, 17, 9, 41, 0, 0, time.UTC)
+
+	tests := []struct {
+		name     string
+		date     time.Time
+		voteType string
+		expected string
+	}{
+		{"clock and type together", at0941, "Ausgabenbremse", "Abstimmung (09:41) · Ausgabenbremse"},
+		{"clock alone", at0941, "Normal", "Abstimmung (09:41)"},
+		// Stadt Zürich supplies sitting dates at midnight, so a clock there
+		// would invent a precision the source does not have.
+		{"midnight leaves the type standing alone", time.Date(2026, 8, 17, 0, 0, 0, 0, time.UTC), "Quorum", "Quorum"},
+		{"nothing to say", time.Time{}, "Normal", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := CardCountsLabel(votes.Vote{Date: tt.date, Type: tt.voteType})
+			if got != tt.expected {
+				t.Errorf("CardCountsLabel(date=%v, type=%q) = %q, want %q",
+					tt.date, tt.voteType, got, tt.expected)
+			}
+		})
+	}
+}
 
 func TestIsDecisionConsistent(t *testing.T) {
 	tests := []struct {
@@ -483,7 +504,23 @@ func TestPostHeadline(t *testing.T) {
 		{
 			name:  "named body and known date",
 			group: []votes.Vote{{Body: "Kantonsrat ZH", Date: day}},
-			want:  "Kantonsrat ZH | Abstimmung vom 06.07.2026",
+			want:  "Kantonsrat ZH | Abstimmung vom 06.07.2026 (10:21)",
+		},
+		{
+			// Stadt Zürich supplies sitting dates at midnight, so a clock there
+			// would invent a precision the source does not have.
+			name:  "a midnight date carries no clock",
+			group: []votes.Vote{{Body: "Gemeinderat Zürich", Date: time.Date(2026, 7, 6, 0, 0, 0, 0, time.UTC)}},
+			want:  "Gemeinderat Zürich | Abstimmung vom 06.07.2026",
+		},
+		{
+			// A group spans several times; its entries carry them instead.
+			name: "a multi-vote group keeps the date alone",
+			group: []votes.Vote{
+				{Body: "Kantonsrat ZH", Date: day},
+				{Body: "Kantonsrat ZH", Date: day.Add(9 * time.Minute)},
+			},
+			want: "Kantonsrat ZH | Abstimmung vom 06.07.2026",
 		},
 		{
 			// Votes with an unparseable date are deliberately kept rather than
@@ -496,7 +533,7 @@ func TestPostHeadline(t *testing.T) {
 		{
 			name:  "unnamed body omits the chamber",
 			group: []votes.Vote{{Date: day}},
-			want:  "Abstimmung vom 06.07.2026",
+			want:  "Abstimmung vom 06.07.2026 (10:21)",
 		},
 		{
 			name:  "empty group",
@@ -693,5 +730,127 @@ func TestQuorumFraktionColumns(t *testing.T) {
 	got = FormatFraktionBreakdown(AggregateFraktionCounts(withNein))
 	if !strings.Contains(got, "(Zust./ohne)") || !strings.Contains(got, "SVP 0/2") {
 		t.Errorf("a Nein choice should join the non-supporters:\n%s", got)
+	}
+}
+
+// TestQuorumTallyFoldsNeinIntoTheUnsupportedBucket pins the arithmetic every
+// surface of a post shares.
+//
+// While every quorum vote the source typed happened to report Nein=0, reading
+// Abwesend alone looked correct, and the generated image did exactly that. The
+// 17.08.2026 Ausgabenbremse reports 141 Ja to 1 Nein with 38 absent, and the
+// card then said "38 ohne" under a Fraktion table whose own column summed to
+// 39 — the image contradicting itself.
+func TestQuorumTallyFoldsNeinIntoTheUnsupportedBucket(t *testing.T) {
+	tests := []struct {
+		name                     string
+		ja, nein, abwesend       *int
+		wantSupport, wantWithout int
+	}{
+		{"Ausgabenbremse with a Nein cast", intPtr(141), intPtr(1), intPtr(38), 141, 39},
+		{"no Nein reported", intPtr(128), intPtr(0), intPtr(52), 128, 52},
+		{"nothing reported at all", nil, nil, nil, 0, 0},
+		{"absent unreported", intPtr(80), intPtr(2), nil, 80, 2},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := VoteCounts{Ja: tt.ja, Nein: tt.nein, Abwesend: tt.abwesend, Type: "Quorum"}
+			support, without := QuorumTally(c)
+			if support != tt.wantSupport || without != tt.wantWithout {
+				t.Errorf("QuorumTally = (%d, %d), want (%d, %d)",
+					support, without, tt.wantSupport, tt.wantWithout)
+			}
+		})
+	}
+}
+
+// TestQuorumCaptionAgreesWithTheTally guards the two against drifting apart
+// again, now that they share one source.
+func TestQuorumCaptionAgreesWithTheTally(t *testing.T) {
+	c := VoteCounts{Ja: intPtr(141), Nein: intPtr(1), Enthaltung: intPtr(0), Abwesend: intPtr(38), Type: "Quorum"}
+
+	_, without := QuorumTally(c)
+	caption := formatQuorumCounts(c)
+
+	if !strings.Contains(caption, fmt.Sprintf("%d ohne Zustimmung", without)) {
+		t.Errorf("caption %q does not state the tally's %d", caption, without)
+	}
+}
+
+// TestGroupPrefixLineNamesTheKindOfBusiness pins the label line that tells a
+// reader what they are looking at. A Postulat is a demand addressed to the
+// Regierungsrat, not a decision taken, and the tally alone does not say so.
+func TestGroupPrefixLineNamesTheKindOfBusiness(t *testing.T) {
+	vote := func(affairType, subtitle, voteType string) votes.Vote {
+		return votes.Vote{
+			Subtitle: subtitle,
+			Type:     voteType,
+			Affair:   votes.Affair{Type: affairType},
+		}
+	}
+
+	tests := []struct {
+		name  string
+		group []votes.Vote
+		want  string
+	}{
+		{
+			name:  "the business type alone",
+			group: []votes.Vote{vote("Postulat", "", "Normal")},
+			want:  "Postulat",
+		},
+		{
+			name:  "a government bill is named too",
+			group: []votes.Vote{vote("Vorlage", "", "Normal")},
+			want:  "Vorlage",
+		},
+		{
+			// The ballot type stays out: "Vorlage · Ausgabenbremse" glued a fact
+			// about the Geschäft to a fact about this ballot. It goes with the
+			// counts, which is what it explains.
+			name:  "the ballot type stays out of it",
+			group: []votes.Vote{vote("Vorlage", "", "Ausgabenbremse")},
+			want:  "Vorlage",
+		},
+		{
+			name:  "the ballot type does not join a subtitle either",
+			group: []votes.Vote{vote("Vorlage", "Dringlicherklärung", "Quorum")},
+			want:  "Vorlage · Dringlicherklärung",
+		},
+		{
+			// Stadt Zürich reports no business type, so its line is unchanged.
+			name:  "no business type leaves the existing prefix",
+			group: []votes.Vote{vote("", "Änderungsantrag zu Ziffer 1", "Normal")},
+			want:  "Änderungsantrag zu Ziffer 1",
+		},
+		{
+			// Which question was put is meaningless when several share the post;
+			// the per-vote headings carry that instead.
+			name: "a multi-vote group keeps only the business type",
+			group: []votes.Vote{
+				vote("Vorlage", "Schlussabstimmung", "Normal"),
+				vote("Vorlage", "", "Ausgabenbremse"),
+			},
+			want: "Vorlage",
+		},
+		{
+			name:  "nothing to say",
+			group: []votes.Vote{vote("", "", "Normal")},
+			want:  "",
+		},
+		{
+			name:  "no votes",
+			group: nil,
+			want:  "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GroupPrefixLine(tt.group); got != tt.want {
+				t.Errorf("GroupPrefixLine() = %q, want %q", got, tt.want)
+			}
+		})
 	}
 }

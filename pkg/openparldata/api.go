@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
@@ -47,7 +48,7 @@ func (c *Client) FetchRecent(limit int) ([]votes.Vote, error) {
 		}
 
 		for _, v := range resp.Data {
-			c.rememberVotingID(v)
+			c.rememberVoting(v)
 			out = append(out, c.toVote(v))
 		}
 
@@ -81,7 +82,64 @@ func (c *Client) GroupByAffair(vs []votes.Vote) ([][]votes.Vote, error) {
 		}
 	}
 
+	// After enrichment, because whether a detail source's verdict may be
+	// published depends on the affair type that enrichment fetches.
+	c.applyDetails(complete)
+
 	return votes.GroupByAffairAndDate(complete), nil
+}
+
+// applyDetails fills in what the configured DetailSource knows and this API
+// does not.
+//
+// The type takes precedence over type_de rather than merely filling its gaps.
+// For Kanton Zürich the API's own value is not only incomplete — whole sittings
+// arrive null — but wrong often enough to matter: in a 94-vote sample three
+// votes typed "Quorum" were ordinary Abstimmungen and one typed "Normal" was a
+// Quorumsabstimmung. The detail source is the record those values are derived
+// from, so where the two disagree it is the one to believe.
+//
+// A vote the source says nothing about keeps everything it already had, and a
+// source that fails entirely costs nothing but the enrichment: the pipeline
+// already refuses to publish a vote whose type it does not recognise.
+func (c *Client) applyDetails(vs []votes.Vote) {
+	if c.details == nil || len(vs) == 0 {
+		return
+	}
+
+	voteURLs := make(map[string]string, len(vs))
+	for _, v := range vs {
+		if u := c.sourceURLs[v.SourceID]; u != "" {
+			voteURLs[v.SourceID] = u
+		}
+	}
+	if len(voteURLs) == 0 {
+		return
+	}
+
+	details, err := c.details.Lookup(voteURLs)
+	if err != nil {
+		// Partial results come back alongside the error, so this reports the
+		// gap and then uses whatever did arrive.
+		log.Printf("⚠️  openparldata: vote details incomplete: %v", err)
+	}
+
+	for i := range vs {
+		d, ok := details[vs[i].SourceID]
+		if !ok {
+			continue
+		}
+		// Assigned even when empty. A vote the detail source knows but cannot
+		// label — a segment titled something nobody has mapped yet — must lose
+		// the API's type rather than keep it: that is the one case where the
+		// API's value is least likely to be right, and an empty type is what
+		// stops the vote publishing. Votes the source says nothing about never
+		// reach here.
+		vs[i].Type = d.Type
+		if d.Decision != "" && vs[i].Decision == "" && affairStatesItsOutcome(vs[i].Affair.Type) {
+			vs[i].Decision = d.Decision
+		}
+	}
 }
 
 // completeGroups fetches the other votings of each affair already present, so a
@@ -180,7 +238,7 @@ func (c *Client) votingsForAffairDays(affairID string, days map[string]bool, see
 				continue
 			}
 			seenVote[dto.ExternalID] = true
-			c.rememberVotingID(dto)
+			c.rememberVoting(dto)
 			found = append(found, candidate)
 		}
 
@@ -199,13 +257,19 @@ func (c *Client) enrich(v *votes.Vote) error {
 		return err
 	}
 
-	affairs, err := c.fetchAffairs(votingID)
-	if err != nil {
-		// The fallback affair number keeps grouping correct, so this degrades
-		// to a post without a business number rather than to no post.
-		log.Printf("⚠️  openparldata: could not fetch affair for voting %d: %v", votingID, err)
-	} else if len(affairs) > 0 {
-		applyAffair(v, affairs[0])
+	// A vote with no affair has nothing to fetch: procedural motions and
+	// attendance roll calls belong to no business matter, and asking anyway
+	// spends a request to be told so.
+	if v.Affair.ID != "" {
+		affairs, err := c.fetchAffairs(votingID)
+		if err != nil {
+			// The fallback affair number keeps grouping correct, so this
+			// degrades to a post without a business number rather than to no
+			// post.
+			log.Printf("⚠️  openparldata: could not fetch affair for voting %d: %v", votingID, err)
+		} else if len(affairs) > 0 {
+			applyAffair(v, affairs[0])
+		}
 	}
 
 	members, err := c.fetchMemberVotes(votingID)
@@ -243,7 +307,7 @@ func (c *Client) votingID(v votes.Vote) (int64, error) {
 	if len(resp.Data) == 0 {
 		return 0, fmt.Errorf("openparldata: no voting with external_id %q", v.SourceID)
 	}
-	c.rememberVotingID(resp.Data[0])
+	c.rememberVoting(resp.Data[0])
 	return resp.Data[0].ID, nil
 }
 
@@ -269,4 +333,38 @@ func (c *Client) fetchMemberVotes(votingID int64) ([]votes.MemberVote, error) {
 		out = append(out, toMemberVote(m))
 	}
 	return out, nil
+}
+
+// verdictBearingAffairTypes are the kinds of business for which a carried vote
+// really does mean "angenommen".
+//
+// It is an allowlist because a Ja does not mean the same thing everywhere. A
+// Vorlage that carries is adopted. An Einzelinitiative that carries is only
+// *vorläufig unterstützt* and goes on to the Regierungsrat — the Kantonsrat's
+// own record for the 17.08.2026 Sprungbeschwerde reads "Vorläufig unterstützt
+// (79 Stimmen)" and lists the business as still pending, while a post calling
+// it "Angenommen" would tell a reader the initiative had passed. The same holds
+// for a Parlamentarische Initiative, and a Motion or Postulat is *überwiesen*
+// rather than accepted.
+//
+// Roughly a sixth of recent Kanton Zürich votes belong to one of those, so this
+// is not a corner case. Where the wording is not certain the formatters print
+// the counts and claim nothing, which is what they did for every cantonal vote
+// before a decision was available at all.
+//
+// Naming the right verb per business type would be better than silence, but the
+// archive does not publish which procedural step a given vote served, and
+// deriving it would be inventing an outcome — the exact thing this pipeline is
+// built not to do.
+var verdictBearingAffairTypes = map[string]bool{
+	"Vorlage":              true,
+	"Geschäftsbericht":     true,
+	"Rechenschaftsbericht": true,
+	"Tätigkeitsbericht":    true,
+}
+
+// affairStatesItsOutcome reports whether "angenommen"/"abgelehnt" is an honest
+// label for a vote on this kind of business.
+func affairStatesItsOutcome(affairType string) bool {
+	return verdictBearingAffairTypes[strings.TrimSpace(affairType)]
 }

@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/openparldata"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/recapp"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
 )
@@ -67,6 +68,27 @@ var zurichCanton = votes.Jurisdiction{
 // zurichCantonBodyKey is the canton's body_key in OpenParlData.
 const zurichCantonBodyKey = "ZH"
 
+// cantonVoteDetails adapts the Kantonsrat's audio archive to the detail source
+// OpenParlData asks for.
+//
+// The two packages are kept unaware of each other on purpose. OpenParlData
+// serves twenty-odd cantons and must not grow a dependency on one body's
+// archive, and the archive has no reason to know which API happens to need it.
+// Joining them is this package's job.
+type cantonVoteDetails struct{ *recapp.Client }
+
+func (d cantonVoteDetails) Lookup(voteURLs map[string]string) (map[string]openparldata.VoteDetail, error) {
+	found, err := d.Client.Lookup(voteURLs)
+	out := make(map[string]openparldata.VoteDetail, len(found))
+	for id, info := range found {
+		out[id] = openparldata.VoteDetail{
+			Type:     info.Type,
+			Decision: info.Decision,
+		}
+	}
+	return out, err
+}
+
 // jurisdictions is the registry, keyed by Jurisdiction.Key.
 var jurisdictions = map[string]Jurisdiction{
 	zurichapi.JurisdictionKey: {
@@ -84,7 +106,8 @@ var jurisdictions = map[string]Jurisdiction{
 		// first run would publish. See cmd/seed_votelog.
 		MaxAgeDays: 14,
 		NewSource: func() votes.Source {
-			return openparldata.New(zurichCanton, zurichCantonBodyKey)
+			return openparldata.New(zurichCanton, zurichCantonBodyKey).
+				WithDetails(cantonVoteDetails{recapp.New()})
 		},
 	},
 }

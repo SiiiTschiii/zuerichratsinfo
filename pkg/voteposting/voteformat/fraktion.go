@@ -52,7 +52,7 @@ const (
 // stops asserting an attendance it cannot support — and stays correct whether or
 // not the source ever separates the two.
 func quorumChoice(voteType, choice string) string {
-	if strings.TrimSpace(voteType) != voteTypeQuorum {
+	if !isThresholdVoteType(voteType) {
 		return choice
 	}
 	switch choice {

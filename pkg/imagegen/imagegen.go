@@ -9,6 +9,7 @@ import (
 	"image/draw"
 	"image/jpeg"
 	"sort"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -125,9 +126,29 @@ func drawShadowedText(img *image.RGBA, face font.Face, emojiFace font.Face, x, y
 
 // drawCenteredText draws text horizontally centered on the image.
 func drawCenteredText(img *image.RGBA, face font.Face, emojiFace font.Face, y int, text string, bg color.RGBA) {
-	w := font.MeasureString(face, text).Ceil()
+	w := measureMixedText(face, emojiFace, text)
 	x := (imgWidth - w) / 2
 	drawShadowedText(img, face, emojiFace, x, y, text, bg)
+}
+
+// measureMixedText returns the width drawShadowedText will actually occupy.
+//
+// It has to split the string the same way the drawing does, because the two
+// faces are different sizes: the verdict emoji renders in NotoEmoji 72 while
+// the text around it is gobold 64. Measuring the whole string with the text
+// face alone reports the width of a glyph that is never drawn — 48px against
+// the 91px the emoji really takes — and a card whose verdict is nothing but
+// "❌" came out 21px right of centre, visibly off against the title below it.
+func measureMixedText(face font.Face, emojiFace font.Face, text string) int {
+	var total fixed.Int26_6
+	for _, seg := range splitEmojiText(text) {
+		f := face
+		if seg.isEmoji && emojiFace != nil {
+			f = emojiFace
+		}
+		total += font.MeasureString(f, seg.text)
+	}
+	return total.Ceil()
 }
 
 // drawHLine draws a thin horizontal separator line.
@@ -415,17 +436,25 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	// Title first: bold, wrapped, centered
 	title := voteformat.CleanVoteTitle(v.Title)
 
-	// Single-vote non-Schlussabstimmung: prepend the Abstimmungsgegenstand inline
-	// in front of the title (e.g. "Dringlicherklärung: Motion von …").
-	if prefix := voteformat.SingleVoteSubtitlePrefix(*v); prefix != "" {
+	// The kind of business, inline in front of the title as on the title card
+	// (e.g. "Vorlage" or "Vorlage · Dringlicherklärung").
+	if prefix := voteformat.GroupPrefixLine([]votes.Vote{*v}); prefix != "" {
 		title = prefix + ": " + title
 	}
+
+	// The heading above the counts: when the vote was taken and what kind of
+	// ballot it was. The multi-vote cards get theirs from SubVoteLabel; this is
+	// the lone-vote case, which has no ordinal to be numbered by.
+	countsLabel := voteformat.CardCountsLabel(*v)
 
 	// Calculate available space for title: reserve space for verdict + stats + party breakdown
 	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 	numParties := len(fraktionCounts)
 	verdictHeight := lineHeight(fonts.verdict)
 	statsHeight := lineHeight(fonts.statNum) + lineHeight(fonts.statLabel)
+	if countsLabel != "" {
+		statsHeight += lineHeight(fonts.statLabel)
+	}
 	separatorHeight := lineHeight(fonts.statLabel) + lineHeight(fonts.statNum)
 	partyLineHeight := lineHeight(fonts.partyNum)
 	partyHeight := partyLineHeight + numParties*partyLineHeight
@@ -485,6 +514,14 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	}
 	cur.gap(fonts.statNum, 0.75)
 
+	if countsLabel != "" {
+		if img != nil {
+			drawCenteredText(img, fonts.statLabel, nil, cur.baseline(fonts.statLabel), countsLabel, bg)
+		}
+		cur.advance(fonts.statLabel)
+		cur.gap(fonts.statLabel, 0.3)
+	}
+
 	// Stats dashboard: large numbers with small labels in columns
 	switch {
 	case isAuswahl:
@@ -532,9 +569,13 @@ func drawStandardStatsDashboard(img *image.RGBA, cur *layoutCursor, counts votef
 // members who did not support it vanish from the card entirely, and the two
 // zeros are positions no one could have taken.
 func drawQuorumStatsDashboard(img *image.RGBA, cur *layoutCursor, counts voteformat.VoteCounts, bg color.RGBA, numFace, labelFace font.Face) {
+	// Shared with the caption and the Fraktion table, which state the same two
+	// numbers: a card that disagreed with the text under it would be worse than
+	// either being wrong alone.
+	support, without := voteformat.QuorumTally(counts)
 	cols := []statCol{
-		{voteformat.FormatVoteCount(counts.Ja), "Zust."},
-		{voteformat.FormatVoteCount(counts.Abwesend), "ohne"},
+		{strconv.Itoa(support), "Zust."},
+		{strconv.Itoa(without), "ohne"},
 	}
 	drawStatColumns(img, cur, cols, bg, numFace, labelFace)
 }
@@ -750,6 +791,9 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 
 	// Title: bold, wrapped, centered (no verdict — ambiguous for multi-vote groups)
 	title := voteformat.CleanVoteTitle(v.Title)
+	if prefix := voteformat.GroupPrefixLine(group); prefix != "" {
+		title = prefix + ": " + title
+	}
 
 	titleFontSize := 42.0
 	var titleFace font.Face
@@ -795,7 +839,10 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 	// Find widest line and center the block, then left-align all lines within it
 	maxW := 0
 	for _, line := range summaryLines {
-		w := font.MeasureString(fonts.small, line).Ceil()
+		// Measured with the same pair of faces it is drawn with below; a
+		// summary line carrying an emoji would otherwise centre off its true
+		// width.
+		w := measureMixedText(fonts.small, fonts.emojiSmall, line)
 		if w > maxW {
 			maxW = w
 		}

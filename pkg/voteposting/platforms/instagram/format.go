@@ -79,12 +79,11 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group)))
 
-	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
-	if len(group) == 1 {
-		if prefix := voteformat.SingleVoteSubtitlePrefix(group[0]); prefix != "" {
-			sb.WriteString(prefix)
-			sb.WriteString("\n")
-		}
+	// The label line: what kind of business this is, plus the
+	// Abstimmungsgegenstand when a lone vote makes that meaningful.
+	if prefix := voteformat.GroupPrefixLine(group); prefix != "" {
+		sb.WriteString(prefix)
+		sb.WriteString("\n")
 	}
 
 	sb.WriteString(title)
@@ -106,7 +105,12 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 			}
 			sb.WriteString("\n")
 		} else {
-			// Single vote: result line
+			// Single vote: the ballot type when it is one worth naming, then the
+			// result line. A lone threshold vote needs the label most — there is
+			// no sibling beside it to make the lopsided tally look unusual.
+			if label := voteformat.TypeLabel(vote.Type); label != "" {
+				sb.WriteString(label + "\n")
+			}
 			if voteformat.HasVerdict(vote) {
 				emoji := voteformat.GetVoteResultEmoji(vote.Decision)
 				result := voteformat.GetVoteResultText(vote.Decision)

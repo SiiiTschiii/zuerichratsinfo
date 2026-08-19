@@ -59,11 +59,9 @@ func buildRootPost(group []votes.Vote, title string, charLimit int) *XPost {
 	header := fmt.Sprintf("🗳️  %s\n\n", voteformat.PostHeadline(group))
 	threadHint := "\n\n👇 Details im Thread"
 
-	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
-	var subtitlePrefix string
-	if len(group) == 1 {
-		subtitlePrefix = voteformat.SingleVoteSubtitlePrefix(group[0])
-	}
+	// The label line: what kind of business this is, plus the
+	// Abstimmungsgegenstand when a lone vote makes that meaningful.
+	subtitlePrefix := voteformat.GroupPrefixLine(group)
 
 	var body string
 	if len(group) == 1 {
@@ -75,11 +73,11 @@ func buildRootPost(group []votes.Vote, title string, charLimit int) *XPost {
 			result := voteformat.GetVoteResultText(vote.Decision)
 			body = fmt.Sprintf("%s %s: %s", resultEmoji, result, title)
 		}
-		if subtitlePrefix != "" {
-			body = subtitlePrefix + "\n" + body
-		}
 	} else {
 		body = title
+	}
+	if subtitlePrefix != "" {
+		body = subtitlePrefix + "\n" + body
 	}
 
 	fullText := header + body + threadHint
@@ -106,11 +104,13 @@ func buildRootPost(group []votes.Vote, title string, charLimit int) *XPost {
 				}
 				body = prefix + title
 			}
-			if subtitlePrefix != "" {
-				body = subtitlePrefix + "\n" + body
-			}
 		} else {
 			body = truncateText(title, available)
+		}
+		// Reattached for both shapes: the overhead above reserves room for it, so
+		// dropping it here shortened the post and lost the line at once.
+		if subtitlePrefix != "" {
+			body = subtitlePrefix + "\n" + body
 		}
 		fullText = header + body + threadHint
 	}
@@ -131,7 +131,12 @@ func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPos
 
 		counts := voteformat.CountsOf(vote)
 		if len(group) == 1 {
-			// Single vote: just the counts
+			// Single vote: the counts, headed by the ballot type when it is one
+			// worth naming. A lone threshold vote needs that most — there is no
+			// sibling beside it to make the lopsided tally look unusual.
+			if label := voteformat.TypeLabel(vote.Type); label != "" {
+				entry.WriteString(label + "\n")
+			}
 			entry.WriteString(voteformat.FormatVoteCountsLong(counts))
 		} else {
 			// Multi-vote: subtitle + counts

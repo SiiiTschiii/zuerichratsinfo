@@ -13,6 +13,9 @@ import (
 // dateLayouts are the timestamp shapes OpenParlData has been observed to return.
 var dateLayouts = []string{"2006-01-02T15:04:05", time.RFC3339, "2006-01-02"}
 
+// dateOnlyLayout is the one shape above that carries no time of day.
+const dateOnlyLayout = "2006-01-02"
+
 // bodyLocation is the wall clock every body this adapter serves actually sits by.
 //
 // OpenParlData publishes timestamps in UTC with no zone marker, while the
@@ -95,6 +98,9 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 func applyAffair(v *votes.Vote, a affairDTO) {
 	if n := deref(a.Number); n != "" {
 		v.Affair.Number = n
+	}
+	if t := deref(a.TypeNameDe); t != "" {
+		v.Affair.Type = t
 	}
 	if t := deref(a.TitleDe); t != "" {
 		v.Affair.Title = t
@@ -246,12 +252,21 @@ func fraktionName(name string) string {
 
 // parseDate returns the zero time for anything unparseable; callers treat that
 // as "unknown", not "old".
+//
+// A date with no time of day stays at local midnight. Read as UTC and shifted
+// into the body's zone it would become 01:00 or 02:00, and formatters that show
+// a vote's time cannot tell that clock reading from a real one.
 func parseDate(s string) time.Time {
 	s = strings.TrimSpace(s)
 	for _, layout := range dateLayouts {
-		if t, err := time.Parse(layout, s); err == nil {
-			return t.In(bodyLocation)
+		t, err := time.Parse(layout, s)
+		if err != nil {
+			continue
 		}
+		if layout == dateOnlyLayout {
+			return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, bodyLocation)
+		}
+		return t.In(bodyLocation)
 	}
 	return time.Time{}
 }

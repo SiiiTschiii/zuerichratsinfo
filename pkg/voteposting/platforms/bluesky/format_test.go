@@ -1,6 +1,7 @@
 package bluesky
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
@@ -154,6 +155,28 @@ func TestFormatVoteThread_VeryLongTitle(t *testing.T) {
 	}
 	if strings.Contains(firstReply.Text, "Schlussabstimmung über") {
 		t.Errorf("first reply must not repeat the title\nFull reply:\n%s", firstReply.Text)
+	}
+}
+
+// The truncation arithmetic reserves room for the business-type line, so a root
+// that loses it is both missing the line and shorter than it was allowed to be.
+func TestFormatVoteThread_TruncatedMultiVoteRootKeepsTheBusinessType(t *testing.T) {
+	longTitle := strings.Repeat("A", maxGraphemes+200)
+
+	var group []votes.Vote
+	for i := 0; i < 2; i++ {
+		v := sampleVote(longTitle, "angenommen", 80, 30, 5, 10)
+		v.SourceID = "trunc-multi-" + strconv.Itoa(i)
+		v.Affair.Type = "Vorlage"
+		group = append(group, v)
+	}
+
+	root := FormatVoteThread(group, nil)[0]
+	if !strings.Contains(root.Text, "Vorlage\n") {
+		t.Errorf("truncated multi-vote root dropped the business type:\n%s", root.Text)
+	}
+	if graphemeLen(root.Text) > maxGraphemes {
+		t.Errorf("root exceeds %d graphemes: %d\n%s", maxGraphemes, graphemeLen(root.Text), root.Text)
 	}
 }
 

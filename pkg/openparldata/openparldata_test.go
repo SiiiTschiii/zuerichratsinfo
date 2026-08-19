@@ -433,6 +433,18 @@ func TestParseDate(t *testing.T) {
 	}
 }
 
+// A value with no time of day must not acquire one. Read as UTC and shifted
+// into the body's zone it becomes 01:00 or 02:00, and the formatters that print
+// a vote's time cannot tell that from a real clock reading.
+func TestParseDateKeepsDateOnlyValuesAtMidnight(t *testing.T) {
+	for _, in := range []string{"2026-07-06", "2026-01-06"} {
+		got := parseDate(in)
+		if h, m := got.Hour(), got.Minute(); h != 0 || m != 0 {
+			t.Errorf("parseDate(%q) = %s, want local midnight", in, got.Format(time.RFC3339))
+		}
+	}
+}
+
 func TestGet_RetriesServerErrors(t *testing.T) {
 	var attempts int
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -777,5 +789,293 @@ func TestSubtitleIsDroppedDespiteDifferentQuoteStyle(t *testing.T) {
 				t.Errorf("sameHeadline(%q, affair) = %v, want %v", tc.voting, got, tc.want)
 			}
 		})
+	}
+}
+
+// TestAffairsResponseAcceptsBareArray covers a shape the API actually serves.
+//
+// A voting that has an affair comes back in the documented {"data": [...]}
+// envelope; a voting that has none comes back as a bare [], which is a correct
+// empty answer in a different shape. Decoding only the envelope turned that into
+// a decode error logged on every single run.
+func TestAffairsResponseAcceptsBareArray(t *testing.T) {
+	tests := []struct {
+		name string
+		body string
+		want int
+	}{
+		{"bare empty array", `[]`, 0},
+		{"bare populated array", `[{"id":1,"number":"6040"}]`, 1},
+		{"documented envelope", `{"data":[{"id":1,"number":"6040"}],"meta":{}}`, 1},
+		{"envelope with no rows", `{"data":[],"meta":{}}`, 0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var resp affairsResponse
+			if err := json.Unmarshal([]byte(tt.body), &resp); err != nil {
+				t.Fatalf("decoding %s: %v", tt.body, err)
+			}
+			if len(resp.Data) != tt.want {
+				t.Errorf("got %d affairs, want %d", len(resp.Data), tt.want)
+			}
+		})
+	}
+}
+
+// stubDetails is a DetailSource that answers from a fixed table and records
+// what it was asked about.
+type stubDetails struct {
+	byVoting map[string]VoteDetail
+	err      error
+	calls    int
+	asked    map[string]string
+}
+
+func (s *stubDetails) Lookup(voteURLs map[string]string) (map[string]VoteDetail, error) {
+	s.calls++
+	s.asked = voteURLs
+	return s.byVoting, s.err
+}
+
+// TestGroupByAffairAppliesDetailTypes is the reason the DetailSource hook
+// exists. The API served the whole 17.08.2026 sitting with a null type, and two
+// of those votes were Ausgabenbremse votes decided against a threshold.
+func TestGroupByAffairAppliesDetailTypes(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(2)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	// The fixture is a real listing, so start from the state that broke:
+	// no type at all.
+	for i := range vs {
+		vs[i].Type = ""
+	}
+
+	details := &stubDetails{byVoting: map[string]VoteDetail{
+		vs[0].SourceID: {Type: "Quorum", Decision: "angenommen"},
+	}}
+	c.WithDetails(details)
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+
+	found, ok := findVote(groups, vs[0].SourceID)
+	if !ok {
+		t.Fatalf("vote %s vanished from the grouping", vs[0].SourceID)
+	}
+	if found.Type != "Quorum" {
+		t.Errorf("Type = %q, want %q", found.Type, "Quorum")
+	}
+	if found.Decision != "angenommen" {
+		t.Errorf("Decision = %q, want %q", found.Decision, "angenommen")
+	}
+
+	// A vote the source says nothing about keeps what the API gave it.
+	untouched, ok := findVote(groups, vs[1].SourceID)
+	if ok && untouched.Type != "" {
+		t.Errorf("unmentioned vote got type %q, want it left alone", untouched.Type)
+	}
+}
+
+// TestGroupByAffairDetailTypeOverridesTheAPI pins that the detail source wins a
+// disagreement. The API's type_de is not merely incomplete for Kanton Zürich —
+// in a 94-vote sample three votes typed "Quorum" were ordinary Abstimmungen and
+// one typed "Normal" was a Quorumsabstimmung.
+func TestGroupByAffairDetailTypeOverridesTheAPI(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(1)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	vs[0].Type = "Normal"
+
+	c.WithDetails(&stubDetails{byVoting: map[string]VoteDetail{
+		vs[0].SourceID: {Type: "Quorum"},
+	}})
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+	if found, ok := findVote(groups, vs[0].SourceID); !ok || found.Type != "Quorum" {
+		t.Errorf("the API's type won; got type %q", found.Type)
+	}
+}
+
+// TestGroupByAffairDetailClearsAnUnreadableType pins the fail-closed half of
+// that override. A segment the archive holds but labels with something nobody
+// has mapped — a new word for a kind of ballot — arrives as an empty type. That
+// must clear the API's value rather than fall back to it: it is exactly the
+// case where type_de is least likely to be right, and an empty type is what
+// keeps the vote off the timeline until someone looks.
+func TestGroupByAffairDetailClearsAnUnreadableType(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(1)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	vs[0].Type = "Normal"
+
+	c.WithDetails(&stubDetails{byVoting: map[string]VoteDetail{
+		vs[0].SourceID: {Type: ""},
+	}})
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+	if found, ok := findVote(groups, vs[0].SourceID); !ok || found.Type != "" {
+		t.Errorf("an unreadable archive label left the vote publishable as %q", found.Type)
+	}
+}
+
+// TestGroupByAffairSurvivesADetailSourceFailure pins that the archive is
+// enrichment. Losing it must degrade to "unknown type", which the posting
+// pipeline already refuses to publish, rather than losing the run.
+func TestGroupByAffairSurvivesADetailSourceFailure(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(1)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+
+	c.WithDetails(&stubDetails{err: fmt.Errorf("archive unreachable")})
+
+	if _, err := c.GroupByAffair(vs); err != nil {
+		t.Fatalf("a failed detail lookup must not fail the fetch, got %v", err)
+	}
+}
+
+// TestGroupByAffairAsksTheDetailSourceForTheVotesOwnURL guards the ordering the
+// lookup depends on. Enrichment replaces Vote.SourceURL with the affair's page,
+// so a lookup keyed off the vote as it ends up would identify nothing.
+func TestGroupByAffairAsksTheDetailSourceForTheVotesOwnURL(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(1)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	own := vs[0].SourceURL
+	if own == "" {
+		t.Fatal("fixture vote has no source URL to check against")
+	}
+
+	details := &stubDetails{}
+	c.WithDetails(details)
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+	if got := details.asked[vs[0].SourceID]; got != own {
+		t.Errorf("detail source was asked about %q, want the vote's own URL %q", got, own)
+	}
+	// And the vote really does end up pointing somewhere else, or this test
+	// would pass for the wrong reason.
+	if found, ok := findVote(groups, vs[0].SourceID); ok && found.SourceURL == own {
+		t.Log("note: enrichment left SourceURL unchanged for this fixture")
+	}
+}
+
+// TestDetailVerdictOnlyWhereItIsHonest is the guard against overstating what a
+// vote achieved.
+//
+// A Vorlage that carries is adopted, so "angenommen" is true of it. An
+// Einzelinitiative that carries is only *vorläufig unterstützt* and passes to
+// the Regierungsrat — the Kantonsrat's own record for the 17.08.2026
+// Sprungbeschwerde reads "Vorläufig unterstützt (79 Stimmen)" and still lists
+// the business as pending, so a post saying "Angenommen" would tell a reader it
+// had passed into law.
+func TestDetailVerdictOnlyWhereItIsHonest(t *testing.T) {
+	tests := []struct {
+		affairType  string
+		wantVerdict bool
+	}{
+		{"Vorlage", true},
+		{"Rechenschaftsbericht", true},
+		{"Geschäftsbericht", true},
+		{"Tätigkeitsbericht", true},
+		// A Ja here means provisional support, not adoption.
+		{"Einzelinitiative", false},
+		{"Parlamentarische Initiative", false},
+		// Überwiesen rather than angenommen.
+		{"Motion", false},
+		{"Postulat", false},
+		{"Wahl", false},
+		// No affair at all: a procedural motion with nothing to state.
+		{"", false},
+		// A kind of business we have not classified stays silent.
+		{"Behördeninitiative", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.affairType, func(t *testing.T) {
+			if got := affairStatesItsOutcome(tt.affairType); got != tt.wantVerdict {
+				t.Errorf("affairStatesItsOutcome(%q) = %v, want %v",
+					tt.affairType, got, tt.wantVerdict)
+			}
+		})
+	}
+}
+
+// TestGroupByAffairWithholdsVerdictFromAnInitiative runs the gate through the
+// real pipeline, so a future reordering that resolved details before the affair
+// type was known would fail here rather than in production.
+func TestGroupByAffairWithholdsVerdictFromAnInitiative(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(12)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+
+	// Offer a verdict for every vote; the gate decides which may keep it.
+	byVoting := make(map[string]VoteDetail, len(vs))
+	for _, v := range vs {
+		byVoting[v.SourceID] = VoteDetail{Type: "Normal", Decision: "angenommen"}
+	}
+	c.WithDetails(&stubDetails{byVoting: byVoting})
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+
+	var checkedWithheld, checkedKept bool
+	for _, g := range groups {
+		for _, v := range g {
+			switch {
+			case v.Affair.Type == "Wahl":
+				// An election states no accept/reject outcome.
+				if v.Decision != "" {
+					t.Errorf("vote %s (%s): Decision = %q, want none",
+						v.SourceID, v.Affair.Type, v.Decision)
+				}
+				checkedWithheld = true
+			case affairStatesItsOutcome(v.Affair.Type):
+				if v.Decision != "angenommen" {
+					t.Errorf("vote %s (%s): Decision = %q, want %q",
+						v.SourceID, v.Affair.Type, v.Decision, "angenommen")
+				}
+				checkedKept = true
+			}
+			// The type is never affected by the verdict gate.
+			if v.Type != "Normal" {
+				t.Errorf("vote %s: Type = %q, want the detail source's %q", v.SourceID, v.Type, "Normal")
+			}
+		}
+	}
+	if !checkedWithheld || !checkedKept {
+		t.Fatalf("fixtures no longer cover both sides of the gate (withheld=%v kept=%v)",
+			checkedWithheld, checkedKept)
 	}
 }

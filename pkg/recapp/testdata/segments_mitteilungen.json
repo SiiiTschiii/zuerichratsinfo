@@ -1,0 +1,47 @@
+[
+  {
+    "entryDate": "2026-04-27",
+    "entryTitle": "152. KR-Sitzung vom 27.04.2026",
+    "segmentUid": "f4c85b52-769d-46ab-951a-2d8e582882d1",
+    "textFormat": "",
+    "title": "SEGMENT_TYPE_SPEAKER",
+    "agendaItemUid": "86a9e704-63f8-41c5-8223-c30eb56ac4bc",
+    "type": "speaker",
+    "speakerTag": "<span data-rec=\"speaker\" class=\"wysiwyg-color-fuchsia\"><i>Ratspräsident Beat Habegger:</i></span>",
+    "deputyFullname": "Beat Habegger"
+  },
+  {
+    "entryDate": "2026-04-27",
+    "entryTitle": "152. KR-Sitzung vom 27.04.2026",
+    "segmentUid": "0f00dae8-277a-47b8-a835-0abd4c1a59f3",
+    "textFormat": "",
+    "title": "SEGMENT_TYPE_SPEAKER",
+    "agendaItemUid": "86a9e704-63f8-41c5-8223-c30eb56ac4bc",
+    "type": "speaker",
+    "speakerTag": "<span data-rec=\"speaker\" class=\"wysiwyg-color-fuchsia\"><i>Ratspräsident Beat Habegger:</i></span>",
+    "deputyFullname": "Beat Habegger"
+  },
+  {
+    "entryDate": "2026-04-27",
+    "entryTitle": "152. KR-Sitzung vom 27.04.2026",
+    "segmentUid": "22c6950f-6167-469f-b802-35fa630e1f6f",
+    "textFormat": "<p><b>Der Kantonsrat stimmt dem Antrag mit 160: 0 Stimmen (mit Stichentscheid und bei 0 Enthaltungen) zu.</b></p>",
+    "title": "Ermittlung der Anwesenden",
+    "agendaItemUid": "86a9e704-63f8-41c5-8223-c30eb56ac4bc",
+    "extVotingUid": "8AFCE43D-5949-B59B-873C-B2B9A8B75443",
+    "votingResult": "yes",
+    "type": "vote"
+  },
+  {
+    "entryDate": "2026-04-27",
+    "entryTitle": "152. KR-Sitzung vom 27.04.2026",
+    "segmentUid": "f222d590-079e-489c-8e6c-b84b9c81931d",
+    "textFormat": "<p><b>Der Kantonsrat stimmt dem Antrag mit 155: 0 Stimmen (bei 0 Enthaltungen) zu. </b></p>",
+    "title": "Quorumsabstimmung",
+    "agendaItemUid": "86a9e704-63f8-41c5-8223-c30eb56ac4bc",
+    "extVotingUid": "F914404A-BB4B-CD57-4B46-383C8D909294",
+    "votingScheme": "binary",
+    "votingResult": "yes",
+    "type": "vote"
+  }
+]

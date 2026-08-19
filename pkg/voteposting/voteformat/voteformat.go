@@ -56,6 +56,51 @@ func IsDecisionConsistent(decision string, ja, nein *int) bool {
 	return !statedAccepted || *nein <= *ja
 }
 
+// GroupPrefixLine returns the label line a post carries above its title: what
+// kind of business this is, and — for a lone vote — which question within it was
+// put and of what kind.
+//
+// The business type is worth the words because it changes what the vote means.
+// "Keine Baubewilligung mehr für Pergolen in Gärten" reads as a decision taken;
+// "Postulat" in front of it reads as what it is, a demand addressed to the
+// Regierungsrat. The difference between a government bill, a parliamentary
+// demand and an individual initiative is exactly what a reader outside the
+// building cannot infer from a tally.
+//
+// It goes on its own line rather than into the title because the title already
+// follows a verdict on single-vote posts: folding it in produced "✅ Angenommen:
+// Vorlage: Rahmenkredit …", two colons deep before the subject appears.
+//
+// Bodies whose source reports no business type are unaffected — Stadt Zürich's
+// PARIS adapter never fills Affair.Type, so its posts keep exactly the line they
+// had.
+func GroupPrefixLine(group []votes.Vote) string {
+	if len(group) == 0 {
+		return ""
+	}
+
+	prefix := strings.TrimSpace(group[0].Affair.Type)
+
+	// The Abstimmungsgegenstand identifies a question within the business, which
+	// is meaningless when several votes share the post; the per-vote headings
+	// carry it there instead.
+	//
+	// The ballot type is deliberately absent from this line. It belongs with the
+	// counts, because what it explains is why they read "Zustimmung/ohne"
+	// instead of "Ja/Nein" — and a line reading "Vorlage · Ausgabenbremse" put
+	// two different kinds of fact side by side as though they were one, the
+	// business on the left and the ballot on the right.
+	if len(group) == 1 {
+		if sub := singleVoteSubtitle(group[0].Subtitle); sub != "" {
+			if prefix == "" {
+				return sub
+			}
+			prefix += " · " + sub
+		}
+	}
+	return prefix
+}
+
 // CleanVoteTitle removes newlines, extra whitespace, and Geschäft number from titles
 func CleanVoteTitle(title string) string {
 	// Replace newlines and carriage returns with spaces
@@ -170,10 +215,25 @@ func IsAuswahlVote(c VoteCounts) bool {
 // voteTypeQuorum is the value both sources publish for a quorum vote.
 const voteTypeQuorum = "Quorum"
 
-// IsQuorumVote reports whether these counts belong to a quorum vote, which is
+// voteTypeAusgabenbremse is the spending brake, which the Kantonsrat's own
+// archive names separately. OpenParlData folds it into "Quorum".
+const voteTypeAusgabenbremse = "Ausgabenbremse"
+
+// isThresholdVoteType reports whether a type is decided against a threshold
+// rather than by comparing Ja to Nein. Both kinds are counted the same way; they
+// differ only in what a post calls them.
+func isThresholdVoteType(voteType string) bool {
+	switch strings.TrimSpace(voteType) {
+	case voteTypeQuorum, voteTypeAusgabenbremse:
+		return true
+	}
+	return false
+}
+
+// IsQuorumVote reports whether these counts belong to a threshold vote, which is
 // counted and rendered differently everywhere it appears.
 func IsQuorumVote(c VoteCounts) bool {
-	return strings.TrimSpace(c.Type) == voteTypeQuorum && !IsAuswahlVote(c)
+	return isThresholdVoteType(c.Type) && !IsAuswahlVote(c)
 }
 
 // formatQuorumCounts renders the summary line for a quorum vote, or "" when the
@@ -193,16 +253,28 @@ func formatQuorumCounts(c VoteCounts) string {
 	if !IsQuorumVote(c) {
 		return ""
 	}
-	// Nein is folded in rather than read as a third column. Today the source
-	// reports 0 for it on every quorum vote, but OpenParlData is considering
-	// mapping the Kantonsrat's "Nicht abgestimmt" onto no instead of absent
-	// (upstream #179). If that lands, reading only Ja and Abwesend would drop
-	// those members from the line entirely — 46 people vanishing from the
-	// 15.06.2026 Ausgabenbremse. Both buckets are "did not support", which is
-	// exactly what the label says, so summing them stays true either way.
-	ohne := deref(c.Nein) + deref(c.Abwesend)
+	_, ohne := QuorumTally(c)
 	return fmt.Sprintf("📊 %s Zustimmungen | %d ohne Zustimmung",
 		FormatVoteCount(c.Ja), ohne)
+}
+
+// QuorumTally splits a quorum vote into the two numbers that are true of it:
+// how many supported, and how many did not.
+//
+// Nein is folded into the second rather than read as a third column. It used to
+// be 0 on every quorum vote the source served, but that is not a property of
+// quorum votes — it was a property of which ones carried a type. The 17.08.2026
+// Ausgabenbremse is a binary ballot with a threshold and reports 141 Ja to 1
+// Nein, and OpenParlData is separately considering mapping the Kantonsrat's
+// "Nicht abgestimmt" onto no instead of absent (upstream #179). Either way both
+// buckets mean "did not support", which is exactly what the label says.
+//
+// It is exported and shared because the caption, the Fraktion table and the
+// generated image all state this number, and they must not be able to disagree:
+// while every quorum vote had Nein=0 the image's own reading — absent alone —
+// looked correct, and it silently stopped being correct the moment one didn't.
+func QuorumTally(c VoteCounts) (support, without int) {
+	return deref(c.Ja), deref(c.Nein) + deref(c.Abwesend)
 }
 
 // deref reads a nullable count, treating "not reported" as zero.
@@ -288,18 +360,6 @@ func IsSchlussabstimmung(abstimmungstitel string) bool {
 	return strings.Contains(strings.ToLower(abstimmungstitel), "schlussabstimmung")
 }
 
-// SingleVoteSubtitlePrefix returns the cleaned Abstimmungsgegenstand text to prepend
-// to a single-vote post, or "" if no prefix should be added.
-// A prefix is added only when: the Abstimmungstitel is non-empty AND does not
-// contain "Schlussabstimmung" (case-insensitive).
-//
-// The vote type is appended when it is one worth naming, so a lone quorum vote
-// carries the label too — that case needs it most, since there is no sibling
-// vote beside it to make the lopsided tally look unusual.
-func SingleVoteSubtitlePrefix(v votes.Vote) string {
-	return joinTypeLabel(singleVoteSubtitle(v.Subtitle), v.Type)
-}
-
 func singleVoteSubtitle(abstimmungstitel string) string {
 	if abstimmungstitel == "" {
 		return ""
@@ -325,6 +385,11 @@ var typeLabels = map[string]string{
 	// "129 Ja | 0 Nein | 51 Abw." reads as near-unanimous agreement rather than
 	// as a procedural vote most of the opposition deliberately sits out.
 	"Quorum": "Quorum",
+	// The spending brake, which needs 91 of 180 votes whatever the opposition
+	// does. It is counted like any other threshold vote but named, because
+	// "Ausgabenbremse" tells a reader what the threshold was for where "Quorum"
+	// only tells them that one existed.
+	"Ausgabenbremse": "Ausgabenbremse",
 	// A knockout round between more than two competing proposals. Kanton Zürich
 	// reports these with no aggregate counts at all, so they are rejected before
 	// posting today (see IsUnsupportedVoteType); the label is here so they read
@@ -351,6 +416,36 @@ var handledVoteTypes = map[string]bool{
 	"Normal": true,
 	// Supporters counted against a threshold, no Nein option.
 	"Quorum": true,
+	// A binary ballot that carries only on reaching 91 of 180 votes.
+	"Ausgabenbremse": true,
+}
+
+// unpostableVoteTypes are types we recognise and have decided not to publish.
+//
+// They are named separately from the types we have simply never seen, because
+// the two call for opposite responses. A type on this list is expected to turn
+// up — every Kanton Zürich sitting opens with an attendance roll call — and
+// skipping it is the system working, so it must not fail a run. An unrecognised
+// type is the source doing something new, which is exactly what someone needs
+// to be told about.
+// Cup-Abstimmung is deliberately absent. It is also never published, but for a
+// reason that is expected to go away: the source serves it with null aggregates
+// and duplicated member rows, both reported upstream. Its run-failing rejection
+// is the reminder that the report is still open, so it stays an
+// ErrUnsupportedVoteType — see TestPostToPlatform_CantonCupVoteIsNotPosted.
+var unpostableVoteTypes = map[string]bool{
+	// A roll call establishing who is in the chamber. It is not a vote on
+	// anything and reports as a lopsided Ja tally, so publishing one would
+	// announce a near-unanimous decision on a question nobody was asked.
+	// Nothing upstream is broken here and nothing is going to change: the
+	// Kantonsrat takes one at the start of most sittings.
+	"Anwesenheitsermittlung": true,
+}
+
+// IsKnownUnpostableType reports whether a type is one we recognise and
+// deliberately do not publish, as opposed to one we do not recognise at all.
+func IsKnownUnpostableType(voteType string) bool {
+	return unpostableVoteTypes[strings.TrimSpace(voteType)]
 }
 
 // IsHandledVoteType reports whether the formatters know how to render a vote of
@@ -359,10 +454,14 @@ var handledVoteTypes = map[string]bool{
 // This is an allowlist, and an empty type does not pass it. That is the point:
 // a type we have never seen is exactly the case where a lopsided tally is most
 // likely to be read wrongly, and refusing to post is recoverable in a way that
-// a misleading post about how parliament voted is not. Kanton Zürich still
-// serves a null type for attendance determinations (Anwesenheitsermittlung),
-// which are not political votes at all and must not be published as though they
-// were, and for the occasional genuine quorum vote.
+// a misleading post about how parliament voted is not.
+//
+// OpenParlData serves a null type often enough that this used to reject whole
+// Kanton Zürich sittings — the 17.08.2026 sitting arrived with all five of its
+// votes untyped, among them two Ausgabenbremse votes and an attendance roll
+// call. Those votes now arrive typed from the Kantonsrat's own archive (see
+// pkg/recapp), so an empty type here means both sources came up blank, which is
+// exactly when refusing is right.
 //
 // Cup-Abstimmung is knowingly excluded. It is a knockout round between more
 // than two proposals, and the source reports no aggregate counts for it, so
@@ -416,6 +515,13 @@ func BodyLabel(group []votes.Vote) string {
 
 // PostHeadline is the first line of a post: which chamber voted, and when.
 //
+// A single-vote post names the time as well, where the source knows it. The
+// post is about one moment, and without it two votes taken under the same
+// agenda item on the same day — "Mitteilungen" is the recurring case, and it
+// carries no business number, so each such vote posts on its own — produce two
+// posts a reader cannot tell apart. Multi-vote groups span several times and
+// keep the date alone; their entries carry the clock (see SubVoteLabel).
+//
 // The date clause is dropped when the date is unknown. Votes with an
 // unparseable date are deliberately kept rather than discarded — silently
 // dropping a vote is worse than posting one whose date we could not read — so
@@ -433,7 +539,11 @@ func PostHeadline(group []votes.Vote) string {
 	if len(group) == 0 || group[0].Date.IsZero() {
 		return prefix + "Abstimmung"
 	}
-	return prefix + "Abstimmung vom " + FormatVoteDate(group[0].Date)
+	headline := prefix + "Abstimmung vom " + FormatVoteDate(group[0].Date)
+	if len(group) == 1 && hasClockTime(group[0].Date) {
+		headline += fmt.Sprintf(" (%s)", group[0].Date.Format("15:04"))
+	}
+	return headline
 }
 
 // LinkLine returns the trailing block of a post: the link, plus the source
@@ -486,6 +596,23 @@ func SubVoteLabel(v votes.Vote, index, groupSize int) string {
 		if groupSize > 1 && hasClockTime(v.Date) {
 			base += fmt.Sprintf(" (%s)", v.Date.Format("15:04"))
 		}
+	}
+	return joinTypeLabel(base, v.Type)
+}
+
+// CardCountsLabel is the heading above the counts on a card showing a lone
+// vote: when it was taken, and what kind of ballot it was.
+//
+// It is what SubVoteLabel does for the entries of a group, for the one case
+// that has no group to be numbered within. The card needs the clock more than
+// the text post does, because a card carries no headline: the caption states
+// the sitting date and time, but the image travels on its own, and two votes
+// under a recurring agenda item ("Mitteilungen") produce the same picture
+// twice. The clock is the only fact the source offers that tells them apart.
+func CardCountsLabel(v votes.Vote) string {
+	base := ""
+	if hasClockTime(v.Date) {
+		base = fmt.Sprintf("Abstimmung (%s)", v.Date.Format("15:04"))
 	}
 	return joinTypeLabel(base, v.Type)
 }

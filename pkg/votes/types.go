@@ -92,6 +92,13 @@ type Affair struct {
 	Title  string
 	ID     string
 	URL    string
+
+	// Type is the source's name for the kind of business this is ("Vorlage",
+	// "Einzelinitiative", "Postulat"). It decides what a Ja actually achieved:
+	// a Vorlage that carries is adopted, while an Einzelinitiative that carries
+	// is only provisionally supported and goes on to the Regierungsrat. Empty
+	// when the source does not say, or when the vote belongs to no business.
+	Type string
 }
 
 // MemberVote is one member's recorded vote.

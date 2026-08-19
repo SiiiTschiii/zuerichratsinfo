@@ -1,5 +1,11 @@
 {
- "data": [
- {"id": 330310, "number": "6093", "title_de": "Nachtragskredite für das Jahr 2026, I. Sammelvorlage", "url_external_de": "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=f0b5be54a5b64648980d071c21115c16"}
- ]
+  "data": [
+    {
+      "id": 330310,
+      "number": "6093",
+      "title_de": "Nachtragskredite für das Jahr 2026, I. Sammelvorlage",
+      "url_external_de": "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=f0b5be54a5b64648980d071c21115c16",
+      "type_name_de": "Vorlage"
+    }
+  ]
 }
