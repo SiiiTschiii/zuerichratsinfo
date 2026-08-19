@@ -384,6 +384,37 @@ func TestSubVoteLabelNamesTheVoteType(t *testing.T) {
 
 func intPtr(n int) *int { return &n }
 
+// A card carries no headline, so the caption's date and time do not travel with
+// it. Two votes under a recurring agenda item produce the same picture twice
+// unless the clock is on the card itself.
+func TestCardCountsLabel(t *testing.T) {
+	at0941 := time.Date(2026, 8, 17, 9, 41, 0, 0, time.UTC)
+
+	tests := []struct {
+		name     string
+		date     time.Time
+		voteType string
+		expected string
+	}{
+		{"clock and type together", at0941, "Ausgabenbremse", "Abstimmung (09:41) · Ausgabenbremse"},
+		{"clock alone", at0941, "Normal", "Abstimmung (09:41)"},
+		// Stadt Zürich supplies sitting dates at midnight, so a clock there
+		// would invent a precision the source does not have.
+		{"midnight leaves the type standing alone", time.Date(2026, 8, 17, 0, 0, 0, 0, time.UTC), "Quorum", "Quorum"},
+		{"nothing to say", time.Time{}, "Normal", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := CardCountsLabel(votes.Vote{Date: tt.date, Type: tt.voteType})
+			if got != tt.expected {
+				t.Errorf("CardCountsLabel(date=%v, type=%q) = %q, want %q",
+					tt.date, tt.voteType, got, tt.expected)
+			}
+		})
+	}
+}
+
 func TestIsDecisionConsistent(t *testing.T) {
 	tests := []struct {
 		name            string

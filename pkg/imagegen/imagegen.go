@@ -442,17 +442,17 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 		title = prefix + ": " + title
 	}
 
-	// The ballot type sits with the counts rather than in the title, because what
-	// it explains is why they read "Zust./ohne" instead of "Ja/Nein". The
-	// multi-vote cards get it from SubVoteLabel; this is the single-vote case.
-	typeLabel := voteformat.TypeLabel(v.Type)
+	// The heading above the counts: when the vote was taken and what kind of
+	// ballot it was. The multi-vote cards get theirs from SubVoteLabel; this is
+	// the lone-vote case, which has no ordinal to be numbered by.
+	countsLabel := voteformat.CardCountsLabel(*v)
 
 	// Calculate available space for title: reserve space for verdict + stats + party breakdown
 	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 	numParties := len(fraktionCounts)
 	verdictHeight := lineHeight(fonts.verdict)
 	statsHeight := lineHeight(fonts.statNum) + lineHeight(fonts.statLabel)
-	if typeLabel != "" {
+	if countsLabel != "" {
 		statsHeight += lineHeight(fonts.statLabel)
 	}
 	separatorHeight := lineHeight(fonts.statLabel) + lineHeight(fonts.statNum)
@@ -514,9 +514,9 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	}
 	cur.gap(fonts.statNum, 0.75)
 
-	if typeLabel != "" {
+	if countsLabel != "" {
 		if img != nil {
-			drawCenteredText(img, fonts.statLabel, nil, cur.baseline(fonts.statLabel), typeLabel, bg)
+			drawCenteredText(img, fonts.statLabel, nil, cur.baseline(fonts.statLabel), countsLabel, bg)
 		}
 		cur.advance(fonts.statLabel)
 		cur.gap(fonts.statLabel, 0.3)
