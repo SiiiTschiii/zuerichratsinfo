@@ -23,7 +23,7 @@ resolved.
 | Attendance roll calls, annulled and empty votings | — | new issue |
 | Ausgabenbremse indistinguishable from other `Quorum` votes | — | new issue |
 | `/affairs` returns a bare `[]` | — | new issue |
-| Cup-Abstimmung per-member records duplicated | [#180](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/180) | comment |
+| Cup-Abstimmung per-member records duplicated | [#180](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/180) | **already filed 2026-08-12** |
 | `decision` still null; `votingResult` has four values | [#181](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/181) | comment |
 | `Präsidium` maps to `abstention` | [#179](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/179) | comment, optional |
 
@@ -39,39 +39,45 @@ Einzelinitiative. That was our bug, not theirs; fixed in `mergedType`.
 
 ## Comment on #178
 
-> Still reproducing on 2026-08-19: `type_de` is null for 13 of the 300 most
-> recent ZH votings. There are two distinct causes, and the first one is new
-> since this issue was filed.
+> Still reproducing on 2026-08-19, but not from the pre-2023 population: 13 of the
+> 300 most recent ZH votings have `type_de: null`, and every one of them is from
+> November 2025 or later. Two causes, unrelated to each other.
 >
 > **1. `votingScheme` present, `type_de` null — 5 votings.** The whole sitting of
-> 17.08.2026 (ids 105409–105413). In recapp all five carry `votingScheme:
-> "binary"` and `voting.voting_type: 0`, the same shape as votings that do get a
-> type:
+> 17.08.2026, ids 105409–105413. All five carry `votingScheme: "binary"` and
+> `voting.voting_type: 0`, so the mapping in your table above should have reached
+> them:
 >
 > ```bash
 > curl -s "https://zh.recapp.ch/viewer/api/shareparl/segments?agendaItemUid=6e20a24f-3a9e-49ab-a855-269abd8457cd&ios=false&language=de" \
 >   | jq -r '.[] | select(.extVotingUid != null) | [.extVotingUid, .title, .votingScheme] | @tsv'
 > ```
 >
-> Their `updated_external_at` is 2026-08-18, so the rows were touched after the
-> sitting and stayed null. That would fit `type_de` being set when a voting is
-> first inserted and never filled in afterwards — in which case any voting
-> imported before its protocol segments are loaded keeps a null type for good.
+> Their `updated_external_at` is 2026-08-18, so the rows were updated after the
+> sitting and are still null today. That would fit `type_de` being written when the
+> voting row is first inserted, with the protocol segments arriving later and
+> nothing backfilling the type.
 >
 > **2. `votingScheme` absent, `voting_type: 5` — 8 votings.** ids 102615, 102617,
-> 102708, 102709, 103981, 103982, 104473, 104477. The `votingScheme` mapping
-> cannot reach these, but their segment `title` would type most of them. 102617
-> is the one that matters: titled `Quorumsabstimmung`, it is the preliminary
-> support of Einzelinitiative 137/2026 with 13 of 180 in favour, and without a
-> type it reads as a unanimous decision. Five of the other seven are attendance
-> roll calls, which are a separate problem — filed as #NNN.
+> 102708, 102709, 103981, 103982, 104473, 104477. No `votingScheme`, and `5` is not
+> one of the codes the pre-2023 fallback maps. Five of them are attendance roll
+> calls (`Anwesenheitsermittlung`, `Präsenzermittlung`, `Ermittlung der
+> Anwesenden`), which are a problem of their own — filed separately as #NNN. The
+> one that matters here is 102617, titled `Quorumsabstimmung` in the archive: the
+> preliminary support of Einzelinitiative 137/2026 with 13 of 180 in favour, which
+> without a type reads as a unanimous decision.
 >
-> **Two votings are typed, but wrongly**, both under-typing a threshold vote as
-> `Normal`. 99904 is the preliminary support of Einzelinitiative 275/2025 with 8
-> yes and 172 absent; 102619 is titled `Quorumsabstimmung` in the archive. Both
-> carry `votingScheme: "binary"` in recapp, so the error is in the source rather
-> than in your mapping — but where `title` and `votingScheme` disagree, `title`
-> appears to be the better of the two.
+> **Where a type is served, your mapping holds.** Across those 300 votings `type_de`
+> agrees with `votingScheme` in every non-null case — Normal/binary 252,
+> Quorum/quorum 31, Cup-Abstimmung/cup 4, no exceptions.
+>
+> Two votings look mistyped at the source rather than by the import: 99904 (the
+> preliminary support of Einzelinitiative 275/2025, 8 yes and 172 absent) and
+> 102619 (segment title `Quorumsabstimmung`) both carry `votingScheme: "binary"`
+> and are typed `Normal`. Where the segment `title` names a ballot type and
+> disagrees with `votingScheme`, the title looks like the better of the two — but
+> only then, since most segments are titled just "Abstimmung", including the
+> threshold votes on preliminary support.
 >
 > ```bash
 > curl -s "https://api.openparldata.ch/v1/votings/?body_key=ZH&limit=300&lang_format=flat" \
@@ -181,32 +187,11 @@ Einzelinitiative. That was our bug, not theirs; fixed in `mergedType`.
 
 ---
 
-## Comment on #180
+## Comment on #180 — not needed
 
-> Still reproducing on 2026-08-19 — the four `Cup-Abstimmung` votings have null
-> aggregates — and the per-member records are no longer a workaround for it:
-> they now contain duplicates.
->
-> Voting 98765 returns **296 records for a 180-seat chamber**, 180 distinct
-> members. Each duplicate carries the same `external_id` as the real record, one
-> labelled with the option and the other `Präsidium`, harmonised to `abstention`:
->
-> ```bash
-> curl -s "https://api.openparldata.ch/v1/votings/98765/votes?limit=500&lang_format=flat" \
->   | jq -r '[.data[] | .vote + " / " + (.vote_display_de|tostring)] | group_by(.)
->            | map(.[0] + " ×" + (length|tostring)) | join(", ")'
-> # => absent/Abwesend ×5, abstention/Auswahl C ×59, abstention/Präsidium ×116,
-> #    further_option/Auswahl D ×23, further_option/Auswahl E ×5, yes/Auswahl A ×88
-> ```
->
-> In 98762 the 88 `Präsidium` records are exactly the 88 members recorded as
-> `Auswahl A`. The other counts are 98752 ×111, 100011 ×172, 98765 ×116; all four
-> are the Cup-Abstimmung votings from this issue. Elsewhere in ZH `Präsidium`
-> appears once per voting, which is presumably the chair.
->
-> Aggregating the per-member records — the only route to a result while the
-> aggregates are null — therefore overstates abstentions and double-counts
-> members.
+Already filed: SiiiTschiii's own comment of 2026-08-12 reports the duplicate
+per-member records, with a cleaner measurement (175 `Präsidium` records per Cup
+voting, counted by `person_id`). Nothing to add.
 
 ---
 
