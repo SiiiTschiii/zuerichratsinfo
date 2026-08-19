@@ -1,0 +1,106 @@
+[
+  {
+    "entryDate": "2026-01-19",
+    "entryTitle": "139. KR-Sitzung vom 19.01.2026",
+    "segmentUid": "95e80f7b-55a4-438b-ad5b-cb0c3607c46d",
+    "textFormat": "",
+    "title": "SEGMENT_TYPE_SPEAKER",
+    "agendaItemUid": "ffcd1ff7-fb00-475a-82c8-141b9d5bb054",
+    "type": "speaker",
+    "speakerTag": "<span data-rec=\"speaker\" class=\"wysiwyg-color-fuchsia\"><i>Ratspräsident Beat Habegger:</i></span>",
+    "deputyFullname": "Beat Habegger"
+  },
+  {
+    "entryDate": "2026-01-19",
+    "entryTitle": "139. KR-Sitzung vom 19.01.2026",
+    "segmentUid": "79a09881-a2db-4b46-a6e5-fce5a2926304",
+    "textFormat": "",
+    "title": "SEGMENT_TYPE_SPEAKER",
+    "agendaItemUid": "ffcd1ff7-fb00-475a-82c8-141b9d5bb054",
+    "type": "speaker",
+    "speakerTag": "<span data-rec=\"speaker\" class=\"wysiwyg-color-fuchsia\"><i>Karin Fehr Thoma (Grüne, Uster):</i></span>",
+    "deputyFullname": "Karin Fehr Thoma"
+  },
+  {
+    "entryDate": "2026-01-19",
+    "entryTitle": "139. KR-Sitzung vom 19.01.2026",
+    "segmentUid": "6368f3d4-b48c-458d-b1dc-0b7552e352ec",
+    "textFormat": "<p><b>Der Kantonsrat stimmt dem Antrag mit 98: 74 Stimmen (bei 0 Enthaltungen) zu. </b></p>",
+    "title": "Abstimmung",
+    "agendaItemUid": "ffcd1ff7-fb00-475a-82c8-141b9d5bb054",
+    "extVotingUid": "AC17DB28-E2C0-974A-51B7-EA7E37CECABB",
+    "votingScheme": "binary",
+    "votingResult": "yes",
+    "type": "vote"
+  },
+  {
+    "entryDate": "2026-01-19",
+    "entryTitle": "139. KR-Sitzung vom 19.01.2026",
+    "segmentUid": "90c9bbd3-5557-450f-bece-2457de6fe544",
+    "textFormat": "<p></p>",
+    "title": "Präsenzermittlung",
+    "agendaItemUid": "ffcd1ff7-fb00-475a-82c8-141b9d5bb054",
+    "votingResult": "yes",
+    "type": "vote"
+  },
+  {
+    "entryDate": "2026-01-19",
+    "entryTitle": "139. KR-Sitzung vom 19.01.2026",
+    "segmentUid": "ba7be50f-1dee-4d1a-b2b3-4aa5e3a22b05",
+    "textFormat": "<p>Option A:\t88<br>Option B:\t10<br>Option C:\t0<br>Option D:\t0<br>Option E:\t74</p>",
+    "title": "Cupabstimmung",
+    "agendaItemUid": "ffcd1ff7-fb00-475a-82c8-141b9d5bb054",
+    "extVotingUid": "A013FA96-4009-464B-BDE6-BCEE2A0269C2",
+    "votingScheme": "cup",
+    "votingResult": "unknown",
+    "type": "vote"
+  },
+  {
+    "entryDate": "2026-01-19",
+    "entryTitle": "139. KR-Sitzung vom 19.01.2026",
+    "segmentUid": "3d6ef05b-cbfd-42c1-8758-361c442f4c3c",
+    "textFormat": "<p><b>Der Kantonsrat stimmt dem Antrag mit 98: 74 Stimmen (bei 0 Enthaltungen) zu. </b></p>",
+    "title": "Abstimmung",
+    "agendaItemUid": "ffcd1ff7-fb00-475a-82c8-141b9d5bb054",
+    "extVotingUid": "2E859A06-C3A5-291D-5A0F-0483B0442392",
+    "votingScheme": "binary",
+    "votingResult": "yes",
+    "type": "vote"
+  },
+  {
+    "entryDate": "2026-01-19",
+    "entryTitle": "139. KR-Sitzung vom 19.01.2026",
+    "segmentUid": "50af539c-0c2d-44e6-b208-ecccfa42fedf",
+    "textFormat": "<p><b>Der Kantonsrat stimmt dem Antrag mit 98: 74 Stimmen (bei 0 Enthaltungen) zu. </b></p>",
+    "title": "Abstimmung",
+    "agendaItemUid": "ffcd1ff7-fb00-475a-82c8-141b9d5bb054",
+    "extVotingUid": "646E31C9-7C58-4B1A-396A-FF65D6C811F4",
+    "votingScheme": "binary",
+    "votingResult": "yes",
+    "type": "vote"
+  },
+  {
+    "entryDate": "2026-01-19",
+    "entryTitle": "139. KR-Sitzung vom 19.01.2026",
+    "segmentUid": "225e6097-6c50-499a-b68b-2f4323dfae9c",
+    "textFormat": "<p><b>Der Kantonsrat stimmt dem Antrag mit 98: 74 Stimmen (bei 0 Enthaltungen) zu. </b></p>",
+    "title": "Abstimmung",
+    "agendaItemUid": "ffcd1ff7-fb00-475a-82c8-141b9d5bb054",
+    "extVotingUid": "B2C7AB2E-5FF5-CA66-6B6E-C28BD2EB6B53",
+    "votingScheme": "binary",
+    "votingResult": "yes",
+    "type": "vote"
+  },
+  {
+    "entryDate": "2026-01-19",
+    "entryTitle": "139. KR-Sitzung vom 19.01.2026",
+    "segmentUid": "26bff4ec-a888-4a53-93a1-0fbc8afd3cc4",
+    "textFormat": "<p><b>Der Kantonsrat stimmt dem Antrag mit 171: 0 Stimmen (bei 0 Enthaltungen) zu. </b></p>",
+    "title": "Abstimmung",
+    "agendaItemUid": "ffcd1ff7-fb00-475a-82c8-141b9d5bb054",
+    "extVotingUid": "3BA53783-D349-DB0D-CD8F-07ACC4DDD223",
+    "votingScheme": "binary",
+    "votingResult": "yes",
+    "type": "vote"
+  }
+]

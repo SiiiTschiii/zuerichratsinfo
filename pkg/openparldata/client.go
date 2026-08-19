@@ -40,6 +40,44 @@ type Client struct {
 	// whichever listing produced a vote so the sub-resource calls need no
 	// extra round trip to rediscover it.
 	votingIDs map[string]int64
+
+	// sourceURLs maps external_id to the voting's own url_external_de,
+	// remembered because enrichment overwrites Vote.SourceURL with the affair's
+	// page and a DetailSource needs the original to identify the vote.
+	sourceURLs map[string]string
+
+	// details optionally supplies the vote type and outcome this API omits.
+	// Nil for every body that has no such source, which is all but one.
+	details DetailSource
+}
+
+// VoteDetail is what an out-of-band source knows about a voting beyond what
+// this API serves. Every field is optional.
+type VoteDetail struct {
+	// Type is the vote type in the vocabulary the formatters speak.
+	Type string
+	// Decision is the outcome label, e.g. "angenommen" or "abgelehnt".
+	Decision string
+}
+
+// DetailSource resolves vote details for votings this API describes
+// incompletely.
+//
+// It takes every vote at once, keyed by external id and carrying that vote's
+// source URL, so an implementation can batch its own requests however its API
+// is shaped rather than being driven one vote at a time.
+//
+// Returning an error alongside a partial map is expected and handled: details
+// are enrichment, and a vote without them keeps whatever the API gave it.
+type DetailSource interface {
+	Lookup(voteURLs map[string]string) (map[string]VoteDetail, error)
+}
+
+// WithDetails attaches a DetailSource. It returns the client so a jurisdiction
+// can be wired in one expression.
+func (c *Client) WithDetails(d DetailSource) *Client {
+	c.details = d
+	return c
 }
 
 // New builds a client for one body. bodyKey is OpenParlData's body_key, e.g.
@@ -53,12 +91,19 @@ func New(jurisdiction votes.Jurisdiction, bodyKey string) *Client {
 		maxAttempts:  3,
 		retryDelay:   time.Second,
 		votingIDs:    make(map[string]int64),
+		sourceURLs:   make(map[string]string),
 	}
 }
 
-func (c *Client) rememberVotingID(v votingDTO) {
-	if v.ExternalID != "" {
-		c.votingIDs[v.ExternalID] = v.ID
+// rememberVoting keeps the identifiers a voting's later calls need, which the
+// listing that produced it is the only place to get them cheaply.
+func (c *Client) rememberVoting(v votingDTO) {
+	if v.ExternalID == "" {
+		return
+	}
+	c.votingIDs[v.ExternalID] = v.ID
+	if u := deref(v.URLExternalDe); u != "" {
+		c.sourceURLs[v.ExternalID] = u
 	}
 }
 

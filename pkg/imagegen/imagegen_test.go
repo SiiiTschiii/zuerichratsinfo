@@ -3,6 +3,7 @@ package imagegen
 import (
 	"bytes"
 	"fmt"
+	"golang.org/x/image/font"
 	"image/jpeg"
 	"strings"
 	"testing"
@@ -276,5 +277,46 @@ func TestDrawFraktionTable_LimitsRowsWhenSpaceIsTight(t *testing.T) {
 	expectedY := rowHeight + rowGap + maxRows*rowHeight + (maxRows-1)*rowGap
 	if cur.y != expectedY {
 		t.Fatalf("expected y=%d with max %d rows, got %d", expectedY, maxRows, cur.y)
+	}
+}
+
+// TestMeasureMixedTextMatchesWhatIsDrawn pins the centring arithmetic to the
+// faces actually used.
+//
+// The verdict emoji renders in NotoEmoji 72 while the text around it is gobold
+// 64, so measuring an emoji with the text face reports a glyph that is never
+// drawn — 48px against the real 91px. A card whose verdict was nothing but "❌"
+// came out 21px right of centre, plainly off against the title beneath it.
+func TestMeasureMixedTextMatchesWhatIsDrawn(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet: %v", err)
+	}
+
+	for _, emoji := range []string{"❌", "✅"} {
+		mixed := measureMixedText(fonts.verdict, fonts.emojiVerdict, emoji)
+		drawn := font.MeasureString(fonts.emojiVerdict, emoji).Ceil()
+		if mixed != drawn {
+			t.Errorf("measureMixedText(%q) = %d, but it is drawn %d wide", emoji, mixed, drawn)
+		}
+		if textOnly := font.MeasureString(fonts.verdict, emoji).Ceil(); textOnly == drawn {
+			t.Skipf("faces now agree on %q; this test no longer proves anything", emoji)
+		}
+	}
+}
+
+// TestMeasureMixedTextLeavesPlainTextAlone checks the fix did not move every
+// other string on the card.
+func TestMeasureMixedTextLeavesPlainTextAlone(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet: %v", err)
+	}
+
+	const plain = "Mitteilungen"
+	got := measureMixedText(fonts.verdict, fonts.emojiVerdict, plain)
+	want := font.MeasureString(fonts.verdict, plain).Ceil()
+	if got != want {
+		t.Errorf("measureMixedText(%q) = %d, want %d — plain text must measure as before", plain, got, want)
 	}
 }

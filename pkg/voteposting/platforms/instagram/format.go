@@ -79,12 +79,11 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group)))
 
-	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
-	if len(group) == 1 {
-		if prefix := voteformat.SingleVoteSubtitlePrefix(group[0]); prefix != "" {
-			sb.WriteString(prefix)
-			sb.WriteString("\n")
-		}
+	// The label line: what kind of business this is, plus the
+	// Abstimmungsgegenstand when a lone vote makes that meaningful.
+	if prefix := voteformat.GroupPrefixLine(group); prefix != "" {
+		sb.WriteString(prefix)
+		sb.WriteString("\n")
 	}
 
 	sb.WriteString(title)

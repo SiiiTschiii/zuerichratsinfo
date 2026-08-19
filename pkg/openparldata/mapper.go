@@ -96,6 +96,9 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 	if n := deref(a.Number); n != "" {
 		v.Affair.Number = n
 	}
+	if t := deref(a.TypeNameDe); t != "" {
+		v.Affair.Type = t
+	}
 	if t := deref(a.TitleDe); t != "" {
 		v.Affair.Title = t
 		if v.Title == "" {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
@@ -13,9 +14,17 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
-// ErrUnsupportedVoteType is returned when a group contains a vote with an
-// unrecognised count format. The group is skipped (not posted, not logged).
+// ErrUnsupportedVoteType is returned when a group contains a vote whose type or
+// count format we do not recognise. The vote is skipped (not posted, not
+// logged) and the run ends non-zero, because an unfamiliar type means the
+// source is serving something new and somebody should look.
 var ErrUnsupportedVoteType = errors.New("unsupported vote type")
+
+// ErrUnpostableVoteType is returned for a vote whose type we recognise and have
+// decided not to publish, such as an attendance roll call. The vote is skipped
+// exactly as above, but the run still succeeds: these arrive on every sitting
+// day and skipping them is the intended behaviour, not a fault to report.
+var ErrUnpostableVoteType = errors.New("vote type not published")
 
 // ErrInconsistentDecision is returned when a vote's Decision field contradicts
 // its raw vote counts (e.g. the source says "Ja" but Nein > Ja). The entire run
@@ -312,8 +321,13 @@ func postableVotes(group []votes.Vote, firstErr *error) ([]votes.Vote, error) {
 	postable := make([]votes.Vote, 0, len(group))
 	for _, v := range group {
 		if err := validateVote(v); err != nil {
-			log.Printf("⚠️  Skipping vote (unsupported vote type): %v", err)
-			if *firstErr == nil {
+			log.Printf("⚠️  Skipping vote: %v\n   %s", err, v.SourceURL)
+			// Only an unrecognised type ends the run non-zero. A type we know
+			// and have chosen not to publish is routine — every sitting opens
+			// with an attendance roll call — and failing on those would leave
+			// the run permanently red while the bot behaves exactly as
+			// intended.
+			if errors.Is(err, ErrUnsupportedVoteType) && *firstErr == nil {
 				*firstErr = err
 			}
 			continue
@@ -332,13 +346,41 @@ func postableVotes(group []votes.Vote, firstErr *error) ([]votes.Vote, error) {
 // both look like a perfectly ordinary lopsided Ja/Nein tally, and would post
 // happily while saying something untrue about how parliament voted.
 func validateVote(v votes.Vote) error {
+	if voteformat.IsKnownUnpostableType(v.Type) {
+		return fmt.Errorf("%w: vote %s (%q, %s) has type %q, which is not published",
+			ErrUnpostableVoteType, v.SourceID, voteDescription(v), countsSummary(v), v.Type)
+	}
 	if !voteformat.IsHandledVoteType(v.Type) {
-		return fmt.Errorf("%w: vote %s (%q) has type %q, which no formatter handles",
-			ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)
+		return fmt.Errorf("%w: vote %s (%q, %s) has type %q, which no formatter handles",
+			ErrUnsupportedVoteType, v.SourceID, voteDescription(v), countsSummary(v), v.Type)
 	}
 	if voteformat.IsUnsupportedVoteType(voteformat.CountsOf(v)) {
 		return fmt.Errorf("%w: vote %s (%q, type=%q) has all-zero counts",
 			ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)
 	}
 	return nil
+}
+
+// voteDescription names the vote for a log line, preferring whichever of the
+// two title fields carries something. A bare id and an empty subtitle — which
+// is what a skipped Kanton Zürich vote used to log — say nothing about what was
+// skipped, and identifying it then meant three API calls by hand.
+func voteDescription(v votes.Vote) string {
+	if v.Subtitle != "" {
+		return v.Subtitle
+	}
+	return v.Title
+}
+
+// countsSummary renders the tally compactly, so a reader of the log can tell a
+// roll call from a contested vote at a glance.
+func countsSummary(v votes.Vote) string {
+	n := func(p *int) string {
+		if p == nil {
+			return "–"
+		}
+		return strconv.Itoa(*p)
+	}
+	return fmt.Sprintf("%s/%s/%s/%s Ja/Nein/Enth/Abw",
+		n(v.Yes), n(v.No), n(v.Abstention), n(v.Absent))
 }

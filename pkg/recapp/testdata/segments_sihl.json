@@ -1,0 +1,48 @@
+[
+  {
+    "entryDate": "2026-08-17",
+    "entryTitle": "164. KR-Sitzung vom 17.08.2026",
+    "segmentUid": "fe7c4443-2b4b-453b-9552-da6815ec2dbf",
+    "textFormat": "",
+    "title": "SEGMENT_TYPE_SPEAKER",
+    "agendaItemUid": "6e20a24f-3a9e-49ab-a855-269abd8457cd",
+    "type": "speaker",
+    "speakerTag": "<span data-rec=\"speaker\" class=\"wysiwyg-color-fuchsia\"><i>Ratspräsidentin Romaine Rogenmoser:</i></span>",
+    "deputyFullname": "Romaine Rogenmoser"
+  },
+  {
+    "entryDate": "2026-08-17",
+    "entryTitle": "164. KR-Sitzung vom 17.08.2026",
+    "segmentUid": "bf461012-8a59-4202-b69c-7e8ebf3ba8ef",
+    "textFormat": "",
+    "title": "SEGMENT_TYPE_SPEAKER",
+    "agendaItemUid": "6e20a24f-3a9e-49ab-a855-269abd8457cd",
+    "type": "speaker",
+    "speakerTag": "<span data-rec=\"speaker\" class=\"wysiwyg-color-fuchsia\"><i>Andreas Hasler (GLP, Illnau-Effretikon):</i></span>",
+    "deputyFullname": "Andreas Hasler"
+  },
+  {
+    "entryDate": "2026-08-17",
+    "entryTitle": "164. KR-Sitzung vom 17.08.2026",
+    "segmentUid": "d694e78d-5c6c-4d81-9f16-1ca42bc76c54",
+    "textFormat": "<p><b>Der Kantonsrat stimmt dem Antrag mit 128: 46 Stimmen (bei 0 Enthaltungen) zu. </b></p>",
+    "title": "Abstimmung",
+    "agendaItemUid": "6e20a24f-3a9e-49ab-a855-269abd8457cd",
+    "extVotingUid": "8FDBDDFC-C068-420D-476A-F704C08D005B",
+    "votingScheme": "binary",
+    "votingResult": "yes",
+    "type": "vote"
+  },
+  {
+    "entryDate": "2026-08-17",
+    "entryTitle": "164. KR-Sitzung vom 17.08.2026",
+    "segmentUid": "b76547a1-5c7e-4e2a-8669-ab5a6317ac92",
+    "textFormat": "<p><b>Der Kantonsrat stimmt dem Antrag mit 141: 1 Stimmen (bei 0 Enthaltungen) zu. </b></p>",
+    "title": "Abstimmung Ausgabenbremse",
+    "agendaItemUid": "6e20a24f-3a9e-49ab-a855-269abd8457cd",
+    "extVotingUid": "088BAC94-081E-08E6-BC6F-4AC3358FC790",
+    "votingScheme": "binary",
+    "votingResult": "yes",
+    "type": "vote"
+  }
+]

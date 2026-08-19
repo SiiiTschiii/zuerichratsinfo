@@ -1,5 +1,11 @@
 {
- "data": [
- {"id": 334189, "number": "205/2026", "title_de": "Rechenschaftsbericht Verwaltungsgericht 2025", "url_external_de": "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=8b884ee1f9e9406394162fd7f0a88a9d"}
- ]
+  "data": [
+    {
+      "id": 334189,
+      "number": "205/2026",
+      "title_de": "Rechenschaftsbericht Verwaltungsgericht 2025",
+      "url_external_de": "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=8b884ee1f9e9406394162fd7f0a88a9d",
+      "type_name_de": "Rechenschaftsbericht"
+    }
+  ]
 }

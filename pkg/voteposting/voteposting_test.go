@@ -528,3 +528,61 @@ func TestPostToPlatform_UnpostableVoteDoesNotSuppressItsGroup(t *testing.T) {
 		t.Errorf("formatter received %d votes, want only the postable one", got)
 	}
 }
+
+// TestPostToPlatform_AttendanceRollCallIsSkippedWithoutFailingTheRun covers the
+// case that made the 17.08.2026 run red for a fortnight.
+//
+// An attendance roll call is not a political vote, so it must never be
+// published — but it is also not a fault. The Kantonsrat takes one at the start
+// of most sittings, and nothing upstream needs fixing, so treating it like an
+// unrecognised type would leave the action failing on every sitting day while
+// the bot did exactly what it should.
+func TestPostToPlatform_AttendanceRollCallIsSkippedWithoutFailingTheRun(t *testing.T) {
+	defer setupTempDir(t)()
+
+	rollCall := createVote("anwesenheit-1", "250999", "2026-08-17")
+	rollCall.Type = "Anwesenheitsermittlung"
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	posted, err := PostToPlatform([][]votes.Vote{{rollCall}}, mockPlatform,
+		SingleLog(testJurisdiction, voteLog), false)
+
+	if err != nil {
+		t.Fatalf("a roll call must not fail the run, got %v", err)
+	}
+	if posted != 0 {
+		t.Errorf("a roll call was published as a vote: posted=%d", posted)
+	}
+	if mockPlatform.formatCalls != 0 {
+		t.Errorf("the roll call reached the formatter: formatCalls=%d", mockPlatform.formatCalls)
+	}
+	// Not logging it keeps the behaviour identical to any other skipped vote.
+	if voteLog.IsPosted(rollCall.SourceID) {
+		t.Error("skipped roll call was marked as posted")
+	}
+}
+
+// TestPostToPlatform_AttendanceRollCallDoesNotMaskAnUnknownType pins that the
+// two rejection kinds stay distinguishable when both occur in one run. A roll
+// call must not swallow the signal that the source served something new.
+func TestPostToPlatform_AttendanceRollCallDoesNotMaskAnUnknownType(t *testing.T) {
+	defer setupTempDir(t)()
+
+	rollCall := createVote("anwesenheit-2", "250998", "2026-08-17")
+	rollCall.Type = "Anwesenheitsermittlung"
+
+	novel := createVote("etwas-neues", "250997", "2026-08-17")
+	novel.Type = "Wahlgang"
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	_, err := PostToPlatform([][]votes.Vote{{rollCall}, {novel}}, mockPlatform,
+		SingleLog(testJurisdiction, voteLog), false)
+
+	if !errors.Is(err, ErrUnsupportedVoteType) {
+		t.Fatalf("expected the unknown type to still fail the run, got %v", err)
+	}
+}

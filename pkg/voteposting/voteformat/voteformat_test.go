@@ -1,6 +1,7 @@
 package voteformat
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -693,5 +694,119 @@ func TestQuorumFraktionColumns(t *testing.T) {
 	got = FormatFraktionBreakdown(AggregateFraktionCounts(withNein))
 	if !strings.Contains(got, "(Zust./ohne)") || !strings.Contains(got, "SVP 0/2") {
 		t.Errorf("a Nein choice should join the non-supporters:\n%s", got)
+	}
+}
+
+// TestQuorumTallyFoldsNeinIntoTheUnsupportedBucket pins the arithmetic every
+// surface of a post shares.
+//
+// While every quorum vote the source typed happened to report Nein=0, reading
+// Abwesend alone looked correct, and the generated image did exactly that. The
+// 17.08.2026 Ausgabenbremse reports 141 Ja to 1 Nein with 38 absent, and the
+// card then said "38 ohne" under a Fraktion table whose own column summed to
+// 39 — the image contradicting itself.
+func TestQuorumTallyFoldsNeinIntoTheUnsupportedBucket(t *testing.T) {
+	tests := []struct {
+		name                     string
+		ja, nein, abwesend       *int
+		wantSupport, wantWithout int
+	}{
+		{"Ausgabenbremse with a Nein cast", intPtr(141), intPtr(1), intPtr(38), 141, 39},
+		{"no Nein reported", intPtr(128), intPtr(0), intPtr(52), 128, 52},
+		{"nothing reported at all", nil, nil, nil, 0, 0},
+		{"absent unreported", intPtr(80), intPtr(2), nil, 80, 2},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := VoteCounts{Ja: tt.ja, Nein: tt.nein, Abwesend: tt.abwesend, Type: "Quorum"}
+			support, without := QuorumTally(c)
+			if support != tt.wantSupport || without != tt.wantWithout {
+				t.Errorf("QuorumTally = (%d, %d), want (%d, %d)",
+					support, without, tt.wantSupport, tt.wantWithout)
+			}
+		})
+	}
+}
+
+// TestQuorumCaptionAgreesWithTheTally guards the two against drifting apart
+// again, now that they share one source.
+func TestQuorumCaptionAgreesWithTheTally(t *testing.T) {
+	c := VoteCounts{Ja: intPtr(141), Nein: intPtr(1), Enthaltung: intPtr(0), Abwesend: intPtr(38), Type: "Quorum"}
+
+	_, without := QuorumTally(c)
+	caption := formatQuorumCounts(c)
+
+	if !strings.Contains(caption, fmt.Sprintf("%d ohne Zustimmung", without)) {
+		t.Errorf("caption %q does not state the tally's %d", caption, without)
+	}
+}
+
+// TestGroupPrefixLineNamesTheKindOfBusiness pins the label line that tells a
+// reader what they are looking at. A Postulat is a demand addressed to the
+// Regierungsrat, not a decision taken, and the tally alone does not say so.
+func TestGroupPrefixLineNamesTheKindOfBusiness(t *testing.T) {
+	vote := func(affairType, subtitle, voteType string) votes.Vote {
+		return votes.Vote{
+			Subtitle: subtitle,
+			Type:     voteType,
+			Affair:   votes.Affair{Type: affairType},
+		}
+	}
+
+	tests := []struct {
+		name  string
+		group []votes.Vote
+		want  string
+	}{
+		{
+			name:  "the business type alone",
+			group: []votes.Vote{vote("Postulat", "", "Normal")},
+			want:  "Postulat",
+		},
+		{
+			name:  "a government bill is named too",
+			group: []votes.Vote{vote("Vorlage", "", "Normal")},
+			want:  "Vorlage",
+		},
+		{
+			name:  "the vote type joins it",
+			group: []votes.Vote{vote("Vorlage", "", "Ausgabenbremse")},
+			want:  "Vorlage · Ausgabenbremse",
+		},
+		{
+			// Stadt Zürich reports no business type, so its line is unchanged.
+			name:  "no business type leaves the existing prefix",
+			group: []votes.Vote{vote("", "Änderungsantrag zu Ziffer 1", "Normal")},
+			want:  "Änderungsantrag zu Ziffer 1",
+		},
+		{
+			// Which question was put is meaningless when several share the post;
+			// the per-vote headings carry that instead.
+			name: "a multi-vote group keeps only the business type",
+			group: []votes.Vote{
+				vote("Vorlage", "Schlussabstimmung", "Normal"),
+				vote("Vorlage", "", "Ausgabenbremse"),
+			},
+			want: "Vorlage",
+		},
+		{
+			name:  "nothing to say",
+			group: []votes.Vote{vote("", "", "Normal")},
+			want:  "",
+		},
+		{
+			name:  "no votes",
+			group: nil,
+			want:  "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GroupPrefixLine(tt.group); got != tt.want {
+				t.Errorf("GroupPrefixLine() = %q, want %q", got, tt.want)
+			}
+		})
 	}
 }

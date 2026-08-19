@@ -61,11 +61,9 @@ func buildRootPost(group []votes.Vote, title string) *BlueskyPost {
 	header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
 	threadHint := "\n\n👇 Details im Thread"
 
-	// For single-vote non-Schlussabstimmung, prepend the Abstimmungsgegenstand
-	var subtitlePrefix string
-	if len(group) == 1 {
-		subtitlePrefix = voteformat.SingleVoteSubtitlePrefix(group[0])
-	}
+	// The label line: what kind of business this is, plus the
+	// Abstimmungsgegenstand when a lone vote makes that meaningful.
+	subtitlePrefix := voteformat.GroupPrefixLine(group)
 
 	var body string
 	if len(group) == 1 {
@@ -79,12 +77,12 @@ func buildRootPost(group []votes.Vote, title string) *BlueskyPost {
 			result := voteformat.GetVoteResultText(vote.Decision)
 			body = fmt.Sprintf("%s %s: %s", resultEmoji, result, title)
 		}
-		if subtitlePrefix != "" {
-			body = subtitlePrefix + "\n" + body
-		}
 	} else {
 		// Multi-vote: just the title
 		body = title
+	}
+	if subtitlePrefix != "" {
+		body = subtitlePrefix + "\n" + body
 	}
 
 	fullText := header + body + threadHint

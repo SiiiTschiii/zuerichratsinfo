@@ -1,5 +1,11 @@
 {
- "data": [
- {"id": 335626, "number": "400/2025", "title_de": "Wahl Abteilungspräsidium Baurekursgericht (BRG) für Claude Reinhardt", "url_external_de": "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=cd858e0d7f904ebe8fbad5b93dbcdbc5"}
- ]
+  "data": [
+    {
+      "id": 335626,
+      "number": "400/2025",
+      "title_de": "Wahl Abteilungspräsidium Baurekursgericht (BRG) für Claude Reinhardt",
+      "url_external_de": "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=cd858e0d7f904ebe8fbad5b93dbcdbc5",
+      "type_name_de": "Wahl"
+    }
+  ]
 }
