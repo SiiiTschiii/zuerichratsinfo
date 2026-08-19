@@ -10,7 +10,9 @@
 #   to        required. A single email string, or a YAML list of them. Each
 #             address is sent its OWN copy (single-recipient To:), so recipients
 #             never see one another.
-#   subject   required. This message's subject line.
+#   subject   required. This message's subject line. QUOTE it if it contains a
+#             colon-space (": "), otherwise YAML reads it as a nested mapping and
+#             the file fails to parse — e.g. subject: "Projekt: der Titel".
 #   body      required. This message's full body (a YAML block scalar with `|`
 #             preserves line breaks). Write the greeting yourself.
 #
@@ -32,7 +34,7 @@ messages:
     to:
       - redaktion@example.org
       - tipps@example.org
-    subject: Ein anderer Betreff für die Redaktion
+    subject: "Beispielblatt: ein Betreff mit Doppelpunkt (darum gequotet)"
     body: |
       Guten Tag
 
