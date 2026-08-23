@@ -85,6 +85,10 @@ See [SETUP.md](SETUP.md) for installation and configuration instructions.
 
 See [TODO.md](TODO.md) for current tasks and roadmap.
 
+## Recognition
+
+zuerichratsinfo is featured on the [City of Zurich's Open Government Data portal](https://www.stadt-zuerich.ch/de/politik-und-verwaltung/statistik-und-daten/open-government-data/anwendungen/anwendungen-2026/zuerichratsinfo.html) as an exemplary application using public government data to improve democratic transparency.
+
 ## Support This Project
 
 Help keep @zuerichratsinfo running! Your support covers the costs for X Premium account and API access.
