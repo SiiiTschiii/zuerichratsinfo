@@ -417,7 +417,7 @@ func TestFitTitle_EllipsisesRatherThanOverflowing(t *testing.T) {
 	maxWidth := imgWidth - 2*padding
 
 	short := "Postulat betreffend Anpassung der Mindestarealfläche"
-	face, lines, err := fitTitle(short, maxWidth, 600)
+	_, lines, err := fitTitle(short, maxWidth, 600)
 	if err != nil {
 		t.Fatalf("fitTitle failed: %v", err)
 	}
@@ -429,7 +429,7 @@ func TestFitTitle_EllipsisesRatherThanOverflowing(t *testing.T) {
 	}
 
 	long := strings.Repeat("Rahmenkredit für ein dreijähriges Pilotprojekt zur Schaffung einer Überbrückungshilfe ", 8)
-	face, lines, err = fitTitle(long, maxWidth, 200)
+	face, lines, err := fitTitle(long, maxWidth, 200)
 	if err != nil {
 		t.Fatalf("fitTitle failed: %v", err)
 	}
