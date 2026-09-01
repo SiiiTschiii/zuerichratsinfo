@@ -379,9 +379,9 @@ AL 0/2/0/1
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SP 40/0/0/1
-SVP 0/22/0/1
-FDP 0/18/0/1
-GLP 0/15/0/1
+SVP 0/20/0/1
+FDP 0/17/0/1
+GLP 0/14/0/1
 Grüne 14/0/0/0
 AL 6/0/0/1
 Die Mitte 0/5/0/0
@@ -403,9 +403,9 @@ Fraktionslos 0/1/0/0
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SP 40/0/0/1
-SVP 0/22/0/1
-FDP 0/18/0/1
-GLP 0/15/0/1
+SVP 0/20/0/1
+FDP 0/17/0/1
+GLP 0/14/0/1
 Grüne 14/0/0/0
 AL 6/0/0/1
 Die Mitte 0/5/0/0
@@ -427,9 +427,9 @@ Fraktionslos 0/1/0/0
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SP 40/0/0/1
-SVP 0/22/0/1
-FDP 0/18/0/1
-GLP 0/15/0/1
+SVP 0/20/0/1
+FDP 0/17/0/1
+GLP 0/14/0/1
 Grüne 14/0/0/0
 AL 6/0/0/1
 Die Mitte 0/5/0/0
@@ -451,9 +451,9 @@ Parlamentarische Initiativen GR Nrn. 2022/144 und 2022/145 vom 13.04.2022: Rahme
 
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SP 40/0/0/1
-SVP 0/22/0/1
-FDP 0/18/0/1
-GLP 0/15/0/1
+SVP 0/20/0/1
+FDP 0/17/0/1
+GLP 0/14/0/1
 Grüne 14/0/0/0
 AL 6/0/0/1
 Die Mitte 0/5/0/0

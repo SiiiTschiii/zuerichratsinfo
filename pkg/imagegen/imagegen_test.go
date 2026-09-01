@@ -446,6 +446,61 @@ func TestFitTitle_EllipsisesRatherThanOverflowing(t *testing.T) {
 	}
 }
 
+// TestWrapText_SplitsWordsWiderThanTheColumn checks the case that has no space
+// to wrap at: a compound wider than the text column is broken across lines
+// rather than drawn past both edges of it.
+func TestWrapText_SplitsWordsWiderThanTheColumn(t *testing.T) {
+	face, err := loadFace(goregular.TTF, titleFontMax)
+	if err != nil {
+		t.Fatalf("loadFace failed: %v", err)
+	}
+	maxWidth := imgWidth - 2*padding
+
+	monster := strings.Repeat("Übertragungsverordnung", 6)
+	text := "Beschluss betreffend " + monster
+	lines := wrapText(face, text, maxWidth)
+
+	for i, line := range lines {
+		if w := font.MeasureString(face, line).Ceil(); w > maxWidth {
+			t.Errorf("line %d is %dpx wide, over the %dpx text column: %q", i, w, maxWidth, line)
+		}
+	}
+	// Splitting must not lose or invent characters: the wrapped lines carry the
+	// same runes, and the only breaks added are line breaks.
+	if got := strings.Join(lines, ""); strings.ReplaceAll(got, " ", "") != strings.ReplaceAll(text, " ", "") {
+		t.Errorf("wrapped text does not reconstruct the input:\n got %q\nwant %q", got, text)
+	}
+
+	// An ordinary title still wraps exactly as it did.
+	plain := "Postulat betreffend Anpassung der Mindestarealfläche bei der Liegenschaftenverwaltung"
+	for i, line := range wrapText(face, plain, maxWidth) {
+		if w := font.MeasureString(face, line).Ceil(); w > maxWidth {
+			t.Errorf("plain line %d is %dpx wide, over the %dpx column", i, w, maxWidth)
+		}
+	}
+}
+
+// TestFitTitle_KeepsOversizedTokensInsideTheColumn checks the width bound on
+// the path that does not ellipsise: a title short enough to be accepted at the
+// first face it tries, but carrying a token wider than the column.
+func TestFitTitle_KeepsOversizedTokensInsideTheColumn(t *testing.T) {
+	maxWidth := imgWidth - 2*padding
+	title := "Beschluss betreffend " + strings.Repeat("Übertragungsverordnung", 6)
+
+	face, lines, err := fitTitle(title, maxWidth, 600)
+	if err != nil {
+		t.Fatalf("fitTitle failed: %v", err)
+	}
+	if strings.HasSuffix(lines[len(lines)-1], "…") {
+		t.Error("a title with room to spare must not be ellipsised")
+	}
+	for i, line := range lines {
+		if w := font.MeasureString(face, line).Ceil(); w > maxWidth {
+			t.Errorf("line %d is %dpx wide, over the %dpx text column: %q", i, w, maxWidth, line)
+		}
+	}
+}
+
 // TestFitTitle_BudgetTooSmallForOneLine checks the degenerate case: even a
 // budget with no room for a single line yields one ellipsised line rather than
 // an empty title.

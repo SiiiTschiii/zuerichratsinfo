@@ -217,8 +217,18 @@ func splitEmojiText(text string) []textSegment {
 }
 
 // wrapText breaks text into lines that fit within maxWidth pixels.
+//
+// Wrapping happens at spaces, so a single word wider than the column has no
+// break to wrap at: a German compound, or an identifier out of a court
+// decision. Such a word is split across lines by splitToWidth rather than
+// emitted as an over-wide line, because the callers draw what they are given
+// and an over-wide line is drawn centred — bleeding past the text column on
+// both sides, with the height accounting none the wiser.
 func wrapText(face font.Face, text string, maxWidth int) []string {
-	words := strings.Fields(text)
+	var words []string
+	for _, w := range strings.Fields(text) {
+		words = append(words, splitToWidth(face, w, maxWidth)...)
+	}
 	if len(words) == 0 {
 		return nil
 	}
@@ -236,6 +246,30 @@ func wrapText(face font.Face, text string, maxWidth int) []string {
 	}
 	lines = append(lines, line)
 	return lines
+}
+
+// splitToWidth breaks one word too wide for the column into the widest pieces
+// that fit. A word that already fits comes back untouched, so the wrapping of
+// ordinary text is unchanged.
+//
+// The pieces are re-joined by the caller's own greedy wrapping, which cannot
+// put two of them back on one line: every piece but the last is as wide as the
+// column allows. A single rune wider than the whole column is kept as its own
+// piece — there is nothing left to split it at.
+func splitToWidth(face font.Face, word string, maxWidth int) []string {
+	if font.MeasureString(face, word).Ceil() <= maxWidth {
+		return []string{word}
+	}
+	runes := []rune(word)
+	var pieces []string
+	start := 0
+	for i := range runes {
+		if i > start && font.MeasureString(face, string(runes[start:i+1])).Ceil() > maxWidth {
+			pieces = append(pieces, string(runes[start:i]))
+			start = i
+		}
+	}
+	return append(pieces, string(runes[start:]))
 }
 
 // titleLineStride returns the baseline-to-baseline distance the title drawing
