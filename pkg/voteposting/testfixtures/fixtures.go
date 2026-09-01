@@ -244,6 +244,41 @@ func LongTitleTruncation() []votes.Vote {
 	return []votes.Vote{v}
 }
 
+// ExtremeTitleFullRoster is the worst real title the Gemeinderat has produced,
+// against a full nine-Fraktion roster.
+//
+// Two parliamentary initiatives, a court decision and its case number in one
+// 560-character sentence. Rendered on a card the title used to take every line
+// it asked for, and the Fraktion table below it was quietly cut off partway
+// down the roster — the party breakdown, the one part of a vote a reader cannot
+// reconstruct from the caption, lost four of its nine rows.
+func ExtremeTitleFullRoster() []votes.Vote {
+	const longTitle = "Parlamentarische Initiativen GR Nrn. 2022/144 und 2022/145 vom " +
+		"13.04.2022: Rahmenkredit für ein dreijähriges Pilotprojekt zur Schaffung einer " +
+		"Überbrückungshilfe für Ausländerinnen und Ausländer ohne gültigen Aufenthaltsstatus " +
+		"und Rahmenkredit für ein dreijähriges Pilotprojekt «Wirtschaftliche Basishilfe für " +
+		"Ausländerinnen und Ausländer mit gültigem Aufenthaltsstatus, die keinen risikofreien " +
+		"Zugang zur Sozialhilfe haben», Beschluss des Verwaltungsgerichts des Kantons Zürich " +
+		"(VB.2025.00517), Entscheid betreffend Einreichung einer Beschwerde an das Bundesgericht"
+
+	v := vote("extremetitle-1", longTitle, "2022/144", "abgelehnt", 60, 60, 0, 5)
+	v.MemberVotes = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 40, 0, 0, 1},
+		{"SVP", 0, 22, 0, 1},
+		{"FDP", 0, 18, 0, 1},
+		{"Grüne", 14, 0, 0, 0},
+		{"GLP", 0, 15, 0, 1},
+		{"Die Mitte", 0, 5, 0, 0},
+		{"AL", 6, 0, 0, 1},
+		{"EVP", 0, 3, 0, 0},
+		{"Fraktionslos", 0, 1, 0, 0},
+	})
+	return []votes.Vote{v}
+}
+
 // MultiVoteGroup returns 2 votes from the same Geschäft: Einleitungsartikel + Schlussabstimmung.
 func MultiVoteGroup() []votes.Vote {
 	const title = "Teilrevision der Gemeindeordnung der Stadt Zürich, Neuordnung der Kompetenzen im Bereich Stadtentwicklung"
@@ -739,6 +774,7 @@ var FixtureNames = []string{
 	"single-vote-abgelehnt",
 	"single-vote-dringlicherklaerung",
 	"long-title-truncation",
+	"extreme-title-full-roster",
 	"multi-vote-group",
 	"generic-antrag-fallback",
 	"ten-vote-stress-test",
@@ -759,6 +795,7 @@ func AllFixtures() map[string][]votes.Vote {
 		"single-vote-abgelehnt":           SingleVoteAbgelehnt(),
 		"single-vote-dringlicherklaerung": SingleVoteDringlicherklaerung(),
 		"long-title-truncation":           LongTitleTruncation(),
+		"extreme-title-full-roster":       ExtremeTitleFullRoster(),
 		"multi-vote-group":                MultiVoteGroup(),
 		"generic-antrag-fallback":         GenericAntragFallback(),
 		"ten-vote-stress-test":            TenVoteStressTest(),

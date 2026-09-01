@@ -364,6 +364,104 @@ AL 0/2/0/1
 
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1
 
+################ FIXTURE extreme-title-full-roster ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+❌ Abgelehnt: Parlamentarische Initiativen GR Nrn. 2022/144 und 2022/145 vom 13.04.2022: Rahmenkredit für ein dreijähriges Pilotprojekt zur Schaffung einer Überbrückungshilfe für Ausländerinnen und Auslände…
+
+👇 Details im Thread
+
+[post 1]
+📊 60 Ja | 60 Nein | 0 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 40/0/0/1
+SVP 0/22/0/1
+FDP 0/18/0/1
+GLP 0/15/0/1
+Grüne 14/0/0/0
+AL 6/0/0/1
+Die Mitte 0/5/0/0
+EVP 0/3/0/0
+Fraktionslos 0/1/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-extremetitle-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+❌ Abgelehnt: Parlamentarische Initiativen GR Nrn. 2022/144 und 2022/145 vom 13.04.2022: Rahmenkredit für ein dreijähriges Pilotprojekt zur Schaffung einer Überbrückungshilfe für Ausländerinnen und Ausländer ohne gültigen Aufenthaltsstatus und Rahmenkredit für ein dreijähriges Pilotprojekt «Wirtschaftliche Basishilfe für Ausländerinnen und Ausländer mit gültigem Aufenthaltsstatus, die keinen risikofreien Zugang zur Sozialhilfe haben», Beschluss des Verwaltungsgerichts des Kantons Zürich (VB.2025.00517), Entscheid betreffend Einreichung einer Beschwerde an das Bundesgericht
+
+👇 Details im Thread
+
+[post 1]
+📊 60 Ja | 60 Nein | 0 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 40/0/0/1
+SVP 0/22/0/1
+FDP 0/18/0/1
+GLP 0/15/0/1
+Grüne 14/0/0/0
+AL 6/0/0/1
+Die Mitte 0/5/0/0
+EVP 0/3/0/0
+Fraktionslos 0/1/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-extremetitle-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+❌ Abgelehnt: Parlamentarische Initiativen GR Nrn. 2022/144 und 2022/145 vom 13.04.2022: Rahmenkredit für ein dreijähriges Pilotprojekt zur Schaffung einer Überbrückungshilfe für Ausländerinnen und Ausländer ohne gültigen Aufenthalt…
+
+👇 Details im Thread
+
+[post 1]
+📊 60 Ja | 60 Nein | 0 Enth. | 5 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 40/0/0/1
+SVP 0/22/0/1
+FDP 0/18/0/1
+GLP 0/15/0/1
+Grüne 14/0/0/0
+AL 6/0/0/1
+Die Mitte 0/5/0/0
+EVP 0/3/0/0
+Fraktionslos 0/1/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-extremetitle-1
+[facet] {Index:{ByteStart:215 ByteEnd:300} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-extremetitle-1 DID: Tag:}]}
+
+---- Instagram ----
+[images] 1
+[caption]
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+Parlamentarische Initiativen GR Nrn. 2022/144 und 2022/145 vom 13.04.2022: Rahmenkredit für ein dreijähriges Pilotprojekt zur Schaffung einer Überbrückungshilfe für Ausländerinnen und Ausländer ohne gültigen Aufenthaltsstatus und Rahmenkredit für ein dreijähriges Pilotprojekt «Wirtschaftliche Basishilfe für Ausländerinnen und Ausländer mit gültigem Aufenthaltsstatus, die keinen risikofreien Zugang zur Sozialhilfe haben», Beschluss des Verwaltungsgerichts des Kantons Zürich (VB.2025.00517), Entscheid betreffend Einreichung einer Beschwerde an das Bundesgericht
+
+❌ Abgelehnt
+📊 60 Ja | 60 Nein | 0 Enthaltung | 5 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 40/0/0/1
+SVP 0/22/0/1
+FDP 0/18/0/1
+GLP 0/15/0/1
+Grüne 14/0/0/0
+AL 6/0/0/1
+Die Mitte 0/5/0/0
+EVP 0/3/0/0
+Fraktionslos 0/1/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-extremetitle-1
+
 ################ FIXTURE multi-vote-group ################
 
 ---- X (limit 280) ----
