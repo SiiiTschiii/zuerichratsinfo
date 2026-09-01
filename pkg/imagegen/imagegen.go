@@ -283,6 +283,18 @@ func titleBlockHeight(face font.Face, n int) int {
 	return n * titleLineStride(face)
 }
 
+// widestWord returns the width of the widest single word in text, measured
+// before any wrapping splits it.
+func widestWord(face font.Face, text string) int {
+	widest := 0
+	for _, w := range strings.Fields(text) {
+		if adv := font.MeasureString(face, w).Ceil(); adv > widest {
+			widest = adv
+		}
+	}
+	return widest
+}
+
 // fitTitle sizes a vote title to the space the results leave it.
 //
 // It shrinks the face first, from titleFontMax down to titleFontMin, and
@@ -303,7 +315,13 @@ func fitTitle(title string, maxWidth, available int) (font.Face, []string, error
 			return nil, nil, err
 		}
 		face, lines = f, wrapText(f, title, maxWidth)
-		if titleBlockHeight(f, len(lines)) <= available {
+		// Width counts as well as height. wrapText now guarantees no line
+		// overruns the column, but it buys that by breaking an over-wide word
+		// mid-compound — so height alone would accept 42pt and hyphenate a word
+		// that a step or two down the ladder sets whole. Measuring the widest
+		// word before wrapping is what still sees the difference; after
+		// wrapping, every line fits by construction.
+		if titleBlockHeight(f, len(lines)) <= available && widestWord(f, title) <= maxWidth {
 			return face, lines, nil
 		}
 	}

@@ -501,6 +501,56 @@ func TestFitTitle_KeepsOversizedTokensInsideTheColumn(t *testing.T) {
 	}
 }
 
+// TestFitTitle_ShrinksBeforeSplittingAWideWord checks which way out of an
+// over-wide word fitTitle takes.
+//
+// Splitting keeps the word inside the column at any size, so a height-only fit
+// test is satisfied at 42pt and the word is broken mid-compound. Most real
+// cases have a cheaper escape: German administrative compounds overrun a 960px
+// column at 42pt and fit whole a couple of steps down. Shrinking is the better
+// trade, and the split stays for words no size can hold — which is what
+// TestFitTitle_KeepsOversizedTokensInsideTheColumn covers.
+func TestFitTitle_ShrinksBeforeSplittingAWideWord(t *testing.T) {
+	maxWidth := imgWidth - 2*padding
+	const long = "Grundstücksverkehrsgenehmigungszuständigkeitsübertragungsverordnung"
+
+	biggest, err := loadFace(goregular.TTF, titleFontMax)
+	if err != nil {
+		t.Fatalf("loadFace failed: %v", err)
+	}
+	smallest, err := loadFace(goregular.TTF, titleFontMin)
+	if err != nil {
+		t.Fatalf("loadFace failed: %v", err)
+	}
+	// The premise: too wide at the top size, fine at the bottom one. Without
+	// both halves the test would prove nothing about the choice being made.
+	if w := font.MeasureString(biggest, long).Ceil(); w <= maxWidth {
+		t.Fatalf("word is only %dpx at %.0fpt; it must overrun the %dpx column", w, titleFontMax, maxWidth)
+	}
+	if w := font.MeasureString(smallest, long).Ceil(); w > maxWidth {
+		t.Fatalf("word is %dpx at %.0fpt; it must fit the %dpx column", w, titleFontMin, maxWidth)
+	}
+
+	face, lines, err := fitTitle("Postulat betreffend die "+long+" im Kanton", maxWidth, 600)
+	if err != nil {
+		t.Fatalf("fitTitle failed: %v", err)
+	}
+	for i, line := range lines {
+		if w := font.MeasureString(face, line).Ceil(); w > maxWidth {
+			t.Errorf("line %d is %dpx wide, over the %dpx text column: %q", i, w, maxWidth, line)
+		}
+	}
+	var whole bool
+	for _, line := range lines {
+		if strings.Contains(line, long) {
+			whole = true
+		}
+	}
+	if !whole {
+		t.Errorf("expected the compound set whole at a smaller size, got %q", lines)
+	}
+}
+
 // TestFitTitle_BudgetTooSmallForOneLine checks the degenerate case: even a
 // budget with no room for a single line yields one ellipsised line rather than
 // an empty title.
