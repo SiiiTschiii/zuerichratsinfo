@@ -233,3 +233,52 @@ func hasInk(img image.Image, region image.Rectangle, bg color.RGBA) bool {
 	}
 	return false
 }
+
+// TestExtremeTitleFixtureAddsUp holds the extreme-title fixture to its own
+// headline and to the chamber's seat count.
+//
+// It is the regression case for cards that shipped a Fraktion table
+// disagreeing with their totals, so it must not ship one itself. It first did:
+// the rows carried 64 Nein under a 60 Nein headline, across 129 seats in a
+// 125-seat chamber. That also put it the wrong side of IsBreakdownComplete,
+// which would have made the posting path drop the very table the fixture
+// exists to exercise — and the golden snapshot pinned the mismatch in place.
+//
+// Deliberately incomplete fixtures do exist, to drive that same gate: the tail
+// of ten-vote-stress-test and the Kantonsrat groups. So this checks the one
+// fixture whose job is a complete, self-consistent table, not all of them.
+func TestExtremeTitleFixtureAddsUp(t *testing.T) {
+	const seats = 125 // Gemeinderat der Stadt Zürich
+
+	group := testfixtures.ExtremeTitleFullRoster()
+	if len(group) != 1 {
+		t.Fatalf("expected a single vote, got %d", len(group))
+	}
+	v := group[0]
+
+	tally := map[string]int{}
+	for _, mv := range v.MemberVotes {
+		tally[mv.Choice]++
+	}
+	for _, c := range []struct {
+		choice   string
+		reported *int
+	}{
+		{"Ja", v.Yes}, {"Nein", v.No}, {"Enthaltung", v.Abstention}, {"Abwesend", v.Absent},
+	} {
+		want := 0
+		if c.reported != nil {
+			want = *c.reported
+		}
+		if tally[c.choice] != want {
+			t.Errorf("%s: rows total %d against a headline of %d", c.choice, tally[c.choice], want)
+		}
+	}
+
+	if len(v.MemberVotes) != seats {
+		t.Errorf("roster holds %d members, but the Gemeinderat has %d seats", len(v.MemberVotes), seats)
+	}
+	if !votes.IsBreakdownComplete(v) {
+		t.Error("breakdown is incomplete, so the posting path would drop the Fraktion table entirely")
+	}
+}

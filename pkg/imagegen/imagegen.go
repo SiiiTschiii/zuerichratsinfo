@@ -36,6 +36,17 @@ const (
 	fraktionNameColWidth  = 200
 	fraktionRowGapFactor  = 0.2
 	fraktionColWidthScale = 0.6
+
+	// The title shrinks between these two sizes to make room for the results,
+	// and is ellipsised only once the smaller of them still does not fit.
+	titleFontMax  = 42.0
+	titleFontMin  = 26.0
+	titleFontStep = 2.0
+
+	// Visible whitespace between two wrapped title lines, as a fraction of the
+	// line height. Shared by the measuring and the drawing so a title budgeted
+	// for n lines really occupies n.
+	titleLineGapFactor = 0.15
 )
 
 var palette = []color.RGBA{
@@ -206,8 +217,18 @@ func splitEmojiText(text string) []textSegment {
 }
 
 // wrapText breaks text into lines that fit within maxWidth pixels.
+//
+// Wrapping happens at spaces, so a single word wider than the column has no
+// break to wrap at: a German compound, or an identifier out of a court
+// decision. Such a word is split across lines by splitToWidth rather than
+// emitted as an over-wide line, because the callers draw what they are given
+// and an over-wide line is drawn centred — bleeding past the text column on
+// both sides, with the height accounting none the wiser.
 func wrapText(face font.Face, text string, maxWidth int) []string {
-	words := strings.Fields(text)
+	var words []string
+	for _, w := range strings.Fields(text) {
+		words = append(words, splitToWidth(face, w, maxWidth)...)
+	}
 	if len(words) == 0 {
 		return nil
 	}
@@ -225,6 +246,133 @@ func wrapText(face font.Face, text string, maxWidth int) []string {
 	}
 	lines = append(lines, line)
 	return lines
+}
+
+// splitToWidth breaks one word too wide for the column into the widest pieces
+// that fit. A word that already fits comes back untouched, so the wrapping of
+// ordinary text is unchanged.
+//
+// The pieces are re-joined by the caller's own greedy wrapping, which cannot
+// put two of them back on one line: every piece but the last is as wide as the
+// column allows. A single rune wider than the whole column is kept as its own
+// piece — there is nothing left to split it at.
+func splitToWidth(face font.Face, word string, maxWidth int) []string {
+	if font.MeasureString(face, word).Ceil() <= maxWidth {
+		return []string{word}
+	}
+	runes := []rune(word)
+	var pieces []string
+	start := 0
+	for i := range runes {
+		if i > start && font.MeasureString(face, string(runes[start:i+1])).Ceil() > maxWidth {
+			pieces = append(pieces, string(runes[start:i]))
+			start = i
+		}
+	}
+	return append(pieces, string(runes[start:]))
+}
+
+// titleLineStride returns the baseline-to-baseline distance the title drawing
+// loop actually advances by: a line plus the gap that follows it.
+func titleLineStride(face font.Face) int {
+	return lineHeight(face) + int(float64(lineHeight(face))*titleLineGapFactor)
+}
+
+// titleBlockHeight returns the vertical space n wrapped title lines occupy.
+func titleBlockHeight(face font.Face, n int) int {
+	return n * titleLineStride(face)
+}
+
+// widestWord returns the width of the widest single word in text, measured
+// before any wrapping splits it.
+func widestWord(face font.Face, text string) int {
+	widest := 0
+	for _, w := range strings.Fields(text) {
+		if adv := font.MeasureString(face, w).Ceil(); adv > widest {
+			widest = adv
+		}
+	}
+	return widest
+}
+
+// fitTitle sizes a vote title to the space the results leave it.
+//
+// It shrinks the face first, from titleFontMax down to titleFontMin, and
+// ellipsises only when even the smallest size overruns the budget. Zurich
+// business titles run to several hundred characters — one Gemeinderat title
+// carries two parliamentary initiatives, a court decision and its case number
+// in a single sentence — and letting such a title take all the room it asks
+// for is what pushed the Fraktion table off the bottom of the card: the party
+// breakdown silently lost rows, and the breakdown is the part a reader cannot
+// reconstruct from anywhere else. The full title is in the caption directly
+// under the image, so an ellipsis there costs nothing.
+func fitTitle(title string, maxWidth, available int) (font.Face, []string, error) {
+	var face font.Face
+	var lines []string
+	for size := titleFontMax; size >= titleFontMin; size -= titleFontStep {
+		f, err := loadFace(goregular.TTF, size)
+		if err != nil {
+			return nil, nil, err
+		}
+		face, lines = f, wrapText(f, title, maxWidth)
+		// Width counts as well as height. wrapText now guarantees no line
+		// overruns the column, but it buys that by breaking an over-wide word
+		// mid-compound — so height alone would accept 42pt and hyphenate a word
+		// that a step or two down the ladder sets whole. Measuring the widest
+		// word before wrapping is what still sees the difference; after
+		// wrapping, every line fits by construction.
+		if titleBlockHeight(f, len(lines)) <= available && widestWord(f, title) <= maxWidth {
+			return face, lines, nil
+		}
+	}
+	return face, ellipsizeLines(face, lines, maxWidth, available), nil
+}
+
+// ellipsizeLines drops the title lines that do not fit and marks the cut.
+func ellipsizeLines(face font.Face, lines []string, maxWidth, available int) []string {
+	stride := titleLineStride(face)
+	if stride <= 0 {
+		return lines
+	}
+	maxLines := available / stride
+	if maxLines < 1 {
+		maxLines = 1
+	}
+	if maxLines >= len(lines) {
+		return lines
+	}
+	kept := append([]string(nil), lines[:maxLines]...)
+	kept[len(kept)-1] = appendEllipsis(face, kept[len(kept)-1], maxWidth)
+	return kept
+}
+
+// appendEllipsis ends a line with "…", dropping trailing words until the
+// ellipsis itself fits within maxWidth.
+func appendEllipsis(face font.Face, line string, maxWidth int) string {
+	const ellipsis = "…"
+	fits := func(s string) bool {
+		return font.MeasureString(face, s+ellipsis).Ceil() <= maxWidth
+	}
+	words := strings.Fields(line)
+	for len(words) > 1 {
+		if candidate := trimForEllipsis(strings.Join(words, " ")); fits(candidate) {
+			return candidate + ellipsis
+		}
+		words = words[:len(words)-1]
+	}
+	// A single word wider than the line has no word boundary left to cut on,
+	// so cut it mid-word rather than returning a bare ellipsis.
+	runes := []rune(trimForEllipsis(strings.Join(words, " ")))
+	for len(runes) > 1 && !fits(string(runes)) {
+		runes = runes[:len(runes)-1]
+	}
+	return string(runes) + ellipsis
+}
+
+// trimForEllipsis strips punctuation the ellipsis would otherwise follow, so a
+// cut lands on "… Aufenthaltsstatus…" rather than "… Aufenthaltsstatus,…".
+func trimForEllipsis(s string) string {
+	return strings.TrimRight(s, " ,;:.·-–—«»(/")
 }
 
 // GenerateCarousel produces carousel JPEG images for a vote group.
@@ -268,6 +416,26 @@ func GenerateCarousel(group []votes.Vote) ([][]byte, error) {
 	}
 
 	return images, nil
+}
+
+// centredStart returns the Y the card's content starts at, centring a block of
+// contentHeight in the space the body band leaves.
+//
+// The clamp is the point. drawFraktionTable stops drawing at
+// imgHeight-padding, so a tall card centred without regard for its bottom edge
+// comes back missing Fraktionen, with nothing on it to say any were dropped.
+// Holding that edge costs a card with room to spare nothing — it is centred
+// exactly as it would be without the clamp — and pins a card too tall to centre
+// to the top of the space instead.
+func centredStart(inset, contentHeight int) int {
+	start := inset + (imgHeight-inset-contentHeight)/2
+	if lowest := imgHeight - padding - contentHeight; start > lowest {
+		start = lowest
+	}
+	if start < inset {
+		start = inset
+	}
+	return start
 }
 
 func newImage(bg color.RGBA) *image.RGBA {
@@ -410,10 +578,7 @@ func renderCombinedCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, e
 	}
 
 	// Real run, centred in the space the band leaves
-	startY := inset + (imgHeight-inset-dry.contentHeight())/2
-	if startY < inset+padding {
-		startY = inset + padding
-	}
+	startY := centredStart(inset, dry.contentHeight())
 	img := newImage(bg)
 	drawBodyBand(img, fonts.bandLabel, *v)
 
@@ -447,39 +612,22 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	// the lone-vote case, which has no ordinal to be numbered by.
 	countsLabel := voteformat.CardCountsLabel(*v)
 
-	// Calculate available space for title: reserve space for verdict + stats + party breakdown
+	// Everything below the title has to fit, all of it: the reserve below
+	// mirrors the layout that follows line for line, and the title gets what is
+	// left over.
+	//
+	// The budget is measured from the band inset rather than from cur.y,
+	// because renderCombinedCard lays the card out twice — a dry run at the
+	// inset, then the real run at the centred start — and a title that sized
+	// itself against each run's own cur.y would come out at two different
+	// sizes, leaving the measured height wrong for the card actually drawn.
 	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
-	numParties := len(fraktionCounts)
-	verdictHeight := lineHeight(fonts.verdict)
-	statsHeight := lineHeight(fonts.statNum) + lineHeight(fonts.statLabel)
-	if countsLabel != "" {
-		statsHeight += lineHeight(fonts.statLabel)
-	}
-	separatorHeight := lineHeight(fonts.statLabel) + lineHeight(fonts.statNum)
-	partyLineHeight := lineHeight(fonts.partyNum)
-	partyHeight := partyLineHeight + numParties*partyLineHeight
-	if numParties > 1 {
-		partyHeight += int(float64((numParties-1)*partyLineHeight) * fraktionRowGapFactor)
-	}
-	bottomReserved := verdictHeight + statsHeight + separatorHeight + partyHeight + padding
-	availableForTitle := imgHeight - cur.y - bottomReserved
+	bottomReserved := combinedBottomReserve(fonts, len(fraktionCounts), countsLabel != "")
+	availableForTitle := imgHeight - bandInset(*v) - bottomReserved
 
-	// Try font sizes from 42 down to 20 until title fits
-	titleFontSize := 42.0
-	var titleFace font.Face
-	var titleLines []string
-	var err error
-	for titleFontSize >= 20 {
-		titleFace, err = loadFace(goregular.TTF, titleFontSize)
-		if err != nil {
-			return nil, nil, err
-		}
-		titleLines = wrapText(titleFace, title, maxTextWidth)
-		totalTitleHeight := len(titleLines) * lineHeight(titleFace)
-		if totalTitleHeight <= availableForTitle {
-			break
-		}
-		titleFontSize -= 2
+	titleFace, titleLines, err := fitTitle(title, maxTextWidth, availableForTitle)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	// Verdict first: large centered emoji above the title
@@ -503,7 +651,7 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 			drawCenteredText(img, titleFace, nil, cur.baseline(titleFace), line, bg)
 		}
 		cur.advance(titleFace)
-		cur.gap(titleFace, 0.15)
+		cur.gap(titleFace, titleLineGapFactor)
 	}
 
 	cur.gap(titleFace, 0.75)
@@ -544,6 +692,69 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
 
 	return titleFace, titleLines, nil
+}
+
+// frac returns a fraction of a face's line height, matching layoutCursor.gap.
+func frac(face font.Face, f float64) int {
+	return int(float64(lineHeight(face)) * f)
+}
+
+// titleTrailingGap reserves the gap drawn after a title's last line.
+//
+// The title's own face is not known while its budget is being computed, so the
+// gap is reserved at the largest size the title can take: a goregular line box
+// runs about 1.2× the point size.
+func titleTrailingGap() int {
+	maxTitleLine := titleFontMax * 1.2
+	return int(maxTitleLine * 0.75)
+}
+
+// fraktionTableHeight returns the space drawFraktionTable occupies: its column
+// header and gap, then one row per Fraktion with a gap between rows.
+func fraktionTableHeight(fonts *fontSet, numParties int) int {
+	rowHeight := lineHeight(fonts.partyNum)
+	height := rowHeight + int(float64(rowHeight)*fraktionRowGapFactor)
+	height += numParties * rowHeight
+	if numParties > 1 {
+		height += int(float64((numParties-1)*rowHeight) * fraktionRowGapFactor)
+	}
+	return height
+}
+
+// statsBlockHeight returns the space between a card's title and its Fraktion
+// table: the separator gap, the stats dashboard, and the gaps around both.
+func statsBlockHeight(fonts *fontSet) int {
+	return frac(fonts.statNum, 0.75) +
+		lineHeight(fonts.statNum) + lineHeight(fonts.statLabel) +
+		frac(fonts.statNum, 0.75) + frac(fonts.partyBold, 1.25)
+}
+
+// combinedBottomReserve returns the space layoutCombinedCard needs for
+// everything that is not the title, so the title can be given what is left.
+//
+// It mirrors the advances and gaps of the layout, which is the point: a reserve
+// that came up short would hand the title room the Fraktion table then has to
+// give up, and the table gives it up by dropping rows.
+func combinedBottomReserve(fonts *fontSet, numParties int, hasCountsLabel bool) int {
+	// The verdict sits above the title, but its space is just as unavailable.
+	reserve := lineHeight(fonts.verdict) + frac(fonts.verdict, 0.75)
+	reserve += titleTrailingGap()
+	if hasCountsLabel {
+		reserve += lineHeight(fonts.statLabel) + frac(fonts.statLabel, 0.3)
+	}
+	reserve += statsBlockHeight(fonts)
+	reserve += fraktionTableHeight(fonts, numParties)
+	return reserve + padding
+}
+
+// resultBottomReserve returns the space layoutResultCard needs below its
+// sub-vote heading, mirroring the advances and gaps of the layout that follows.
+func resultBottomReserve(fonts *fontSet, numParties int) int {
+	reserve := frac(fonts.boldHeading, 0.5)
+	reserve += lineHeight(fonts.verdictSm) + frac(fonts.verdictSm, 0.75)
+	reserve += statsBlockHeight(fonts)
+	reserve += fraktionTableHeight(fonts, numParties)
+	return reserve + padding
 }
 
 // statCol holds a value/label pair for dashboard-style stat columns.
@@ -726,19 +937,29 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 	cur.advance(numFace)
 	cur.gap(numFace, fraktionRowGapFactor)
 
-	tableBottom := imgHeight - padding
-	if cur.imgHeight > 0 {
-		tableBottom = cur.imgHeight - padding
-	}
 	rowHeight := lineHeight(numFace)
 	if rowHeight <= 0 {
 		return
 	}
 	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
-	rowStride := rowHeight + rowGap
-	maxRows := (tableBottom - cur.y) / rowStride
-	if maxRows > len(entries) {
-		maxRows = len(entries)
+
+	// The measuring pass takes every row. It has to: renderCombinedCard centres
+	// the card on the height this pass reports, so a measurement that had
+	// already dropped rows would report a short card, centre it lower, and make
+	// the drawing pass drop them for real — which is how a long title used to
+	// cost the card its last Fraktionen.
+	maxRows := len(entries)
+	if img != nil {
+		tableBottom := imgHeight - padding
+		if cur.imgHeight > 0 {
+			tableBottom = cur.imgHeight - padding
+		}
+		// n rows occupy n*rowHeight plus the n-1 gaps between them; the last
+		// row is not followed by one. Dividing by the full stride would demand
+		// a trailing gap that is never drawn and drop a row that fits.
+		if fit := (tableBottom - cur.y + rowGap) / (rowHeight + rowGap); fit < maxRows {
+			maxRows = fit
+		}
 	}
 	if maxRows < 0 {
 		maxRows = 0
@@ -772,10 +993,7 @@ func renderTitleCard(group []votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte,
 	dry := newCursor(inset, imgHeight)
 	layoutTitleCard(nil, dry, group, bg, fonts)
 
-	startY := inset + (imgHeight-inset-dry.contentHeight())/2
-	if startY < inset+padding {
-		startY = inset + padding
-	}
+	startY := centredStart(inset, dry.contentHeight())
 	img := newImage(bg)
 	drawBodyBand(img, fonts.bandLabel, group[0])
 
@@ -789,27 +1007,31 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 	v := group[0]
 	maxTextWidth := imgWidth - 2*padding
 
+	// The summary is built first: it is what the title has to leave room for,
+	// and it does not depend on the size the title ends up at.
+	var summaryLines []string
+	for i, sv := range group {
+		line, ok := formatSummaryLine(i+1, sv, len(group))
+		if ok {
+			summaryLines = append(summaryLines, wrapText(fonts.small, line, maxTextWidth)...)
+		}
+	}
+
+	// Reserve: gap after the title, the "Übersicht" header and its gap, one
+	// line per summary line, and the bottom padding.
+	summaryReserve := titleTrailingGap() +
+		lineHeight(fonts.small) + frac(fonts.small, 0.4) +
+		len(summaryLines)*lineHeight(fonts.small) + padding
+
 	// Title: bold, wrapped, centered (no verdict — ambiguous for multi-vote groups)
 	title := voteformat.CleanVoteTitle(v.Title)
 	if prefix := voteformat.GroupPrefixLine(group); prefix != "" {
 		title = prefix + ": " + title
 	}
 
-	titleFontSize := 42.0
-	var titleFace font.Face
-	var titleLines []string
-	for titleFontSize >= 20 {
-		var err error
-		titleFace, err = loadFace(goregular.TTF, titleFontSize)
-		if err != nil {
-			return
-		}
-		titleLines = wrapText(titleFace, title, maxTextWidth)
-		totalTitleHeight := len(titleLines) * lineHeight(titleFace)
-		if totalTitleHeight <= imgHeight-cur.y-padding {
-			break
-		}
-		titleFontSize -= 2
+	titleFace, titleLines, err := fitTitle(title, maxTextWidth, imgHeight-bandInset(v)-summaryReserve)
+	if err != nil {
+		return
 	}
 
 	for _, line := range titleLines {
@@ -817,7 +1039,7 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 			drawCenteredText(img, titleFace, nil, cur.baseline(titleFace), line, bg)
 		}
 		cur.advance(titleFace)
-		cur.gap(titleFace, 0.15)
+		cur.gap(titleFace, titleLineGapFactor)
 	}
 
 	// Summary: list each sub-vote with number + emoji + short subtitle.
@@ -829,13 +1051,6 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 	cur.advance(fonts.small)
 	cur.gap(fonts.small, 0.4)
 
-	var summaryLines []string
-	for i, sv := range group {
-		line, ok := formatSummaryLine(i+1, sv, len(group))
-		if ok {
-			summaryLines = append(summaryLines, wrapText(fonts.small, line, maxTextWidth)...)
-		}
-	}
 	// Find widest line and center the block, then left-align all lines within it
 	maxW := 0
 	for _, line := range summaryLines {
@@ -864,10 +1079,7 @@ func renderResultCard(v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total i
 	layoutResultCard(nil, dry, v, bg, fonts, idx, total)
 
 	// Real run, centred in the space the band leaves
-	startY := inset + (imgHeight-inset-dry.contentHeight())/2
-	if startY < inset+padding {
-		startY = inset + padding
-	}
+	startY := centredStart(inset, dry.contentHeight())
 	img := newImage(bg)
 	drawBodyBand(img, fonts.bandLabel, *v)
 	cur := newCursor(startY, imgHeight)
@@ -889,9 +1101,17 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 
 	// Heading naming this vote within the group. Without it the cards of a
 	// group whose source publishes no per-vote title are indistinguishable.
+	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
+
 	if sub := voteformat.SubVoteLabel(*v, idx-1, total); sub != "" {
 		maxTextWidth := imgWidth - 2*padding
 		subLines := wrapText(fonts.boldHeading, sub, maxTextWidth)
+		// Same bargain as the combined card's title: the heading gives way to
+		// the results rather than pushing Fraktionen off the bottom. It keeps
+		// its face — these labels are short enough that shrinking would only
+		// make the common card worse — and is cut with an ellipsis instead.
+		available := imgHeight - bandInset(*v) - resultBottomReserve(fonts, len(fraktionCounts))
+		subLines = ellipsizeLines(fonts.boldHeading, subLines, maxTextWidth, available)
 		for _, line := range subLines {
 			if img != nil {
 				drawCenteredText(img, fonts.boldHeading, fonts.emojiLarge, cur.baseline(fonts.boldHeading), line, bg)
@@ -945,7 +1165,6 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 	cur.gap(fonts.partyBold, 1.25)
 
 	// Party breakdown table
-	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 	drawFraktionTable(img, cur, fraktionCounts, bg, fonts.partyBold, fonts.partyNum)
 }
 
