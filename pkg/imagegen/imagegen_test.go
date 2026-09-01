@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	"image/jpeg"
 	"strings"
 	"testing"
@@ -364,48 +365,86 @@ func TestCardsKeepEveryFraktion(t *testing.T) {
 		t.Fatalf("loadFontSet failed: %v", err)
 	}
 
+	eachCard(t, fonts, func(t *testing.T, c cardLayout) {
+		dry := newCursor(c.inset, imgHeight)
+		c.layout(nil, dry)
+
+		startY := centredStart(c.inset, dry.contentHeight())
+		if bottom := startY + dry.contentHeight(); bottom > imgHeight-padding {
+			t.Errorf("%s: content ends at y=%d, past the %dpx bottom limit", c.label, bottom, imgHeight-padding)
+		}
+
+		real := newCursor(startY, imgHeight)
+		c.layout(newImage(c.bg), real)
+		if real.contentHeight() != dry.contentHeight() {
+			t.Errorf("%s: drawn card is %dpx tall against %dpx measured — the table dropped rows",
+				c.label, real.contentHeight(), dry.contentHeight())
+		}
+	})
+}
+
+// TestCardsClearTheBodyBand checks the margin under the band.
+//
+// A card whose content is centred but never charged for that margin fills the
+// frame instead: on the 03.12.2025 Postulat the verdict emoji sat 2px below the
+// band, reading as though it were part of it. titleBudget charges the title for
+// the margin, so a card that tall gives up a font size and keeps its breathing
+// room — which is what this asserts, for every card of every fixture.
+func TestCardsClearTheBodyBand(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	eachCard(t, fonts, func(t *testing.T, c cardLayout) {
+		dry := newCursor(c.inset, imgHeight)
+		c.layout(nil, dry)
+
+		startY := centredStart(c.inset, dry.contentHeight())
+		if gap := startY - c.inset; gap < padding {
+			t.Errorf("%s: content starts %dpx below the band, under the %dpx margin (card is %dpx tall)",
+				c.label, gap, padding, dry.contentHeight())
+		}
+	})
+}
+
+// cardLayout is one card of one fixture: everything eachCard's callers need to
+// lay it out the way render*Card does.
+type cardLayout struct {
+	label  string
+	bg     color.RGBA
+	inset  int
+	layout func(*image.RGBA, *layoutCursor)
+}
+
+// eachCard runs fn over every card every fixture produces — the same cards
+// GenerateCarousel draws — as a subtest per fixture.
+func eachCard(t *testing.T, fonts *fontSet, fn func(*testing.T, cardLayout)) {
+	t.Helper()
+
 	for name, group := range testfixtures.AllFixtures() {
 		t.Run(name, func(t *testing.T) {
 			bg := SelectColor(group[0].Jurisdiction, group[0].Affair.Number)
 			inset := bandInset(group[0])
 
-			check := func(label string, layout func(*image.RGBA, *layoutCursor)) {
-				t.Helper()
-
-				dry := newCursor(inset, imgHeight)
-				layout(nil, dry)
-
-				startY := centredStart(inset, dry.contentHeight())
-				if bottom := startY + dry.contentHeight(); bottom > imgHeight-padding {
-					t.Errorf("%s: content ends at y=%d, past the %dpx bottom limit", label, bottom, imgHeight-padding)
-				}
-
-				real := newCursor(startY, imgHeight)
-				layout(newImage(bg), real)
-				if real.contentHeight() != dry.contentHeight() {
-					t.Errorf("%s: drawn card is %dpx tall against %dpx measured — the table dropped rows",
-						label, real.contentHeight(), dry.contentHeight())
-				}
-			}
-
 			if len(group) == 1 {
 				v := group[0]
-				check("combined card", func(img *image.RGBA, cur *layoutCursor) {
+				fn(t, cardLayout{"combined card", bg, inset, func(img *image.RGBA, cur *layoutCursor) {
 					if _, _, err := layoutCombinedCard(img, cur, &v, bg, fonts); err != nil {
 						t.Fatalf("layoutCombinedCard failed: %v", err)
 					}
-				})
+				}})
 				return
 			}
 
-			check("title card", func(img *image.RGBA, cur *layoutCursor) {
+			fn(t, cardLayout{"title card", bg, inset, func(img *image.RGBA, cur *layoutCursor) {
 				layoutTitleCard(img, cur, group, bg, fonts)
-			})
+			}})
 			for i := range group {
 				v := group[i]
-				check(fmt.Sprintf("result card %d", i+1), func(img *image.RGBA, cur *layoutCursor) {
+				fn(t, cardLayout{fmt.Sprintf("result card %d", i+1), bg, inset, func(img *image.RGBA, cur *layoutCursor) {
 					layoutResultCard(img, cur, &v, bg, fonts, i+1, len(group))
-				})
+				}})
 			}
 		})
 	}

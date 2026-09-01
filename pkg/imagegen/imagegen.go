@@ -419,16 +419,23 @@ func GenerateCarousel(group []votes.Vote) ([][]byte, error) {
 }
 
 // centredStart returns the Y the card's content starts at, centring a block of
-// contentHeight in the space the body band leaves.
+// contentHeight between the margin under the body band and the one above the
+// bottom edge.
 //
-// The clamp is the point. drawFraktionTable stops drawing at
-// imgHeight-padding, so a tall card centred without regard for its bottom edge
-// comes back missing Fraktionen, with nothing on it to say any were dropped.
-// Holding that edge costs a card with room to spare nothing — it is centred
-// exactly as it would be without the clamp — and pins a card too tall to centre
-// to the top of the space instead.
+// The clamps are the point, and they rank. drawFraktionTable stops drawing at
+// imgHeight-padding, so a card centred without regard for its bottom edge comes
+// back missing Fraktionen, with nothing on it to say any were dropped: the
+// bottom edge is held first. The margin under the band is held second, which is
+// the order that matters only for a card too tall to satisfy both — it gives up
+// its top margin, down to the band edge at worst, rather than a Fraktion.
+//
+// Cards that fit keep both margins, because titleBudget charges the title for
+// them. The two margins are equal, so centring between them is the same
+// arithmetic as centring in the raw frame: a card with room to spare sits
+// exactly where it always did.
 func centredStart(inset, contentHeight int) int {
-	start := inset + (imgHeight-inset-contentHeight)/2
+	top := inset + padding
+	start := top + (imgHeight-padding-top-contentHeight)/2
 	if lowest := imgHeight - padding - contentHeight; start > lowest {
 		start = lowest
 	}
@@ -623,7 +630,7 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	// sizes, leaving the measured height wrong for the card actually drawn.
 	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 	bottomReserved := combinedBottomReserve(fonts, len(fraktionCounts), countsLabel != "")
-	availableForTitle := imgHeight - bandInset(*v) - bottomReserved
+	availableForTitle := titleBudget(*v, bottomReserved)
 
 	titleFace, titleLines, err := fitTitle(title, maxTextWidth, availableForTitle)
 	if err != nil {
@@ -727,6 +734,19 @@ func statsBlockHeight(fonts *fontSet) int {
 	return frac(fonts.statNum, 0.75) +
 		lineHeight(fonts.statNum) + lineHeight(fonts.statLabel) +
 		frac(fonts.statNum, 0.75) + frac(fonts.partyBold, 1.25)
+}
+
+// titleBudget returns the vertical space a card's title may take: the frame
+// below the band, less the margin that has to stay under the band, less what
+// the results below the title need.
+//
+// The top margin is budgeted rather than hoped for. Centring only ever
+// protected the bottom edge, so a title long enough to fill the card was
+// accepted at full size and the top paid for it: on the 03.12.2025 Postulat the
+// verdict emoji came out 2px under the band, all but touching it. Charging the
+// title for the margin makes it give up a font size instead.
+func titleBudget(v votes.Vote, reserve int) int {
+	return imgHeight - bandInset(v) - padding - reserve
 }
 
 // combinedBottomReserve returns the space layoutCombinedCard needs for
@@ -1029,7 +1049,7 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 		title = prefix + ": " + title
 	}
 
-	titleFace, titleLines, err := fitTitle(title, maxTextWidth, imgHeight-bandInset(v)-summaryReserve)
+	titleFace, titleLines, err := fitTitle(title, maxTextWidth, titleBudget(v, summaryReserve))
 	if err != nil {
 		return
 	}
@@ -1110,7 +1130,7 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 		// the results rather than pushing Fraktionen off the bottom. It keeps
 		// its face — these labels are short enough that shrinking would only
 		// make the common card worse — and is cut with an ellipsis instead.
-		available := imgHeight - bandInset(*v) - resultBottomReserve(fonts, len(fraktionCounts))
+		available := titleBudget(*v, resultBottomReserve(fonts, len(fraktionCounts)))
 		subLines = ellipsizeLines(fonts.boldHeading, subLines, maxTextWidth, available)
 		for _, line := range subLines {
 			if img != nil {
