@@ -364,6 +364,97 @@ AL 0/2/0/1
 
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1
 
+################ FIXTURE tall-title-band-clearance ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Reto Brüesch @Z7f3a94241 (SVP) und Jean-Marc Jung (SVP) vom 03.12.2025: Bau- und Entwicklungsprojekte sowie Erarbeitung und Genehmigung von Nutzungs- und Sondernutzungsplanungen,…
+
+👇 Details im Thread
+
+[post 1]
+📊 117 Ja | 0 Nein | 0 Enthaltung | 8 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 37/0/0/4
+FDP 23/0/0/1
+SVP 16/0/0/0
+GLP 14/0/0/1
+Grüne 12/0/0/2
+AL 8/0/0/0
+Die Mitte 7/0/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-bandclearance-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Reto Brüesch @Z7f3a94241 (SVP) und Jean-Marc Jung (SVP) vom 03.12.2025: Bau- und Entwicklungsprojekte sowie Erarbeitung und Genehmigung von Nutzungs- und Sondernutzungsplanungen, Verankerung einer klaren, standardisierten und nachvollziehbaren Interessenabwägung gemäss Art. 3 Raumplanungsverordnung (RPV)
+
+👇 Details im Thread
+
+[post 1]
+📊 117 Ja | 0 Nein | 0 Enthaltung | 8 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 37/0/0/4
+FDP 23/0/0/1
+SVP 16/0/0/0
+GLP 14/0/0/1
+Grüne 12/0/0/2
+AL 8/0/0/0
+Die Mitte 7/0/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-bandclearance-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+✅ Angenommen: Postulat von Reto Brüesch (SVP) und Jean-Marc Jung (SVP) vom 03.12.2025: Bau- und Entwicklungsprojekte sowie Erarbeitung und Genehmigung von Nutzungs- und Sondernutzungsplanungen, Verankerung einer klaren, standardisi…
+
+👇 Details im Thread
+[mention] zri-testbot-7f3a.bsky.social @ 81-94
+
+[post 1]
+📊 117 Ja | 0 Nein | 0 Enth. | 8 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 37/0/0/4
+FDP 23/0/0/1
+SVP 16/0/0/0
+GLP 14/0/0/1
+Grüne 12/0/0/2
+AL 8/0/0/0
+Die Mitte 7/0/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-bandclearance-1
+[facet] {Index:{ByteStart:182 ByteEnd:268} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-bandclearance-1 DID: Tag:}]}
+
+---- Instagram ----
+[images] 1
+[caption]
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+Postulat von Reto Brüesch @zueri835 (SVP) und Jean-Marc Jung (SVP) vom 03.12.2025: Bau- und Entwicklungsprojekte sowie Erarbeitung und Genehmigung von Nutzungs- und Sondernutzungsplanungen, Verankerung einer klaren, standardisierten und nachvollziehbaren Interessenabwägung gemäss Art. 3 Raumplanungsverordnung (RPV)
+
+✅ Angenommen
+📊 117 Ja | 0 Nein | 0 Enthaltung | 8 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 37/0/0/4
+FDP 23/0/0/1
+SVP 16/0/0/0
+GLP 14/0/0/1
+Grüne 12/0/0/2
+AL 8/0/0/0
+Die Mitte 7/0/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-bandclearance-1
+
 ################ FIXTURE extreme-title-full-roster ################
 
 ---- X (limit 280) ----

@@ -244,6 +244,36 @@ func LongTitleTruncation() []votes.Vote {
 	return []votes.Vote{v}
 }
 
+// TallTitleBandClearance is the 03.12.2025 Postulat: a title just long enough
+// to fill the card at full size.
+//
+// It is the case between "fits comfortably" and "has to be cut". Its eight
+// 42pt lines left the content 2px below the body band — the verdict emoji all
+// but touching the chamber name — because the layout centred the content but
+// only ever charged the title for the margin at the bottom. The card should
+// give up a font size here, long before it gives up a line.
+func TallTitleBandClearance() []votes.Vote {
+	const title = "Postulat von Reto Brüesch (SVP) und Jean-Marc Jung (SVP) vom 03.12.2025: " +
+		"Bau- und Entwicklungsprojekte sowie Erarbeitung und Genehmigung von Nutzungs- und " +
+		"Sondernutzungsplanungen, Verankerung einer klaren, standardisierten und " +
+		"nachvollziehbaren Interessenabwägung gemäss Art. 3 Raumplanungsverordnung (RPV)"
+
+	v := vote("bandclearance-1", title, "2025/438", "angenommen", 117, 0, 0, 8)
+	v.MemberVotes = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 37, 0, 0, 4},
+		{"FDP", 23, 0, 0, 1},
+		{"SVP", 16, 0, 0, 0},
+		{"GLP", 14, 0, 0, 1},
+		{"Grüne", 12, 0, 0, 2},
+		{"AL", 8, 0, 0, 0},
+		{"Die Mitte", 7, 0, 0, 0},
+	})
+	return []votes.Vote{v}
+}
+
 // ExtremeTitleFullRoster is the worst real title the Gemeinderat has produced,
 // against a full nine-Fraktion roster.
 //
@@ -779,6 +809,7 @@ var FixtureNames = []string{
 	"single-vote-abgelehnt",
 	"single-vote-dringlicherklaerung",
 	"long-title-truncation",
+	"tall-title-band-clearance",
 	"extreme-title-full-roster",
 	"multi-vote-group",
 	"generic-antrag-fallback",
@@ -800,6 +831,7 @@ func AllFixtures() map[string][]votes.Vote {
 		"single-vote-abgelehnt":           SingleVoteAbgelehnt(),
 		"single-vote-dringlicherklaerung": SingleVoteDringlicherklaerung(),
 		"long-title-truncation":           LongTitleTruncation(),
+		"tall-title-band-clearance":       TallTitleBandClearance(),
 		"extreme-title-full-roster":       ExtremeTitleFullRoster(),
 		"multi-vote-group":                MultiVoteGroup(),
 		"generic-antrag-fallback":         GenericAntragFallback(),
