@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"sort"
+	"strings"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"gopkg.in/yaml.v3"
@@ -122,8 +123,17 @@ func updateREADME(stats map[string]int, totalContacts int) {
 	platformsUpdated := 0
 	for platform, count := range platformMap {
 		// Pattern: | Platform     | Status (with emoji) | NUMBER | Account |
-		pattern := regexp.MustCompile(fmt.Sprintf(`(\|\s*%s\s*\|[^|]+\|)\s*\d+\s*(\|)`, regexp.QuoteMeta(platform)))
-		newReadme := pattern.ReplaceAllString(readme, fmt.Sprintf("${1} %d ${2}", count))
+		// The count cell is kept at its original width so the table stays
+		// aligned the way Markdown formatters (e.g. Prettier) write it.
+		pattern := regexp.MustCompile(fmt.Sprintf(`(\|\s*%s\s*\|[^|]+\|)( *\d+ *)(\|)`, regexp.QuoteMeta(platform)))
+		newReadme := pattern.ReplaceAllStringFunc(readme, func(match string) string {
+			groups := pattern.FindStringSubmatch(match)
+			cell := fmt.Sprintf(" %d ", count)
+			if pad := len(groups[2]) - len(cell); pad > 0 {
+				cell += strings.Repeat(" ", pad)
+			}
+			return groups[1] + cell + groups[3]
+		})
 		if newReadme != readme {
 			platformsUpdated++
 			readme = newReadme
