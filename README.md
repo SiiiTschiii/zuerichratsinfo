@@ -34,10 +34,10 @@ Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei D
 
 ## Covered Bodies
 
-| Body                         | Data source                                                              | Status  | Tagging                       |
-| ---------------------------- | ------------------------------------------------------------------------ | ------- | ----------------------------- |
-| **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 137 verified contacts      |
-| **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live | 🟡 282 candidates, 0 verified |
+| Body                         | Data source                                                              | Status  |
+| ---------------------------- | ------------------------------------------------------------------------ | ------- |
+| **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live |
+| **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live |
 
 Both bodies post to the same accounts. Every post names which chamber voted, in
 the text and on the image, so the two are never confused.
@@ -53,14 +53,7 @@ the text and on the image, so the two are never confused.
 | Bluesky     | ✅ Active  | 28                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
 | TikTok      | ❌ Planned | 18                                  | -                                                                                    |
 
-_"Politicians with a verified account" is how many Gemeinderat and Stadtrat members
-(9 of them Stadträte) we have identified as being active on that platform, so that
-they can be tagged in a post, out of the 137 politicians curated in
-[data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml). Most were found
-and checked by hand; the rest are the accounts the city publishes itself, imported
-from PARIS. Platforms are sorted by coverage. Only **verified** accounts count, and only
-verified accounts are ever posted: an account carries `verified: true` once a
-human has opened it and confirmed it belongs to the person named beside it._
+_The count is how many politicians the bot can tag on that platform in case they are mentioned in a post. The curated mapping lives in [data/](data/)._
 
 ## What It Does
 
