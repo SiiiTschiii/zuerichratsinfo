@@ -322,6 +322,37 @@ func TestFormatVoteThread_RootTruncation(t *testing.T) {
 	}
 }
 
+// TestFormatVoteThread_StilleWahlTruncation pins that truncateText's own
+// appended "…" is budgeted for, not just the text before it. A budget that
+// stops one weighted character short of charLimit still overruns once
+// truncateText adds the ellipsis on top — see the fixed
+// buildStilleWahlPost.
+func TestFormatVoteThread_StilleWahlTruncation(t *testing.T) {
+	longAmt := strings.Repeat("Mitglied Obergericht ", 30)
+	group := []votes.Vote{
+		{
+			SourceID: "stille-wahl-trunc-1",
+			Title:    "Wahl " + longAmt + "für Roland Schmid",
+			Type:     "Anwesenheitsermittlung",
+			Date:     testfixtures.MustDate("2026-07-06"),
+			Affair:   votes.Affair{Type: "Wahl"},
+		},
+	}
+
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
+	if len(thread) != 1 {
+		t.Fatalf("want a single post, got %d", len(thread))
+	}
+
+	post := thread[0].Text
+	if got := weightedLen(post); got > DefaultMaxChars {
+		t.Errorf("stille Wahl post exceeds DefaultMaxChars: %d > %d", got, DefaultMaxChars)
+	}
+	if !strings.Contains(post, "…") {
+		t.Error("truncated stille Wahl post should contain '…'")
+	}
+}
+
 // The truncation arithmetic reserves room for the business-type line, so a root
 // that loses it is both missing the line and shorter than it was allowed to be.
 func TestFormatVoteThread_TruncatedMultiVoteRootKeepsTheBusinessType(t *testing.T) {

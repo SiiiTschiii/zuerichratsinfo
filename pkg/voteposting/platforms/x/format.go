@@ -91,7 +91,9 @@ func buildStilleWahlPost(group []votes.Vote, sw voteformat.StilleWahl, contactMa
 	if weightedLen(fullText) > charLimit {
 		// Extremely unlikely (every Amt seen in practice is well under this
 		// budget), but truncate rather than post something the API rejects.
-		available := charLimit - weightedLen(header) - weightedLen(link)
+		// truncateText appends its own "…", so that has to come out of the
+		// budget too, or the truncated post still overruns by its weight.
+		available := charLimit - weightedLen(header) - weightedLen(link) - weightedLen("…")
 		if available > 0 {
 			body = truncateText(body, available)
 		}
