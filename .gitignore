@@ -10,6 +10,11 @@ zurichratsinfo
 
 data/email_overrides.yaml
 
+# Unverified social-account candidates harvested by search. Guesses about real
+# people's accounts do not belong in a public repo; verified handles graduate
+# into data/<jurisdiction>/contacts.yaml by hand.
+data/*/contacts_candidates.yaml
+
 # Outreach campaign recipient lists contain personal emails — keep local.
 # Only the schema example is committed.
 data/campaign_recipients/*
