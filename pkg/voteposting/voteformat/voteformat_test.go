@@ -954,9 +954,105 @@ func TestAuthorList(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := AuthorList(tt.authors); got != tt.want {
+			if got := AuthorList(tt.authors, 0); got != tt.want {
 				t.Errorf("AuthorList() = %q, want %q", got, tt.want)
 			}
 		})
+	}
+}
+
+// TestFitAuthorPrefix pins what gives way when a signatory list and a title
+// compete for one post: never the title.
+func TestFitAuthorPrefix(t *testing.T) {
+	five := []votes.Author{
+		{Name: "Hannah Pfalzgraf", Party: "SP"},
+		{Name: "Yvonne Bürgin", Party: "Die Mitte"},
+		{Name: "Andrea Gisler", Party: "GLP"},
+		{Name: "Silvia Rigoni", Party: "Grüne"},
+		{Name: "Judith Anna Stofer", Party: "AL"},
+	}
+	group := []votes.Vote{{Affair: votes.Affair{Type: "Postulat", Authors: five}}}
+	measure := func(s string) int { return len([]rune(s)) }
+	full := "Postulat von Hannah Pfalzgraf (SP), Yvonne Bürgin (Die Mitte), Andrea Gisler (GLP), Silvia Rigoni (Grüne) und Judith Anna Stofer (AL)"
+
+	t.Run("room for everyone names everyone", func(t *testing.T) {
+		prefix, deferred := FitAuthorPrefix(group, 500, measure)
+		if prefix != full {
+			t.Errorf("prefix = %q, want every signatory named", prefix)
+		}
+		if len(deferred) != 0 {
+			t.Errorf("deferred = %+v, want nobody held back", deferred)
+		}
+	})
+
+	t.Run("a tight budget sheds from the end", func(t *testing.T) {
+		prefix, deferred := FitAuthorPrefix(group, measure(full)-10, measure)
+		if measure(prefix) > measure(full)-10 {
+			t.Errorf("prefix = %q, still over budget", prefix)
+		}
+		if !strings.HasSuffix(prefix, "u. a.") {
+			t.Errorf("prefix = %q, want it to signal that more names follow", prefix)
+		}
+		if len(deferred) == 0 {
+			t.Fatal("want the shed signatories returned so a reply can name them")
+		}
+		// Shed from the end: the first signatory is the one that stays.
+		if deferred[len(deferred)-1].Name != "Judith Anna Stofer" {
+			t.Errorf("deferred = %+v, want the list shed from the end", deferred)
+		}
+		if !strings.Contains(prefix, "Hannah Pfalzgraf") {
+			t.Errorf("prefix = %q, want the first signatory kept", prefix)
+		}
+	})
+
+	t.Run("no room for any name keeps the type and defers all", func(t *testing.T) {
+		prefix, deferred := FitAuthorPrefix(group, 12, measure)
+		if prefix != "Postulat" {
+			t.Errorf("prefix = %q, want the business type alone", prefix)
+		}
+		if len(deferred) != len(five) {
+			t.Errorf("deferred %d, want all %d signatories moved to the block below",
+				len(deferred), len(five))
+		}
+	})
+
+	t.Run("business with no authors is unaffected", func(t *testing.T) {
+		vorlage := []votes.Vote{{Affair: votes.Affair{Type: "Vorlage"}}}
+		prefix, deferred := FitAuthorPrefix(vorlage, 5, measure)
+		if prefix != "Vorlage" || len(deferred) != 0 {
+			t.Errorf("got %q / %+v, want the plain label and nothing deferred", prefix, deferred)
+		}
+	})
+}
+
+func TestSignatoryLine(t *testing.T) {
+	if got := SignatoryLine(nil); got != "" {
+		t.Errorf("SignatoryLine(nil) = %q, want nothing to post", got)
+	}
+	got := SignatoryLine([]votes.Author{
+		{Name: "Silvia Rigoni", Party: "Grüne"},
+		{Name: "Judith Anna Stofer", Party: "AL"},
+	})
+	want := "✍️ Weitere Unterzeichnende: Silvia Rigoni (Grüne) und Judith Anna Stofer (AL)"
+	if got != want {
+		t.Errorf("SignatoryLine() = %q, want %q", got, want)
+	}
+}
+
+func TestAuthorListCapped(t *testing.T) {
+	three := []votes.Author{
+		{Name: "A", Party: "SP"}, {Name: "B", Party: "FDP"}, {Name: "C", Party: "AL"},
+	}
+	if got, want := AuthorList(three, 0), "A (SP), B (FDP) und C (AL)"; got != want {
+		t.Errorf("max 0 = %q, want all named: %q", got, want)
+	}
+	if got, want := AuthorList(three, 2), "A (SP) und B (FDP) u. a."; got != want {
+		t.Errorf("max 2 = %q, want %q", got, want)
+	}
+	if got, want := AuthorList(three, 1), "A (SP) u. a."; got != want {
+		t.Errorf("max 1 = %q, want %q", got, want)
+	}
+	if got, want := AuthorList(three, 5), "A (SP), B (FDP) und C (AL)"; got != want {
+		t.Errorf("a cap above the count = %q, want no 'u. a.': %q", got, want)
 	}
 }

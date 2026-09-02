@@ -14,15 +14,6 @@ import (
 // largest on record for Kanton Zürich is well under a hundred.
 const contributorPageSize = 100
 
-// maxRenderedAuthors bounds what a post will name.
-//
-// A business is filed by one or two members and co-signed by a few more, and
-// only the first signatories are named here, so the cap is a guard rather than
-// a policy — but it has to exist. The alternative is an authorship line long
-// enough to push the actual subject of the vote out of a 280-character post,
-// which trades the thing a reader needs for the thing they merely like.
-const maxRenderedAuthors = 3
-
 // affairAuthors returns the members who put an affair before the chamber.
 //
 // Kanton Zürich's titles are bare subject lines — "Ökologischer Ausgleich im
@@ -31,11 +22,14 @@ const maxRenderedAuthors = 3
 // names in a post, so a post with no names in it tags nobody however well
 // curated the file is.
 //
-// Two filters decide who is named, and both matter:
+// Everyone who signed is named, first signatory first. Stadt Zürich's titles
+// name every submitter — city Postulate simply happen to have two — and the
+// full list carries something the lead name alone hides: a Postulat signed
+// across SP, Die Mitte, GLP, Grüne and AL is a broad coalition, and that is
+// visible at a glance only if the names are there.
 //
-//   - Only first signatories. Everyone who signs is a harmonised "author", but
-//     the Erstunterzeichnende are the ones the record treats as having filed it
-//     and the ones a city title would have named.
+// One filter decides who is named:
+//
 //   - Only people the record gives a party. A person with none is not a member
 //     acting in the chamber but a private individual exercising the right to
 //     file an Einzelinitiative. The parliament publishes their name; putting it
@@ -55,31 +49,32 @@ func (c *Client) affairAuthors(affairID int64) ([]votes.Author, error) {
 		return nil, err
 	}
 
-	leads := make([]contributorDTO, 0, len(resp.Data))
+	signatories := make([]contributorDTO, 0, len(resp.Data))
 	for _, cont := range resp.Data {
 		if cont.Type != "person" || cont.RoleHarmonized != "author" {
-			continue
-		}
-		if !isFirstSignatory(deref(cont.RoleDe)) {
 			continue
 		}
 		if strings.TrimSpace(cont.Fullname) == "" || strings.TrimSpace(deref(cont.PartyDe)) == "" {
 			continue
 		}
-		leads = append(leads, cont)
+		signatories = append(signatories, cont)
 	}
 
-	// The API returns signatories in descending position, first signatory last.
-	sort.SliceStable(leads, func(i, j int) bool {
-		return position(leads[i]) < position(leads[j])
+	// First signatory first, then the rest in the order the parliament lists
+	// them. Position alone almost always gives that — the Erstunterzeichnende
+	// carry position 1 — but the role is the field that actually says so, and
+	// it costs nothing to sort on both.
+	sort.SliceStable(signatories, func(i, j int) bool {
+		li := isFirstSignatory(deref(signatories[i].RoleDe))
+		lj := isFirstSignatory(deref(signatories[j].RoleDe))
+		if li != lj {
+			return li
+		}
+		return position(signatories[i]) < position(signatories[j])
 	})
 
-	if len(leads) > maxRenderedAuthors {
-		leads = leads[:maxRenderedAuthors]
-	}
-
-	authors := make([]votes.Author, 0, len(leads))
-	for _, cont := range leads {
+	authors := make([]votes.Author, 0, len(signatories))
+	for _, cont := range signatories {
 		authors = append(authors, votes.Author{
 			Name:  strings.TrimSpace(cont.Fullname),
 			Party: strings.TrimSpace(deref(cont.PartyDe)),
@@ -88,13 +83,12 @@ func (c *Client) affairAuthors(affairID int64) ([]votes.Author, error) {
 	return authors, nil
 }
 
-// isFirstSignatory reads the body's own role label.
-//
-// The harmonised field cannot answer this — it says "author" for every
-// signatory — so the German label is the only thing that separates the member
-// who filed a business from the ones who added their name to it. Matching a
-// prefix covers both gendered forms and the pair the API serves joined,
-// "Erstunterzeichnerin / Erstunterzeichner".
+// isFirstSignatory reads the body's own role label, which is the only field
+// that separates the member who filed a business from the ones who added their
+// name to it — the harmonised field says "author" for every signatory. Matching
+// a prefix covers both gendered forms and the pair the API serves joined,
+// "Erstunterzeichnerin / Erstunterzeichner". It orders the list; it no longer
+// decides who is on it.
 func isFirstSignatory(roleDe string) bool {
 	return strings.HasPrefix(strings.TrimSpace(roleDe), "Erstunterzeichn")
 }

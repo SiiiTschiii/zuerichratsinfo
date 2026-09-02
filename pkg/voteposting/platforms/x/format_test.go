@@ -591,3 +591,70 @@ contacts:
 		t.Errorf("the author on the label line was not tagged\n%s", thread[0].Text)
 	}
 }
+
+// The title is what a reader cannot do without, so a long signatory list must
+// never be the reason it gets cut. The names that do not fit move into the
+// thread instead.
+func TestFormatVoteThread_LongSignatoryListNeverTruncatesTheTitle(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+	title := group[0].Title
+
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
+	if len(thread) < 2 {
+		t.Fatalf("got %d posts, want a root and at least one reply", len(thread))
+	}
+
+	if !strings.Contains(thread[0].Text, title) {
+		t.Errorf("the title was cut to make room for names:\n%s", thread[0].Text)
+	}
+	if strings.Contains(thread[0].Text, "…") {
+		t.Errorf("root carries an ellipsis, so something was truncated:\n%s", thread[0].Text)
+	}
+	if weightedLen(thread[0].Text) > DefaultMaxChars {
+		t.Errorf("root is %d chars, over the %d limit", weightedLen(thread[0].Text), DefaultMaxChars)
+	}
+
+	// Everyone is still named across the thread.
+	all := allThreadText(thread)
+	for _, a := range group[0].Affair.Authors {
+		if !strings.Contains(all, a.Name) {
+			t.Errorf("%s is named nowhere in the thread", a.Name)
+		}
+	}
+	if !strings.Contains(all, "Weitere Unterzeichnende") {
+		t.Errorf("the shed signatories got no block of their own:\n%s", all)
+	}
+}
+
+// With room to spare every signatory is named in the root, and no separate
+// block is needed at all.
+func TestFormatVoteThread_PremiumRootNamesEverySignatory(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+
+	thread := FormatVoteThread(group, nil, 2000)
+
+	for _, a := range group[0].Affair.Authors {
+		if !strings.Contains(thread[0].Text, a.Name) {
+			t.Errorf("%s is missing from a root with room for them:\n%s", a.Name, thread[0].Text)
+		}
+	}
+	if strings.Contains(allThreadText(thread), "Weitere Unterzeichnende") {
+		t.Error("a signatory block was added even though the root held everyone")
+	}
+}
+
+// A single signatory is the ordinary case and must read as plain prose, with no
+// "u. a." and no extra block.
+func TestFormatVoteThread_SingleSignatory(t *testing.T) {
+	group := testfixtures.KantonsratMemberBusiness()
+
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
+
+	if !strings.Contains(thread[0].Text, "Postulat von Tobias Weidmann (SVP)") {
+		t.Errorf("want the lone signatory named plainly:\n%s", thread[0].Text)
+	}
+	all := allThreadText(thread)
+	if strings.Contains(all, "u. a.") || strings.Contains(all, "Weitere Unterzeichnende") {
+		t.Errorf("one signatory should need no overflow machinery:\n%s", all)
+	}
+}

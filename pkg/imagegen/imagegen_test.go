@@ -618,3 +618,84 @@ func TestAppendEllipsis_TrimsPunctuation(t *testing.T) {
 		t.Errorf("got %q, want %q", got, "gültigem Aufenthaltsstatus…")
 	}
 }
+
+// The card sets the type, the signatories and the subject in one column. Text
+// posts name everyone; the card names as many as the font ladder can hold, and
+// only then starts dropping — because the subject is what a reader cannot do
+// without.
+func TestCardTitleNamesEveryoneItCanFit(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+
+	_, lines, err := cardTitle(group, voteformat.CleanVoteTitle(group[0].Title),
+		imgWidth-2*padding, 900)
+	if err != nil {
+		t.Fatalf("cardTitle: %v", err)
+	}
+	set := strings.Join(lines, " ")
+
+	for _, a := range group[0].Affair.Authors {
+		if !strings.Contains(set, a.Name) {
+			t.Errorf("%s is missing from a card with room for them:\n%s", a.Name, set)
+		}
+	}
+	if strings.Contains(set, "u. a.") {
+		t.Errorf("names were dropped from a card that had room:\n%s", set)
+	}
+	if strings.Contains(set, "…") {
+		t.Errorf("the card cut its own title:\n%s", set)
+	}
+}
+
+// Squeezed hard, the card gives up names rather than the subject — and says so
+// with "u. a." rather than silently dropping people.
+func TestCardTitleShedsNamesBeforeTheSubject(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+	subject := voteformat.CleanVoteTitle(group[0].Title)
+
+	// A budget below what the font ladder can absorb. The card holds all five
+	// names down to about 120px, so this is a deliberately extreme squeeze —
+	// which is the point: shedding is the last resort, not the usual path.
+	_, lines, err := cardTitle(group, subject, imgWidth-2*padding, 100)
+	if err != nil {
+		t.Fatalf("cardTitle: %v", err)
+	}
+	set := strings.Join(lines, " ")
+
+	named := 0
+	for _, a := range group[0].Affair.Authors {
+		if strings.Contains(set, a.Name) {
+			named++
+		}
+	}
+	if named == len(group[0].Affair.Authors) {
+		t.Fatalf("nothing was shed, so this budget is not tight enough to test:\n%s", set)
+	}
+	if named == 0 {
+		t.Errorf("every name was dropped; the first signatory should survive longest:\n%s", set)
+	}
+	if !strings.Contains(set, "u. a.") {
+		t.Errorf("names were dropped without saying so:\n%s", set)
+	}
+	if !strings.Contains(set, "Hannah Pfalzgraf") {
+		t.Errorf("the first signatory was shed before the co-signatories:\n%s", set)
+	}
+	// The subject survives the squeeze that cost the names.
+	if strings.Contains(set, "…") {
+		t.Errorf("the subject was cut even though names were available to shed:\n%s", set)
+	}
+}
+
+// Business filed by the government has no signatories, and the card is exactly
+// as it was before authorship existed.
+func TestCardTitleWithoutAuthors(t *testing.T) {
+	group := testfixtures.KantonsratVote()
+	subject := voteformat.CleanVoteTitle(group[0].Title)
+
+	_, lines, err := cardTitle(group, subject, imgWidth-2*padding, 900)
+	if err != nil {
+		t.Fatalf("cardTitle: %v", err)
+	}
+	if set := strings.Join(lines, " "); strings.Contains(set, " von ") {
+		t.Errorf("a card with no authors grew a 'von' clause:\n%s", set)
+	}
+}

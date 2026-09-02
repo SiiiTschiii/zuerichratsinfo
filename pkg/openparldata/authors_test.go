@@ -54,7 +54,7 @@ const (
 	co    = "Mitunterzeichnerin / Mitunterzeichner"
 )
 
-func TestAffairAuthors_FirstSignatoriesOnly(t *testing.T) {
+func TestAffairAuthors_NamesEverySignatoryLeadFirst(t *testing.T) {
 	c, _ := contributorServer(t, []map[string]any{
 		contributor("person", co, "Carmen Marty Fässler", "SP", 5),
 		contributor("person", co, "Gianna Berger", "AL", 2),
@@ -66,8 +66,15 @@ func TestAffairAuthors_FirstSignatoriesOnly(t *testing.T) {
 		t.Fatalf("affairAuthors: %v", err)
 	}
 
-	if len(authors) != 1 || authors[0].Name != "Daniela Sun-Güller" {
-		t.Fatalf("got %+v, want only the first signatory", authors)
+	want := []string{"Daniela Sun-Güller", "Gianna Berger", "Carmen Marty Fässler"}
+	if len(authors) != len(want) {
+		t.Fatalf("got %+v, want every signatory named", authors)
+	}
+	for i, name := range want {
+		if authors[i].Name != name {
+			t.Errorf("author %d = %q, want %q — first signatory first, then by position",
+				i, authors[i].Name, name)
+		}
 	}
 	if authors[0].Party != "GLP" {
 		t.Errorf("Party = %q, want GLP", authors[0].Party)
@@ -123,12 +130,14 @@ func TestAffairAuthors_OrderedByPosition(t *testing.T) {
 	}
 }
 
-// The cap is a guard on post length, not a policy: a business with an unusual
-// number of first signatories must not push the subject out of the post.
-func TestAffairAuthors_CapsTheNumberNamed(t *testing.T) {
+// A long signatory list is named in full. What a card does when it cannot set
+// that many is the card's problem — see imagegen.cardTitle — and no reason for
+// the adapter to withhold names from the text posts.
+func TestAffairAuthors_NamesLongSignatoryLists(t *testing.T) {
 	var records []map[string]any
-	for i := 1; i <= maxRenderedAuthors+2; i++ {
-		records = append(records, contributor("person", first, fmt.Sprintf("Member %d", i), "SP", i))
+	records = append(records, contributor("person", first, "Lead Member", "SP", 1))
+	for i := 2; i <= 6; i++ {
+		records = append(records, contributor("person", co, fmt.Sprintf("Member %d", i), "GLP", i))
 	}
 
 	c, _ := contributorServer(t, records)
@@ -137,11 +146,28 @@ func TestAffairAuthors_CapsTheNumberNamed(t *testing.T) {
 	if err != nil {
 		t.Fatalf("affairAuthors: %v", err)
 	}
-	if len(authors) != maxRenderedAuthors {
-		t.Errorf("got %d authors, want them capped at %d", len(authors), maxRenderedAuthors)
+	if len(authors) != 6 {
+		t.Errorf("got %d authors, want all six named", len(authors))
 	}
-	if authors[0].Name != "Member 1" {
-		t.Errorf("got %q first, want the earliest position kept", authors[0].Name)
+	if authors[0].Name != "Lead Member" {
+		t.Errorf("got %q first, want the first signatory", authors[0].Name)
+	}
+}
+
+// The parliament lists the first signatory at position 1, but the role is the
+// field that actually says so, and it is what decides the order.
+func TestAffairAuthors_LeadFirstEvenWhenPositionDisagrees(t *testing.T) {
+	c, _ := contributorServer(t, []map[string]any{
+		contributor("person", co, "Co Signer", "SP", 1),
+		contributor("person", first, "The Filer", "SVP", 9),
+	})
+
+	authors, err := c.affairAuthors(1)
+	if err != nil {
+		t.Fatalf("affairAuthors: %v", err)
+	}
+	if len(authors) != 2 || authors[0].Name != "The Filer" {
+		t.Errorf("got %+v, want the first signatory named first", authors)
 	}
 }
 

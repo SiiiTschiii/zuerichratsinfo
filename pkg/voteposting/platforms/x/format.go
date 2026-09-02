@@ -41,10 +41,13 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 	}
 
 	// --- Build root post ---
-	root := buildRootPost(group, title, contactMapper, charLimit)
+	root, deferred := buildRootPost(group, title, contactMapper, charLimit)
 
 	// --- Build reply posts ---
-	replies := buildReplyPosts(group, voteformat.LinkLine(group), charLimit)
+	// Signatories the root had no room for lead the thread: naming them costs a
+	// line here, where truncating the title to keep them would have cost the
+	// subject of the vote.
+	replies := buildReplyPosts(group, voteformat.SignatoryLine(deferred), voteformat.LinkLine(group), charLimit)
 
 	thread := make([]*XPost, 0, 1+len(replies))
 	thread = append(thread, root)
@@ -55,13 +58,22 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 
 // buildRootPost creates the root post with header, title, result, and thread hint.
 // If the title is too long, it is truncated with "…".
-func buildRootPost(group []votes.Vote, title string, contactMapper *contacts.Mapper, charLimit int) *XPost {
+func buildRootPost(group []votes.Vote, title string, contactMapper *contacts.Mapper, charLimit int) (*XPost, []votes.Author) {
 	header := fmt.Sprintf("🗳️  %s\n\n", voteformat.PostHeadline(group))
 	threadHint := "\n\n👇 Details im Thread"
 
 	// The label line: what kind of business this is, who filed it, plus the
 	// Abstimmungsgegenstand when a lone vote makes that meaningful.
-	subtitlePrefix := voteformat.GroupPrefixLine(group)
+	//
+	// Sized against what the title leaves, so a long signatory list sheds names
+	// into the thread rather than eating the subject of the vote.
+	body := title
+	if len(group) == 1 && voteformat.HasVerdict(group[0]) {
+		body = fmt.Sprintf("%s %s: %s", voteformat.GetVoteResultEmoji(group[0].Decision),
+			voteformat.GetVoteResultText(group[0].Decision), title)
+	}
+	available := charLimit - weightedLen(header) - weightedLen(threadHint) - weightedLen(body) - 1
+	subtitlePrefix, deferred := voteformat.FitAuthorPrefix(group, available, weightedLen)
 
 	// Tagged too, not just the title: for a body whose titles carry no names —
 	// Kanton Zürich's never do — this line is the only place a politician is
@@ -70,19 +82,6 @@ func buildRootPost(group []votes.Vote, title string, contactMapper *contacts.Map
 		subtitlePrefix = contactMapper.TagXHandlesInText(subtitlePrefix)
 	}
 
-	var body string
-	if len(group) == 1 {
-		vote := group[0]
-		if !voteformat.HasVerdict(vote) {
-			body = title
-		} else {
-			resultEmoji := voteformat.GetVoteResultEmoji(vote.Decision)
-			result := voteformat.GetVoteResultText(vote.Decision)
-			body = fmt.Sprintf("%s %s: %s", resultEmoji, result, title)
-		}
-	} else {
-		body = title
-	}
 	if subtitlePrefix != "" {
 		body = subtitlePrefix + "\n" + body
 	}
@@ -122,16 +121,22 @@ func buildRootPost(group []votes.Vote, title string, contactMapper *contacts.Map
 		fullText = header + body + threadHint
 	}
 
-	return &XPost{Text: fullText}
+	return &XPost{Text: fullText}, deferred
 }
 
 // buildReplyPosts creates reply posts with vote details and link.
 // Packs as many vote entries as fit into each reply (≤charLimit).
 // The link is appended to the last reply.
-func buildReplyPosts(group []votes.Vote, linkLine string, charLimit int) []*XPost {
+func buildReplyPosts(group []votes.Vote, signatoryLine, linkLine string, charLimit int) []*XPost {
 
 	// Build individual vote entry strings
 	var entries []string
+
+	// The signatories the root could not hold come first, so a reader meets
+	// them before the tallies rather than after them.
+	if signatoryLine != "" {
+		entries = append(entries, signatoryLine)
+	}
 
 	for i, vote := range group {
 		var entry strings.Builder

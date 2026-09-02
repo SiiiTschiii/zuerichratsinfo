@@ -400,3 +400,26 @@ contacts:
 		t.Errorf("the author on the label line was not tagged\n%s", content.Caption)
 	}
 }
+
+// The caption has room for a paragraph, so it never sheds a name: everyone who
+// signed is in the one block a reader sees.
+func TestFormatCarousel_CaptionNamesEverySignatory(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+
+	content, err := FormatCarousel(group)
+	if err != nil {
+		t.Fatalf("FormatCarousel: %v", err)
+	}
+
+	for _, a := range group[0].Affair.Authors {
+		if !strings.Contains(content.Caption, a.Name) {
+			t.Errorf("%s is missing from the caption:\n%s", a.Name, content.Caption)
+		}
+	}
+	if strings.Contains(content.Caption, "u. a.") {
+		t.Errorf("the caption shortened a list it had room for:\n%s", content.Caption)
+	}
+	if strings.Contains(content.Caption, "Weitere Unterzeichnende") {
+		t.Errorf("the caption split a list it had room for:\n%s", content.Caption)
+	}
+}

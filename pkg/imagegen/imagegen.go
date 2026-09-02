@@ -307,12 +307,19 @@ func widestWord(face font.Face, text string) int {
 // reconstruct from anywhere else. The full title is in the caption directly
 // under the image, so an ellipsis there costs nothing.
 func fitTitle(title string, maxWidth, available int) (font.Face, []string, error) {
+	face, lines, _, err := fitTitleFully(title, maxWidth, available)
+	return face, lines, err
+}
+
+// fitTitleFully is fitTitle, and also reports whether the title got in whole.
+// False means the font ladder ran out and the last lines were cut.
+func fitTitleFully(title string, maxWidth, available int) (font.Face, []string, bool, error) {
 	var face font.Face
 	var lines []string
 	for size := titleFontMax; size >= titleFontMin; size -= titleFontStep {
 		f, err := loadFace(goregular.TTF, size)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, false, err
 		}
 		face, lines = f, wrapText(f, title, maxWidth)
 		// Width counts as well as height. wrapText now guarantees no line
@@ -322,10 +329,48 @@ func fitTitle(title string, maxWidth, available int) (font.Face, []string, error
 		// word before wrapping is what still sees the difference; after
 		// wrapping, every line fits by construction.
 		if titleBlockHeight(f, len(lines)) <= available && widestWord(f, title) <= maxWidth {
+			return face, lines, true, nil
+		}
+	}
+	return face, ellipsizeLines(face, lines, maxWidth, available), false, nil
+}
+
+// cardTitle sets the card's title line, naming as many signatories as the card
+// can hold.
+//
+// Text posts name everyone who signed. The card cannot always: the type, the
+// names and the subject share one column, and the font ladder is what absorbs a
+// long line. Only when that runs out does this start dropping names — because
+// what a reader cannot do without is the subject of the vote, so it is the last
+// thing to give way. A card with room names everyone, exactly like the caption
+// beside it.
+func cardTitle(group []votes.Vote, subject string, maxWidth, available int) (font.Face, []string, error) {
+	// Fullest first, then one name shorter each time, down to a lone name.
+	caps := []int{0}
+	for n := voteformat.CountAuthors(group) - 1; n >= 1; n-- {
+		caps = append(caps, n)
+	}
+
+	var face font.Face
+	var lines []string
+	for _, max := range caps {
+		title := subject
+		if prefix := voteformat.GroupPrefixLineCapped(group, max); prefix != "" {
+			title = prefix + ": " + subject
+		}
+
+		f, ls, whole, err := fitTitleFully(title, maxWidth, available)
+		if err != nil {
+			return nil, nil, err
+		}
+		face, lines = f, ls
+		if whole {
 			return face, lines, nil
 		}
 	}
-	return face, ellipsizeLines(face, lines, maxWidth, available), nil
+	// Even one name does not fit: keep the shortest and let the cut fall where
+	// it must.
+	return face, lines, nil
 }
 
 // ellipsizeLines drops the title lines that do not fit and marks the cut.
@@ -608,12 +653,6 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	// Title first: bold, wrapped, centered
 	title := voteformat.CleanVoteTitle(v.Title)
 
-	// The kind of business, inline in front of the title as on the title card
-	// (e.g. "Vorlage" or "Vorlage · Dringlicherklärung").
-	if prefix := voteformat.GroupPrefixLine([]votes.Vote{*v}); prefix != "" {
-		title = prefix + ": " + title
-	}
-
 	// The heading above the counts: when the vote was taken and what kind of
 	// ballot it was. The multi-vote cards get theirs from SubVoteLabel; this is
 	// the lone-vote case, which has no ordinal to be numbered by.
@@ -632,7 +671,7 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	bottomReserved := combinedBottomReserve(fonts, len(fraktionCounts), countsLabel != "")
 	availableForTitle := titleBudget(*v, bottomReserved)
 
-	titleFace, titleLines, err := fitTitle(title, maxTextWidth, availableForTitle)
+	titleFace, titleLines, err := cardTitle([]votes.Vote{*v}, title, maxTextWidth, availableForTitle)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -1045,11 +1084,8 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 
 	// Title: bold, wrapped, centered (no verdict — ambiguous for multi-vote groups)
 	title := voteformat.CleanVoteTitle(v.Title)
-	if prefix := voteformat.GroupPrefixLine(group); prefix != "" {
-		title = prefix + ": " + title
-	}
 
-	titleFace, titleLines, err := fitTitle(title, maxTextWidth, titleBudget(v, summaryReserve))
+	titleFace, titleLines, err := cardTitle(group, title, maxTextWidth, titleBudget(v, summaryReserve))
 	if err != nil {
 		return
 	}
