@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -95,7 +96,7 @@ func mergeByName(cs []Contact) []Contact {
 	at := make(map[string]int, len(cs))
 
 	for _, c := range cs {
-		key := normalizeName(c.Name)
+		key := NameKey(c.Name)
 		i, seen := at[key]
 		if !seen {
 			at[key] = len(merged)
@@ -134,6 +135,26 @@ func appendNew(existing, incoming []string) []string {
 
 func normalizeName(name string) string {
 	return strings.ToLower(strings.TrimSpace(name))
+}
+
+// NameKey is the identity of a person across files and sources, insensitive to
+// case, spacing and the order of the name parts.
+//
+// The order has to be ignored because the same politician is written both ways
+// in practice: PARIS serves "Bögli Moritz" while its own vote titles and the
+// curated mapping say "Moritz Bögli". Keying on the exact string quietly
+// created a second entry for eight sitting Gemeinderäte, which no validation
+// catches — two entries with different names are not duplicates to a checker
+// that compares strings, and only one of them ends up carrying the handles.
+//
+// Sorting the parts, rather than trying to guess which one is the surname, is
+// what makes it work for "David Garcia Nuñez" too, where the split is
+// ambiguous. Two different politicians whose names are anagrams by whole word
+// would collide; there are none, and the alternative collides on real people.
+func NameKey(name string) string {
+	parts := strings.Fields(strings.ToLower(strings.TrimSpace(name)))
+	sort.Strings(parts)
+	return strings.Join(parts, " ")
 }
 
 func newMapper(cs []Contact) *Mapper {

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
@@ -49,7 +50,7 @@ func TestMerge_AddsNameOnlyMember(t *testing.T) {
 
 func TestMerge_AddsNewPlatformToExisting(t *testing.T) {
 	existing := map[string]*Contact{
-		"Test Person": {Name: "Test Person", X: []string{"https://x.com/testperson"}},
+		contacts.NameKey("Test Person"): {Name: "Test Person", X: []string{"https://x.com/testperson"}},
 	}
 
 	result, added, accounts := merge(existing, []votes.Member{{
@@ -77,7 +78,7 @@ func TestMerge_AddsNewPlatformToExisting(t *testing.T) {
 // A curated handle is never replaced: both are kept and a human decides.
 func TestMerge_KeepsCuratedHandleBesideDifferentPublishedOne(t *testing.T) {
 	existing := map[string]*Contact{
-		"Test Person": {Name: "Test Person", X: []string{"https://x.com/curated"}},
+		contacts.NameKey("Test Person"): {Name: "Test Person", X: []string{"https://x.com/curated"}},
 	}
 
 	result, _, accounts := merge(existing, []votes.Member{{
@@ -97,7 +98,7 @@ func TestMerge_KeepsCuratedHandleBesideDifferentPublishedOne(t *testing.T) {
 // member is a deliberate, human edit.
 func TestMerge_NeverRemovesCuratedContact(t *testing.T) {
 	existing := map[string]*Contact{
-		"Departed Member": {Name: "Departed Member", X: []string{"https://x.com/departed"}},
+		contacts.NameKey("Departed Member"): {Name: "Departed Member", X: []string{"https://x.com/departed"}},
 	}
 
 	result, _, _ := merge(existing, []votes.Member{{Name: "Sitting Member"}})
@@ -169,7 +170,7 @@ func TestSaveAndLoadRoundTrip(t *testing.T) {
 	if gotHeader != header {
 		t.Errorf("header = %q, want %q", gotHeader, header)
 	}
-	c, ok := reloaded["Test Person"]
+	c, ok := reloaded[contacts.NameKey("Test Person")]
 	if !ok {
 		t.Fatalf("contact did not survive the round trip: %v", reloaded)
 	}
@@ -203,6 +204,114 @@ func TestAffiliation(t *testing.T) {
 	for _, tt := range tests {
 		if got := affiliation(tt.member); got != tt.want {
 			t.Errorf("affiliation(%+v) = %q, want %q", tt.member, got, tt.want)
+		}
+	}
+}
+
+// PARIS writes "Bögli Moritz" where the curated file says "Moritz Bögli". Keyed
+// on the string, the roster added a second entry for eight sitting Gemeinderäte
+// — and nothing downstream would have complained, because two entries with
+// different names are not duplicates to a checker that compares strings.
+func TestMerge_MatchesAPersonWhoseNamePartsAreOrderedDifferently(t *testing.T) {
+	existing := map[string]*Contact{
+		contacts.NameKey("Bögli Moritz"): {
+			Name: "Bögli Moritz",
+			X:    []string{"https://x.com/MoritzBoegli"},
+		},
+	}
+
+	result, added, accounts := merge(existing, []votes.Member{{
+		Name:     "Moritz Bögli",
+		Party:    "AL",
+		Accounts: []votes.Account{{Platform: "instagram", URL: "https://www.instagram.com/moritzboegli/"}},
+	}})
+
+	if added != 0 {
+		t.Errorf("added = %d, want 0 — this is the same person", added)
+	}
+	if len(result) != 1 {
+		t.Fatalf("got %d contacts, want the roster folded into the existing one: %+v", len(result), result)
+	}
+	if accounts != 1 || len(result[0].Instagram) != 1 {
+		t.Errorf("the published account did not reach the existing contact: %+v", result[0])
+	}
+	if result[0].Name != "Bögli Moritz" {
+		t.Errorf("Name = %q, want the curated spelling left alone", result[0].Name)
+	}
+}
+
+// PARIS serves the same account under several spellings, and the curated file
+// already holds some of them. Compared as strings, each refresh recorded
+// another copy of an account that was already there.
+func TestAddAccounts_RecognisesAnAccountAlreadyOnFile(t *testing.T) {
+	c := &Contact{
+		Name:      "Përparim Avdili",
+		Instagram: []string{"https://www.instagram.com/perparim.avdili/?hl=de"},
+	}
+
+	added := addAccounts(c, []votes.Account{
+		{Platform: "instagram", URL: "https://www.instagram.com/perparim.avdili/"},
+		{Platform: "instagram", URL: "https://www.instagram.com/perparim.avdili/?igsh=abc123"},
+	})
+
+	if added != 0 {
+		t.Errorf("added = %d, want 0 — both are the account already on file", added)
+	}
+	if len(c.Instagram) != 1 {
+		t.Errorf("Instagram = %v, want the one entry left alone", c.Instagram)
+	}
+}
+
+func TestAddAccounts_StoresNewAccountsWithoutTracking(t *testing.T) {
+	c := &Contact{Name: "Alex Guggenheim"}
+
+	added := addAccounts(c, []votes.Account{
+		{Platform: "instagram", URL: "https://www.instagram.com/alex.guggenheim?igsh=d2pvbmpjNzV5Z2lp&utm_source=qr"},
+	})
+
+	if added != 1 {
+		t.Fatalf("added = %d, want 1", added)
+	}
+	if c.Instagram[0] != "https://www.instagram.com/alex.guggenheim" {
+		t.Errorf("stored %q, want the share token dropped", c.Instagram[0])
+	}
+}
+
+// A Facebook profile is its query string, so the tidying must not touch it.
+func TestStripTracking_KeepsAQueryThatIdentifiesTheAccount(t *testing.T) {
+	const url = "https://www.facebook.com/profile.php?id=100070693802425"
+	if got := stripTracking(url); got != url {
+		t.Errorf("stripTracking(%q) = %q, want it untouched", url, got)
+	}
+}
+
+// Every way a URL varies without pointing somewhere else. Each of these,
+// compared literally, added a second copy of an account already on file.
+func TestAccountKey_SameAccountDifferentSpellings(t *testing.T) {
+	same := [][2]string{
+		{"https://www.facebook.com/attila.kipfer", "https://facebook.com/attila.kipfer"},
+		{"https://www.linkedin.com/in/alana-gerdes", "https://www.linkedin.com/in/alana-gerdes/"},
+		{"https://www.linkedin.com/in/attila-kipfer", "https://ch.linkedin.com/in/attila-kipfer"},
+		{"https://www.instagram.com/perparim.avdili/?hl=de", "https://www.instagram.com/perparim.avdili/"},
+		{"https://www.instagram.com/alex.guggenheim?igsh=abc&utm_source=qr", "https://instagram.com/alex.guggenheim"},
+		{"https://x.com/MoritzBoegli", "https://x.com/moritzboegli"},
+	}
+	for _, pair := range same {
+		if accountKey(pair[0]) != accountKey(pair[1]) {
+			t.Errorf("accountKey(%q) = %q\naccountKey(%q) = %q\nwant them equal",
+				pair[0], accountKey(pair[0]), pair[1], accountKey(pair[1]))
+		}
+	}
+
+	different := [][2]string{
+		{"https://x.com/someone", "https://x.com/someone_else"},
+		// Two Facebook profiles differ only in the id their query carries.
+		{"https://www.facebook.com/profile.php?id=100070693802425", "https://www.facebook.com/profile.php?id=100063702649427"},
+		{"https://www.instagram.com/annagraff_", "https://x.com/annagraff_"},
+	}
+	for _, pair := range different {
+		if accountKey(pair[0]) == accountKey(pair[1]) {
+			t.Errorf("accountKey collapsed two different accounts: %q and %q", pair[0], pair[1])
 		}
 	}
 }

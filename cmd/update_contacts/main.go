@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"sort"
 	"strings"
@@ -117,7 +118,7 @@ func loadExisting(path string) (map[string]*Contact, string, error) {
 	byName := make(map[string]*Contact, len(mapping.Contacts))
 	for i := range mapping.Contacts {
 		c := &mapping.Contacts[i]
-		byName[c.Name] = c
+		byName[contacts.NameKey(c.Name)] = c
 	}
 	return byName, leadingComments(string(data)), nil
 }
@@ -140,14 +141,21 @@ func leadingComments(content string) string {
 
 // merge folds the roster into the curated contacts, adding names that are new
 // and accounts that are not already recorded. It reports how many of each.
+//
+// existing is keyed by contacts.NameKey rather than by name.
 func merge(existing map[string]*Contact, members []votes.Member) ([]Contact, int, int) {
 	added, accounts := 0, 0
 
 	for _, m := range members {
-		c, ok := existing[m.Name]
+		// Keyed on the person, not on the spelling: the curated file and the
+		// source disagree on the order of the name parts often enough that
+		// matching the string added a second entry for someone already in it.
+		key := contacts.NameKey(m.Name)
+
+		c, ok := existing[key]
 		if !ok {
 			c = &Contact{Name: m.Name}
-			existing[m.Name] = c
+			existing[key] = c
 			added++
 			fmt.Printf("➕ %s%s\n", m.Name, affiliation(m))
 		}
@@ -177,12 +185,13 @@ func addAccounts(c *Contact, published []votes.Account) int {
 		if field == nil {
 			continue
 		}
-		if contains(*field, a.URL) {
+		url := stripTracking(a.URL)
+		if recorded(*field, url) {
 			continue
 		}
-		*field = append(*field, a.URL)
+		*field = append(*field, url)
 		added++
-		fmt.Printf("   🔗 %s: %s %s\n", c.Name, a.Platform, a.URL)
+		fmt.Printf("   🔗 %s: %s %s\n", c.Name, a.Platform, url)
 	}
 
 	return added
@@ -209,13 +218,90 @@ func platformField(c *Contact, platform string) *[]string {
 	}
 }
 
-func contains(haystack []string, needle string) bool {
-	for _, s := range haystack {
-		if s == needle {
+// recorded reports whether the file already has this account, comparing what
+// the URLs point at rather than how they are spelled.
+func recorded(existing []string, candidate string) bool {
+	key := accountKey(candidate)
+	for _, have := range existing {
+		if accountKey(have) == key {
 			return true
 		}
 	}
 	return false
+}
+
+// accountKey identifies the account a URL points at, for comparison only —
+// nothing is ever stored in this form.
+//
+// The curated file and PARIS write the same account differently in every way a
+// URL can vary without changing: "facebook.com/attila.kipfer" against
+// "www.facebook.com/attila.kipfer", "linkedin.com/in/alana-gerdes" against the
+// same with a trailing slash. Each of those spellings, compared literally, adds
+// a second copy of an account already on file — and then a third on the next
+// refresh, because the copy never matches either.
+func accountKey(raw string) string {
+	u, err := url.Parse(strings.TrimSpace(stripTracking(raw)))
+	if err != nil {
+		return strings.ToLower(strings.TrimSpace(raw))
+	}
+
+	host := strings.ToLower(u.Hostname())
+	host = strings.TrimPrefix(host, "www.")
+	host = strings.TrimPrefix(host, "m.")
+	// Country subdomains address the same profile: ch.linkedin.com and
+	// linkedin.com differ only in which office serves the page.
+	if i := strings.Index(host, ".linkedin.com"); i > 0 {
+		host = "linkedin.com"
+	}
+
+	path := strings.TrimSuffix(strings.ToLower(u.EscapedPath()), "/")
+
+	key := host + path
+	if q := u.Query().Encode(); q != "" {
+		key += "?" + strings.ToLower(q)
+	}
+	return key
+}
+
+// trackingParams are query parameters that say how a link was shared or in
+// which language it was opened, rather than which account it points at.
+//
+// They have to go, because accounts are deduplicated by URL and PARIS serves
+// the same account under several spellings: "instagram.com/perparim.avdili/"
+// against the "…/?hl=de" already on file, "…?igsh=<token>" for a link someone
+// copied out of the app. Kept, each refresh would record another copy of an
+// account already there.
+//
+// It is a list of things to drop rather than a rule to drop every query,
+// because some of these URLs are nothing without theirs: a Facebook profile is
+// identified by "profile.php?id=100070693802425".
+var trackingParams = map[string]bool{
+	"hl":                true, // interface language
+	"locale":            true, // interface language
+	"originalSubdomain": true, // LinkedIn's country hint
+	"igsh":              true, // Instagram share token
+	"si":                true, // share token
+	"fbclid":            true, // click id
+}
+
+// stripTracking removes those parameters and leaves everything else alone. A
+// URL that will not parse comes back as it went in: this is tidying, and not
+// worth failing a refresh over.
+func stripTracking(raw string) string {
+	u, err := url.Parse(strings.TrimSpace(raw))
+	if err != nil {
+		return raw
+	}
+
+	q := u.Query()
+	for key := range q {
+		if trackingParams[key] || strings.HasPrefix(key, "utm_") {
+			q.Del(key)
+		}
+	}
+	u.RawQuery = q.Encode()
+
+	return strings.TrimSuffix(u.String(), "?")
 }
 
 // affiliation renders a member's party and Fraktion for the run's output, so a

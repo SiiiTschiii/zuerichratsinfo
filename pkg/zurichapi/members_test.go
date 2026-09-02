@@ -44,7 +44,7 @@ func TestMemberName_GivenNameFirst(t *testing.T) {
 func TestPublishedAccounts(t *testing.T) {
 	k := Kontakt{SozialeMedien: SozialeMedienList{Kommunikation: []SozialesMedium{
 		{Typ: "Twitter", Adresse: "https://twitter.com/someone"},
-		{Typ: "Instagram", Adresse: "www.instagram.com/someone/"},
+		{Typ: "Instagram", Adresse: "www.instagram.com/someone/?hl=de"},
 		{Typ: "LinkedIn", Adresse: " "},
 		{Typ: "Homepage", Adresse: "https://example.ch"},
 	}}}
@@ -57,7 +57,10 @@ func TestPublishedAccounts(t *testing.T) {
 	if got[0].Platform != "x" || got[0].URL != "https://x.com/someone" {
 		t.Errorf("got %+v, want twitter.com normalised to x.com under platform x", got[0])
 	}
-	if got[1].URL != "https://www.instagram.com/someone/" {
+	// Reported as published, tracking parameters and all: what an account URL
+	// should look like in the curated file is cmd/update_contacts' decision,
+	// not this adapter's.
+	if got[1].URL != "https://www.instagram.com/someone/?hl=de" {
 		t.Errorf("got %q, want a scheme added — cmd/validate_contacts rejects bare URLs", got[1].URL)
 	}
 }

@@ -46,18 +46,19 @@ the text and on the image, so the two are never confused.
 
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
-| LinkedIn    | ❌ Planned | 108 | -                                                                                    |
-| Facebook    | ❌ Planned | 83 | -                                                                                    |
-| Instagram   | ✅ Active  | 91 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
-| X (Twitter) | ✅ Active  | 59 | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| LinkedIn    | ❌ Planned | 111 | -                                                                                    |
+| Facebook    | ❌ Planned | 86 | -                                                                                    |
+| Instagram   | ✅ Active  | 96 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
+| X (Twitter) | ✅ Active  | 64 | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
 | Bluesky     | ✅ Active  | 28 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
 | TikTok      | ❌ Planned | 18 | -                                                                                    |
 
 _"Politicians with a verified account" is how many Gemeinderat and Stadtrat members
-(9 of them Stadträte) we have manually identified and verified as being active on
-that platform, so that they can be tagged in a post, out of the 132 politicians
-curated in [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml).
-Platforms are sorted by coverage. All 180 Kantonsrat members are listed in
+(9 of them Stadträte) we have identified as being active on that platform, so that
+they can be tagged in a post, out of the 137 politicians curated in
+[data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml). Most were found
+and checked by hand; the rest are the accounts the city publishes itself, imported
+from PARIS. Platforms are sorted by coverage. All 180 Kantonsrat members are listed in
 [data/zurich-canton/contacts.yaml](data/zurich-canton/contacts.yaml), but no handle
 of theirs has been verified yet, so they are not counted here. An entry with no
 handles is valid and does what it should: the post names that member without

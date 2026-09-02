@@ -51,13 +51,6 @@ contacts:
       - https://www.linkedin.com/in/andreas-hauri-02a35217/
     x:
       - https://x.com/andreashauri
-  - name: Angele Florine
-    instagram:
-      - https://www.instagram.com/florineangele/
-    linkedin:
-      - https://www.linkedin.com/in/florine-angele/
-    x:
-      - https://x.com/AngeleFlorine
   - name: Angelica Eichenberger
     facebook:
       - https://www.facebook.com/angelica.eichenberger.908
@@ -74,6 +67,8 @@ contacts:
       - https://www.instagram.com/annagraff_
     linkedin:
       - https://www.linkedin.com/in/annagraff/
+    x:
+      - https://x.com/annagraff_
   - name: Anthony Goldstein
     linkedin:
       - https://www.linkedin.com/in/anthony-goldstein-50589693/
@@ -82,6 +77,13 @@ contacts:
       - https://www.instagram.com/ariane.buchli/
     linkedin:
       - https://www.linkedin.com/in/arianebuchli/
+  - name: Attila Kipfer
+    facebook:
+      - https://www.facebook.com/attila.kipfer
+    linkedin:
+      - https://ch.linkedin.com/in/attila-kipfer-6620a898
+    tiktok:
+      - https://www.tiktok.com/@attila.kipfer
   - name: Balthasar Glättli
     bluesky:
       - https://bsky.app/profile/bglaettli.bsky.social
@@ -95,6 +97,13 @@ contacts:
       - https://www.tiktok.com/@bglaettli
     x:
       - https://x.com/bglaettli
+  - name: Barbara Wiesmann
+    facebook:
+      - https://www.facebook.com/barbara.wiesmann
+    instagram:
+      - https://www.instagram.com/barbara_wiesmann/
+    x:
+      - https://x.com/bawizu
   - name: Beat Oberholzer
     bluesky:
       - https://bsky.app/profile/beatober.bsky.social
@@ -118,23 +127,15 @@ contacts:
       - https://www.instagram.com/brendamaeder/
     linkedin:
       - https://www.linkedin.com/in/brendamaeder/
-  - name: Bögli Moritz
-    facebook:
-      - https://www.facebook.com/moritz.bogli
-    instagram:
-      - https://www.instagram.com/moritzboegli/
-    x:
-      - https://x.com/MoritzBoegli
   - name: Camille Roseau
     bluesky:
       - https://bsky.app/profile/camillero.bsky.social
+    instagram:
+      - https://www.instagram.com/camille.roseau/
     linkedin:
       - https://www.linkedin.com/in/camille-roseau-931590157
     tiktok:
       - https://www.tiktok.com/@camilleroseau1
-  - name: Can Lara
-    x:
-      - https://x.com/laramelizcan
   - name: Catalina Gajardo Hofmann
     facebook:
       - https://www.facebook.com/catalina.gajardohofmann
@@ -280,6 +281,18 @@ contacts:
   - name: Florian Utz
     facebook:
       - https://www.facebook.com/florian.utz.526
+  - name: Florine Angele
+    instagram:
+      - https://www.instagram.com/florineangele/
+    linkedin:
+      - https://www.linkedin.com/in/florine-angele/
+    x:
+      - https://x.com/AngeleFlorine
+  - name: Frank Rühli
+    instagram:
+      - https://www.instagram.com/frank_ruehli/
+    linkedin:
+      - https://www.linkedin.com/in/frank-r%C3%BChli-3b0bb182/
   - name: Frank-Elmar Linxweiler
     linkedin:
       - https://www.linkedin.com/in/frank-elmar-linxweiler-frm-0591063/
@@ -300,14 +313,19 @@ contacts:
   - name: Guy Krayenbühl
     linkedin:
       - https://www.linkedin.com/in/guy-krayenb%C3%BChl-922b19153/
-  - name: Habegger Rahel
-    facebook:
-      - https://www.facebook.com/rahelsarahabegger
-    linkedin:
-      - https://www.linkedin.com/in/rahel-habegger-03677a1a3
   - name: Hannah Locher
     facebook:
       - https://www.facebook.com/hannah.locher
+  - name: Hans Dellenbach
+    linkedin:
+      - https://www.linkedin.com/in/hansdellenbach
+    x:
+      - https://x.com/HansDellenbach
+  - name: Heidi Egger
+    facebook:
+      - https://www.facebook.com/heidieggerzuerich
+    instagram:
+      - https://www.instagram.com/heidiegger1512/
   - name: Ivo Bieri
     linkedin:
       - https://www.linkedin.com/in/ivo-bieri/
@@ -327,6 +345,15 @@ contacts:
       - https://www.instagram.com/janina.ann.lena/
     linkedin:
       - https://www.linkedin.com/in/janina-flueckiger/
+  - name: Jehuda Spielman
+    facebook:
+      - https://www.facebook.com/JehudaSpielman/
+    instagram:
+      - https://instagram.com/JehudaSpielman/
+    linkedin:
+      - https://linkedin.com/in/JehudaSpielman
+    x:
+      - https://x.com/JehudaSpielman
   - name: Johann Widmer
     facebook:
       - https://www.facebook.com/profile.php?id=100077478961604
@@ -390,13 +417,9 @@ contacts:
       - https://www.tiktok.com/@karinweyermann7
     x:
       - https://x.com/KWeyermann
-  - name: Kipfer Attila
-    facebook:
-      - https://www.facebook.com/attila.kipfer
-    linkedin:
-      - https://ch.linkedin.com/in/attila-kipfer-6620a898
-    tiktok:
-      - https://www.tiktok.com/@attila.kipfer
+  - name: Lara Can
+    x:
+      - https://x.com/laramelizcan
   - name: Leah Heuri
     instagram:
       - https://www.instagram.com/leah.heuri/
@@ -420,7 +443,7 @@ contacts:
       - https://www.instagram.com/lisa_diggelmann/
     x:
       - https://x.com/LisaDiggelmann
-  - name: Mahrer Liv
+  - name: Liv Mahrer
     facebook:
       - https://www.facebook.com/profile.php?id=100063702649427
     instagram:
@@ -521,6 +544,7 @@ contacts:
   - name: Micha Amstad
     bluesky:
       - https://bsky.app/profile/michaamstad.bsky.social
+      - https://web-cdn.bsky.app/profile/michaamstad.bsky.social
     instagram:
       - https://www.instagram.com/michaamstad/?hl=de
     linkedin:
@@ -545,12 +569,21 @@ contacts:
     facebook:
       - https://www.facebook.com/michele.romagnolo.svp
   - name: Mischa Schiwow
+    facebook:
+      - https://www.facebook.com/mischa.schiwow/
     instagram:
       - https://www.instagram.com/mischa_schiwow/
     linkedin:
       - https://ch.linkedin.com/in/mischa-schiwow-520b0816
     tiktok:
       - https://www.tiktok.com/@mischaschiwow
+  - name: Moritz Bögli
+    facebook:
+      - https://www.facebook.com/moritz.bogli
+    instagram:
+      - https://www.instagram.com/moritzboegli/
+    x:
+      - https://x.com/MoritzBoegli
   - name: Murat Gediz
     facebook:
       - https://www.facebook.com/share/16EwYFRNqK/?mibextid=wwXIfr
@@ -585,6 +618,8 @@ contacts:
       - https://www.instagram.com/nina_eggenschwiler/
     linkedin:
       - https://www.linkedin.com/in/nina-eggenschwiler-439073aa/
+    x:
+      - https://x.com/ninasuij
   - name: Oliver Heimgartner
     facebook:
       - https://www.facebook.com/oliheimgartner
@@ -642,6 +677,11 @@ contacts:
       - https://www.tiktok.com/@perparim.avdili
     x:
       - https://x.com/PerparimAvdili
+  - name: Rahel Habegger
+    facebook:
+      - https://www.facebook.com/rahelsarahabegger
+    linkedin:
+      - https://www.linkedin.com/in/rahel-habegger-03677a1a3
   - name: Rahel Hofstetter
     instagram:
       - https://www.instagram.com/rahelhof/
@@ -771,6 +811,8 @@ contacts:
   - name: Simone Widmer
     instagram:
       - https://www.instagram.com/simonewidmer_official/
+    linkedin:
+      - https://www.linkedin.com/in/simone-widmer-ab597a185/
   - name: Sofia Karakostas
     bluesky:
       - https://bsky.app/profile/sofiakarakostas.bsky.social
@@ -794,15 +836,6 @@ contacts:
       - https://www.instagram.com/spzuerich/
     tiktok:
       - https://www.tiktok.com/@spzuerich
-  - name: Spielman Jehuda
-    facebook:
-      - https://www.facebook.com/JehudaSpielman/
-    instagram:
-      - https://instagram.com/JehudaSpielman/
-    linkedin:
-      - https://linkedin.com/in/JehudaSpielman
-    x:
-      - https://x.com/JehudaSpielman
   - name: Stefan Urech
     instagram:
       - https://www.instagram.com/urechstefan/
@@ -851,6 +884,8 @@ contacts:
     x:
       - https://x.com/MaagTanja_al
   - name: Thomas Bühler
+    instagram:
+      - https://www.instagram.com/thomasbuehler82/
     linkedin:
       - https://www.linkedin.com/in/thomas-b%C3%BChler-a02218188/
   - name: Thomas Hofstetter
@@ -893,7 +928,10 @@ contacts:
       - https://www.linkedin.com/in/vera-ay%C5%9Fe-%C3%A7elik-8a17641bb/
     tiktok:
       - https://www.tiktok.com/@veracelik1967
-  - name: Voellmy Xenia
+  - name: Wolfgang Kweitel
+    x:
+      - https://x.com/KweitelZH
+  - name: Xenia Voellmy
     linkedin:
       - https://www.linkedin.com/in/xenia-voellmy
   - name: Yves Henz
