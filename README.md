@@ -46,12 +46,12 @@ the text and on the image, so the two are never confused.
 
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
-| LinkedIn    | ❌ Planned | 112 | -                                                                                    |
-| Facebook    | ❌ Planned | 87 | -                                                                                    |
-| Instagram   | ✅ Active  | 97 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
-| X (Twitter) | ✅ Active  | 64 | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
-| Bluesky     | ✅ Active  | 28 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
-| TikTok      | ❌ Planned | 18 | -                                                                                    |
+| LinkedIn    | ❌ Planned | 112                                 | -                                                                                    |
+| Facebook    | ❌ Planned | 87                                  | -                                                                                    |
+| Instagram   | ✅ Active  | 97                                  | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
+| X (Twitter) | ✅ Active  | 64                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| Bluesky     | ✅ Active  | 28                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
+| TikTok      | ❌ Planned | 18                                  | -                                                                                    |
 
 _"Politicians with a verified account" is how many Gemeinderat and Stadtrat members
 (9 of them Stadträte) we have identified as being active on that platform, so that
@@ -60,12 +60,7 @@ they can be tagged in a post, out of the 137 politicians curated in
 and checked by hand; the rest are the accounts the city publishes itself, imported
 from PARIS. Platforms are sorted by coverage. Only **verified** accounts count, and only
 verified accounts are ever posted: an account carries `verified: true` once a
-human has opened it and confirmed it belongs to the person named beside it.
-[data/zurich-canton/contacts.yaml](data/zurich-canton/contacts.yaml) also holds
-282 unverified candidates from a name search across all 180 Kantonsrat members —
-they are leads, they are marked as such, and the tagger cannot see them. A
-member with no verified handle is fine: the post names them without tagging
-them._
+human has opened it and confirmed it belongs to the person named beside it._
 
 ## What It Does
 
