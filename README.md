@@ -34,10 +34,10 @@ Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei D
 
 ## Covered Bodies
 
-| Body                                                          | Data source                                              | Status                        | Tagging               |
-| ------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------- | --------------------- |
-| **Gemeinderat Stadt Zürich**                                   | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 132 curated contacts |
-| **Kantonsrat Zürich**                                          | [OpenParlData](https://api.openparldata.ch/documentation) | ✅ Live | ❌ Not yet curated |
+| Body                         | Data source                                                              | Status  | Tagging                 |
+| ---------------------------- | ------------------------------------------------------------------------ | ------- | ----------------------- |
+| **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 132 curated contacts |
+| **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live | ❌ Not yet curated      |
 
 Both bodies post to the same accounts. Every post names which chamber voted, in
 the text and on the image, so the two are never confused.
@@ -46,12 +46,12 @@ the text and on the image, so the two are never confused.
 
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
-| LinkedIn    | ❌ Planned | 108 | -                                                                                    |
-| Facebook    | ❌ Planned | 83 | -                                                                                    |
-| Instagram   | ✅ Active  | 92 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
-| X (Twitter) | ✅ Active  | 59 | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
-| Bluesky     | ✅ Active  | 28 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
-| TikTok      | ❌ Planned | 18 | -                                                                                    |
+| LinkedIn    | ❌ Planned | 108                                 | -                                                                                    |
+| Facebook    | ❌ Planned | 83                                  | -                                                                                    |
+| Instagram   | ✅ Active  | 91                                  | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
+| X (Twitter) | ✅ Active  | 59                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| Bluesky     | ✅ Active  | 28                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
+| TikTok      | ❌ Planned | 18                                  | -                                                                                    |
 
 _"Politicians with a verified account" is how many Gemeinderat and Stadtrat members
 (9 of them Stadträte) we have manually identified and verified as being active on
