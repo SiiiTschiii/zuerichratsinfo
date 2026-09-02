@@ -447,9 +447,11 @@ func TestLoadContactFiles_MergesADualMandate(t *testing.T) {
 contacts:
   - name: David Garcia Nuñez
     bluesky:
-      - https://bsky.app/profile/thuritch.bsky.social
+      - url: https://bsky.app/profile/thuritch.bsky.social
+        verified: true
     x:
-      - https://x.com/thuritch
+      - url: https://x.com/thuritch
+        verified: true
 `), 0o600); err != nil {
 		t.Fatalf("write: %v", err)
 	}
@@ -460,7 +462,8 @@ contacts:
   - name: David Garcia Nuñez
   - name: Someone Else
     x:
-      - https://x.com/someoneelse
+      - url: https://x.com/someoneelse
+        verified: true
 `), 0o600); err != nil {
 		t.Fatalf("write: %v", err)
 	}
@@ -494,7 +497,8 @@ func TestLoadContactFiles_UnionsAccountsAcrossFiles(t *testing.T) {
 contacts:
   - name: Anna Graff
     x:
-      - https://x.com/annagraff
+      - url: https://x.com/annagraff
+        verified: true
 `), 0o600); err != nil {
 		t.Fatalf("write: %v", err)
 	}
@@ -504,10 +508,13 @@ contacts:
 contacts:
   - name: anna graff
     x:
-      - https://x.com/annagraff
-      - https://x.com/annagraff_kr
+      - url: https://x.com/annagraff
+        verified: true
+      - url: https://x.com/annagraff_kr
+        verified: true
     instagram:
-      - https://www.instagram.com/annagraff_/
+      - url: https://www.instagram.com/annagraff_/
+        verified: true
 `), 0o600); err != nil {
 		t.Fatalf("write: %v", err)
 	}
@@ -589,9 +596,10 @@ contacts:
 	}
 }
 
-// A bare string is what every handle in the mapping looked like before
-// candidates existed, and each one is there because a human put it there.
-func TestBareStringAccountIsVerified(t *testing.T) {
+// The shape that leaves `verified` unsaid must not publish anything. It still
+// parses, so a stale file degrades to posting without tags rather than failing
+// a run — cmd/validate_contacts is what rejects it.
+func TestBareStringAccountIsNotVerified(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "contacts.yaml")
 	if err := os.WriteFile(path, []byte(`version: "1.0"
@@ -607,19 +615,19 @@ contacts:
 	if err != nil {
 		t.Fatalf("LoadContacts: %v", err)
 	}
-	if got := mapper.GetXHandle("Anna Graff"); got != "https://x.com/annagraff" {
-		t.Errorf("GetXHandle = %q, want the handle treated as verified", got)
+	if got := mapper.GetXHandle("Anna Graff"); got != "" {
+		t.Errorf("GetXHandle = %q, want nothing — the file never said it was verified", got)
 	}
 }
 
-// Round-tripping must not rewrite the 360 hand-curated one-line entries into
-// three-line mappings, and must not quietly drop a candidate's metadata.
+// Round-tripping must not quietly change what a file says about publication.
 func TestAccountRoundTrip(t *testing.T) {
 	in := `version: "1.0"
 contacts:
     - name: Anna Graff
       x:
-        - https://x.com/annagraff
+        - url: https://x.com/annagraff
+          verified: true
         - url: https://x.com/maybe
           verified: false
           confidence: medium
@@ -656,7 +664,8 @@ contacts:
 contacts:
   - name: Anna Graff
     x:
-      - https://x.com/annagraff
+      - url: https://x.com/annagraff
+        verified: true
 `), 0o600); err != nil {
 		t.Fatalf("write: %v", err)
 	}

@@ -570,7 +570,8 @@ func TestFormatVoteThread_TagsAuthorsOnTheLabelLine(t *testing.T) {
 contacts:
   - name: Tobias Weidmann
     x:
-      - https://x.com/tobiasweidmann
+      - url: https://x.com/tobiasweidmann
+        verified: true
 `), 0o600)
 	if err != nil {
 		t.Fatalf("write contacts file: %v", err)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -151,6 +152,8 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 		return errors
 	}
 
+	errors = append(errors, checkAccountsAreExplicit(string(data))...)
+
 	// Check contacts are sorted alphabetically by name
 	if !skipOrderCheck {
 		for i := 1; i < len(mapping.Contacts); i++ {
@@ -213,6 +216,29 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 		}
 	}
 
+	return errors
+}
+
+// bareAccount matches a handle written as a plain list item instead of the
+// `url:` mapping.
+var bareAccount = regexp.MustCompile(`(?m)^\s+- (https?://\S+)\s*$`)
+
+// checkAccountsAreExplicit rejects the shape that leaves `verified` unsaid.
+//
+// A bare URL still parses — as unverified, so a stale file degrades to posting
+// without tags rather than failing a run — but it must not survive review.
+// Whether a handle may be published is the one thing the file has to state out
+// loud, and a default you cannot see is not one anybody checks.
+func checkAccountsAreExplicit(content string) []ValidationError {
+	var errors []ValidationError
+	for _, m := range bareAccount.FindAllStringSubmatch(content, -1) {
+		errors = append(errors, ValidationError{
+			URL: m[1],
+			Message: "Account is written as a bare URL. Give it an explicit flag: " +
+				"`- url: <URL>` followed by `verified: true` (a human confirmed this account) " +
+				"or `verified: false` (a candidate, never posted).",
+		})
+	}
 	return errors
 }
 

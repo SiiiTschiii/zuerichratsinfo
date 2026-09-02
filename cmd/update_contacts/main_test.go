@@ -156,8 +156,8 @@ func TestSaveAndLoadRoundTrip(t *testing.T) {
 	if !strings.Contains(got, "\n  - name: Test Person\n") {
 		t.Errorf("want two-space indented contacts, got:\n%s", got)
 	}
-	if !strings.Contains(got, "\n    x:\n      - https://x.com/testperson\n") {
-		t.Errorf("want block-style platform lists, got:\n%s", got)
+	if !strings.Contains(got, "\n    x:\n      - url: https://x.com/testperson\n        verified: true\n") {
+		t.Errorf("want every account to state whether it may be published, got:\n%s", got)
 	}
 	if bsky, insta := strings.Index(got, "bluesky:"), strings.Index(got, "instagram:"); bsky > insta {
 		t.Errorf("platforms are not in alphabetical order:\n%s", got)

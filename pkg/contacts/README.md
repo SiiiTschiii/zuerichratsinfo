@@ -29,23 +29,27 @@ Curating 180 cantonal members is weeks of one-by-one checking; the alternative
 was keeping the leads somewhere the tooling could not see, which meant the work
 could not start until it was finished.
 
-Two shapes, both valid:
+Every account states it, in one shape:
 
 ```yaml
   - name: Anna Graff
     x:
-      - https://x.com/annagraff        # a bare string is verified
-      - url: https://x.com/maybe       # a candidate: not posted
+      - url: https://x.com/annagraff
+        verified: true
+      - url: https://x.com/maybe        # a candidate: not posted
         verified: false
         confidence: high
 ```
 
-A bare string is verified because that is what every handle meant before
-candidates existed — each got there because a human put it there. In the mapping
-form `verified` defaults to false, so the defaults fall the safe way round:
-publishing takes a deliberate act, and forgetting the flag leaves a lead silent.
-`confidence` is an ordering aid on unverified entries only; drop it when you
-confirm the account.
+There is deliberately no shape that means "verified" without saying so. A bare
+URL string — what the mapping used before candidates existed — still parses, as
+*unverified*, so a stale file degrades to posting without tags rather than
+failing a run; `cmd/validate_contacts` rejects it loudly instead. The defaults
+therefore fall the safe way round: publishing takes a deliberate act.
+
+`confidence` is an ordering aid on unverified entries only, and says how well a
+search result's page title matched the name — never evidence of identity. Drop
+it when you confirm the account; the validator requires that.
 
 Party and Fraktion are deliberately not stored here. The parliaments publish
 both, so a copy would only go stale; `cmd/generate_search_urls` reads them live

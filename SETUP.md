@@ -174,9 +174,11 @@ An entry with no handles is valid and costs nothing: the post names that member
 without tagging them. Tagging the wrong account is the failure that matters —
 it puts a real person's handle next to a vote they did not cast.
 
-Only accounts marked `verified: true` are ever posted, so candidates can sit in
-the file while you work through them. To confirm one, open it, check it is the
-person named above it, then flip the flag and drop the `confidence` line:
+Every account says whether it may be published, and only `verified: true` is
+ever posted — so candidates can sit in the file while you work through them.
+There is no shape that means verified without saying so. To confirm one, open
+it, check it is the person named above it, then flip the flag and drop the
+`confidence` line:
 
 ```yaml
     instagram:

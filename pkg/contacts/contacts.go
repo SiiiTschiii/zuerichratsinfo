@@ -38,24 +38,23 @@ type Account struct {
 	Confidence string `yaml:"confidence,omitempty"`
 }
 
-// UnmarshalYAML accepts both shapes the file uses.
+// UnmarshalYAML reads the one shape the file uses, and fails safe on the old one.
 //
-// A bare string is a verified account. That is the form every handle in the
-// mapping had before candidates existed, and each one got there because a human
-// put it there — so reading it as verified preserves exactly what the file
-// already meant, and spares ~360 entries a "verified: true" line that would say
-// nothing.
+// Every account is a mapping with an explicit `verified`. A bare URL string —
+// the shape the mapping used before candidates existed — still parses, as
+// unverified, so a stale file degrades to posting without tags rather than
+// failing a run; cmd/validate_contacts rejects it loudly instead.
 //
-// The mapping form is for everything else, and Verified defaults to false in
-// it. The defaults therefore fall the safe way round: to publish a handle you
-// have to say so, and forgetting the flag on a candidate leaves it silent.
+// There is deliberately no shape that means "verified" without saying so. A
+// safety flag whose default is invisible is not one you can check by reading
+// the file, which is the only place anyone actually checks it.
 func (a *Account) UnmarshalYAML(value *yaml.Node) error {
 	if value.Kind == yaml.ScalarNode {
 		var url string
 		if err := value.Decode(&url); err != nil {
 			return err
 		}
-		*a = Account{URL: url, Verified: true}
+		*a = Account{URL: url}
 		return nil
 	}
 
@@ -67,16 +66,6 @@ func (a *Account) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*a = Account(raw)
 	return nil
-}
-
-// MarshalYAML writes back the shape the account came in as, so a verified
-// handle stays one readable line and only candidates carry their metadata.
-func (a Account) MarshalYAML() (any, error) {
-	if a.Verified && a.Confidence == "" {
-		return a.URL, nil
-	}
-	type account Account
-	return account(a), nil
 }
 
 // VerifiedAccounts builds accounts that are already confirmed, which is what

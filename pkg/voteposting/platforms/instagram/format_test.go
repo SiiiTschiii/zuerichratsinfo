@@ -248,7 +248,8 @@ func TestFormatCarouselWithContacts_TagsInstagramHandlesInTitle(t *testing.T) {
 contacts:
   - name: Anna Graff
     instagram:
-      - https://www.instagram.com/annagraff_/
+      - url: https://www.instagram.com/annagraff_/
+        verified: true
 `), 0o600)
 	if err != nil {
 		t.Fatalf("write contacts file: %v", err)
@@ -378,7 +379,8 @@ func TestFormatCarouselWithContacts_TagsAuthorsOnTheLabelLine(t *testing.T) {
 contacts:
   - name: Tobias Weidmann
     instagram:
-      - https://www.instagram.com/tobiasweidmann/
+      - url: https://www.instagram.com/tobiasweidmann/
+        verified: true
 `), 0o600)
 	if err != nil {
 		t.Fatalf("write contacts file: %v", err)
