@@ -174,6 +174,19 @@ An entry with no handles is valid and costs nothing: the post names that member
 without tagging them. Tagging the wrong account is the failure that matters —
 it puts a real person's handle next to a vote they did not cast.
 
+Only accounts marked `verified: true` are ever posted, so candidates can sit in
+the file while you work through them. To confirm one, open it, check it is the
+person named above it, then flip the flag and drop the `confidence` line:
+
+```yaml
+    instagram:
+      - url: https://www.instagram.com/tmweidmann/
+        verified: true
+```
+
+`generate_search_urls` lists the candidates already on file for each gap, so
+checking one is usually quicker than searching again.
+
 ### Comparing the two data sources
 
 Stadt Zürich is served by both PARIS and OpenParlData, which is what makes the

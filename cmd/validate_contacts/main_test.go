@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 )
 
 // Test valid YAML parsing
@@ -148,12 +150,12 @@ func TestSupportedPlatforms(t *testing.T) {
 			name: "all supported platforms",
 			contact: Contact{
 				Name:      "Test User",
-				X:         []string{"https://x.com/test"},
-				Facebook:  []string{"https://facebook.com/test"},
-				Instagram: []string{"https://instagram.com/test"},
-				LinkedIn:  []string{"https://linkedin.com/in/test"},
-				Bluesky:   []string{"https://bsky.app/profile/test"},
-				TikTok:    []string{"https://tiktok.com/@test"},
+				X:         contacts.VerifiedAccounts("https://x.com/test"),
+				Facebook:  contacts.VerifiedAccounts("https://facebook.com/test"),
+				Instagram: contacts.VerifiedAccounts("https://instagram.com/test"),
+				LinkedIn:  contacts.VerifiedAccounts("https://linkedin.com/in/test"),
+				Bluesky:   contacts.VerifiedAccounts("https://bsky.app/profile/test"),
+				TikTok:    contacts.VerifiedAccounts("https://tiktok.com/@test"),
 			},
 			wantErrors: 0,
 		},
@@ -168,7 +170,7 @@ func TestSupportedPlatforms(t *testing.T) {
 			name: "platform with multiple URLs",
 			contact: Contact{
 				Name: "Test User",
-				X:    []string{"https://x.com/test1", "https://x.com/test2"},
+				X:    contacts.VerifiedAccounts("https://x.com/test1", "https://x.com/test2"),
 			},
 			wantErrors: 0,
 		},

@@ -8,25 +8,22 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"gopkg.in/yaml.v3"
 )
 
-// Contact represents a council member with their social media accounts
-type Contact struct {
-	Name      string   `yaml:"name"`
-	Bluesky   []string `yaml:"bluesky,omitempty"`
-	Facebook  []string `yaml:"facebook,omitempty"`
-	Instagram []string `yaml:"instagram,omitempty"`
-	LinkedIn  []string `yaml:"linkedin,omitempty"`
-	TikTok    []string `yaml:"tiktok,omitempty"`
-	X         []string `yaml:"x,omitempty"`
-}
+// The schema lives in pkg/contacts, so the validator checks the same types the
+// bot reads rather than a copy that can drift away from them.
+type (
+	Account        = contacts.Account
+	Contact        = contacts.Contact
+	ContactMapping = contacts.ContactMapping
+)
 
-// ContactMapping contains the full mapping structure
-type ContactMapping struct {
-	Version  string    `yaml:"version"`
-	Contacts []Contact `yaml:"contacts"`
-}
+// validConfidence are the values a candidate may carry. It is an ordering aid
+// for whoever works through the list — never evidence of identity — so an
+// invented level would only mislead the person doing the verifying.
+var validConfidence = map[string]bool{"high": true, "medium": true, "low": true}
 
 var (
 	supportedPlatforms = map[string]bool{
@@ -222,18 +219,7 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 func validateContactPlatforms(contact Contact) []ValidationError {
 	var errors []ValidationError
 
-	// Check each platform
-	platforms := map[string][]string{
-		"x":         contact.X,
-		"facebook":  contact.Facebook,
-		"instagram": contact.Instagram,
-		"linkedin":  contact.LinkedIn,
-		"bluesky":   contact.Bluesky,
-		"tiktok":    contact.TikTok,
-	}
-
-	for platform, urls := range platforms {
-		// Validate platform is supported
+	for _, platform := range contacts.Platforms {
 		if !supportedPlatforms[platform] {
 			errors = append(errors, ValidationError{
 				ContactName: contact.Name,
@@ -243,29 +229,38 @@ func validateContactPlatforms(contact Contact) []ValidationError {
 			continue
 		}
 
-		// Validate each URL
-		for _, urlStr := range urls {
-			if err := validateURL(urlStr, platform); err != nil {
+		for _, account := range contact.Accounts(platform) {
+			if err := validateURL(account.URL, platform); err != nil {
 				errors = append(errors, ValidationError{
 					ContactName: contact.Name,
 					Platform:    platform,
-					URL:         urlStr,
+					URL:         account.URL,
 					Message:     err.Error(),
+				})
+			}
+			if c := account.Confidence; c != "" && !validConfidence[strings.ToLower(c)] {
+				errors = append(errors, ValidationError{
+					ContactName: contact.Name,
+					Platform:    platform,
+					URL:         account.URL,
+					Message: fmt.Sprintf("Unknown confidence %q (want high, medium or low). "+
+						"Confidence records how well a search result matched the person; "+
+						"it is not evidence of identity.", c),
+				})
+			}
+			// A verified account has been confirmed by a human, so the score
+			// that once ranked it as a guess is spent. Leaving it behind reads
+			// as though the confirmation were itself only likely.
+			if account.Verified && account.Confidence != "" {
+				errors = append(errors, ValidationError{
+					ContactName: contact.Name,
+					Platform:    platform,
+					URL:         account.URL,
+					Message:     "Verified accounts must not keep a confidence score — drop it once you have confirmed the account.",
 				})
 			}
 		}
 	}
-
-	// Check if contact has at least one platform (warn if empty, but don't error)
-	hasAnyPlatform := false
-	for _, urls := range platforms {
-		if len(urls) > 0 {
-			hasAnyPlatform = true
-			break
-		}
-	}
-	// Note: hasAnyPlatform is computed but not currently used for validation
-	_ = hasAnyPlatform
 
 	return errors
 }

@@ -5,7 +5,11 @@ This script validates a jurisdiction's `contacts.yaml` — `data/zurich-city/`,
 
 1. **Valid YAML syntax** - The file must be parseable YAML
 2. **Supported platforms** - Only allowed platforms: x, facebook, instagram, linkedin, bluesky, tiktok
-3. **Valid URLs** - All URLs must:
+3. **Account shape** - A handle is either a bare URL string (verified) or a
+   mapping with `url`, optional `verified` (default false) and optional
+   `confidence` (`high`, `medium` or `low`). A verified account must not keep a
+   confidence score — that value ranks a guess, and the guess is over.
+4. **Valid URLs** - All URLs must:
    - Use http or https scheme
    - Match the expected domain for their platform
    - Be properly formatted

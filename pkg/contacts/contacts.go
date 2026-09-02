@@ -11,15 +11,139 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Account is one social media account in the mapping.
+//
+// It exists so a handle can sit in the file before anyone has confirmed it
+// belongs to the person named beside it. Curating 180 cantonal members is weeks
+// of one-by-one checking, and the alternative to holding candidates here was
+// holding them somewhere the tooling could not see — which meant the work could
+// not start until it was finished.
+//
+// Verified is the whole point: only a verified account is ever posted. See
+// Contact.Verified, which is the single gate every reader goes through.
+type Account struct {
+	URL string `yaml:"url"`
+
+	// Verified marks a handle a human has confirmed belongs to this person —
+	// opened the profile and recognised them. It is not a guess that scored
+	// well. Tagging the wrong account puts a real person's handle next to a
+	// vote they did not cast, and this flag is what stands between a search
+	// result and that happening.
+	Verified bool `yaml:"verified"`
+
+	// Confidence is scaffolding on an unverified candidate, and says only how
+	// well a search result's own page title matched the person: "high",
+	// "medium" or "low". It is an ordering aid for whoever works through the
+	// list, never evidence of identity, and nothing reads it at post time.
+	Confidence string `yaml:"confidence,omitempty"`
+}
+
+// UnmarshalYAML accepts both shapes the file uses.
+//
+// A bare string is a verified account. That is the form every handle in the
+// mapping had before candidates existed, and each one got there because a human
+// put it there — so reading it as verified preserves exactly what the file
+// already meant, and spares ~360 entries a "verified: true" line that would say
+// nothing.
+//
+// The mapping form is for everything else, and Verified defaults to false in
+// it. The defaults therefore fall the safe way round: to publish a handle you
+// have to say so, and forgetting the flag on a candidate leaves it silent.
+func (a *Account) UnmarshalYAML(value *yaml.Node) error {
+	if value.Kind == yaml.ScalarNode {
+		var url string
+		if err := value.Decode(&url); err != nil {
+			return err
+		}
+		*a = Account{URL: url, Verified: true}
+		return nil
+	}
+
+	// A named alias, so decoding the mapping does not re-enter this method.
+	type account Account
+	var raw account
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	*a = Account(raw)
+	return nil
+}
+
+// MarshalYAML writes back the shape the account came in as, so a verified
+// handle stays one readable line and only candidates carry their metadata.
+func (a Account) MarshalYAML() (any, error) {
+	if a.Verified && a.Confidence == "" {
+		return a.URL, nil
+	}
+	type account Account
+	return account(a), nil
+}
+
+// VerifiedAccounts builds accounts that are already confirmed, which is what
+// code constructing a mapping in memory — tests, fixtures — almost always
+// means.
+func VerifiedAccounts(urls ...string) []Account {
+	out := make([]Account, 0, len(urls))
+	for _, u := range urls {
+		out = append(out, Account{URL: u, Verified: true})
+	}
+	return out
+}
+
 // Contact represents a council member with their social media accounts
+// Fields are declared alphabetically because that order is what gets
+// marshalled, and cmd/validate_contacts requires it in the file.
 type Contact struct {
-	Name      string   `yaml:"name"`
-	X         []string `yaml:"x,omitempty,flow"`         // X (Twitter) handles with @
-	Facebook  []string `yaml:"facebook,omitempty,flow"`  // Full URLs
-	Instagram []string `yaml:"instagram,omitempty,flow"` // Full URLs
-	LinkedIn  []string `yaml:"linkedin,omitempty,flow"`  // Full URLs
-	Bluesky   []string `yaml:"bluesky,omitempty,flow"`   // Full URLs
-	TikTok    []string `yaml:"tiktok,omitempty,flow"`    // Full URLs
+	Name      string    `yaml:"name"`
+	Bluesky   []Account `yaml:"bluesky,omitempty"`
+	Facebook  []Account `yaml:"facebook,omitempty"`
+	Instagram []Account `yaml:"instagram,omitempty"`
+	LinkedIn  []Account `yaml:"linkedin,omitempty"`
+	TikTok    []Account `yaml:"tiktok,omitempty"`
+	X         []Account `yaml:"x,omitempty"`
+}
+
+// Platforms are the platform keys the mapping supports, in the order the file
+// carries them.
+var Platforms = []string{"bluesky", "facebook", "instagram", "linkedin", "tiktok", "x"}
+
+// Accounts returns every account recorded for a platform, verified or not.
+//
+// Callers that put a handle in front of readers must use Verified instead. This
+// one is for the curation tools, which exist precisely to show what has not
+// been confirmed yet.
+func (c Contact) Accounts(platform string) []Account {
+	switch strings.ToLower(platform) {
+	case "x", "twitter":
+		return c.X
+	case "facebook":
+		return c.Facebook
+	case "instagram":
+		return c.Instagram
+	case "linkedin":
+		return c.LinkedIn
+	case "bluesky":
+		return c.Bluesky
+	case "tiktok":
+		return c.TikTok
+	default:
+		return nil
+	}
+}
+
+// Verified returns the URLs on a platform that a human has confirmed.
+//
+// This is the gate. Every path that can reach a published post — the tagger,
+// the Mapper accessors, outreach — reads through here, so an unverified handle
+// cannot be posted by forgetting to check a flag somewhere.
+func (c Contact) Verified(platform string) []string {
+	var out []string
+	for _, a := range c.Accounts(platform) {
+		if a.Verified && strings.TrimSpace(a.URL) != "" {
+			out = append(out, a.URL)
+		}
+	}
+	return out
 }
 
 // ContactMapping contains the full mapping structure
@@ -116,18 +240,27 @@ func mergeByName(cs []Contact) []Contact {
 	return merged
 }
 
-// appendNew adds the URLs not already recorded, keeping the existing order.
-func appendNew(existing, incoming []string) []string {
-	for _, url := range incoming {
+// appendNew adds the accounts not already recorded, keeping the existing order.
+//
+// When the same URL arrives twice and either copy is verified, the merged one
+// is verified: a confirmation is a fact about the account, and the file that
+// happens to be read second should not be able to take it back.
+func appendNew(existing, incoming []Account) []Account {
+	for _, add := range incoming {
 		found := false
-		for _, have := range existing {
-			if have == url {
-				found = true
-				break
+		for i, have := range existing {
+			if have.URL != add.URL {
+				continue
 			}
+			found = true
+			if add.Verified && !existing[i].Verified {
+				existing[i].Verified = true
+				existing[i].Confidence = ""
+			}
+			break
 		}
 		if !found {
-			existing = append(existing, url)
+			existing = append(existing, add)
 		}
 	}
 	return existing
@@ -187,22 +320,18 @@ func (m *Mapper) GetContact(name string) (Contact, bool) {
 	return contact, ok
 }
 
-// GetXHandle returns the first X (Twitter) handle for a name, if available
+// GetXHandle returns the first verified X (Twitter) handle for a name.
 func (m *Mapper) GetXHandle(name string) string {
-	contact, ok := m.GetContact(name)
-	if !ok || len(contact.X) == 0 {
+	handles := m.GetXHandles(name)
+	if len(handles) == 0 {
 		return ""
 	}
-	return contact.X[0]
+	return handles[0]
 }
 
-// GetXHandles returns all X (Twitter) handles for a name
+// GetXHandles returns the verified X (Twitter) handles for a name.
 func (m *Mapper) GetXHandles(name string) []string {
-	contact, ok := m.GetContact(name)
-	if !ok {
-		return nil
-	}
-	return contact.X
+	return m.GetPlatformURLs(name, "x")
 }
 
 // GetPlatformURL returns the first URL for a specific platform, if available
@@ -214,29 +343,16 @@ func (m *Mapper) GetPlatformURL(name, platform string) string {
 	return urls[0]
 }
 
-// GetPlatformURLs returns all URLs for a specific platform
+// GetPlatformURLs returns the verified URLs for a specific platform.
+//
+// Unverified candidates are deliberately invisible here: everything downstream
+// of this method eventually reaches a reader.
 func (m *Mapper) GetPlatformURLs(name, platform string) []string {
 	contact, ok := m.GetContact(name)
 	if !ok {
 		return nil
 	}
-
-	switch strings.ToLower(platform) {
-	case "x", "twitter":
-		return contact.X
-	case "facebook":
-		return contact.Facebook
-	case "instagram":
-		return contact.Instagram
-	case "linkedin":
-		return contact.LinkedIn
-	case "bluesky":
-		return contact.Bluesky
-	case "tiktok":
-		return contact.TikTok
-	default:
-		return nil
-	}
+	return contact.Verified(platform)
 }
 
 // HasPlatform checks if a contact has a specific platform configured

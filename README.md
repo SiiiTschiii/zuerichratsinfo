@@ -34,10 +34,10 @@ Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei D
 
 ## Covered Bodies
 
-| Body                         | Data source                                                              | Status  | Tagging                     |
-| ---------------------------- | ------------------------------------------------------------------------ | ------- | --------------------------- |
-| **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 132 curated contacts     |
-| **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live | 🟡 180 listed, none verified |
+| Body                         | Data source                                                              | Status  | Tagging                       |
+| ---------------------------- | ------------------------------------------------------------------------ | ------- | ----------------------------- |
+| **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 137 verified contacts      |
+| **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live | 🟡 282 candidates, 0 verified |
 
 Both bodies post to the same accounts. Every post names which chamber voted, in
 the text and on the image, so the two are never confused.
@@ -58,11 +58,14 @@ _"Politicians with a verified account" is how many Gemeinderat and Stadtrat memb
 they can be tagged in a post, out of the 137 politicians curated in
 [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml). Most were found
 and checked by hand; the rest are the accounts the city publishes itself, imported
-from PARIS. Platforms are sorted by coverage. All 180 Kantonsrat members are listed in
-[data/zurich-canton/contacts.yaml](data/zurich-canton/contacts.yaml), but no handle
-of theirs has been verified yet, so they are not counted here. An entry with no
-handles is valid and does what it should: the post names that member without
-tagging them._
+from PARIS. Platforms are sorted by coverage. Only **verified** accounts count, and only
+verified accounts are ever posted: an account carries `verified: true` once a
+human has opened it and confirmed it belongs to the person named beside it.
+[data/zurich-canton/contacts.yaml](data/zurich-canton/contacts.yaml) also holds
+282 unverified candidates from a name search across all 180 Kantonsrat members —
+they are leads, they are marked as such, and the tagger cannot see them. A
+member with no verified handle is fine: the post names them without tagging
+them._
 
 ## What It Does
 

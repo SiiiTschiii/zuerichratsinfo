@@ -30,23 +30,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Contact mirrors the curated schema. Platform fields are declared in
-// alphabetical order because that order is what gets marshalled, and
-// cmd/validate_contacts requires it in the file.
-type Contact struct {
-	Name      string   `yaml:"name"`
-	Bluesky   []string `yaml:"bluesky,omitempty"`
-	Facebook  []string `yaml:"facebook,omitempty"`
-	Instagram []string `yaml:"instagram,omitempty"`
-	LinkedIn  []string `yaml:"linkedin,omitempty"`
-	TikTok    []string `yaml:"tiktok,omitempty"`
-	X         []string `yaml:"x,omitempty"`
-}
-
-type ContactMapping struct {
-	Version  string    `yaml:"version"`
-	Contacts []Contact `yaml:"contacts"`
-}
+// The schema lives in pkg/contacts, so what this writes is what the bot reads.
+type (
+	Account        = contacts.Account
+	Contact        = contacts.Contact
+	ContactMapping = contacts.ContactMapping
+)
 
 func main() {
 	jurisdiction := flag.String("jurisdiction", "zurich-city",
@@ -189,7 +178,10 @@ func addAccounts(c *Contact, published []votes.Account) int {
 		if recorded(*field, url) {
 			continue
 		}
-		*field = append(*field, url)
+		// Verified on arrival: these are the accounts the parliament publishes
+		// for its own members, which is a stronger claim than any search result
+		// and the same one the file has always recorded for them.
+		*field = append(*field, Account{URL: url, Verified: true})
 		added++
 		fmt.Printf("   🔗 %s: %s %s\n", c.Name, a.Platform, url)
 	}
@@ -197,9 +189,9 @@ func addAccounts(c *Contact, published []votes.Account) int {
 	return added
 }
 
-// platformField addresses the slice a platform's URLs live in, or nil for a
+// platformField addresses the slice a platform's accounts live in, or nil for a
 // platform the schema has no column for.
-func platformField(c *Contact, platform string) *[]string {
+func platformField(c *Contact, platform string) *[]Account {
 	switch platform {
 	case "bluesky":
 		return &c.Bluesky
@@ -220,10 +212,10 @@ func platformField(c *Contact, platform string) *[]string {
 
 // recorded reports whether the file already has this account, comparing what
 // the URLs point at rather than how they are spelled.
-func recorded(existing []string, candidate string) bool {
+func recorded(existing []Account, candidate string) bool {
 	key := accountKey(candidate)
 	for _, have := range existing {
-		if accountKey(have) == key {
+		if accountKey(have.URL) == key {
 			return true
 		}
 	}

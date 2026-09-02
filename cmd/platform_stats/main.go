@@ -4,27 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"gopkg.in/yaml.v3"
+	contactsPkg "github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 )
-
-type Contact struct {
-	Name      string   `yaml:"name"`
-	X         []string `yaml:"x,omitempty"`
-	Instagram []string `yaml:"instagram,omitempty"`
-	Facebook  []string `yaml:"facebook,omitempty"`
-	LinkedIn  []string `yaml:"linkedin,omitempty"`
-	TikTok    []string `yaml:"tiktok,omitempty"`
-	Bluesky   []string `yaml:"bluesky,omitempty"`
-}
-
-type Contacts struct {
-	Version  string    `yaml:"version"`
-	Contacts []Contact `yaml:"contacts"`
-}
 
 type PlatformStat struct {
 	Name  string
@@ -32,17 +17,19 @@ type PlatformStat struct {
 }
 
 func main() {
-	// Read contacts.yaml
-	data, err := os.ReadFile(contacts.PathFor("zurich-city"))
-	if err != nil {
-		log.Fatalf("Error reading contacts.yaml: %v", err)
+	// Every jurisdiction's file, because the table counts politicians the bot
+	// can tag and it can tag them wherever they sit.
+	files, err := filepath.Glob(filepath.Join("data", "*", "contacts.yaml"))
+	if err != nil || len(files) == 0 {
+		log.Fatalf("Error finding contacts files: %v", err)
 	}
+	sort.Strings(files)
 
-	var contacts Contacts
-	err = yaml.Unmarshal(data, &contacts)
+	mapper, err := contactsPkg.LoadContactFiles(files...)
 	if err != nil {
-		log.Fatalf("Error parsing contacts.yaml: %v", err)
+		log.Fatalf("Error loading contacts: %v", err)
 	}
+	all := mapper.GetAllContacts()
 
 	// Count platforms
 	stats := map[string]int{
@@ -54,24 +41,23 @@ func main() {
 		"Bluesky":     0,
 	}
 
-	for _, contact := range contacts.Contacts {
-		if len(contact.X) > 0 {
-			stats["X (Twitter)"]++
+	// Verified only: an unverified candidate is a lead, not an account we can
+	// tag, and the table's own column calls them verified.
+	label := map[string]string{
+		"x": "X (Twitter)", "instagram": "Instagram", "facebook": "Facebook",
+		"linkedin": "LinkedIn", "tiktok": "TikTok", "bluesky": "Bluesky",
+	}
+	curated := 0
+	for _, contact := range all {
+		counted := false
+		for _, platform := range contactsPkg.Platforms {
+			if len(contact.Verified(platform)) > 0 {
+				stats[label[platform]]++
+				counted = true
+			}
 		}
-		if len(contact.Instagram) > 0 {
-			stats["Instagram"]++
-		}
-		if len(contact.Facebook) > 0 {
-			stats["Facebook"]++
-		}
-		if len(contact.LinkedIn) > 0 {
-			stats["LinkedIn"]++
-		}
-		if len(contact.TikTok) > 0 {
-			stats["TikTok"]++
-		}
-		if len(contact.Bluesky) > 0 {
-			stats["Bluesky"]++
+		if counted {
+			curated++
 		}
 	}
 
@@ -93,7 +79,7 @@ func main() {
 	}
 
 	// Update README.md
-	updateREADME(stats, len(contacts.Contacts))
+	updateREADME(stats, curated)
 }
 
 func updateREADME(stats map[string]int, totalContacts int) {

@@ -28,7 +28,7 @@ func TestMerge_AddsNewMember(t *testing.T) {
 	if accounts != 1 {
 		t.Errorf("accounts = %d, want 1", accounts)
 	}
-	if len(result[0].X) != 1 || result[0].X[0] != "https://x.com/testperson" {
+	if len(result[0].X) != 1 || result[0].X[0].URL != "https://x.com/testperson" {
 		t.Errorf("X = %v, want the published handle", result[0].X)
 	}
 }
@@ -50,7 +50,7 @@ func TestMerge_AddsNameOnlyMember(t *testing.T) {
 
 func TestMerge_AddsNewPlatformToExisting(t *testing.T) {
 	existing := map[string]*Contact{
-		contacts.NameKey("Test Person"): {Name: "Test Person", X: []string{"https://x.com/testperson"}},
+		contacts.NameKey("Test Person"): {Name: "Test Person", X: contacts.VerifiedAccounts("https://x.com/testperson")},
 	}
 
 	result, added, accounts := merge(existing, []votes.Member{{
@@ -78,7 +78,7 @@ func TestMerge_AddsNewPlatformToExisting(t *testing.T) {
 // A curated handle is never replaced: both are kept and a human decides.
 func TestMerge_KeepsCuratedHandleBesideDifferentPublishedOne(t *testing.T) {
 	existing := map[string]*Contact{
-		contacts.NameKey("Test Person"): {Name: "Test Person", X: []string{"https://x.com/curated"}},
+		contacts.NameKey("Test Person"): {Name: "Test Person", X: contacts.VerifiedAccounts("https://x.com/curated")},
 	}
 
 	result, _, accounts := merge(existing, []votes.Member{{
@@ -89,7 +89,7 @@ func TestMerge_KeepsCuratedHandleBesideDifferentPublishedOne(t *testing.T) {
 	if accounts != 1 {
 		t.Errorf("accounts = %d, want 1", accounts)
 	}
-	if len(result[0].X) != 2 || result[0].X[0] != "https://x.com/curated" {
+	if len(result[0].X) != 2 || result[0].X[0].URL != "https://x.com/curated" {
 		t.Errorf("X = %v, want the curated handle first and both kept", result[0].X)
 	}
 }
@@ -98,7 +98,7 @@ func TestMerge_KeepsCuratedHandleBesideDifferentPublishedOne(t *testing.T) {
 // member is a deliberate, human edit.
 func TestMerge_NeverRemovesCuratedContact(t *testing.T) {
 	existing := map[string]*Contact{
-		contacts.NameKey("Departed Member"): {Name: "Departed Member", X: []string{"https://x.com/departed"}},
+		contacts.NameKey("Departed Member"): {Name: "Departed Member", X: contacts.VerifiedAccounts("https://x.com/departed")},
 	}
 
 	result, _, _ := merge(existing, []votes.Member{{Name: "Sitting Member"}})
@@ -136,9 +136,9 @@ func TestSaveAndLoadRoundTrip(t *testing.T) {
 
 	err := save(path, header, []Contact{{
 		Name:      "Test Person",
-		X:         []string{"https://x.com/testperson"},
-		Bluesky:   []string{"https://bsky.app/profile/testperson.bsky.social"},
-		Instagram: []string{"https://www.instagram.com/testperson/"},
+		X:         contacts.VerifiedAccounts("https://x.com/testperson"),
+		Bluesky:   contacts.VerifiedAccounts("https://bsky.app/profile/testperson.bsky.social"),
+		Instagram: contacts.VerifiedAccounts("https://www.instagram.com/testperson/"),
 	}})
 	if err != nil {
 		t.Fatalf("save: %v", err)
@@ -216,7 +216,7 @@ func TestMerge_MatchesAPersonWhoseNamePartsAreOrderedDifferently(t *testing.T) {
 	existing := map[string]*Contact{
 		contacts.NameKey("Bögli Moritz"): {
 			Name: "Bögli Moritz",
-			X:    []string{"https://x.com/MoritzBoegli"},
+			X:    contacts.VerifiedAccounts("https://x.com/MoritzBoegli"),
 		},
 	}
 
@@ -246,7 +246,7 @@ func TestMerge_MatchesAPersonWhoseNamePartsAreOrderedDifferently(t *testing.T) {
 func TestAddAccounts_RecognisesAnAccountAlreadyOnFile(t *testing.T) {
 	c := &Contact{
 		Name:      "Përparim Avdili",
-		Instagram: []string{"https://www.instagram.com/perparim.avdili/?hl=de"},
+		Instagram: contacts.VerifiedAccounts("https://www.instagram.com/perparim.avdili/?hl=de"),
 	}
 
 	added := addAccounts(c, []votes.Account{
@@ -272,8 +272,8 @@ func TestAddAccounts_StoresNewAccountsWithoutTracking(t *testing.T) {
 	if added != 1 {
 		t.Fatalf("added = %d, want 1", added)
 	}
-	if c.Instagram[0] != "https://www.instagram.com/alex.guggenheim" {
-		t.Errorf("stored %q, want the share token dropped", c.Instagram[0])
+	if c.Instagram[0].URL != "https://www.instagram.com/alex.guggenheim" {
+		t.Errorf("stored %q, want the share token dropped", c.Instagram[0].URL)
 	}
 }
 
@@ -315,5 +315,21 @@ func TestAccountKey_SameAccountDifferentSpellings(t *testing.T) {
 		if accountKey(pair[0]) == accountKey(pair[1]) {
 			t.Errorf("accountKey collapsed two different accounts: %q and %q", pair[0], pair[1])
 		}
+	}
+}
+
+// Accounts the parliament publishes for its own members arrive confirmed: that
+// is a stronger claim than any search result, and it is what the file has
+// always recorded for them.
+func TestAddAccounts_PublishedAccountsArriveVerified(t *testing.T) {
+	c := &Contact{Name: "Test Person"}
+
+	addAccounts(c, []votes.Account{{Platform: "x", URL: "https://x.com/testperson"}})
+
+	if len(c.X) != 1 || !c.X[0].Verified {
+		t.Errorf("got %+v, want the published account marked verified", c.X)
+	}
+	if c.X[0].Confidence != "" {
+		t.Errorf("confidence = %q, want none on a published account", c.X[0].Confidence)
 	}
 }

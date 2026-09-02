@@ -110,11 +110,12 @@ func (m *Mapper) TagXHandlesInText(text string) string {
 	var taggableContacts []HandleTag
 
 	for _, contact := range m.getAllContacts() {
-		if len(contact.X) == 0 {
+		verified := contact.Verified("x")
+		if len(verified) == 0 {
 			continue
 		}
 
-		handle := ExtractXHandleFromURL(contact.X[0])
+		handle := ExtractXHandleFromURL(verified[0])
 		if handle == "" {
 			continue
 		}
@@ -137,11 +138,12 @@ func (m *Mapper) TagInstagramHandlesInText(text string) string {
 	var taggableContacts []HandleTag
 
 	for _, contact := range m.getAllContacts() {
-		if len(contact.Instagram) == 0 {
+		verified := contact.Verified("instagram")
+		if len(verified) == 0 {
 			continue
 		}
 
-		handle := ExtractInstagramHandleFromURL(contact.Instagram[0])
+		handle := ExtractInstagramHandleFromURL(verified[0])
 		if handle == "" {
 			continue
 		}
@@ -285,11 +287,12 @@ func (m *Mapper) FindBlueskyMentions(text string) []BlueskyMention {
 	var taggable []blueskyTag
 
 	for _, contact := range m.getAllContacts() {
-		if len(contact.Bluesky) == 0 {
+		verified := contact.Verified("bluesky")
+		if len(verified) == 0 {
 			continue
 		}
 
-		handle := ExtractBlueskyHandleFromURL(contact.Bluesky[0])
+		handle := ExtractBlueskyHandleFromURL(verified[0])
 		if handle == "" {
 			continue
 		}

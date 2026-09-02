@@ -26,20 +26,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type ContactsFile struct {
-	Version  string    `yaml:"version"`
-	Contacts []Contact `yaml:"contacts"`
-}
-
-type Contact struct {
-	Name      string   `yaml:"name"`
-	X         []string `yaml:"x,omitempty"`
-	Facebook  []string `yaml:"facebook,omitempty"`
-	Instagram []string `yaml:"instagram,omitempty"`
-	LinkedIn  []string `yaml:"linkedin,omitempty"`
-	TikTok    []string `yaml:"tiktok,omitempty"`
-	Bluesky   []string `yaml:"bluesky,omitempty"`
-}
+type (
+	Contact      = contacts.Contact
+	ContactsFile = contacts.ContactMapping
+)
 
 // platform names a search this tool can emit, in the order it prints them.
 type platform struct {
@@ -47,41 +37,41 @@ type platform struct {
 	// searchURL builds the search link, or returns "" for a platform that has
 	// no linkable search.
 	searchURL func(query string) string
-	// urls addresses the contact's existing entries for this platform.
-	urls func(*Contact) []string
+	// key is the platform key in the contacts schema.
+	key string
 }
 
 var platforms = []platform{
 	{
 		name:      "X/Twitter",
+		key:       "x",
 		searchURL: func(q string) string { return "https://x.com/search?q=" + q + "&src=typed_query&f=user" },
-		urls:      func(c *Contact) []string { return c.X },
 	},
 	{
 		// Instagram refuses search links opened from another site.
 		name:      "Instagram",
+		key:       "instagram",
 		searchURL: func(string) string { return "" },
-		urls:      func(c *Contact) []string { return c.Instagram },
 	},
 	{
 		name:      "Facebook",
+		key:       "facebook",
 		searchURL: func(q string) string { return "https://www.facebook.com/search/top?q=" + q },
-		urls:      func(c *Contact) []string { return c.Facebook },
 	},
 	{
 		name:      "LinkedIn",
+		key:       "linkedin",
 		searchURL: func(q string) string { return "https://www.linkedin.com/search/results/all/?keywords=" + q },
-		urls:      func(c *Contact) []string { return c.LinkedIn },
 	},
 	{
 		name:      "TikTok",
+		key:       "tiktok",
 		searchURL: func(q string) string { return "https://www.tiktok.com/search?q=" + q },
-		urls:      func(c *Contact) []string { return c.TikTok },
 	},
 	{
 		name:      "Bluesky",
+		key:       "bluesky",
 		searchURL: func(q string) string { return "https://bsky.app/search?q=" + q },
-		urls:      func(c *Contact) []string { return c.Bluesky },
 	},
 }
 
@@ -127,7 +117,7 @@ func main() {
 			continue
 		}
 		missing++
-		printContact(c.Name, roster[c.Name], gaps, j)
+		printContact(c, roster[c.Name], gaps, j)
 	}
 
 	fmt.Printf("\n---\n")
@@ -158,11 +148,15 @@ func platformNames(ps []platform) string {
 	return strings.Join(names, ", ")
 }
 
-// gapsFor returns the platforms this contact has no account on yet.
+// gapsFor returns the platforms this contact has no *verified* account on yet.
+//
+// A platform holding only unverified candidates is still a gap: nothing is
+// posted until someone confirms one, and confirming is exactly the work this
+// tool exists to hand over.
 func gapsFor(c *Contact, wanted []platform) []platform {
 	var gaps []platform
 	for _, p := range wanted {
-		if len(p.urls(c)) == 0 {
+		if len(c.Verified(p.key)) == 0 {
 			gaps = append(gaps, p)
 		}
 	}
@@ -193,7 +187,8 @@ func fetchRoster(j config.Jurisdiction) map[string]votes.Member {
 	return byName
 }
 
-func printContact(name string, member votes.Member, gaps []platform, j config.Jurisdiction) {
+func printContact(contact Contact, member votes.Member, gaps []platform, j config.Jurisdiction) {
+	name := contact.Name
 	fmt.Printf("## %s", name)
 	if affiliation := affiliationOf(member); affiliation != "" {
 		fmt.Printf(" — %s", affiliation)
@@ -208,6 +203,16 @@ func printContact(name string, member votes.Member, gaps []platform, j config.Ju
 
 	query := url.QueryEscape(name)
 	for _, p := range gaps {
+		// Candidates already harvested for this platform come first: checking
+		// one of them is cheaper than searching again, and it is the step that
+		// actually turns a lead into a taggable account.
+		for _, a := range contact.Accounts(p.key) {
+			conf := a.Confidence
+			if conf == "" {
+				conf = "unrated"
+			}
+			fmt.Printf("- %s candidate (%s, unconfirmed): %s\n", p.name, conf, a.URL)
+		}
 		if u := p.searchURL(query); u != "" {
 			fmt.Printf("- %s: %s\n", p.name, u)
 		} else {
