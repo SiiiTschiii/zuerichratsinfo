@@ -910,6 +910,54 @@ func KantonsratCupVote() []votes.Vote {
 	return []votes.Vote{v}
 }
 
+// KantonsratStilleWahl is the real 06.07.2026 vote (external id A6172102-...):
+// Roland Schmid's uncontested election to the Obergericht.
+//
+// Kanton Zürich fills an uncontested seat by declaring the candidate elected
+// on the spot (§ 124 KRG) rather than holding a ballot, so the only vote
+// OpenParlData/recapp record against the business is the quorum roll call —
+// typed Anwesenheitsermittlung, same as the roll call opening a sitting. Left
+// alone, that type would make this business get silently skipped like any
+// other attendance check (voteformat.unpostableVoteTypes) — wrong here, since
+// unlike a plain roll call this one names a real council decision.
+// voteformat.AsStilleWahl is what tells the two apart: Affair.Type == "Wahl"
+// plus a title that parses as "Wahl <Amt> für <Name>" is a fact pattern a
+// routine roll call never has.
+func KantonsratStilleWahl() []votes.Vote {
+	const title = "Wahl Mitglied Obergericht (100%) für Roland Schmid"
+	const geschaeftURL = "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188"
+
+	return []votes.Vote{{
+		SourceID:     "A6172102-0F8C-4C1A-C772-79EB0EA2DE9D",
+		Jurisdiction: "zurich-canton",
+		Body:         "Kantonsrat ZH",
+		Date:         time.Date(2026, 7, 6, 6, 21, 46, 0, time.UTC),
+		Sequence:     "1783318906",
+		Title:        title,
+		Type:         "Anwesenheitsermittlung",
+		// Withheld for every Wahl affair, same as KantonsratVote — see
+		// openparldata.affairStatesItsOutcome.
+		Decision: "",
+		// The roll call's own tally: who was in the chamber, not a ballot on
+		// the candidate. AsStilleWahl-routed formatters must never render
+		// these — see voteformat.StilleWahlBody.
+		Yes:         intPtr(165),
+		No:          intPtr(0),
+		Abstention:  intPtr(0),
+		Absent:      intPtr(15),
+		SourceURL:   geschaeftURL,
+		GroupURL:    geschaeftURL,
+		Attribution: "Source: OpenParlData.ch",
+		Affair: votes.Affair{
+			Number: "31/2026",
+			Title:  title,
+			ID:     "335625",
+			URL:    geschaeftURL,
+			Type:   "Wahl",
+		},
+	}}
+}
+
 // kantonsratRoster spreads a tally across the chamber's factions in roughly
 // their real proportions. Exact per-faction figures are not the point here —
 // the group exists to exercise labelling and layout — but the total must match
@@ -961,6 +1009,7 @@ var FixtureNames = []string{
 	"kantonsrat-decision-reported",
 	"kantonsrat-member-business",
 	"kantonsrat-co-signed-business",
+	"kantonsrat-stille-wahl",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
@@ -985,5 +1034,6 @@ func AllFixtures() map[string][]votes.Vote {
 		"kantonsrat-decision-reported":    KantonsratDecisionReported(),
 		"kantonsrat-member-business":      KantonsratMemberBusiness(),
 		"kantonsrat-co-signed-business":   KantonsratCoSignedBusiness(),
+		"kantonsrat-stille-wahl":          KantonsratStilleWahl(),
 	}
 }

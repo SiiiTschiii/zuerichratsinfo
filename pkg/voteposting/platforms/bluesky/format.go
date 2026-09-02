@@ -30,6 +30,21 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 		return nil
 	}
 
+	// A stille Wahl gets its own single post, not a thread: there are no
+	// per-vote counts to put in replies, and nothing here is misleading
+	// enough to need the "Details im Thread" hint. This must run before
+	// anything below touches voteformat.CountsOf/FormatVoteCounts* or a
+	// verdict emoji, none of which mean anything for an uncontested election.
+	if len(group) == 1 {
+		if sw, ok := voteformat.AsStilleWahl(group[0]); ok {
+			post := buildStilleWahlPost(group, sw)
+			if contactMapper != nil {
+				post.Mentions = contactMapper.FindBlueskyMentions(post.Text)
+			}
+			return []*BlueskyPost{post}
+		}
+	}
+
 	firstVote := group[0]
 
 	// Common components
@@ -57,6 +72,30 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 	}
 
 	return thread
+}
+
+// buildStilleWahlPost builds the single post announcing a stille Wahl: the
+// office and who was elected to it, and a link — no counts, no verdict emoji,
+// no thread. See voteformat.AsStilleWahl/StilleWahlBody for why.
+func buildStilleWahlPost(group []votes.Vote, sw voteformat.StilleWahl) *BlueskyPost {
+	header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
+	link := voteformat.LinkLine(group)
+	body := voteformat.StilleWahlBody(sw)
+
+	fullText := header + body + link
+	if graphemeLen(fullText) > maxGraphemes {
+		// Extremely unlikely (every Amt seen in practice is well under this
+		// budget), but truncate rather than post something the API rejects.
+		// truncateText appends its own "…", so that has to come out of the
+		// budget too, or the truncated post still overruns by its length.
+		available := maxGraphemes - graphemeLen(header) - graphemeLen(link) - graphemeLen("…")
+		if available > 0 {
+			body = truncateText(body, available)
+		}
+		fullText = header + body + link
+	}
+
+	return makePost(fullText, voteformat.GroupLink(group))
 }
 
 // buildRootPost creates the root post with header, title, result, and thread hint.
