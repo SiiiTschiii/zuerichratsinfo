@@ -248,6 +248,8 @@ func accountKey(raw string) string {
 	host := strings.ToLower(u.Hostname())
 	host = strings.TrimPrefix(host, "www.")
 	host = strings.TrimPrefix(host, "m.")
+	// Bluesky's CDN host serves the same profile as the canonical one.
+	host = strings.TrimPrefix(host, "web-cdn.")
 	// Country subdomains address the same profile: ch.linkedin.com and
 	// linkedin.com differ only in which office serves the page.
 	if i := strings.Index(host, ".linkedin.com"); i > 0 {

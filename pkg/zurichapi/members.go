@@ -98,6 +98,12 @@ func publishedAccounts(k Kontakt) []votes.Account {
 			// would sit in the file as a second spelling of the same handle.
 			url = strings.ReplaceAll(url, "twitter.com", "x.com")
 		}
+		if platform == "bluesky" {
+			// web-cdn.bsky.app serves the same profile as bsky.app. PARIS
+			// publishes both, and stored side by side they are one account
+			// recorded twice.
+			url = strings.ReplaceAll(url, "web-cdn.bsky.app", "bsky.app")
+		}
 
 		// PARIS publishes a fair number of these bare, as
 		// "www.instagram.com/…". cmd/validate_contacts rejects a URL with no

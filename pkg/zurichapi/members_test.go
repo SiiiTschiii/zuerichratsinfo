@@ -45,14 +45,15 @@ func TestPublishedAccounts(t *testing.T) {
 	k := Kontakt{SozialeMedien: SozialeMedienList{Kommunikation: []SozialesMedium{
 		{Typ: "Twitter", Adresse: "https://twitter.com/someone"},
 		{Typ: "Instagram", Adresse: "www.instagram.com/someone/?hl=de"},
+		{Typ: "Bluesky", Adresse: "https://web-cdn.bsky.app/profile/someone.bsky.social"},
 		{Typ: "LinkedIn", Adresse: " "},
 		{Typ: "Homepage", Adresse: "https://example.ch"},
 	}}}
 
 	got := publishedAccounts(k)
 
-	if len(got) != 2 {
-		t.Fatalf("got %+v, want the two accounts the mapping has columns for", got)
+	if len(got) != 3 {
+		t.Fatalf("got %+v, want the three accounts the mapping has columns for", got)
 	}
 	if got[0].Platform != "x" || got[0].URL != "https://x.com/someone" {
 		t.Errorf("got %+v, want twitter.com normalised to x.com under platform x", got[0])
@@ -62,5 +63,10 @@ func TestPublishedAccounts(t *testing.T) {
 	// not this adapter's.
 	if got[1].URL != "https://www.instagram.com/someone/?hl=de" {
 		t.Errorf("got %q, want a scheme added — cmd/validate_contacts rejects bare URLs", got[1].URL)
+	}
+	// The CDN host and the canonical one are the same profile; storing both
+	// records one account twice.
+	if got[2].URL != "https://bsky.app/profile/someone.bsky.social" {
+		t.Errorf("got %q, want web-cdn.bsky.app canonicalised to bsky.app", got[2].URL)
 	}
 }
