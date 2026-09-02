@@ -47,7 +47,15 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 	// Signatories the root had no room for lead the thread: naming them costs a
 	// line here, where truncating the title to keep them would have cost the
 	// subject of the vote.
-	replies := buildReplyPosts(group, voteformat.SignatoryLine(deferred), voteformat.LinkLine(group), charLimit)
+	//
+	// Tagged like the root's own line. X finds no mentions on its own, so a
+	// handle only exists where this puts one — and a member shed from the root
+	// for length has done nothing to deserve losing their tag.
+	signatories := voteformat.SignatoryLine(deferred)
+	if contactMapper != nil {
+		signatories = contactMapper.TagXHandlesInText(signatories)
+	}
+	replies := buildReplyPosts(group, signatories, voteformat.LinkLine(group), charLimit)
 
 	thread := make([]*XPost, 0, 1+len(replies))
 	thread = append(thread, root)

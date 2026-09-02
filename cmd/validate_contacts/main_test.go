@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
@@ -20,12 +21,24 @@ func TestValidYAML(t *testing.T) {
 			yamlContent: `version: "1.0"
 contacts:
   - name: "John Doe"
-    x: ["https://x.com/johndoe"]
-    facebook: ["https://www.facebook.com/johndoe"]
-    instagram: ["https://www.instagram.com/johndoe"]
-    linkedin: ["https://www.linkedin.com/in/johndoe"]
-    bluesky: ["https://bsky.app/profile/johndoe"]
-    tiktok: ["https://www.tiktok.com/@johndoe"]
+    x:
+      - url: https://x.com/johndoe
+        verified: true
+    facebook:
+      - url: https://www.facebook.com/johndoe
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/johndoe
+        verified: true
+    linkedin:
+      - url: https://www.linkedin.com/in/johndoe
+        verified: true
+    bluesky:
+      - url: https://bsky.app/profile/johndoe
+        verified: true
+    tiktok:
+      - url: https://www.tiktok.com/@johndoe
+        verified: true
 `,
 			wantErrors: 0,
 		},
@@ -34,7 +47,9 @@ contacts:
 			yamlContent: `version: "1.0"
 contacts:
   - name: "Jane Smith"
-    x: ["https://x.com/janesmith"]
+    x:
+      - url: https://x.com/janesmith
+        verified: true
 `,
 			wantErrors: 0,
 		},
@@ -51,9 +66,10 @@ contacts:
 			name: "invalid yaml - wrong indentation",
 			yamlContent: `version: "1.0"
 contacts:
-- name: "Test"
-  x: ["https://x.com/test"]
-    facebook: ["https://facebook.com/test"]
+  - name: "Test"
+   x:
+      - url: https://x.com/test
+        verified: true
 `,
 			wantErrors: 1, // Should fail YAML parsing
 		},
@@ -61,7 +77,9 @@ contacts:
 			name: "missing version field",
 			yamlContent: `contacts:
   - name: "Test"
-    x: ["https://x.com/test"]
+    x:
+      - url: https://x.com/test
+        verified: true
 `,
 			wantErrors: 1, // Missing version
 		},
@@ -76,7 +94,9 @@ contacts: []
 			name: "contact without name",
 			yamlContent: `version: "1.0"
 contacts:
-  - x: ["https://x.com/test"]
+  - x:
+      - url: https://x.com/test
+        verified: true
 `,
 			wantErrors: 1, // Contact has no name
 		},
@@ -85,9 +105,13 @@ contacts:
 			yamlContent: `version: "1.0"
 contacts:
   - name: "John Doe"
-    x: ["https://x.com/johndoe"]
+    x:
+      - url: https://x.com/johndoe
+        verified: true
   - name: "John Doe"
-    facebook: ["https://facebook.com/johndoe"]
+    facebook:
+      - url: https://facebook.com/johndoe
+        verified: true
 `,
 			wantErrors: 1, // Duplicate name
 		},
@@ -96,10 +120,14 @@ contacts:
 			yamlContent: `version: "1.0"
 contacts:
   - name: "Nadina Diday"
-    facebook: ["https://www.facebook.com/nadina.diday"]
+    facebook:
+      - url: https://www.facebook.com/nadina.diday
+        verified: true
   - name: "Niyazi Erdem - https://www.facebook.com/niyazi.erdem.129357"
   - name: "Oberholzer Beat"
-    facebook: ["https://www.facebook.com/beatober"]
+    facebook:
+      - url: https://www.facebook.com/beatober
+        verified: true
 `,
 			wantErrors: 1, // Name contains URL instead of proper YAML structure
 		},
@@ -108,7 +136,9 @@ contacts:
 			yamlContent: `version: "1.0"
 contacts:
   - name: "Valid Person"
-    x: ["https://x.com/valid"]
+    x:
+      - url: https://x.com/valid
+        verified: true
   - name: "Person Name facebook: https://facebook.com/profile"
 `,
 			wantErrors: 2, // Name contains both URL and platform data (triggers both validation rules)
@@ -366,11 +396,19 @@ func TestURLValidationInFile(t *testing.T) {
 			yamlContent: `version: "1.0"
 contacts:
   - name: "User One"
-    x: ["https://x.com/user1"]
-    facebook: ["https://facebook.com/user1"]
+    x:
+      - url: https://x.com/user1
+        verified: true
+    facebook:
+      - url: https://facebook.com/user1
+        verified: true
   - name: "User Two"
-    instagram: ["https://instagram.com/user2"]
-    linkedin: ["https://linkedin.com/in/user2"]
+    instagram:
+      - url: https://instagram.com/user2
+        verified: true
+    linkedin:
+      - url: https://linkedin.com/in/user2
+        verified: true
 `,
 			wantErrors: 0,
 		},
@@ -379,10 +417,16 @@ contacts:
 			yamlContent: `version: "1.0"
 contacts:
   - name: "User One"
-    x: ["www.x.com/user1"]
-    facebook: ["https://twitter.com/user1"]
+    x:
+      - url: www.x.com/user1
+        verified: true
+    facebook:
+      - url: https://twitter.com/user1
+        verified: true
   - name: "User Two"
-    instagram: [""]
+    instagram:
+      - url: 
+        verified: true
 `,
 			wantErrors: 3, // Missing scheme, wrong domain, empty URL
 		},
@@ -391,8 +435,14 @@ contacts:
 			yamlContent: `version: "1.0"
 contacts:
   - name: "User One"
-    x: ["https://x.com/valid", "www.x.com/invalid"]
-    facebook: ["https://facebook.com/valid"]
+    x:
+      - url: https://x.com/valid
+        verified: true
+      - url: www.x.com/invalid
+        verified: true
+    facebook:
+      - url: https://facebook.com/valid
+        verified: true
 `,
 			wantErrors: 1, // One invalid x URL
 		},
@@ -432,4 +482,66 @@ func hasSubstring(s, substr string) bool {
 		}
 	}
 	return false
+}
+
+// Both `- https://…` and `- url:` with no flag decode to the same unverified
+// Account, so only the file's own nodes can tell them apart — and only this
+// check makes the file say which it meant.
+func TestCheckAccountShape(t *testing.T) {
+	tests := []struct {
+		name    string
+		yaml    string
+		wantErr string
+	}{
+		{
+			name:    "a bare URL says nothing about publication",
+			yaml:    "version: \"1.0\"\ncontacts:\n  - name: A\n    x:\n      - https://x.com/a\n",
+			wantErr: "bare URL",
+		},
+		{
+			name:    "a mapping that omits verified says nothing either",
+			yaml:    "version: \"1.0\"\ncontacts:\n  - name: A\n    x:\n      - url: https://x.com/a\n",
+			wantErr: "does not say whether it may be published",
+		},
+		{
+			// The unmarshaller ignores keys it does not know, so this would
+			// decode as unverified and quietly stop tagging someone.
+			name:    "a misspelt flag is not a flag",
+			yaml:    "version: \"1.0\"\ncontacts:\n  - name: A\n    x:\n      - url: https://x.com/a\n        verifed: true\n",
+			wantErr: `Unknown account field "verifed"`,
+		},
+		{
+			name: "an explicit account passes",
+			yaml: "version: \"1.0\"\ncontacts:\n  - name: A\n    x:\n      - url: https://x.com/a\n        verified: true\n",
+		},
+		{
+			name: "a candidate passes too",
+			yaml: "version: \"1.0\"\ncontacts:\n  - name: A\n    x:\n      - url: https://x.com/a\n        verified: false\n        confidence: high\n",
+		},
+		{
+			name: "a contact with no accounts at all is fine",
+			yaml: "version: \"1.0\"\ncontacts:\n  - name: A\n",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			errs := checkAccountShape(tt.yaml)
+			if tt.wantErr == "" {
+				if len(errs) != 0 {
+					t.Fatalf("got %v, want no errors", errs)
+				}
+				return
+			}
+			found := false
+			for _, e := range errs {
+				if strings.Contains(e.Message, tt.wantErr) {
+					found = true
+				}
+			}
+			if !found {
+				t.Errorf("got %v, want an error mentioning %q", errs, tt.wantErr)
+			}
+		})
+	}
 }

@@ -333,3 +333,67 @@ func TestAddAccounts_PublishedAccountsArriveVerified(t *testing.T) {
 		t.Errorf("confidence = %q, want none on a published account", c.X[0].Confidence)
 	}
 }
+
+// A candidate already on file is exactly what the parliament publishing the
+// same account confirms. Skipping it would let a harvested guess permanently
+// shadow the authoritative record.
+func TestAddAccounts_PromotesACandidateTheSourcePublishes(t *testing.T) {
+	c := &Contact{
+		Name: "Test Person",
+		X: []Account{{
+			URL:        "https://x.com/testperson",
+			Verified:   false,
+			Confidence: "high",
+		}},
+	}
+
+	added := addAccounts(c, []votes.Account{
+		{Platform: "x", URL: "https://x.com/testperson"},
+	})
+
+	if added != 1 {
+		t.Errorf("added = %d, want the promotion counted as a change", added)
+	}
+	if len(c.X) != 1 {
+		t.Fatalf("X = %+v, want the existing entry promoted, not duplicated", c.X)
+	}
+	if !c.X[0].Verified {
+		t.Error("the candidate was not promoted by the published record")
+	}
+	if c.X[0].Confidence != "" {
+		t.Errorf("confidence = %q, want it dropped once the account is confirmed", c.X[0].Confidence)
+	}
+}
+
+// Promotion also has to see through the spellings accountKey already handles.
+func TestAddAccounts_PromotesAcrossURLSpellings(t *testing.T) {
+	c := &Contact{
+		Name:    "Test Person",
+		Bluesky: []Account{{URL: "https://web-cdn.bsky.app/profile/tp.bsky.social", Confidence: "low"}},
+	}
+
+	addAccounts(c, []votes.Account{
+		{Platform: "bluesky", URL: "https://bsky.app/profile/tp.bsky.social"},
+	})
+
+	if len(c.Bluesky) != 1 || !c.Bluesky[0].Verified {
+		t.Errorf("Bluesky = %+v, want the CDN-host candidate promoted in place", c.Bluesky)
+	}
+}
+
+// An account already confirmed needs no change and must not be recounted.
+func TestAddAccounts_LeavesAVerifiedAccountAlone(t *testing.T) {
+	c := &Contact{
+		Name: "Test Person",
+		X:    contacts.VerifiedAccounts("https://x.com/testperson"),
+	}
+
+	added := addAccounts(c, []votes.Account{{Platform: "x", URL: "https://x.com/testperson"}})
+
+	if added != 0 {
+		t.Errorf("added = %d, want nothing counted for an account already confirmed", added)
+	}
+	if len(c.X) != 1 {
+		t.Errorf("X = %+v, want no duplicate", c.X)
+	}
+}

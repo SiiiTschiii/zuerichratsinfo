@@ -113,8 +113,11 @@ type Affair struct {
 	Authors []Author
 }
 
-// Author is a member who put a business matter before the chamber — the
-// Erstunterzeichnende, not everyone who later signed it.
+// Author is a member who signed a business matter into the chamber: the
+// Erstunterzeichnende first, then the Mitunterzeichnende in the order the
+// parliament lists them. Formatters render as many as a post can carry and
+// name the rest in their own block, so consumers should expect the whole list
+// rather than a lead alone.
 //
 // Party is required rather than decorative: it is what distinguishes a member
 // acting in the chamber from a private person exercising a right of initiative,

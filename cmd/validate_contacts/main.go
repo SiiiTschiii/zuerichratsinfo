@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"regexp"
 	"sort"
 	"strings"
 
@@ -152,7 +151,7 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 		return errors
 	}
 
-	errors = append(errors, checkAccountsAreExplicit(string(data))...)
+	errors = append(errors, checkAccountShape(string(data))...)
 
 	// Check contacts are sorted alphabetically by name
 	if !skipOrderCheck {
@@ -219,27 +218,92 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 	return errors
 }
 
-// bareAccount matches a handle written as a plain list item instead of the
-// `url:` mapping.
-var bareAccount = regexp.MustCompile(`(?m)^\s+- (https?://\S+)\s*$`)
+// accountFields are the only keys an account may carry. Anything else is a
+// typo, and a typo in this file is dangerous in one specific direction: the
+// custom unmarshaller ignores what it does not recognise, so `verifed: true`
+// would decode as unverified and quietly stop tagging someone.
+var accountFields = map[string]bool{"url": true, "verified": true, "confidence": true}
 
-// checkAccountsAreExplicit rejects the shape that leaves `verified` unsaid.
+// checkAccountShape walks the file's nodes to enforce what the parsed value can
+// no longer tell us apart.
 //
-// A bare URL still parses — as unverified, so a stale file degrades to posting
-// without tags rather than failing a run — but it must not survive review.
-// Whether a handle may be published is the one thing the file has to state out
-// loud, and a default you cannot see is not one anybody checks.
-func checkAccountsAreExplicit(content string) []ValidationError {
-	var errors []ValidationError
-	for _, m := range bareAccount.FindAllStringSubmatch(content, -1) {
-		errors = append(errors, ValidationError{
-			URL: m[1],
-			Message: "Account is written as a bare URL. Give it an explicit flag: " +
-				"`- url: <URL>` followed by `verified: true` (a human confirmed this account) " +
-				"or `verified: false` (a candidate, never posted).",
-		})
+// Both `- https://…` and `- url: …` with no `verified` decode to the same
+// unverified Account, so by the time validateContactPlatforms sees it the
+// omission is invisible. Whether a handle may be published is the one thing
+// this file has to state out loud, and this is what makes it say so.
+func checkAccountShape(content string) []ValidationError {
+	var root yaml.Node
+	if err := yaml.Unmarshal([]byte(content), &root); err != nil || len(root.Content) == 0 {
+		return nil // the decode above already reported this
 	}
+
+	var errors []ValidationError
+	forEachAccount(&root, func(name, platform string, account *yaml.Node) {
+		if account.Kind == yaml.ScalarNode {
+			errors = append(errors, ValidationError{
+				ContactName: name, Platform: platform, URL: account.Value,
+				Message: "Account is written as a bare URL. Give it an explicit flag: " +
+					"`- url: <URL>` followed by `verified: true` (a human confirmed this account) " +
+					"or `verified: false` (a candidate, never posted).",
+			})
+			return
+		}
+		if account.Kind != yaml.MappingNode {
+			return
+		}
+
+		seen := map[string]bool{}
+		url := ""
+		for i := 0; i+1 < len(account.Content); i += 2 {
+			key := account.Content[i].Value
+			seen[key] = true
+			if key == "url" {
+				url = account.Content[i+1].Value
+			}
+			if !accountFields[key] {
+				errors = append(errors, ValidationError{
+					ContactName: name, Platform: platform,
+					Message: fmt.Sprintf("Unknown account field %q (want url, verified or confidence). "+
+						"A misspelt `verified` decodes as false and silently stops the account being posted.", key),
+				})
+			}
+		}
+		if !seen["verified"] {
+			errors = append(errors, ValidationError{
+				ContactName: name, Platform: platform, URL: url,
+				Message: "Account does not say whether it may be published. Add `verified: true` " +
+					"(a human confirmed this account) or `verified: false` (a candidate, never posted).",
+			})
+		}
+	})
 	return errors
+}
+
+// forEachAccount visits every account node under every contact's platform keys.
+func forEachAccount(root *yaml.Node, visit func(name, platform string, account *yaml.Node)) {
+	doc := root.Content[0]
+	for i := 0; i+1 < len(doc.Content); i += 2 {
+		if doc.Content[i].Value != "contacts" {
+			continue
+		}
+		for _, contact := range doc.Content[i+1].Content {
+			name := ""
+			for j := 0; j+1 < len(contact.Content); j += 2 {
+				if contact.Content[j].Value == "name" {
+					name = contact.Content[j+1].Value
+				}
+			}
+			for j := 0; j+1 < len(contact.Content); j += 2 {
+				platform := contact.Content[j].Value
+				if !supportedPlatforms[platform] {
+					continue
+				}
+				for _, account := range contact.Content[j+1].Content {
+					visit(name, platform, account)
+				}
+			}
+		}
+	}
 }
 
 func validateContactPlatforms(contact Contact) []ValidationError {

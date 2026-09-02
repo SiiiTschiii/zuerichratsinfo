@@ -658,3 +658,36 @@ func TestFormatVoteThread_SingleSignatory(t *testing.T) {
 		t.Errorf("one signatory should need no overflow machinery:\n%s", all)
 	}
 }
+
+// A member shed from the root for length has done nothing to deserve losing
+// their tag. X finds no mentions on its own, so the signatory block has to be
+// tagged like the root's own line.
+func TestFormatVoteThread_TagsDeferredSignatories(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+
+	contactsFile := filepath.Join(t.TempDir(), "contacts.yaml")
+	err := os.WriteFile(contactsFile, []byte(`version: "1.0"
+contacts:
+  - name: Judith Anna Stofer
+    x:
+      - url: https://x.com/jastofer
+        verified: true
+`), 0o600)
+	if err != nil {
+		t.Fatalf("write contacts file: %v", err)
+	}
+	mapper, err := contacts.LoadContacts(contactsFile)
+	if err != nil {
+		t.Fatalf("load contacts: %v", err)
+	}
+
+	thread := FormatVoteThread(group, mapper, DefaultMaxChars)
+	all := allThreadText(thread)
+
+	if !strings.Contains(all, "Weitere Unterzeichnende") {
+		t.Fatalf("this fixture should shed at 280 chars:\n%s", all)
+	}
+	if !strings.Contains(all, "Judith Anna Stofer @jastofer") {
+		t.Errorf("a deferred signatory was named but not tagged:\n%s", all)
+	}
+}

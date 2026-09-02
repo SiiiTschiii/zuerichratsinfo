@@ -175,7 +175,16 @@ func addAccounts(c *Contact, published []votes.Account) int {
 			continue
 		}
 		url := stripTracking(a.URL)
-		if recorded(*field, url) {
+
+		// The same account may already be on file as a candidate. The
+		// parliament publishing it is the confirmation that candidate was
+		// waiting for, so promote it rather than skipping past it — otherwise a
+		// harvested guess permanently shadows the authoritative record.
+		if promoted, found := promote(*field, url); found {
+			if promoted {
+				added++
+				fmt.Printf("   ✅ %s: %s confirmed by %s\n", c.Name, a.Platform, url)
+			}
 			continue
 		}
 		// Verified on arrival: these are the accounts the parliament publishes
@@ -212,14 +221,25 @@ func platformField(c *Contact, platform string) *[]Account {
 
 // recorded reports whether the file already has this account, comparing what
 // the URLs point at rather than how they are spelled.
-func recorded(existing []Account, candidate string) bool {
+// promote marks an account already on file as verified, reporting whether it
+// changed anything and whether the account was there at all.
+//
+// A confirmation is a fact about the account: once the body publishes it, the
+// confidence score that ranked it as a guess is spent and comes off with it.
+func promote(existing []Account, candidate string) (changed, found bool) {
 	key := accountKey(candidate)
-	for _, have := range existing {
-		if accountKey(have.URL) == key {
-			return true
+	for i, have := range existing {
+		if accountKey(have.URL) != key {
+			continue
 		}
+		if existing[i].Verified {
+			return false, true
+		}
+		existing[i].Verified = true
+		existing[i].Confidence = ""
+		return true, true
 	}
-	return false
+	return false, false
 }
 
 // accountKey identifies the account a URL points at, for comparison only —
