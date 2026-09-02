@@ -30,6 +30,17 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 		return nil
 	}
 
+	// A stille Wahl gets its own single post, not a thread: there are no
+	// per-vote counts to put in replies, and nothing here is misleading
+	// enough to need the "Details im Thread" hint. This must run before
+	// anything below touches voteformat.CountsOf/FormatVoteCounts* or a
+	// verdict emoji, none of which mean anything for an uncontested election.
+	if len(group) == 1 {
+		if sw, ok := voteformat.AsStilleWahl(group[0]); ok {
+			return []*XPost{buildStilleWahlPost(group, sw, contactMapper, charLimit)}
+		}
+	}
+
 	firstVote := group[0]
 
 	// Common components
@@ -62,6 +73,32 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 	thread = append(thread, replies...)
 
 	return thread
+}
+
+// buildStilleWahlPost builds the single post announcing a stille Wahl: the
+// office and who was elected to it, and a link — no counts, no verdict emoji,
+// no thread. See voteformat.AsStilleWahl/StilleWahlBody for why.
+func buildStilleWahlPost(group []votes.Vote, sw voteformat.StilleWahl, contactMapper *contacts.Mapper, charLimit int) *XPost {
+	if contactMapper != nil {
+		sw.Name = contactMapper.TagXHandlesInText(sw.Name)
+	}
+
+	header := fmt.Sprintf("🗳️  %s\n\n", voteformat.PostHeadline(group))
+	link := voteformat.LinkLine(group)
+	body := voteformat.StilleWahlBody(sw)
+
+	fullText := header + body + link
+	if weightedLen(fullText) > charLimit {
+		// Extremely unlikely (every Amt seen in practice is well under this
+		// budget), but truncate rather than post something the API rejects.
+		available := charLimit - weightedLen(header) - weightedLen(link)
+		if available > 0 {
+			body = truncateText(body, available)
+		}
+		fullText = header + body + link
+	}
+
+	return &XPost{Text: fullText}
 }
 
 // buildRootPost creates the root post with header, title, result, and thread hint.

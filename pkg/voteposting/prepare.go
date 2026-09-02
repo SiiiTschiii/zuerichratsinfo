@@ -358,6 +358,14 @@ func PostableGroups(groups [][]votes.Vote) [][]votes.Vote {
 // both look like a perfectly ordinary lopsided Ja/Nein tally, and would post
 // happily while saying something untrue about how parliament voted.
 func validateVote(v votes.Vote) error {
+	// A stille Wahl is an Anwesenheitsermittlung that IsKnownUnpostableType
+	// would otherwise reject: an uncontested election whose title names who
+	// was elected. It gets its own post instead of the usual Ja/Nein
+	// rendering — see voteformat.AsStilleWahl and the formatters that check
+	// for it before touching any counts.
+	if _, ok := voteformat.AsStilleWahl(v); ok {
+		return nil
+	}
 	if voteformat.IsKnownUnpostableType(v.Type) {
 		return fmt.Errorf("%w: vote %s (%q, %s) has type %q, which is not published",
 			ErrUnpostableVoteType, v.SourceID, voteDescription(v), countsSummary(v), v.Type)

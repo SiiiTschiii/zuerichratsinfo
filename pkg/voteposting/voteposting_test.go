@@ -564,6 +564,43 @@ func TestPostToPlatform_AttendanceRollCallIsSkippedWithoutFailingTheRun(t *testi
 	}
 }
 
+// TestPostToPlatform_StilleWahlIsPostedWithoutTally covers the opposite case
+// from TestPostToPlatform_AttendanceRollCallIsSkippedWithoutFailingTheRun: an
+// Anwesenheitsermittlung whose business names a real council decision — an
+// uncontested election under § 124 KRG — must reach the formatter and get
+// posted like any other vote, not be swallowed as a routine roll call. See
+// voteformat.AsStilleWahl.
+func TestPostToPlatform_StilleWahlIsPostedWithoutTally(t *testing.T) {
+	defer setupTempDir(t)()
+
+	stilleWahl := createVote("stille-wahl-1", "31/2026", "2026-07-06")
+	stilleWahl.Type = "Anwesenheitsermittlung"
+	stilleWahl.Title = "Wahl Mitglied Obergericht (100%) für Roland Schmid"
+	stilleWahl.Affair.Type = "Wahl"
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	posted, err := PostToPlatform([][]votes.Vote{{stilleWahl}}, mockPlatform,
+		SingleLog(testJurisdiction, voteLog), false)
+
+	if err != nil {
+		t.Fatalf("a stille Wahl must not fail the run, got %v", err)
+	}
+	if posted != 1 {
+		t.Errorf("stille Wahl was not published: posted=%d", posted)
+	}
+	if mockPlatform.formatCalls != 1 {
+		t.Errorf("stille Wahl never reached the formatter: formatCalls=%d", mockPlatform.formatCalls)
+	}
+	if len(mockPlatform.lastGroup) != 1 || mockPlatform.lastGroup[0].SourceID != stilleWahl.SourceID {
+		t.Errorf("formatter was handed the wrong group: %+v", mockPlatform.lastGroup)
+	}
+	if !voteLog.IsPosted(stilleWahl.SourceID) {
+		t.Error("published stille Wahl was not marked as posted")
+	}
+}
+
 // TestPostToPlatform_AttendanceRollCallDoesNotMaskAnUnknownType pins that the
 // two rejection kinds stay distinguishable when both occur in one run. A roll
 // call must not swallow the signal that the source served something new.

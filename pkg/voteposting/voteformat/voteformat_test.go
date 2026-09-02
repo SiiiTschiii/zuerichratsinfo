@@ -925,6 +925,88 @@ func TestGroupPrefixLineNamesWhoFiledIt(t *testing.T) {
 	}
 }
 
+// TestAsStilleWahl pins the detector's three conditions and the
+// name-plausibility guard against the real titles pulled from OpenParlData
+// while building this feature — see the package doc on AsStilleWahl for the
+// data these are drawn from.
+func TestAsStilleWahl(t *testing.T) {
+	stilleWahl := func(affairType, voteType, title string) votes.Vote {
+		return votes.Vote{
+			Title: title,
+			Type:  voteType,
+			Affair: votes.Affair{
+				Type:  affairType,
+				Title: title,
+			},
+		}
+	}
+
+	tests := []struct {
+		name   string
+		v      votes.Vote
+		want   StilleWahl
+		wantOK bool
+	}{
+		{
+			name:   "real example: Roland Schmid",
+			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglied Obergericht (100%) für Roland Schmid"),
+			want:   StilleWahl{Amt: "Mitglied Obergericht (100%)", Name: "Roland Schmid"},
+			wantOK: true,
+		},
+		{
+			name:   "real example: Claude Reinhardt",
+			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Abteilungspräsidium Baurekursgericht (BRG) für Claude Reinhardt"),
+			want:   StilleWahl{Amt: "Abteilungspräsidium Baurekursgericht (BRG)", Name: "Claude Reinhardt"},
+			wantOK: true,
+		},
+		{
+			name:   "wrong affair type: a routine roll call opening a sitting",
+			v:      stilleWahl("", "Anwesenheitsermittlung", ""),
+			wantOK: false,
+		},
+		{
+			name: "wrong vote type: a real contested election",
+			// The real "Wahl Mitglied Bankrat ZKB für Walter Schoch" (41/109/10/19)
+			// carries this exact title shape but was typed Normal, not
+			// Anwesenheitsermittlung — this is the case IsKnownUnpostableType
+			// must never widen to cover.
+			v:      stilleWahl("Wahl", "Normal", "Wahl Mitglied Bankrat ZKB für Walter Schoch"),
+			wantOK: false,
+		},
+		{
+			name:   "no individual named: a collective appointment",
+			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Geschäftsleitung (GL) Kantonsrat Amtsjahr 2026/2027"),
+			wantOK: false,
+		},
+		{
+			name: "implausible name: a term of office, not a person",
+			// The real "Wahl Mitglieder Schiedsgericht in
+			// Sozialversicherungsstreitigkeiten für die Amtsdauer 2025-2031" —
+			// without the plausibility guard this would extract the "name"
+			// "die Amtsdauer 2025-2031".
+			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglieder Schiedsgericht für die Amtsdauer 2025-2031"),
+			wantOK: false,
+		},
+		{
+			name:   "implausible name: a legislature reference",
+			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl acht Mitglieder Obergericht für die Legislatur 2019-2025"),
+			wantOK: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, ok := AsStilleWahl(tt.v)
+			if ok != tt.wantOK {
+				t.Fatalf("AsStilleWahl() ok = %v, want %v", ok, tt.wantOK)
+			}
+			if ok && got != tt.want {
+				t.Errorf("AsStilleWahl() = %+v, want %+v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestAuthorList(t *testing.T) {
 	tests := []struct {
 		name    string

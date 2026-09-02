@@ -594,6 +594,77 @@ func IsKnownUnpostableType(voteType string) bool {
 	return unpostableVoteTypes[strings.TrimSpace(voteType)]
 }
 
+// StilleWahl is what a silent/uncontested election's title tells a reader:
+// the office and the person elected to it. See AsStilleWahl.
+type StilleWahl struct {
+	Amt  string
+	Name string
+}
+
+// stilleWahlTitlePattern matches the fixed shape Kanton Zürich gives an
+// uncontested-election business: "Wahl <Amt> für <Name>".
+var stilleWahlTitlePattern = regexp.MustCompile(`(?i)^Wahl\s+(.+?)\s+für\s+(.+)$`)
+
+// implausibleStilleWahlName rejects a capture that is grammatically in the
+// "für ..." slot but is not a person's name — a business's Amtsdauer,
+// Legislatur or Amtsjahr, not its candidate. Seen live: "Wahl Mitglieder
+// Schiedsgericht in Sozialversicherungsstreitigkeiten für die Amtsdauer
+// 2025-2031", which without this guard would extract the "name"
+// "die Amtsdauer 2025-2031".
+var implausibleStilleWahlName = regexp.MustCompile(`(?i)\d|Amtsdauer|Legislatur|Amtsjahr`)
+
+// AsStilleWahl reports whether v is a silent/uncontested election — a "Wahl"
+// business resolved by acclamation under § 124 KRG, whose only recorded vote
+// is the quorum roll call rather than a ballot on the candidate — and, if so,
+// the office and name its title names.
+//
+// All three conditions matter. Affair.Type == "Wahl" alone would also fire on
+// the routine roll call opening a sitting, if that business happened to be
+// misfiled; the title parse alone can misfire on text that only looks like
+// this shape ("... für die Amtsdauer ..." names a term, not a person); and
+// Type == "Anwesenheitsermittlung" is what actually tells a stille Wahl apart
+// from a genuinely contested election, which instead produces a "Normal" or
+// Auswahl-typed vote. Checked against ~2000 historical Kanton Zürich votings:
+// this combination never once fired on a contested race, even when the title
+// was otherwise identical in shape (e.g. "Wahl Mitglied Bankrat ZKB für
+// Walter Schoch", a real 41/109/10/19 contest, came back typed "Normal").
+//
+// ok is false whenever any part of the pattern doesn't hold, including a
+// title that doesn't name an individual (a collective appointment like "Wahl
+// Geschäftsleitung (GL) Kantonsrat Amtsjahr 2026/2027" names no one to credit
+// and is left for a future, harder feature); callers must then fall back to
+// treating the vote as an ordinary (silently skipped) Anwesenheitsermittlung.
+func AsStilleWahl(v votes.Vote) (StilleWahl, bool) {
+	if strings.TrimSpace(v.Affair.Type) != "Wahl" || v.Type != "Anwesenheitsermittlung" {
+		return StilleWahl{}, false
+	}
+	m := stilleWahlTitlePattern.FindStringSubmatch(CleanVoteTitle(v.Title))
+	if m == nil {
+		return StilleWahl{}, false
+	}
+	name := strings.TrimSpace(m[2])
+	if implausibleStilleWahlName.MatchString(name) {
+		return StilleWahl{}, false
+	}
+	return StilleWahl{Amt: strings.TrimSpace(m[1]), Name: name}, true
+}
+
+// StilleWahlBody renders the reader-facing text for a stille Wahl: what was
+// filled and who filled it — deliberately omitting the roll-call numbers
+// (attendance, not an election result) that unpostableVoteTypes exists to
+// keep off the timeline in the first place.
+//
+// "Gewählt" is safe to assert without a Decision field on the vote: per
+// § 124 KRG, reaching this fact pattern at all — a Wahl business whose only
+// vote is a quorum roll call, no ballot — means the president already
+// declared the candidate elected by construction of the rule. A contested
+// race takes the other branch of the rule and produces a Normal or
+// Auswahl-typed vote instead, never Anwesenheitsermittlung; there is no third
+// outcome the rule allows for here.
+func StilleWahlBody(sw StilleWahl) string {
+	return fmt.Sprintf("Stille Wahl (unbestritten)\n%s\n\n✅ Gewählt: %s", sw.Amt, sw.Name)
+}
+
 // IsHandledVoteType reports whether the formatters know how to render a vote of
 // this type. Callers skip anything else rather than publish it.
 //

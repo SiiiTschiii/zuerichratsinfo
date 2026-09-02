@@ -68,6 +68,21 @@ func FormatCarouselWithContacts(group []votes.Vote, contactMapper *contacts.Mapp
 // buildCaption creates the caption text for an Instagram carousel post.
 // Includes vote details (similar to X/Bluesky thread text flattened) + vote page link.
 func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
+	// A stille Wahl gets its own caption: the office and who was elected to
+	// it, and a link — no counts, no verdict emoji. This must run before
+	// anything below touches voteformat.CountsOf/FormatVoteCounts* or a
+	// verdict emoji, none of which mean anything for an uncontested election.
+	// The carousel image is handled the same way, in imagegen.GenerateCarousel.
+	if len(group) == 1 {
+		if sw, ok := voteformat.AsStilleWahl(group[0]); ok {
+			if contactMapper != nil {
+				sw.Name = contactMapper.TagInstagramHandlesInText(sw.Name)
+			}
+			header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
+			return header + voteformat.StilleWahlBody(sw) + voteformat.LinkLine(group)
+		}
+	}
+
 	firstVote := group[0]
 
 	// Header

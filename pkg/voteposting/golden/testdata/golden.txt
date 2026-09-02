@@ -2619,6 +2619,58 @@ AL 5/0/0/0
 🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
 Source: OpenParlData.ch
 
+################ FIXTURE kantonsrat-stille-wahl ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026 (06:21)
+
+Stille Wahl (unbestritten)
+Mitglied Obergericht (100%)
+
+✅ Gewählt: Roland Schmid
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+Source: OpenParlData.ch
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026 (06:21)
+
+Stille Wahl (unbestritten)
+Mitglied Obergericht (100%)
+
+✅ Gewählt: Roland Schmid
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+Source: OpenParlData.ch
+
+---- Bluesky ----
+[post 0]
+🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026 (06:21)
+
+Stille Wahl (unbestritten)
+Mitglied Obergericht (100%)
+
+✅ Gewählt: Roland Schmid
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+Source: OpenParlData.ch
+[facet] {Index:{ByteStart:149 ByteEnd:235} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188 DID: Tag:}]}
+
+---- Instagram ----
+[images] 1
+[caption]
+🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026 (06:21)
+
+Stille Wahl (unbestritten)
+Mitglied Obergericht (100%)
+
+✅ Gewählt: Roland Schmid
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+Source: OpenParlData.ch
+
 ################ FIXTURE instagram-long-multi-vote-truncation ################
 
 ---- X (limit 280) ----
