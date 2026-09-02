@@ -1,0 +1,13 @@
+{
+ "data": [
+  {"person_id": 17436, "active": true},
+  {"person_id": 17447, "active": true},
+  {"person_id": 17578, "active": true},
+  {"person_id": 17853, "active": true},
+  {"person_id": 17638, "active": true},
+  {"person_id": 17870, "active": true},
+  {"person_id": 17892, "active": false},
+  {"person_id": 17695, "active": false}
+ ],
+ "meta": {"offset": 0, "limit": 500, "total_records": 8, "has_more": false}
+}

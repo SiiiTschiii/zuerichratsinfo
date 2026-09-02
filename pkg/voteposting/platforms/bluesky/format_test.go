@@ -609,3 +609,30 @@ func TestFormatVoteThread_SingleVoteSubtitlePrefix(t *testing.T) {
 		})
 	}
 }
+
+// Bluesky's root is tighter than X's, so it sheds sooner — but never the title.
+func TestFormatVoteThread_LongSignatoryListNeverTruncatesTheTitle(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+
+	thread := FormatVoteThread(group, nil)
+	if len(thread) < 2 {
+		t.Fatalf("got %d posts, want a root and at least one reply", len(thread))
+	}
+
+	if !strings.Contains(thread[0].Text, group[0].Title) {
+		t.Errorf("the title was cut to make room for names:\n%s", thread[0].Text)
+	}
+	if graphemeLen(thread[0].Text) > maxGraphemes {
+		t.Errorf("root is %d graphemes, over the %d limit", graphemeLen(thread[0].Text), maxGraphemes)
+	}
+
+	var all strings.Builder
+	for _, p := range thread {
+		all.WriteString(p.Text)
+	}
+	for _, a := range group[0].Affair.Authors {
+		if !strings.Contains(all.String(), a.Name) {
+			t.Errorf("%s is named nowhere in the thread", a.Name)
+		}
+	}
+}

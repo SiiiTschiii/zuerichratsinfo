@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "data/zurich-city/contacts.yaml"
+      - "data/zurich-canton/contacts.yaml"
       - "cmd/validate_contacts/**"
       - "cmd/platform_stats/**"
       - "README.md"
@@ -11,6 +12,7 @@ on:
   pull_request:
     paths:
       - "data/zurich-city/contacts.yaml"
+      - "data/zurich-canton/contacts.yaml"
       - "cmd/validate_contacts/**"
       - "cmd/platform_stats/**"
       - "README.md"
@@ -35,8 +37,14 @@ jobs:
       - name: Download dependencies
         run: go mod download
 
+      # Every jurisdiction's file, against the same schema: they differ only in
+      # how much of it is filled in yet.
       - name: Validate contacts.yaml
-        run: go run cmd/validate_contacts/main.go data/zurich-city/contacts.yaml
+        run: |
+          for file in data/*/contacts.yaml; do
+            echo "→ $file"
+            go run cmd/validate_contacts/main.go "$file"
+          done
 
       # The generator rewrites README.md in place, so running it and diffing
       # tells us whether the committed stats still match data/zurich-city/contacts.yaml.

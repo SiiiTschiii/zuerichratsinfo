@@ -8,25 +8,22 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"gopkg.in/yaml.v3"
 )
 
-// Contact represents a council member with their social media accounts
-type Contact struct {
-	Name      string   `yaml:"name"`
-	Bluesky   []string `yaml:"bluesky,omitempty"`
-	Facebook  []string `yaml:"facebook,omitempty"`
-	Instagram []string `yaml:"instagram,omitempty"`
-	LinkedIn  []string `yaml:"linkedin,omitempty"`
-	TikTok    []string `yaml:"tiktok,omitempty"`
-	X         []string `yaml:"x,omitempty"`
-}
+// The schema lives in pkg/contacts, so the validator checks the same types the
+// bot reads rather than a copy that can drift away from them.
+type (
+	Account        = contacts.Account
+	Contact        = contacts.Contact
+	ContactMapping = contacts.ContactMapping
+)
 
-// ContactMapping contains the full mapping structure
-type ContactMapping struct {
-	Version  string    `yaml:"version"`
-	Contacts []Contact `yaml:"contacts"`
-}
+// validConfidence are the values a candidate may carry. It is an ordering aid
+// for whoever works through the list — never evidence of identity — so an
+// invented level would only mislead the person doing the verifying.
+var validConfidence = map[string]bool{"high": true, "medium": true, "low": true}
 
 var (
 	supportedPlatforms = map[string]bool{
@@ -111,6 +108,12 @@ func main() {
 	os.Exit(0)
 }
 
+// sortHint names the exact command that fixes an ordering complaint, for the
+// file actually being validated — there is more than one.
+func sortHint(filepath string) string {
+	return "go run cmd/validate_contacts/main.go -sort " + filepath
+}
+
 func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationError {
 	var errors []ValidationError
 
@@ -148,6 +151,8 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 		return errors
 	}
 
+	errors = append(errors, checkAccountShape(string(data))...)
+
 	// Check contacts are sorted alphabetically by name
 	if !skipOrderCheck {
 		for i := 1; i < len(mapping.Contacts); i++ {
@@ -156,7 +161,7 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 			if strings.ToLower(curr) < strings.ToLower(prev) {
 				errors = append(errors, ValidationError{
 					ContactName: curr,
-					Message:     fmt.Sprintf("Contact is out of alphabetical order (comes after '%s'). Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/zurich-city/contacts.yaml", prev),
+					Message:     fmt.Sprintf("Contact is out of alphabetical order (comes after '%s'). Run with -sort flag to fix: %s", prev, sortHint(filepath)),
 				})
 			}
 		}
@@ -213,21 +218,98 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 	return errors
 }
 
+// accountFields are the only keys an account may carry. Anything else is a
+// typo, and a typo in this file is dangerous in one specific direction: the
+// custom unmarshaller ignores what it does not recognise, so `verifed: true`
+// would decode as unverified and quietly stop tagging someone.
+var accountFields = map[string]bool{"url": true, "verified": true, "confidence": true}
+
+// checkAccountShape walks the file's nodes to enforce what the parsed value can
+// no longer tell us apart.
+//
+// Both `- https://…` and `- url: …` with no `verified` decode to the same
+// unverified Account, so by the time validateContactPlatforms sees it the
+// omission is invisible. Whether a handle may be published is the one thing
+// this file has to state out loud, and this is what makes it say so.
+func checkAccountShape(content string) []ValidationError {
+	var root yaml.Node
+	if err := yaml.Unmarshal([]byte(content), &root); err != nil || len(root.Content) == 0 {
+		return nil // the decode above already reported this
+	}
+
+	var errors []ValidationError
+	forEachAccount(&root, func(name, platform string, account *yaml.Node) {
+		if account.Kind == yaml.ScalarNode {
+			errors = append(errors, ValidationError{
+				ContactName: name, Platform: platform, URL: account.Value,
+				Message: "Account is written as a bare URL. Give it an explicit flag: " +
+					"`- url: <URL>` followed by `verified: true` (a human confirmed this account) " +
+					"or `verified: false` (a candidate, never posted).",
+			})
+			return
+		}
+		if account.Kind != yaml.MappingNode {
+			return
+		}
+
+		seen := map[string]bool{}
+		url := ""
+		for i := 0; i+1 < len(account.Content); i += 2 {
+			key := account.Content[i].Value
+			seen[key] = true
+			if key == "url" {
+				url = account.Content[i+1].Value
+			}
+			if !accountFields[key] {
+				errors = append(errors, ValidationError{
+					ContactName: name, Platform: platform,
+					Message: fmt.Sprintf("Unknown account field %q (want url, verified or confidence). "+
+						"A misspelt `verified` decodes as false and silently stops the account being posted.", key),
+				})
+			}
+		}
+		if !seen["verified"] {
+			errors = append(errors, ValidationError{
+				ContactName: name, Platform: platform, URL: url,
+				Message: "Account does not say whether it may be published. Add `verified: true` " +
+					"(a human confirmed this account) or `verified: false` (a candidate, never posted).",
+			})
+		}
+	})
+	return errors
+}
+
+// forEachAccount visits every account node under every contact's platform keys.
+func forEachAccount(root *yaml.Node, visit func(name, platform string, account *yaml.Node)) {
+	doc := root.Content[0]
+	for i := 0; i+1 < len(doc.Content); i += 2 {
+		if doc.Content[i].Value != "contacts" {
+			continue
+		}
+		for _, contact := range doc.Content[i+1].Content {
+			name := ""
+			for j := 0; j+1 < len(contact.Content); j += 2 {
+				if contact.Content[j].Value == "name" {
+					name = contact.Content[j+1].Value
+				}
+			}
+			for j := 0; j+1 < len(contact.Content); j += 2 {
+				platform := contact.Content[j].Value
+				if !supportedPlatforms[platform] {
+					continue
+				}
+				for _, account := range contact.Content[j+1].Content {
+					visit(name, platform, account)
+				}
+			}
+		}
+	}
+}
+
 func validateContactPlatforms(contact Contact) []ValidationError {
 	var errors []ValidationError
 
-	// Check each platform
-	platforms := map[string][]string{
-		"x":         contact.X,
-		"facebook":  contact.Facebook,
-		"instagram": contact.Instagram,
-		"linkedin":  contact.LinkedIn,
-		"bluesky":   contact.Bluesky,
-		"tiktok":    contact.TikTok,
-	}
-
-	for platform, urls := range platforms {
-		// Validate platform is supported
+	for _, platform := range contacts.Platforms {
 		if !supportedPlatforms[platform] {
 			errors = append(errors, ValidationError{
 				ContactName: contact.Name,
@@ -237,29 +319,38 @@ func validateContactPlatforms(contact Contact) []ValidationError {
 			continue
 		}
 
-		// Validate each URL
-		for _, urlStr := range urls {
-			if err := validateURL(urlStr, platform); err != nil {
+		for _, account := range contact.Accounts(platform) {
+			if err := validateURL(account.URL, platform); err != nil {
 				errors = append(errors, ValidationError{
 					ContactName: contact.Name,
 					Platform:    platform,
-					URL:         urlStr,
+					URL:         account.URL,
 					Message:     err.Error(),
+				})
+			}
+			if c := account.Confidence; c != "" && !validConfidence[strings.ToLower(c)] {
+				errors = append(errors, ValidationError{
+					ContactName: contact.Name,
+					Platform:    platform,
+					URL:         account.URL,
+					Message: fmt.Sprintf("Unknown confidence %q (want high, medium or low). "+
+						"Confidence records how well a search result matched the person; "+
+						"it is not evidence of identity.", c),
+				})
+			}
+			// A verified account has been confirmed by a human, so the score
+			// that once ranked it as a guess is spent. Leaving it behind reads
+			// as though the confirmation were itself only likely.
+			if account.Verified && account.Confidence != "" {
+				errors = append(errors, ValidationError{
+					ContactName: contact.Name,
+					Platform:    platform,
+					URL:         account.URL,
+					Message:     "Verified accounts must not keep a confidence score — drop it once you have confirmed the account.",
 				})
 			}
 		}
 	}
-
-	// Check if contact has at least one platform (warn if empty, but don't error)
-	hasAnyPlatform := false
-	for _, urls := range platforms {
-		if len(urls) > 0 {
-			hasAnyPlatform = true
-			break
-		}
-	}
-	// Note: hasAnyPlatform is computed but not currently used for validation
-	_ = hasAnyPlatform
 
 	return errors
 }
@@ -386,7 +477,7 @@ func checkPlatformOrderInFile(filepath string, contactName string, skipOrderChec
 		if platformsInFile[i] != sortedPlatforms[i] {
 			return &ValidationError{
 				ContactName: contactName,
-				Message:     "Platforms are not in alphabetical order. Run with -sort flag to fix: go run cmd/validate_contacts/main.go -sort data/zurich-city/contacts.yaml",
+				Message:     "Platforms are not in alphabetical order. Run with -sort flag to fix: " + sortHint(filepath),
 			}
 		}
 	}

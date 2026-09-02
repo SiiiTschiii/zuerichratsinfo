@@ -34,10 +34,10 @@ Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei D
 
 ## Covered Bodies
 
-| Body                         | Data source                                                              | Status  | Tagging                 |
-| ---------------------------- | ------------------------------------------------------------------------ | ------- | ----------------------- |
-| **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 132 curated contacts |
-| **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live | ❌ Not yet curated      |
+| Body                         | Data source                                                              | Status  | Tagging                       |
+| ---------------------------- | ------------------------------------------------------------------------ | ------- | ----------------------------- |
+| **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 137 verified contacts      |
+| **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live | 🟡 282 candidates, 0 verified |
 
 Both bodies post to the same accounts. Every post names which chamber voted, in
 the text and on the image, so the two are never confused.
@@ -46,19 +46,26 @@ the text and on the image, so the two are never confused.
 
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
-| LinkedIn    | ❌ Planned | 108                                 | -                                                                                    |
-| Facebook    | ❌ Planned | 83                                  | -                                                                                    |
-| Instagram   | ✅ Active  | 91                                  | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
-| X (Twitter) | ✅ Active  | 59                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
-| Bluesky     | ✅ Active  | 28                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
-| TikTok      | ❌ Planned | 18                                  | -                                                                                    |
+| LinkedIn    | ❌ Planned | 111 | -                                                                                    |
+| Facebook    | ❌ Planned | 86 | -                                                                                    |
+| Instagram   | ✅ Active  | 96 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
+| X (Twitter) | ✅ Active  | 64 | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| Bluesky     | ✅ Active  | 28 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
+| TikTok      | ❌ Planned | 18 | -                                                                                    |
 
 _"Politicians with a verified account" is how many Gemeinderat and Stadtrat members
-(9 of them Stadträte) we have manually identified and verified as being active on
-that platform, so that they can be tagged in a post, out of the 132 politicians
-curated in [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml).
-Platforms are sorted by coverage. Kantonsrat members are not yet curated and so are
-not counted here._
+(9 of them Stadträte) we have identified as being active on that platform, so that
+they can be tagged in a post, out of the 137 politicians curated in
+[data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml). Most were found
+and checked by hand; the rest are the accounts the city publishes itself, imported
+from PARIS. Platforms are sorted by coverage. Only **verified** accounts count, and only
+verified accounts are ever posted: an account carries `verified: true` once a
+human has opened it and confirmed it belongs to the person named beside it.
+[data/zurich-canton/contacts.yaml](data/zurich-canton/contacts.yaml) also holds
+282 unverified candidates from a name search across all 180 Kantonsrat members —
+they are leads, they are marked as such, and the tagger cannot see them. A
+member with no verified handle is fine: the post names them without tagging
+them._
 
 ## What It Does
 

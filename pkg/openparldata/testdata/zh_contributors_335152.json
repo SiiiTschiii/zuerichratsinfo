@@ -1,0 +1,6 @@
+{
+ "data": [
+  {"type": "group", "role_harmonized": "author", "role_de": null, "fullname": "Obergericht des Kantons Zürich", "party_de": null, "position": 1}
+ ],
+ "meta": {"offset": 0, "limit": 100, "total_records": 1, "has_more": false}
+}

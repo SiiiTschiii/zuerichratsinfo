@@ -79,9 +79,15 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group)))
 
-	// The label line: what kind of business this is, plus the
+	// The label line: what kind of business this is, who filed it, plus the
 	// Abstimmungsgegenstand when a lone vote makes that meaningful.
+	//
+	// Tagged like the title, and for a body whose titles carry no names — Kanton
+	// Zürich's never do — this is the only line that names anyone at all.
 	if prefix := voteformat.GroupPrefixLine(group); prefix != "" {
+		if contactMapper != nil {
+			prefix = contactMapper.TagInstagramHandlesInText(prefix)
+		}
 		sb.WriteString(prefix)
 		sb.WriteString("\n")
 	}

@@ -1,0 +1,12 @@
+{
+ "data": [
+  {"id": 17436, "fullname": "Patrick Walder", "active": true, "party_de": "SVP", "parliamentary_group_name_de": "SVP-Fraktion", "website_parliament_url_de": "https://www.kantonsrat.zh.ch/mitglieder/mitglied/?id=02fc6474f15a41ebb42a949aad46f620"},
+  {"id": 17447, "fullname": "Hans Egli", "active": true, "party_de": "EDU", "parliamentary_group_name_de": "Fraktion SVP", "website_parliament_url_de": "https://www.kantonsrat.zh.ch/mitglieder/mitglied/?id=0838a770cc28429fbed1ad3565082c30"},
+  {"id": 17578, "fullname": "Gianna Berger", "active": true, "party_de": "AL", "parliamentary_group_name_de": "Fraktion AL", "website_parliament_url_de": "https://www.kantonsrat.zh.ch/mitglieder/mitglied/?id=45af919f2eec41a5bb5eb60da0d1a4c7"},
+  {"id": 17853, "fullname": "Daniela Sun-Güller", "active": true, "party_de": "GLP", "parliamentary_group_name_de": "Fraktion Grünliberale", "website_parliament_url_de": "https://www.kantonsrat.zh.ch/mitglieder/mitglied/?id=c118f559e5b744f086507cc7d4b43e92"},
+  {"id": 17638, "fullname": "Carmen Marty Fässler", "active": true, "party_de": "SP", "parliamentary_group_name_de": "Fraktion SP", "website_parliament_url_de": "https://www.kantonsrat.zh.ch/mitglieder/mitglied/?id=62b7d5d765904ed99f71c939a6b3f618"},
+  {"id": 17870, "fullname": "Jürg Trachsel", "active": false, "party_de": "SVP", "parliamentary_group_name_de": null, "website_parliament_url_de": "https://www.kantonsrat.zh.ch/mitglieder/mitglied/?id=01a43cc7b942457281d73d4ff5b69f62"},
+  {"id": 21593, "fullname": "Gregor Rutz", "active": true, "party_de": "SVP", "parliamentary_group_name_de": "Fraktion V", "website_parliament_url_de": "https://www.parlament.ch/de/biografie/gregor-rutz/4125"}
+ ],
+ "meta": {"offset": 0, "limit": 500, "total_records": 7, "has_more": false}
+}

@@ -71,6 +71,14 @@ func IsDecisionConsistent(decision string, ja, nein *int) bool {
 // follows a verdict on single-vote posts: folding it in produced "✅ Angenommen:
 // Vorlage: Rahmenkredit …", two colons deep before the subject appears.
 //
+// It also names who filed the business, when the source says. That is the other
+// half of what a vote means, and Stadt Zürich already has it: PARIS writes the
+// submitters into the title, so a city post reads "Postulat von Ivo Bieri (SP)
+// und …" without this line doing anything. Kanton Zürich serves the same fact
+// separately and leaves its titles a bare subject, so the names are put back
+// here — which is also what lets the tagger find them, since it matches names
+// in the text of a post and cannot tag what the post never says.
+//
 // Bodies whose source reports no business type are unaffected — Stadt Zürich's
 // PARIS adapter never fills Affair.Type, so its posts keep exactly the line they
 // had.
@@ -80,6 +88,15 @@ func GroupPrefixLine(group []votes.Vote) string {
 	}
 
 	prefix := strings.TrimSpace(group[0].Affair.Type)
+
+	// Only alongside the type, which is where the "von" attaches: the two
+	// arrive from the same call, and "von Marc Bourgeois (FDP)" standing on its
+	// own would read as a sentence with its subject missing.
+	if prefix != "" {
+		if authors := AuthorList(group[0].Affair.Authors, 0); authors != "" {
+			prefix += " von " + authors
+		}
+	}
 
 	// The Abstimmungsgegenstand identifies a question within the business, which
 	// is meaningless when several votes share the post; the per-vote headings
@@ -99,6 +116,135 @@ func GroupPrefixLine(group []votes.Vote) string {
 		}
 	}
 	return prefix
+}
+
+// AuthorList renders who filed a business as German prose: "Nadia Koch (GLP)",
+// or "Marc Bourgeois (FDP) und Tobias Weidmann (SVP)" for several.
+//
+// The party in brackets is the same shape Stadt Zürich's titles already use, so
+// one account posting for two chambers reads as one voice.
+//
+// max caps how many are named, appending "u. a." for the rest; 0 names all,
+// which is what every text post does. The cap exists for the vote card, where
+// the type is set in a fixed column and shrinking the font is preferred to
+// dropping names — see imagegen.cardPrefix. Cutting the author list is the last
+// thing tried there, and never done anywhere else.
+func AuthorList(authors []votes.Author, max int) string {
+	names := make([]string, 0, len(authors))
+	for _, a := range authors {
+		name := strings.TrimSpace(a.Name)
+		if name == "" {
+			continue
+		}
+		if party := strings.TrimSpace(a.Party); party != "" {
+			name += " (" + party + ")"
+		}
+		names = append(names, name)
+	}
+
+	more := ""
+	if max > 0 && len(names) > max {
+		names, more = names[:max], " u. a."
+	}
+
+	switch len(names) {
+	case 0:
+		return ""
+	case 1:
+		return names[0] + more
+	default:
+		return strings.Join(names[:len(names)-1], ", ") + " und " + names[len(names)-1] + more
+	}
+}
+
+// GroupPrefixLineCapped is GroupPrefixLine with at most max authors named.
+//
+// Only the vote card uses it, and only after the font ladder has run out: the
+// subject of the vote is what a reader cannot do without, so it is the last
+// thing to give way.
+func GroupPrefixLineCapped(group []votes.Vote, max int) string {
+	if len(group) == 0 {
+		return ""
+	}
+	capped := make([]votes.Vote, len(group))
+	copy(capped, group)
+	full := AuthorList(capped[0].Affair.Authors, 0)
+	short := AuthorList(capped[0].Affair.Authors, max)
+	line := GroupPrefixLine(capped)
+	if full == "" || full == short {
+		return line
+	}
+	return strings.Replace(line, "von "+full, "von "+short, 1)
+}
+
+// FitAuthorPrefix returns the label line that fits the space a post has left,
+// and the signatories it could not fit.
+//
+// The title is never what gives way. A reader who loses the subject of the vote
+// has lost the post; a reader who finds three of five names in the next post of
+// the thread has lost nothing. So names are shed from the end until the line
+// fits, and the ones shed come back in their own block — see SignatoryLine.
+//
+// available is the space left for this line after the header, the title and
+// whatever the platform appends; measure is the platform's own length function,
+// because X counts weighted runes and Bluesky counts graphemes.
+func FitAuthorPrefix(group []votes.Vote, available int, measure func(string) int) (string, []votes.Author) {
+	if len(group) == 0 {
+		return "", nil
+	}
+	authors := group[0].Affair.Authors
+
+	full := GroupPrefixLine(group)
+	if len(authors) == 0 || measure(full) <= available {
+		return full, nil
+	}
+
+	for n := len(authors) - 1; n >= 1; n-- {
+		if line := GroupPrefixLineCapped(group, n); measure(line) <= available {
+			return line, authors[n:]
+		}
+	}
+
+	// Not even one name fits beside this title. The type still labels the
+	// business, and every signatory moves to the block below.
+	return prefixWithoutAuthors(group), authors
+}
+
+// prefixWithoutAuthors is the label line with the authorship removed.
+func prefixWithoutAuthors(group []votes.Vote) string {
+	bare := make([]votes.Vote, len(group))
+	copy(bare, group)
+	bare[0].Affair.Authors = nil
+	return GroupPrefixLine(bare)
+}
+
+// SignatoryLine names the members a post could not fit beside its title.
+//
+// "Weitere Unterzeichnende" rather than "Mitunterzeichnende" because the split
+// is made on length, not on role: the first signatory is named first and is
+// almost always the one that fits, but nothing guarantees the boundary falls
+// exactly there, and a label that is only usually right is worse than one that
+// is always right.
+func SignatoryLine(authors []votes.Author) string {
+	names := AuthorList(authors, 0)
+	if names == "" {
+		return ""
+	}
+	return "✍️ Weitere Unterzeichnende: " + names
+}
+
+// CountAuthors reports how many of an affair's signatories a post would name.
+func CountAuthors(group []votes.Vote) int {
+	if len(group) == 0 {
+		return 0
+	}
+	n := 0
+	for _, a := range group[0].Affair.Authors {
+		if strings.TrimSpace(a.Name) != "" {
+			n++
+		}
+	}
+	return n
 }
 
 // CleanVoteTitle removes newlines, extra whitespace, and Geschäft number from titles

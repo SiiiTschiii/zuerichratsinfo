@@ -1,319 +1,358 @@
-// Package main fetches contacts from Zurich API and merges them into contacts.yaml
-// Usage: go run cmd/update_contacts/main.go
+// Command update_contacts refreshes a jurisdiction's contacts.yaml from the
+// body's own roster.
 //
-// This script:
-// 1. Loads existing data/contacts.yaml
-// 2. Fetches contacts from Zurich API
-// 3. For each contact:
-//   - If new: add with all their accounts
-//   - If exists: merge accounts (warn on conflicts)
+//	go run ./cmd/update_contacts                              # zurich-city
+//	go run ./cmd/update_contacts -jurisdiction zurich-canton
+//	go run ./cmd/update_contacts -jurisdiction zurich-canton -dry-run
 //
-// 4. Saves updated contacts.yaml (append-only)
+// It is append-only by design. The file is a hand-curated mapping in which
+// every handle was verified by a human, and a roster that briefly drops someone
+// — a Nachrücken mid-processing, a source outage — must not be able to delete
+// that work. Members who have left are removed by hand, deliberately.
+//
+// Party and Fraktion are printed for the run's benefit and never written: the
+// parliament publishes them, so a second copy here could only go stale. See
+// votes.Member.
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"sort"
 	"strings"
-	"time"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 	"gopkg.in/yaml.v3"
 )
 
-type Contact struct {
-	Name      string   `yaml:"name"`
-	X         []string `yaml:"x,omitempty,flow"`
-	Facebook  []string `yaml:"facebook,omitempty,flow"`
-	Instagram []string `yaml:"instagram,omitempty,flow"`
-	LinkedIn  []string `yaml:"linkedin,omitempty,flow"`
-	Bluesky   []string `yaml:"bluesky,omitempty,flow"`
-}
-
-type ContactMapping struct {
-	Version  string    `yaml:"version"`
-	Contacts []Contact `yaml:"contacts"`
-}
-
-var contactsFile = contacts.PathFor("zurich-city")
+// The schema lives in pkg/contacts, so what this writes is what the bot reads.
+type (
+	Account        = contacts.Account
+	Contact        = contacts.Contact
+	ContactMapping = contacts.ContactMapping
+)
 
 func main() {
-	fmt.Println("📥 Fetching contacts from Zurich API...")
+	jurisdiction := flag.String("jurisdiction", "zurich-city",
+		"jurisdiction to refresh ("+strings.Join(config.JurisdictionKeys(), ", ")+")")
+	dryRun := flag.Bool("dry-run", false, "report what would change without writing the file")
+	flag.Parse()
 
-	// Step 1: Load existing contacts.yaml
-	existingContacts := loadExistingContacts()
-	fmt.Printf("📋 Loaded %d existing contacts\n", len(existingContacts))
+	j, err := config.LookupJurisdiction(*jurisdiction)
+	if err != nil {
+		log.Fatalf("❌ %v", err)
+	}
+	if j.NewMemberSource == nil {
+		log.Fatalf("❌ %s publishes no member roster", j.Key)
+	}
 
-	// Step 2: Fetch contacts from API
-	apiContacts := fetchContactsFromAPI()
-	fmt.Printf("🌐 Fetched %d contacts from API\n", len(apiContacts))
+	path := contacts.PathFor(j.Key)
 
-	// Step 3: Merge contacts
-	updated, added, warnings := mergeContacts(existingContacts, apiContacts)
+	existing, header, err := loadExisting(path)
+	if err != nil {
+		log.Fatalf("❌ %v", err)
+	}
+	fmt.Printf("📋 %s: %d existing contacts\n", path, len(existing))
 
-	// Step 4: Save updated contacts.yaml
-	saveContacts(updated)
+	fmt.Printf("📥 Fetching the %s roster...\n", j.Name)
+	members, err := j.NewMemberSource().FetchMembers()
+	if err != nil {
+		log.Fatalf("❌ failed to fetch roster: %v", err)
+	}
+	fmt.Printf("🌐 %d members\n", len(members))
 
-	// Summary
-	fmt.Println("\n✅ Update complete!")
-	fmt.Printf("   - Total contacts: %d\n", len(updated))
-	fmt.Printf("   - New contacts added: %d\n", added)
-	fmt.Printf("   - Warnings: %d\n", warnings)
+	merged, added, accounts := merge(existing, members)
+
+	fmt.Printf("\n✅ %d contacts total, %d new, %d accounts added\n", len(merged), added, accounts)
+	if *dryRun {
+		fmt.Println("🔍 Dry run — nothing written.")
+		return
+	}
+	if added == 0 && accounts == 0 {
+		fmt.Println("💤 Nothing to write.")
+		return
+	}
+	if err := save(path, header, merged); err != nil {
+		log.Fatalf("❌ %v", err)
+	}
+	fmt.Printf("💾 Saved to %s\n", path)
 }
 
-func loadExistingContacts() map[string]*Contact {
-	contacts := make(map[string]*Contact)
-
-	data, err := os.ReadFile(contactsFile)
+// loadExisting reads the curated file, returning the contacts by name and the
+// comment block above `version`.
+//
+// The header is carried through verbatim because it is the one part of the file
+// no tool can regenerate: it says why this jurisdiction's mapping looks the way
+// it does, and rewriting the file around it must not cost that.
+func loadExisting(path string) (map[string]*Contact, string, error) {
+	data, err := os.ReadFile(path)
+	if os.IsNotExist(err) {
+		fmt.Printf("⚠️  %s does not exist yet, creating it\n", path)
+		return map[string]*Contact{}, "", nil
+	}
 	if err != nil {
-		if os.IsNotExist(err) {
-			fmt.Println("⚠️  No existing contacts.yaml found, will create new one")
-			return contacts
-		}
-		log.Fatalf("Failed to read contacts file: %v", err)
+		return nil, "", fmt.Errorf("reading %s: %w", path, err)
 	}
 
 	var mapping ContactMapping
 	if err := yaml.Unmarshal(data, &mapping); err != nil {
-		log.Fatalf("Failed to parse contacts YAML: %v", err)
+		return nil, "", fmt.Errorf("parsing %s: %w", path, err)
 	}
 
+	byName := make(map[string]*Contact, len(mapping.Contacts))
 	for i := range mapping.Contacts {
-		contact := &mapping.Contacts[i]
-		contacts[contact.Name] = contact
+		c := &mapping.Contacts[i]
+		byName[contacts.NameKey(c.Name)] = c
 	}
-
-	return contacts
+	return byName, leadingComments(string(data)), nil
 }
 
-func fetchContactsFromAPI() []Contact {
-	client := zurichapi.NewClient()
-
-	apiContacts, err := client.FetchAllKontakte()
-	if err != nil {
-		log.Fatalf("Failed to fetch contacts: %v", err)
+// leadingComments returns the comment and blank lines that open a file.
+func leadingComments(content string) string {
+	var out []string
+	for _, line := range strings.Split(content, "\n") {
+		trimmed := strings.TrimSpace(line)
+		if trimmed != "" && !strings.HasPrefix(trimmed, "#") {
+			break
+		}
+		out = append(out, line)
 	}
-
-	var contacts []Contact
-	for _, apiContact := range apiContacts {
-		name := strings.ReplaceAll(apiContact.NameVorname, "\u00a0", " ")
-		name = strings.TrimSpace(name)
-		if name == "" {
-			continue
-		}
-
-		contact := Contact{Name: name}
-		hasAccount := false
-
-		for _, sm := range apiContact.SozialeMedien.Kommunikation {
-			url := strings.TrimSpace(sm.Adresse)
-			if url == "" {
-				continue
-			}
-
-			hasAccount = true
-			platform := strings.ToLower(strings.TrimSpace(sm.Typ))
-
-			switch platform {
-			case "x", "twitter":
-				// Normalize twitter.com to x.com
-				url = strings.ReplaceAll(url, "twitter.com", "x.com")
-				contact.X = append(contact.X, url)
-			case "facebook":
-				contact.Facebook = append(contact.Facebook, url)
-			case "instagram":
-				contact.Instagram = append(contact.Instagram, url)
-			case "linkedin":
-				contact.LinkedIn = append(contact.LinkedIn, url)
-			case "bluesky":
-				contact.Bluesky = append(contact.Bluesky, url)
-			}
-		}
-
-		// Only add contacts with at least one social media account
-		if hasAccount {
-			contacts = append(contacts, contact)
-		}
+	if len(out) == 0 {
+		return ""
 	}
-
-	return contacts
+	return strings.Join(out, "\n") + "\n"
 }
 
-func mergeContacts(existing map[string]*Contact, apiContacts []Contact) ([]Contact, int, int) {
-	added := 0
-	warnings := 0
+// merge folds the roster into the curated contacts, adding names that are new
+// and accounts that are not already recorded. It reports how many of each.
+//
+// existing is keyed by contacts.NameKey rather than by name.
+func merge(existing map[string]*Contact, members []votes.Member) ([]Contact, int, int) {
+	added, accounts := 0, 0
 
-	for _, apiContact := range apiContacts {
-		existingContact, exists := existing[apiContact.Name]
+	for _, m := range members {
+		// Keyed on the person, not on the spelling: the curated file and the
+		// source disagree on the order of the name parts often enough that
+		// matching the string added a second entry for someone already in it.
+		key := contacts.NameKey(m.Name)
 
-		if !exists {
-			// New contact - add it
-			existing[apiContact.Name] = &apiContact
+		c, ok := existing[key]
+		if !ok {
+			c = &Contact{Name: m.Name}
+			existing[key] = c
 			added++
-			fmt.Printf("➕ New: %s\n", apiContact.Name)
-			continue
+			fmt.Printf("➕ %s%s\n", m.Name, affiliation(m))
 		}
-
-		// Contact exists - merge accounts
-		merged := mergeAccounts(existingContact, &apiContact)
-		warnings += merged
+		accounts += addAccounts(c, m.Accounts)
 	}
 
-	// Convert map back to slice and sort alphabetically by name
-	result := make([]Contact, 0, len(existing))
-	for _, contact := range existing {
-		result = append(result, *contact)
+	out := make([]Contact, 0, len(existing))
+	for _, c := range existing {
+		out = append(out, *c)
 	}
-
-	// Sort by name for consistent output
-	sort.Slice(result, func(i, j int) bool {
-		return result[i].Name < result[j].Name
+	// The same comparator cmd/validate_contacts enforces on the file.
+	sort.Slice(out, func(i, j int) bool {
+		return strings.ToLower(out[i].Name) < strings.ToLower(out[j].Name)
 	})
-
-	return result, added, warnings
+	return out, added, accounts
 }
 
-func mergeAccounts(existing, new *Contact) int {
-	warnings := 0
+// addAccounts records the accounts the body itself publishes, keeping anything
+// already in the file. A handle that differs from the one on record is added
+// beside it rather than replacing it: both may be real, and deciding that is a
+// human's call.
+func addAccounts(c *Contact, published []votes.Account) int {
+	added := 0
 
-	// Helper function to merge a platform's accounts
-	mergePlatform := func(platformName, emoji string, existingAccounts, newAccounts *[]string) {
-		for _, newAccount := range *newAccounts {
-			found := false
-			for _, existingAccount := range *existingAccounts {
-				if existingAccount == newAccount {
-					found = true
-					break
-				}
-			}
-
-			if !found {
-				// Check if it might be a conflicting account (same platform, different URL)
-				if len(*existingAccounts) > 0 {
-					// We have existing accounts but this is a new one - could be additional or conflict
-					// For now, treat as additional account
-					*existingAccounts = append(*existingAccounts, newAccount)
-					fmt.Printf("   %s Added additional %s for %s: %s\n", emoji, platformName, existing.Name, newAccount)
-				} else {
-					// First account for this platform
-					*existingAccounts = append(*existingAccounts, newAccount)
-					fmt.Printf("   %s Added %s for %s: %s\n", emoji, platformName, existing.Name, newAccount)
-				}
-			}
-		}
-	}
-
-	// Merge each platform
-	mergePlatform("X", "📱", &existing.X, &new.X)
-	mergePlatform("Facebook", "📘", &existing.Facebook, &new.Facebook)
-	mergePlatform("Instagram", "📷", &existing.Instagram, &new.Instagram)
-	mergePlatform("LinkedIn", "💼", &existing.LinkedIn, &new.LinkedIn)
-	mergePlatform("Bluesky", "🦋", &existing.Bluesky, &new.Bluesky)
-
-	return warnings
-}
-
-func saveContacts(contacts []Contact) {
-	mapping := ContactMapping{
-		Version:  "1.0",
-		Contacts: contacts,
-	}
-
-	// Marshal to YAML
-	yamlData, err := yaml.Marshal(&mapping)
-	if err != nil {
-		log.Fatalf("Failed to marshal YAML: %v", err)
-	}
-
-	// Convert to VS Code-compatible formatting (2 spaces, dash at list level)
-	formattedYAML := formatYAMLForVSCode(string(yamlData))
-
-	// Build output with header
-	output := "# Contact to Social Media Mapping\n"
-	output += "# This file maps names of politicians to their social media accounts\n"
-	output += fmt.Sprintf("# Last updated: %s\n\n", time.Now().Format("2006-01-02"))
-	output += formattedYAML
-
-	if err := os.WriteFile(contactsFile, []byte(output), 0644); err != nil {
-		log.Fatalf("Failed to write contacts file: %v", err)
-	}
-
-	fmt.Printf("\n💾 Saved to %s\n", contactsFile)
-}
-
-// formatYAMLForVSCode converts Go YAML style to VS Code style
-// Go marshaler uses: 4 spaces for list items, 6 spaces for fields
-// VS Code wants: 2 spaces for list items, 4 spaces for fields
-// Also adds blank lines between contacts for better readability
-func formatYAMLForVSCode(yamlContent string) string {
-	lines := strings.Split(yamlContent, "\n")
-	var result []string
-	var previousWasContact bool
-
-	for _, line := range lines {
-		if len(line) == 0 {
-			result = append(result, line)
+	for _, a := range published {
+		field := platformField(c, a.Platform)
+		if field == nil {
 			continue
 		}
+		url := stripTracking(a.URL)
 
-		// Count leading spaces
-		leadingSpaces := 0
-		for _, ch := range line {
-			if ch == ' ' {
-				leadingSpaces++
-			} else {
-				break
+		// The same account may already be on file as a candidate. The
+		// parliament publishing it is the confirmation that candidate was
+		// waiting for, so promote it rather than skipping past it — otherwise a
+		// harvested guess permanently shadows the authoritative record.
+		if promoted, found := promote(*field, url); found {
+			if promoted {
+				added++
+				fmt.Printf("   ✅ %s: %s confirmed by %s\n", c.Name, a.Platform, url)
 			}
+			continue
 		}
-
-		// Convert indentation based on the pattern
-		if leadingSpaces > 0 {
-			var newSpaces int
-			content := strings.TrimLeft(line, " ")
-
-			// List item line (starts with -)
-			if strings.HasPrefix(content, "- ") {
-				// 4 spaces → 2 spaces, 8 spaces → 4 spaces, etc.
-				newSpaces = leadingSpaces / 2
-
-				// Add blank line before each contact (except the first one)
-				if strings.HasPrefix(content, "- name:") && previousWasContact {
-					result = append(result, "")
-				}
-				previousWasContact = strings.HasPrefix(content, "- name:")
-			} else {
-				// Field line (has a colon)
-				// 6 spaces → 4 spaces, 10 spaces → 6 spaces, etc.
-				// Pattern: subtract 2 from original
-				newSpaces = leadingSpaces - 2
-			}
-
-			line = strings.Repeat(" ", newSpaces) + content
-		}
-
-		// Convert single quotes to double quotes for consistency
-		line = strings.ReplaceAll(line, "['", "[\"")
-		line = strings.ReplaceAll(line, "']", "\"]")
-		line = strings.ReplaceAll(line, "', '", "\", \"")
-
-		// Add quotes around name values to avoid whitespace issues
-		if strings.Contains(line, "name: ") {
-			// Extract name value (everything after "name: ")
-			parts := strings.SplitN(line, "name: ", 2)
-			if len(parts) == 2 {
-				nameValue := strings.TrimSpace(parts[1])
-				// Only add quotes if not already quoted
-				if !strings.HasPrefix(nameValue, "\"") && nameValue != "" {
-					line = parts[0] + "name: \"" + nameValue + "\""
-				}
-			}
-		}
-
-		result = append(result, line)
+		// Verified on arrival: these are the accounts the parliament publishes
+		// for its own members, which is a stronger claim than any search result
+		// and the same one the file has always recorded for them.
+		*field = append(*field, Account{URL: url, Verified: true})
+		added++
+		fmt.Printf("   🔗 %s: %s %s\n", c.Name, a.Platform, url)
 	}
 
-	return strings.Join(result, "\n")
+	return added
+}
+
+// platformField addresses the slice a platform's accounts live in, or nil for a
+// platform the schema has no column for.
+func platformField(c *Contact, platform string) *[]Account {
+	switch platform {
+	case "bluesky":
+		return &c.Bluesky
+	case "facebook":
+		return &c.Facebook
+	case "instagram":
+		return &c.Instagram
+	case "linkedin":
+		return &c.LinkedIn
+	case "tiktok":
+		return &c.TikTok
+	case "x":
+		return &c.X
+	default:
+		return nil
+	}
+}
+
+// recorded reports whether the file already has this account, comparing what
+// the URLs point at rather than how they are spelled.
+// promote marks an account already on file as verified, reporting whether it
+// changed anything and whether the account was there at all.
+//
+// A confirmation is a fact about the account: once the body publishes it, the
+// confidence score that ranked it as a guess is spent and comes off with it.
+func promote(existing []Account, candidate string) (changed, found bool) {
+	key := accountKey(candidate)
+	for i, have := range existing {
+		if accountKey(have.URL) != key {
+			continue
+		}
+		if existing[i].Verified {
+			return false, true
+		}
+		existing[i].Verified = true
+		existing[i].Confidence = ""
+		return true, true
+	}
+	return false, false
+}
+
+// accountKey identifies the account a URL points at, for comparison only —
+// nothing is ever stored in this form.
+//
+// The curated file and PARIS write the same account differently in every way a
+// URL can vary without changing: "facebook.com/attila.kipfer" against
+// "www.facebook.com/attila.kipfer", "linkedin.com/in/alana-gerdes" against the
+// same with a trailing slash. Each of those spellings, compared literally, adds
+// a second copy of an account already on file — and then a third on the next
+// refresh, because the copy never matches either.
+func accountKey(raw string) string {
+	u, err := url.Parse(strings.TrimSpace(stripTracking(raw)))
+	if err != nil {
+		return strings.ToLower(strings.TrimSpace(raw))
+	}
+
+	host := strings.ToLower(u.Hostname())
+	host = strings.TrimPrefix(host, "www.")
+	host = strings.TrimPrefix(host, "m.")
+	// Bluesky's CDN host serves the same profile as the canonical one.
+	host = strings.TrimPrefix(host, "web-cdn.")
+	// Country subdomains address the same profile: ch.linkedin.com and
+	// linkedin.com differ only in which office serves the page.
+	if i := strings.Index(host, ".linkedin.com"); i > 0 {
+		host = "linkedin.com"
+	}
+
+	path := strings.TrimSuffix(strings.ToLower(u.EscapedPath()), "/")
+
+	key := host + path
+	if q := u.Query().Encode(); q != "" {
+		key += "?" + strings.ToLower(q)
+	}
+	return key
+}
+
+// trackingParams are query parameters that say how a link was shared or in
+// which language it was opened, rather than which account it points at.
+//
+// They have to go, because accounts are deduplicated by URL and PARIS serves
+// the same account under several spellings: "instagram.com/perparim.avdili/"
+// against the "…/?hl=de" already on file, "…?igsh=<token>" for a link someone
+// copied out of the app. Kept, each refresh would record another copy of an
+// account already there.
+//
+// It is a list of things to drop rather than a rule to drop every query,
+// because some of these URLs are nothing without theirs: a Facebook profile is
+// identified by "profile.php?id=100070693802425".
+var trackingParams = map[string]bool{
+	"hl":                true, // interface language
+	"locale":            true, // interface language
+	"originalSubdomain": true, // LinkedIn's country hint
+	"igsh":              true, // Instagram share token
+	"si":                true, // share token
+	"fbclid":            true, // click id
+}
+
+// stripTracking removes those parameters and leaves everything else alone. A
+// URL that will not parse comes back as it went in: this is tidying, and not
+// worth failing a refresh over.
+func stripTracking(raw string) string {
+	u, err := url.Parse(strings.TrimSpace(raw))
+	if err != nil {
+		return raw
+	}
+
+	q := u.Query()
+	for key := range q {
+		if trackingParams[key] || strings.HasPrefix(key, "utm_") {
+			q.Del(key)
+		}
+	}
+	u.RawQuery = q.Encode()
+
+	return strings.TrimSuffix(u.String(), "?")
+}
+
+// affiliation renders a member's party and Fraktion for the run's output, so a
+// name arriving in the file can be recognised without a second lookup.
+func affiliation(m votes.Member) string {
+	switch {
+	case m.Party == "" && m.Fraktion == "":
+		return ""
+	case m.Fraktion == "" || m.Fraktion == m.Party:
+		return " (" + m.Party + ")"
+	case m.Party == "":
+		return " (Fraktion " + m.Fraktion + ")"
+	default:
+		return " (" + m.Party + ", Fraktion " + m.Fraktion + ")"
+	}
+}
+
+// save writes the mapping back, preserving the file's own header.
+//
+// The two-space indent is not cosmetic: it is the shape the curated files are
+// already in, and the default four would rewrite every line of a 900-line file
+// the first time this runs, burying the actual change.
+func save(path, header string, cs []Contact) error {
+	var sb strings.Builder
+	sb.WriteString(header)
+
+	enc := yaml.NewEncoder(&sb)
+	enc.SetIndent(2)
+	if err := enc.Encode(ContactMapping{Version: "1.0", Contacts: cs}); err != nil {
+		return fmt.Errorf("marshalling contacts: %w", err)
+	}
+	if err := enc.Close(); err != nil {
+		return fmt.Errorf("marshalling contacts: %w", err)
+	}
+
+	if err := os.WriteFile(path, []byte(sb.String()), 0o644); err != nil {
+		return fmt.Errorf("writing %s: %w", path, err)
+	}
+	return nil
 }

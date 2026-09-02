@@ -46,6 +46,10 @@ type Client struct {
 	// page and a DetailSource needs the original to identify the vote.
 	sourceURLs map[string]string
 
+	// authors caches an affair's first signatories, which enrichment would
+	// otherwise ask for once per vote in a group. See Client.authorsOf.
+	authors map[int64][]votes.Author
+
 	// details optionally supplies the vote type and outcome this API omits.
 	// Nil for every body that has no such source, which is all but one.
 	details DetailSource
@@ -92,6 +96,7 @@ func New(jurisdiction votes.Jurisdiction, bodyKey string) *Client {
 		retryDelay:   time.Second,
 		votingIDs:    make(map[string]int64),
 		sourceURLs:   make(map[string]string),
+		authors:      make(map[int64][]votes.Author),
 	}
 }
 

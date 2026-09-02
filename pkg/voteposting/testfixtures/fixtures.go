@@ -693,6 +693,143 @@ func KantonsratDecisionReported() []votes.Vote {
 	return group
 }
 
+// KantonsratMemberBusiness is the real 31.08.2026 vote on Postulat 367/2025,
+// filed by Tobias Weidmann (SVP).
+//
+// It is the case the canton has and the city does not: business put forward by
+// members, whose names appear nowhere in the title. Stadt Zürich's titles carry
+// their submitters — "Postulat von Reto Brüesch (SVP) und …" — while Kanton
+// Zürich's are bare subject lines and the authorship arrives separately, from
+// the affair's contributor list.
+//
+// So this is what proves the two chambers read alike, and that the mapping does
+// anything at all for the canton: a post that names nobody tags nobody, however
+// well curated the file is. Roughly a third of recent cantonal business has
+// named authors; the rest comes from the Regierungsrat or a committee and
+// renders exactly as the other cantonal fixtures do.
+func KantonsratMemberBusiness() []votes.Vote {
+	const title = "Verbindliche Richtlinien – keine Smartphones an Volksschulen"
+
+	v := votes.Vote{
+		SourceID:     "FBA39D0F-37F4-9741-5EFE-D6F42E280FC4",
+		Jurisdiction: "zurich-canton",
+		Body:         "Kantonsrat ZH",
+		Date:         time.Date(2026, 8, 31, 10, 21, 8, 0, time.UTC),
+		Sequence:     "1788171668",
+		Title:        title,
+		Type:         "Normal",
+		Decision:     "",
+		Yes:          intPtr(92),
+		No:           intPtr(82),
+		Abstention:   intPtr(2),
+		Absent:       intPtr(4),
+		SourceURL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1",
+		GroupURL:     "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1",
+		Attribution:  "Source: OpenParlData.ch",
+		Affair: votes.Affair{
+			Number: "367/2025",
+			Title:  title,
+			ID:     "284945",
+			URL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1",
+			Type:   "Postulat",
+			// One first signatory, which is what the canton's record almost
+			// always has: the two co-signatories are not named, and the
+			// Direktion the business was assigned to is not an author.
+			Authors: []votes.Author{{Name: "Tobias Weidmann", Party: "SVP"}},
+		},
+	}
+
+	// Spelled out rather than spread mechanically, because a post whose author
+	// is named needs the table beside it to be readable as the same event: a
+	// Postulat filed by an SVP member and carried by the bourgeois factions.
+	v.MemberVotes = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SVP", 46, 0, 0, 1},
+		{"SP", 0, 35, 0, 1},
+		{"FDP", 29, 0, 0, 1},
+		{"Grünliberale", 0, 23, 0, 0},
+		{"Grüne", 0, 19, 0, 0},
+		{"Die Mitte", 10, 0, 1, 1},
+		{"EVP", 6, 0, 1, 0},
+		{"AL", 0, 5, 0, 0},
+	})
+	// The unattached member, as in KantonsratVote: about 1% of the chamber.
+	v.MemberVotes = append(v.MemberVotes, votes.MemberVote{Name: "Fraktionslos", Choice: "Ja"})
+
+	return []votes.Vote{v}
+}
+
+// KantonsratCoSignedBusiness is the real 08.06.2026 vote on Postulat 377/2020,
+// filed by Hannah Pfalzgraf (SP) and co-signed across four other parties.
+//
+// It is the shape that decides how much of a signatory list a post can carry.
+// One name says who filed it; all five say the thing the lead name hides, that
+// a Postulat on LGBTI equality was carried into the chamber by SP, Die Mitte,
+// GLP, Grüne and AL together. Text posts name all five. The card names as many
+// as its column holds and drops from the end only when the font ladder has run
+// out, because the subject of the vote is what a reader cannot do without.
+//
+// Five is the long end of normal: recent cantonal business runs one to five
+// signatories, and this is the only fixture where naming everyone costs the
+// 280-character X root its full title.
+func KantonsratCoSignedBusiness() []votes.Vote {
+	const title = "Gleichstellung von LGBTI-Menschen und Massnahmen gegen Hasskommunikation"
+
+	v := votes.Vote{
+		SourceID:     "08E65A77-2230-1903-47C7-3295F674EF43",
+		Jurisdiction: "zurich-canton",
+		Body:         "Kantonsrat ZH",
+		Date:         time.Date(2026, 6, 8, 9, 15, 20, 0, time.UTC),
+		Sequence:     "1780909-520",
+		Title:        title,
+		Type:         "Normal",
+		Decision:     "",
+		Yes:          intPtr(99),
+		No:           intPtr(74),
+		Abstention:   intPtr(0),
+		Absent:       intPtr(7),
+		SourceURL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01",
+		GroupURL:     "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01",
+		Attribution:  "Source: OpenParlData.ch",
+		Affair: votes.Affair{
+			Number: "377/2020",
+			Title:  title,
+			ID:     "91231",
+			URL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01",
+			Type:   "Postulat",
+			// First signatory first, then the co-signatories in the order the
+			// parliament lists them. The Direktion the business was assigned to
+			// is on the same contributor list and is not an author.
+			Authors: []votes.Author{
+				{Name: "Hannah Pfalzgraf", Party: "SP"},
+				{Name: "Yvonne Bürgin", Party: "Die Mitte"},
+				{Name: "Andrea Gisler", Party: "GLP"},
+				{Name: "Silvia Rigoni", Party: "Grüne"},
+				{Name: "Judith Anna Stofer", Party: "AL"},
+			},
+		},
+	}
+
+	v.MemberVotes = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SVP", 0, 46, 0, 2},
+		{"SP", 36, 0, 0, 0},
+		{"FDP", 26, 0, 0, 4},
+		{"Grünliberale", 23, 0, 0, 0},
+		{"Grüne", 19, 0, 0, 0},
+		{"Die Mitte", 0, 11, 0, 1},
+		{"EVP", 0, 7, 0, 0},
+		{"AL", 5, 0, 0, 0},
+	})
+	v.MemberVotes = append(v.MemberVotes, votes.MemberVote{Name: "Fraktionslos", Choice: "Ja"})
+
+	return []votes.Vote{v}
+}
+
 // KantonsratLoneQuorumVote is a spending-brake vote standing on its own, which
 // is how they usually arrive: the 17.08.2026 Rahmenkredit Energiegesetz was a
 // single vote posted alone.
@@ -822,6 +959,8 @@ var FixtureNames = []string{
 	"kantonsrat-multi-vote",
 	"kantonsrat-lone-quorum-vote",
 	"kantonsrat-decision-reported",
+	"kantonsrat-member-business",
+	"kantonsrat-co-signed-business",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
@@ -844,5 +983,7 @@ func AllFixtures() map[string][]votes.Vote {
 		"kantonsrat-multi-vote":           KantonsratMultiVote(),
 		"kantonsrat-lone-quorum-vote":     KantonsratLoneQuorumVote(),
 		"kantonsrat-decision-reported":    KantonsratDecisionReported(),
+		"kantonsrat-member-business":      KantonsratMemberBusiness(),
+		"kantonsrat-co-signed-business":   KantonsratCoSignedBusiness(),
 	}
 }

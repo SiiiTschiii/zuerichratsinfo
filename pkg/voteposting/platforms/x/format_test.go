@@ -2,9 +2,12 @@ package x
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
@@ -554,5 +557,137 @@ func TestFormatVoteThread_SingleVoteSubtitlePrefix(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// A body whose titles carry no names — Kanton Zürich's never do — is named only
+// on the label line, so tagging the title alone would tag nobody.
+func TestFormatVoteThread_TagsAuthorsOnTheLabelLine(t *testing.T) {
+	group := testfixtures.KantonsratMemberBusiness()
+
+	contactsFile := filepath.Join(t.TempDir(), "contacts.yaml")
+	err := os.WriteFile(contactsFile, []byte(`version: "1.0"
+contacts:
+  - name: Tobias Weidmann
+    x:
+      - url: https://x.com/tobiasweidmann
+        verified: true
+`), 0o600)
+	if err != nil {
+		t.Fatalf("write contacts file: %v", err)
+	}
+
+	mapper, err := contacts.LoadContacts(contactsFile)
+	if err != nil {
+		t.Fatalf("load contacts: %v", err)
+	}
+
+	thread := FormatVoteThread(group, mapper, DefaultMaxChars)
+	if len(thread) == 0 {
+		t.Fatal("no posts")
+	}
+
+	if !strings.Contains(thread[0].Text, "Postulat von Tobias Weidmann @tobiasweidmann (SVP)") {
+		t.Errorf("the author on the label line was not tagged\n%s", thread[0].Text)
+	}
+}
+
+// The title is what a reader cannot do without, so a long signatory list must
+// never be the reason it gets cut. The names that do not fit move into the
+// thread instead.
+func TestFormatVoteThread_LongSignatoryListNeverTruncatesTheTitle(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+	title := group[0].Title
+
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
+	if len(thread) < 2 {
+		t.Fatalf("got %d posts, want a root and at least one reply", len(thread))
+	}
+
+	if !strings.Contains(thread[0].Text, title) {
+		t.Errorf("the title was cut to make room for names:\n%s", thread[0].Text)
+	}
+	if strings.Contains(thread[0].Text, "…") {
+		t.Errorf("root carries an ellipsis, so something was truncated:\n%s", thread[0].Text)
+	}
+	if weightedLen(thread[0].Text) > DefaultMaxChars {
+		t.Errorf("root is %d chars, over the %d limit", weightedLen(thread[0].Text), DefaultMaxChars)
+	}
+
+	// Everyone is still named across the thread.
+	all := allThreadText(thread)
+	for _, a := range group[0].Affair.Authors {
+		if !strings.Contains(all, a.Name) {
+			t.Errorf("%s is named nowhere in the thread", a.Name)
+		}
+	}
+	if !strings.Contains(all, "Weitere Unterzeichnende") {
+		t.Errorf("the shed signatories got no block of their own:\n%s", all)
+	}
+}
+
+// With room to spare every signatory is named in the root, and no separate
+// block is needed at all.
+func TestFormatVoteThread_PremiumRootNamesEverySignatory(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+
+	thread := FormatVoteThread(group, nil, 2000)
+
+	for _, a := range group[0].Affair.Authors {
+		if !strings.Contains(thread[0].Text, a.Name) {
+			t.Errorf("%s is missing from a root with room for them:\n%s", a.Name, thread[0].Text)
+		}
+	}
+	if strings.Contains(allThreadText(thread), "Weitere Unterzeichnende") {
+		t.Error("a signatory block was added even though the root held everyone")
+	}
+}
+
+// A single signatory is the ordinary case and must read as plain prose, with no
+// "u. a." and no extra block.
+func TestFormatVoteThread_SingleSignatory(t *testing.T) {
+	group := testfixtures.KantonsratMemberBusiness()
+
+	thread := FormatVoteThread(group, nil, DefaultMaxChars)
+
+	if !strings.Contains(thread[0].Text, "Postulat von Tobias Weidmann (SVP)") {
+		t.Errorf("want the lone signatory named plainly:\n%s", thread[0].Text)
+	}
+	all := allThreadText(thread)
+	if strings.Contains(all, "u. a.") || strings.Contains(all, "Weitere Unterzeichnende") {
+		t.Errorf("one signatory should need no overflow machinery:\n%s", all)
+	}
+}
+
+// A member shed from the root for length has done nothing to deserve losing
+// their tag. X finds no mentions on its own, so the signatory block has to be
+// tagged like the root's own line.
+func TestFormatVoteThread_TagsDeferredSignatories(t *testing.T) {
+	group := testfixtures.KantonsratCoSignedBusiness()
+
+	contactsFile := filepath.Join(t.TempDir(), "contacts.yaml")
+	err := os.WriteFile(contactsFile, []byte(`version: "1.0"
+contacts:
+  - name: Judith Anna Stofer
+    x:
+      - url: https://x.com/jastofer
+        verified: true
+`), 0o600)
+	if err != nil {
+		t.Fatalf("write contacts file: %v", err)
+	}
+	mapper, err := contacts.LoadContacts(contactsFile)
+	if err != nil {
+		t.Fatalf("load contacts: %v", err)
+	}
+
+	thread := FormatVoteThread(group, mapper, DefaultMaxChars)
+	all := allThreadText(thread)
+
+	if !strings.Contains(all, "Weitere Unterzeichnende") {
+		t.Fatalf("this fixture should shed at 280 chars:\n%s", all)
+	}
+	if !strings.Contains(all, "Judith Anna Stofer @jastofer") {
+		t.Errorf("a deferred signatory was named but not tagged:\n%s", all)
 	}
 }

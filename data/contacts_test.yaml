@@ -8,29 +8,53 @@ version: "1.0"
 contacts:
   - name: Anna Graff
     bluesky:
-      - https://bsky.app/profile/zri-testbot-7f3a.bsky.social
-    x:
-      - https://x.com/Z7f3a94241
+      - url: https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+        verified: true
     instagram:
-      - https://www.instagram.com/zueri835/
-  - name: Reto Brüesch
-    bluesky:
-      - https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+      - url: https://www.instagram.com/zueri835/
+        verified: true
     x:
-      - https://x.com/Z7f3a94241
-    instagram:
-      - https://www.instagram.com/zueri835/
-  - name: Max Müller
-    bluesky:
-      - https://bsky.app/profile/zri-testbot-7f3a.bsky.social
-    x:
-      - https://x.com/Z7f3a94241
-    instagram:
-      - https://www.instagram.com/zueri835/
+      - url: https://x.com/Z7f3a94241
+        verified: true
   - name: Liv Mahrer
     bluesky:
-      - https://bsky.app/profile/zri-testbot-7f3a.bsky.social
-    x:
-      - https://x.com/Z7f3a94241
+      - url: https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+        verified: true
     instagram:
-      - https://www.instagram.com/zueri835/
+      - url: https://www.instagram.com/zueri835/
+        verified: true
+    x:
+      - url: https://x.com/Z7f3a94241
+        verified: true
+  - name: Max Müller
+    bluesky:
+      - url: https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/zueri835/
+        verified: true
+  # A Kantonsrat member, so the cantonal fixture can show that a body whose
+  # titles carry no names still tags its authors.
+    x:
+      - url: https://x.com/Z7f3a94241
+        verified: true
+  - name: Reto Brüesch
+    bluesky:
+      - url: https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/zueri835/
+        verified: true
+    x:
+      - url: https://x.com/Z7f3a94241
+        verified: true
+  - name: Tobias Weidmann
+    bluesky:
+      - url: https://bsky.app/profile/zri-testbot-7f3a.bsky.social
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/zueri835/
+        verified: true
+    x:
+      - url: https://x.com/Z7f3a94241
+        verified: true
