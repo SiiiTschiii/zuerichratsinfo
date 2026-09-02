@@ -1,6 +1,7 @@
 # Validate Contacts Script
 
-This script validates the `data/zurich-city/contacts.yaml` file to ensure:
+This script validates a jurisdiction's `contacts.yaml` — `data/zurich-city/`,
+`data/zurich-canton/`, or any later one — to ensure:
 
 1. **Valid YAML syntax** - The file must be parseable YAML
 2. **Supported platforms** - Only allowed platforms: x, facebook, instagram, linkedin, bluesky, tiktok
@@ -13,10 +14,14 @@ This script validates the `data/zurich-city/contacts.yaml` file to ensure:
 
 ### Manual validation
 
-Run the validation script directly:
+Run the validation script directly, one file at a time:
 
 ```bash
 go run cmd/validate_contacts/main.go data/zurich-city/contacts.yaml
+```
+
+```bash
+go run cmd/validate_contacts/main.go data/zurich-canton/contacts.yaml
 ```
 
 Or use the Makefile:
@@ -75,9 +80,9 @@ $ go run cmd/validate_contacts/main.go data/zurich-city/contacts.yaml
 
 ## GitHub Actions
 
-The validation runs automatically on:
+CI validates every `data/*/contacts.yaml`. The validation runs automatically on:
 
-- Push to `main` branch (when contacts.yaml or validation code changes)
+- Push to `main` branch (when a contacts.yaml or validation code changes)
 - Pull requests to `main` branch
 - Manual workflow dispatch
 

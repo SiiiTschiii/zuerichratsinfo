@@ -41,7 +41,7 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 	}
 
 	// --- Build root post ---
-	root := buildRootPost(group, title, charLimit)
+	root := buildRootPost(group, title, contactMapper, charLimit)
 
 	// --- Build reply posts ---
 	replies := buildReplyPosts(group, voteformat.LinkLine(group), charLimit)
@@ -55,13 +55,20 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 
 // buildRootPost creates the root post with header, title, result, and thread hint.
 // If the title is too long, it is truncated with "…".
-func buildRootPost(group []votes.Vote, title string, charLimit int) *XPost {
+func buildRootPost(group []votes.Vote, title string, contactMapper *contacts.Mapper, charLimit int) *XPost {
 	header := fmt.Sprintf("🗳️  %s\n\n", voteformat.PostHeadline(group))
 	threadHint := "\n\n👇 Details im Thread"
 
-	// The label line: what kind of business this is, plus the
+	// The label line: what kind of business this is, who filed it, plus the
 	// Abstimmungsgegenstand when a lone vote makes that meaningful.
 	subtitlePrefix := voteformat.GroupPrefixLine(group)
+
+	// Tagged too, not just the title: for a body whose titles carry no names —
+	// Kanton Zürich's never do — this line is the only place a politician is
+	// named, so tagging the title alone would tag nobody.
+	if contactMapper != nil {
+		subtitlePrefix = contactMapper.TagXHandlesInText(subtitlePrefix)
+	}
 
 	var body string
 	if len(group) == 1 {

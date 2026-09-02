@@ -1,13 +1,28 @@
+// Command generate_search_urls prints per-politician search links for the
+// manual part of curating contacts.yaml: finding and verifying handles.
+//
+//	go run ./cmd/generate_search_urls                              # zurich-city
+//	go run ./cmd/generate_search_urls -jurisdiction zurich-canton
+//	go run ./cmd/generate_search_urls -jurisdiction zurich-canton -platform instagram
+//
+// Party, Fraktion and the member's page on the parliament's own site come from
+// the body's live roster rather than from contacts.yaml, which stores none of
+// them. They are what turns "Anna Müller" into a search a human can actually
+// settle: the mapping is worth having only if every handle in it belongs to the
+// person the post will name.
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/url"
 	"os"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 	"gopkg.in/yaml.v3"
 )
 
@@ -26,85 +41,200 @@ type Contact struct {
 	Bluesky   []string `yaml:"bluesky,omitempty"`
 }
 
+// platform names a search this tool can emit, in the order it prints them.
+type platform struct {
+	name string
+	// searchURL builds the search link, or returns "" for a platform that has
+	// no linkable search.
+	searchURL func(query string) string
+	// urls addresses the contact's existing entries for this platform.
+	urls func(*Contact) []string
+}
+
+var platforms = []platform{
+	{
+		name:      "X/Twitter",
+		searchURL: func(q string) string { return "https://x.com/search?q=" + q + "&src=typed_query&f=user" },
+		urls:      func(c *Contact) []string { return c.X },
+	},
+	{
+		// Instagram refuses search links opened from another site.
+		name:      "Instagram",
+		searchURL: func(string) string { return "" },
+		urls:      func(c *Contact) []string { return c.Instagram },
+	},
+	{
+		name:      "Facebook",
+		searchURL: func(q string) string { return "https://www.facebook.com/search/top?q=" + q },
+		urls:      func(c *Contact) []string { return c.Facebook },
+	},
+	{
+		name:      "LinkedIn",
+		searchURL: func(q string) string { return "https://www.linkedin.com/search/results/all/?keywords=" + q },
+		urls:      func(c *Contact) []string { return c.LinkedIn },
+	},
+	{
+		name:      "TikTok",
+		searchURL: func(q string) string { return "https://www.tiktok.com/search?q=" + q },
+		urls:      func(c *Contact) []string { return c.TikTok },
+	},
+	{
+		name:      "Bluesky",
+		searchURL: func(q string) string { return "https://bsky.app/search?q=" + q },
+		urls:      func(c *Contact) []string { return c.Bluesky },
+	},
+}
+
 func main() {
-	contactsPath := contacts.PathFor("zurich-city")
-	data, err := os.ReadFile(contactsPath)
+	jurisdiction := flag.String("jurisdiction", "zurich-city",
+		"jurisdiction to curate ("+strings.Join(config.JurisdictionKeys(), ", ")+")")
+	only := flag.String("platform", "", "print searches for one platform only, e.g. instagram")
+	flag.Parse()
+
+	j, err := config.LookupJurisdiction(*jurisdiction)
 	if err != nil {
-		log.Fatalf("Failed to read contacts.yaml: %v", err)
+		log.Fatalf("❌ %v", err)
 	}
 
-	var contactsFile ContactsFile
-	if err := yaml.Unmarshal(data, &contactsFile); err != nil {
-		log.Fatalf("Failed to parse contacts.yaml: %v", err)
+	wanted, err := selectPlatforms(*only)
+	if err != nil {
+		log.Fatalf("❌ %v", err)
 	}
 
-	fmt.Println("# Social Media Search URLs")
-	fmt.Println("# Copy these URLs to find social media accounts")
-	fmt.Println()
-	fmt.Println("**Note:** Instagram doesn't support direct search links from external browsers. Search for names directly within the Instagram app or website.")
+	path := contacts.PathFor(j.Key)
+	data, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("❌ reading %s: %v", path, err)
+	}
+
+	var file ContactsFile
+	if err := yaml.Unmarshal(data, &file); err != nil {
+		log.Fatalf("❌ parsing %s: %v", path, err)
+	}
+
+	roster := fetchRoster(j)
+
+	fmt.Printf("# Social media search URLs — %s\n\n", j.Name)
+	fmt.Printf("Verify before adding: a handle that belongs to someone else puts a real\n")
+	fmt.Printf("person's account next to a vote they did not cast.\n\n")
+	fmt.Println("**Note:** Instagram does not accept search links from another site. Search the name in the app or on instagram.com.")
 	fmt.Println()
 
-	missingCount := 0
-	for _, contact := range contactsFile.Contacts {
-		// Skip if already has all platforms
-		hasX := len(contact.X) > 0
-		hasFacebook := len(contact.Facebook) > 0
-		hasInstagram := len(contact.Instagram) > 0
-		hasLinkedIn := len(contact.LinkedIn) > 0
-		hasTikTok := len(contact.TikTok) > 0
-		hasBluesky := len(contact.Bluesky) > 0
-
-		if hasX && hasFacebook && hasInstagram && hasLinkedIn && hasTikTok && hasBluesky {
+	missing := 0
+	for _, c := range file.Contacts {
+		gaps := gapsFor(&c, wanted)
+		if len(gaps) == 0 {
 			continue
 		}
-
-		missingCount++
-		fmt.Printf("## %s\n", contact.Name)
-
-		// Parse name for search
-		parts := strings.Fields(contact.Name)
-		searchName := strings.Join(parts, " ")
-
-		if !hasX {
-			xSearch := url.QueryEscape(searchName)
-			fmt.Printf("- X/Twitter: https://x.com/search?q=%s&src=typed_query&f=user\n", xSearch)
-		}
-
-		if !hasInstagram {
-			fmt.Println("- Instagram: https://www.instagram.com/")
-		}
-
-		if !hasFacebook {
-			fbSearch := url.QueryEscape(searchName + " Zürich")
-			fmt.Printf("- Facebook: https://www.facebook.com/search/top?q=%s\n", fbSearch)
-		}
-
-		if !hasLinkedIn {
-			linkedInSearch := url.QueryEscape(searchName)
-			fmt.Printf("- LinkedIn: https://www.linkedin.com/search/results/all/?keywords=%s\n", linkedInSearch)
-		}
-
-		if !hasTikTok {
-			tiktokSearch := url.QueryEscape(searchName)
-			fmt.Printf("- TikTok: https://www.tiktok.com/search?q=%s\n", tiktokSearch)
-		}
-
-		if !hasBluesky {
-			bskySearch := url.QueryEscape(searchName)
-			fmt.Printf("- Bluesky: https://bsky.app/search?q=%s\n", bskySearch)
-		}
-
-		// Google search as fallback
-		googleSearch := url.QueryEscape(searchName + " Gemeinderat Zürich social media")
-		fmt.Printf("- Google: https://www.google.com/search?q=%s\n", googleSearch)
-
-		fmt.Println()
+		missing++
+		printContact(c.Name, roster[c.Name], gaps, j)
 	}
 
 	fmt.Printf("\n---\n")
-	fmt.Printf("Found %d people missing social media accounts\n", missingCount)
-	fmt.Println("\n💡 Tips:")
-	fmt.Println("- Search for the person's name + 'Gemeinderat' or their party name")
-	fmt.Println("- Check their official Gemeinderat profile page for social media links")
-	fmt.Println("- Gemeinderat profiles: https://www.gemeinderat-zuerich.ch/ratsmitglieder")
+	fmt.Printf("%d of %d contacts still missing an account on %s\n", missing, len(file.Contacts), platformNames(wanted))
+	if len(roster) == 0 {
+		fmt.Println("\n⚠️  No live roster: party and Fraktion are missing from the searches above.")
+	}
+}
+
+// selectPlatforms narrows the search list to one platform, or returns them all.
+func selectPlatforms(only string) ([]platform, error) {
+	if only == "" {
+		return platforms, nil
+	}
+	for _, p := range platforms {
+		if strings.EqualFold(only, p.name) || strings.EqualFold(only, strings.SplitN(p.name, "/", 2)[0]) {
+			return []platform{p}, nil
+		}
+	}
+	return nil, fmt.Errorf("unknown platform %q, want one of %s", only, platformNames(platforms))
+}
+
+func platformNames(ps []platform) string {
+	names := make([]string, len(ps))
+	for i, p := range ps {
+		names[i] = p.name
+	}
+	return strings.Join(names, ", ")
+}
+
+// gapsFor returns the platforms this contact has no account on yet.
+func gapsFor(c *Contact, wanted []platform) []platform {
+	var gaps []platform
+	for _, p := range wanted {
+		if len(p.urls(c)) == 0 {
+			gaps = append(gaps, p)
+		}
+	}
+	return gaps
+}
+
+// fetchRoster returns the body's sitting members by name, or an empty map if
+// the roster cannot be reached.
+//
+// A missing roster costs the affiliation lines, not the run: the search URLs
+// themselves only need the name, and a curator halfway through a session should
+// not be stopped by a third-party outage.
+func fetchRoster(j config.Jurisdiction) map[string]votes.Member {
+	if j.NewMemberSource == nil {
+		return nil
+	}
+
+	members, err := j.NewMemberSource().FetchMembers()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "⚠️  could not fetch the %s roster: %v\n", j.Name, err)
+		return nil
+	}
+
+	byName := make(map[string]votes.Member, len(members))
+	for _, m := range members {
+		byName[m.Name] = m
+	}
+	return byName
+}
+
+func printContact(name string, member votes.Member, gaps []platform, j config.Jurisdiction) {
+	fmt.Printf("## %s", name)
+	if affiliation := affiliationOf(member); affiliation != "" {
+		fmt.Printf(" — %s", affiliation)
+	}
+	fmt.Println()
+
+	if member.ProfileURL != "" {
+		// The parliament's own page, first: it is the one source that cannot be
+		// the wrong person, and it often links the accounts outright.
+		fmt.Printf("- Profil (%s): %s\n", j.ShortName, member.ProfileURL)
+	}
+
+	query := url.QueryEscape(name)
+	for _, p := range gaps {
+		if u := p.searchURL(query); u != "" {
+			fmt.Printf("- %s: %s\n", p.name, u)
+		} else {
+			fmt.Printf("- %s: search %q in the app\n", p.name, name)
+		}
+	}
+
+	// The catch-all, narrowed by whatever the roster knows: "Anna Müller" alone
+	// finds the wrong Anna Müller.
+	web := name + " " + j.ShortName
+	if member.Party != "" {
+		web += " " + member.Party
+	}
+	fmt.Printf("- Google: https://www.google.com/search?q=%s\n\n", url.QueryEscape(web))
+}
+
+// affiliationOf renders party and Fraktion when they differ, since sitting with
+// a Fraktion is not the same as belonging to its party.
+func affiliationOf(m votes.Member) string {
+	switch {
+	case m.Party == "" && m.Fraktion == "":
+		return ""
+	case m.Fraktion == "" || m.Fraktion == m.Party:
+		return m.Party
+	case m.Party == "":
+		return "Fraktion " + m.Fraktion
+	default:
+		return m.Party + ", Fraktion " + m.Fraktion
+	}
 }

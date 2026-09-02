@@ -34,10 +34,10 @@ Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei D
 
 ## Covered Bodies
 
-| Body                         | Data source                                                              | Status  | Tagging                 |
-| ---------------------------- | ------------------------------------------------------------------------ | ------- | ----------------------- |
-| **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 132 curated contacts |
-| **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live | ❌ Not yet curated      |
+| Body                         | Data source                                                              | Status  | Tagging                     |
+| ---------------------------- | ------------------------------------------------------------------------ | ------- | --------------------------- |
+| **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live | ✅ 132 curated contacts     |
+| **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live | 🟡 180 listed, none verified |
 
 Both bodies post to the same accounts. Every post names which chamber voted, in
 the text and on the image, so the two are never confused.
@@ -46,19 +46,22 @@ the text and on the image, so the two are never confused.
 
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
-| LinkedIn    | ❌ Planned | 108                                 | -                                                                                    |
-| Facebook    | ❌ Planned | 83                                  | -                                                                                    |
-| Instagram   | ✅ Active  | 91                                  | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
-| X (Twitter) | ✅ Active  | 59                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
-| Bluesky     | ✅ Active  | 28                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
-| TikTok      | ❌ Planned | 18                                  | -                                                                                    |
+| LinkedIn    | ❌ Planned | 108 | -                                                                                    |
+| Facebook    | ❌ Planned | 83 | -                                                                                    |
+| Instagram   | ✅ Active  | 91 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
+| X (Twitter) | ✅ Active  | 59 | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| Bluesky     | ✅ Active  | 28 | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
+| TikTok      | ❌ Planned | 18 | -                                                                                    |
 
 _"Politicians with a verified account" is how many Gemeinderat and Stadtrat members
 (9 of them Stadträte) we have manually identified and verified as being active on
 that platform, so that they can be tagged in a post, out of the 132 politicians
 curated in [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml).
-Platforms are sorted by coverage. Kantonsrat members are not yet curated and so are
-not counted here._
+Platforms are sorted by coverage. All 180 Kantonsrat members are listed in
+[data/zurich-canton/contacts.yaml](data/zurich-canton/contacts.yaml), but no handle
+of theirs has been verified yet, so they are not counted here. An entry with no
+handles is valid and does what it should: the post names that member without
+tagging them._
 
 ## What It Does
 

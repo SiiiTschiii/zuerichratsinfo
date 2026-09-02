@@ -1,0 +1,7 @@
+{
+ "data": [
+  {"type": "group", "role_harmonized": "author", "role_de": null, "fullname": "Sozialversicherungsgericht", "party_de": null, "position": 1},
+  {"type": "group", "role_harmonized": "leading_department", "role_de": "Direktion", "fullname": "Sozialversicherungsgericht", "party_de": null, "position": 1}
+ ],
+ "meta": {"offset": 0, "limit": 100, "total_records": 2, "has_more": false}
+}

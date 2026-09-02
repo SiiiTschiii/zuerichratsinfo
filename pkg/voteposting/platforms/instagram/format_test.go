@@ -367,3 +367,34 @@ func TestFormatCarousel_SingleVoteSubtitlePrefix(t *testing.T) {
 		})
 	}
 }
+
+// A body whose titles carry no names — Kanton Zürich's never do — is named only
+// on the label line, so tagging the title alone would tag nobody.
+func TestFormatCarouselWithContacts_TagsAuthorsOnTheLabelLine(t *testing.T) {
+	group := testfixtures.KantonsratMemberBusiness()
+
+	contactsFile := filepath.Join(t.TempDir(), "contacts.yaml")
+	err := os.WriteFile(contactsFile, []byte(`version: "1.0"
+contacts:
+  - name: Tobias Weidmann
+    instagram:
+      - https://www.instagram.com/tobiasweidmann/
+`), 0o600)
+	if err != nil {
+		t.Fatalf("write contacts file: %v", err)
+	}
+
+	mapper, err := contacts.LoadContacts(contactsFile)
+	if err != nil {
+		t.Fatalf("load contacts: %v", err)
+	}
+
+	content, err := FormatCarouselWithContacts(group, mapper)
+	if err != nil {
+		t.Fatalf("FormatCarouselWithContacts error: %v", err)
+	}
+
+	if !strings.Contains(content.Caption, "Postulat von Tobias Weidmann @tobiasweidmann (SVP)") {
+		t.Errorf("the author on the label line was not tagged\n%s", content.Caption)
+	}
+}

@@ -1,0 +1,9 @@
+{
+ "data": [
+  {"id": 5077, "active": true, "type_harmonized": "council_legislative"},
+  {"id": 5080, "active": true, "type_harmonized": "committee"},
+  {"id": 3807, "active": true, "type_harmonized": "parliamentary_group"},
+  {"id": 5003, "active": false, "type_harmonized": "committee"}
+ ],
+ "meta": {"offset": 0, "limit": 500, "total_records": 4, "has_more": false}
+}

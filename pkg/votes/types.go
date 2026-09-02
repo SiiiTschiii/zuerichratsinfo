@@ -99,6 +99,30 @@ type Affair struct {
 	// is only provisionally supported and goes on to the Regierungsrat. Empty
 	// when the source does not say, or when the vote belongs to no business.
 	Type string
+
+	// Authors are the members who put this business before the chamber. Empty
+	// for business that comes from the government or a committee rather than
+	// from members, and for a source that does not publish authorship.
+	//
+	// It exists because who filed something is half of what a vote on it means,
+	// and the two sources supply that fact in incompatible shapes: Stadt
+	// Zürich's PARIS writes it into the title ("Postulat von Ivo Bieri (SP)
+	// und …"), while OpenParlData serves it as a relation and leaves the title
+	// a bare subject line. Formatters read this field; the city's titles are
+	// left exactly as they arrive.
+	Authors []Author
+}
+
+// Author is a member who put a business matter before the chamber — the
+// Erstunterzeichnende, not everyone who later signed it.
+//
+// Party is required rather than decorative: it is what distinguishes a member
+// acting in the chamber from a private person exercising a right of initiative,
+// whom the parliament's record names but this project has no business
+// broadcasting. See openparldata.affairAuthors.
+type Author struct {
+	Name  string
+	Party string
 }
 
 // MemberVote is one member's recorded vote.

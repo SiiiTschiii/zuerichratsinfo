@@ -58,7 +58,8 @@ func LoadContacts(path string) (*Mapper, error) {
 //
 // A missing file is not an error: a jurisdiction ships before its ~180 members
 // are curated, and the correct behaviour then is to post without tagging rather
-// than not to post. Later files win on duplicate names.
+// than not to post. A name in more than one file keeps the accounts from all of
+// them — see mergeByName.
 func LoadContactFiles(paths ...string) (*Mapper, error) {
 	var all []Contact
 	for _, path := range paths {
@@ -79,15 +80,72 @@ func LoadContactFiles(paths ...string) (*Mapper, error) {
 	return newMapper(all), nil
 }
 
+// mergeByName folds contacts that share a name into one, keeping every account.
+//
+// Dual mandates make this necessary rather than tidy: someone sits in the
+// Gemeinderat and the Kantonsrat at once, so they appear in both files — once
+// with the handles verified for them, and once as a bare name in a roster still
+// being curated. Letting the last file win would take a curated politician's
+// tagging away, silently, because a second file happened to list them.
+//
+// Order is preserved: the first appearance fixes a contact's position, and
+// later files only add to it.
+func mergeByName(cs []Contact) []Contact {
+	merged := make([]Contact, 0, len(cs))
+	at := make(map[string]int, len(cs))
+
+	for _, c := range cs {
+		key := normalizeName(c.Name)
+		i, seen := at[key]
+		if !seen {
+			at[key] = len(merged)
+			merged = append(merged, c)
+			continue
+		}
+
+		into := &merged[i]
+		into.X = appendNew(into.X, c.X)
+		into.Facebook = appendNew(into.Facebook, c.Facebook)
+		into.Instagram = appendNew(into.Instagram, c.Instagram)
+		into.LinkedIn = appendNew(into.LinkedIn, c.LinkedIn)
+		into.Bluesky = appendNew(into.Bluesky, c.Bluesky)
+		into.TikTok = appendNew(into.TikTok, c.TikTok)
+	}
+
+	return merged
+}
+
+// appendNew adds the URLs not already recorded, keeping the existing order.
+func appendNew(existing, incoming []string) []string {
+	for _, url := range incoming {
+		found := false
+		for _, have := range existing {
+			if have == url {
+				found = true
+				break
+			}
+		}
+		if !found {
+			existing = append(existing, url)
+		}
+	}
+	return existing
+}
+
+func normalizeName(name string) string {
+	return strings.ToLower(strings.TrimSpace(name))
+}
+
 func newMapper(cs []Contact) *Mapper {
+	cs = mergeByName(cs)
+
 	contactMap := make(map[string]Contact, len(cs)*2)
 	for _, contact := range cs {
 		// Store by exact name
 		contactMap[contact.Name] = contact
 
 		// Also store normalized version (lowercase, trimmed)
-		normalized := strings.ToLower(strings.TrimSpace(contact.Name))
-		contactMap[normalized] = contact
+		contactMap[normalizeName(contact.Name)] = contact
 	}
 
 	return &Mapper{
@@ -104,8 +162,7 @@ func (m *Mapper) GetContact(name string) (Contact, bool) {
 	}
 
 	// Try normalized match
-	normalized := strings.ToLower(strings.TrimSpace(name))
-	contact, ok := m.contacts[normalized]
+	contact, ok := m.contacts[normalizeName(name)]
 	return contact, ok
 }
 

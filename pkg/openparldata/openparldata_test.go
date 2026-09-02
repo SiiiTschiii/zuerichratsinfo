@@ -80,6 +80,14 @@ func fixtureFor(r *http.Request) (string, bool) {
 	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 
 	switch {
+	case len(parts) == 3 && parts[0] == "affairs" && parts[2] == "contributors":
+		return "zh_contributors_" + parts[1] + ".json", true
+	case len(parts) == 3 && parts[0] == "groups" && parts[2] == "memberships":
+		return "zh_group_memberships_" + parts[1] + ".json", true
+	case parts[0] == "groups":
+		return "zh_groups.json", true
+	case parts[0] == "persons":
+		return "zh_persons.json", true
 	case len(parts) == 3 && parts[0] == "votings" && parts[2] == "votes":
 		return "zh_votes_" + parts[1] + ".json", true
 	case len(parts) == 3 && parts[0] == "votings" && parts[2] == "affairs":
@@ -375,6 +383,7 @@ func findVote(groups [][]votes.Vote, sourceID string) (votes.Vote, bool) {
 func TestFraktionName(t *testing.T) {
 	tests := map[string]string{
 		"Fraktion SVP":           "SVP",
+		"SVP-Fraktion":           "SVP",
 		"Fraktion Grünliberale":  "Grünliberale",
 		"SP":                     "SP",
 		"Die Mitte/EVP":          "Die Mitte/EVP",

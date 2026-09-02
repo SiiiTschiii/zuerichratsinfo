@@ -21,6 +21,18 @@ To re-record, fetch each URL with `lang_format=flat` and prune to the fields in
     /v1/votings/<id>/affairs                                  -> zh_affairs_<id>.json
     /v1/votings/?body_key=ZH&affair_id=<id>&limit=100         -> zh_votings_affair_<id>.json
 
+The roster fixtures behind `FetchMembers` are cut down rather than captured
+whole: the real listings run to 46 groups, 913 memberships and 834 persons, and
+what the code has to get right is which of them count. The seven person records
+kept are five sitting members — including an EDU member who sits with the SVP
+and both spellings of "Fraktion SVP" — plus the two cases that have to be
+excluded: a seat the parliament never closed, and a former Kantonsrat who now
+sits in Bern and is still active as a person.
+
+    /v1/groups/?body_key=ZH&limit=500                         -> zh_groups.json
+    /v1/groups/<id>/memberships?limit=500                     -> zh_group_memberships_<id>.json
+    /v1/persons/?body_key=ZH&limit=500                        -> zh_persons.json
+
 Records are written one per line. These are captured API responses rather than
 hand-maintained files, so per-field line breaks cost a reviewable diff and buy
 nothing.

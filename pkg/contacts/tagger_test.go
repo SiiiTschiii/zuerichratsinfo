@@ -1,6 +1,8 @@
 package contacts
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -429,4 +431,95 @@ func TestFindBlueskyMentions(t *testing.T) {
 			t.Errorf("FindBlueskyMentions should not modify text")
 		}
 	})
+}
+
+// A dual mandate puts the same person in two jurisdictions' files: curated in
+// one, a bare name in the other's uncurated roster. Losing their handles
+// because a second file happened to list them would be a silent regression in
+// the body that already worked.
+func TestLoadContactFiles_MergesADualMandate(t *testing.T) {
+	dir := t.TempDir()
+
+	curated := filepath.Join(dir, "city.yaml")
+	if err := os.WriteFile(curated, []byte(`version: "1.0"
+contacts:
+  - name: David Garcia Nuñez
+    bluesky:
+      - https://bsky.app/profile/thuritch.bsky.social
+    x:
+      - https://x.com/thuritch
+`), 0o600); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	roster := filepath.Join(dir, "canton.yaml")
+	if err := os.WriteFile(roster, []byte(`version: "1.0"
+contacts:
+  - name: David Garcia Nuñez
+  - name: Someone Else
+    x:
+      - https://x.com/someoneelse
+`), 0o600); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	// The uncurated roster loads last, as it does in the real channel.
+	mapper, err := LoadContactFiles(curated, roster)
+	if err != nil {
+		t.Fatalf("LoadContactFiles: %v", err)
+	}
+
+	if got := mapper.GetXHandle("David Garcia Nuñez"); got != "https://x.com/thuritch" {
+		t.Errorf("X handle = %q, want the curated one kept", got)
+	}
+	if !mapper.HasPlatform("David Garcia Nuñez", "bluesky") {
+		t.Error("the Bluesky account was lost to the bare roster entry")
+	}
+	if got := len(mapper.GetAllContacts()); got != 2 {
+		t.Errorf("got %d contacts, want the duplicate folded into one", got)
+	}
+	if got := mapper.GetXHandle("Someone Else"); got != "https://x.com/someoneelse" {
+		t.Errorf("Someone Else X handle = %q, want the second file still read", got)
+	}
+}
+
+// Accounts verified separately in two files are both that person's.
+func TestLoadContactFiles_UnionsAccountsAcrossFiles(t *testing.T) {
+	dir := t.TempDir()
+
+	a := filepath.Join(dir, "a.yaml")
+	if err := os.WriteFile(a, []byte(`version: "1.0"
+contacts:
+  - name: Anna Graff
+    x:
+      - https://x.com/annagraff
+`), 0o600); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	b := filepath.Join(dir, "b.yaml")
+	if err := os.WriteFile(b, []byte(`version: "1.0"
+contacts:
+  - name: anna graff
+    x:
+      - https://x.com/annagraff
+      - https://x.com/annagraff_kr
+    instagram:
+      - https://www.instagram.com/annagraff_/
+`), 0o600); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	mapper, err := LoadContactFiles(a, b)
+	if err != nil {
+		t.Fatalf("LoadContactFiles: %v", err)
+	}
+
+	handles := mapper.GetXHandles("Anna Graff")
+	if len(handles) != 2 {
+		t.Errorf("X handles = %v, want both, with the shared one recorded once", handles)
+	}
+	if !mapper.HasPlatform("Anna Graff", "instagram") {
+		t.Error("the Instagram account from the second file was dropped")
+	}
 }

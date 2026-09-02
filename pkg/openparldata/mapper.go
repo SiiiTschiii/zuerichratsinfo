@@ -240,11 +240,17 @@ func toMemberVote(v voteDTO) votes.MemberVote {
 	}
 }
 
-// fraktionName trims the redundant "Fraktion " prefix some bodies include
-// ("Fraktion SVP"), so faction labels read the same across sources.
+// fraktionName trims the redundant "Fraktion" some bodies include, so faction
+// labels read the same across sources.
+//
+// Both placements occur: Kanton Zürich publishes "Fraktion SVP" throughout its
+// vote records, and "SVP-Fraktion" on the odd person record.
 func fraktionName(name string) string {
 	name = strings.TrimSpace(name)
 	if rest, ok := strings.CutPrefix(name, "Fraktion "); ok {
+		return strings.TrimSpace(rest)
+	}
+	if rest, ok := strings.CutSuffix(name, "-Fraktion"); ok {
 		return strings.TrimSpace(rest)
 	}
 	return name

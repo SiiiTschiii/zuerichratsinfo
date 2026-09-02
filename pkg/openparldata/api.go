@@ -269,6 +269,7 @@ func (c *Client) enrich(v *votes.Vote) error {
 			log.Printf("⚠️  openparldata: could not fetch affair for voting %d: %v", votingID, err)
 		} else if len(affairs) > 0 {
 			applyAffair(v, affairs[0])
+			v.Affair.Authors = c.authorsOf(affairs[0].ID)
 		}
 	}
 
@@ -309,6 +310,33 @@ func (c *Client) votingID(v votes.Vote) (int64, error) {
 	}
 	c.rememberVoting(resp.Data[0])
 	return resp.Data[0].ID, nil
+}
+
+// authorsOf returns an affair's first signatories, remembering them for the
+// rest of the run.
+//
+// The cache is what keeps this to one request per business matter: enrichment
+// runs per vote, and a single Geschäft routinely carries five votes from one
+// sitting — the Glattalbahn group has five — which without it would ask the
+// same question five times.
+//
+// Authorship is enrichment, so a failure costs the names and nothing else: the
+// post still carries the subject, the counts and the link.
+func (c *Client) authorsOf(affairID int64) []votes.Author {
+	if authors, ok := c.authors[affairID]; ok {
+		return authors
+	}
+
+	authors, err := c.affairAuthors(affairID)
+	if err != nil {
+		log.Printf("⚠️  openparldata: could not fetch authors for affair %d: %v", affairID, err)
+		// Cached as absent, so one outage is not re-tried once per vote in the
+		// group. The next run starts with an empty cache and tries again.
+		authors = nil
+	}
+
+	c.authors[affairID] = authors
+	return authors
 }
 
 func (c *Client) fetchAffairs(votingID int64) ([]affairDTO, error) {

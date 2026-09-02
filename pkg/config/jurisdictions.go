@@ -40,6 +40,13 @@ type Jurisdiction struct {
 	// NewSource builds the adapter that fetches this body's votes.
 	NewSource func() votes.Source
 
+	// NewMemberSource builds the adapter that enumerates this body's sitting
+	// members. Kept separate from NewSource because the two are read on
+	// different clocks: the bot fetches votes every few hours, while the roster
+	// is fetched by a human running cmd/update_contacts after an election or a
+	// Nachrücken. Nil for a body whose source publishes no roster.
+	NewMemberSource func() votes.MemberSource
+
 	// Enabled decides whether the scheduled run posts this body. It defaults to
 	// false for every jurisdiction and is turned on with
 	// JURISDICTION_<KEY>_ENABLED, e.g. JURISDICTION_ZURICH_CITY_ENABLED=true.
@@ -92,9 +99,10 @@ func (d cantonVoteDetails) Lookup(voteURLs map[string]string) (map[string]openpa
 // jurisdictions is the registry, keyed by Jurisdiction.Key.
 var jurisdictions = map[string]Jurisdiction{
 	zurichapi.JurisdictionKey: {
-		Jurisdiction: zurichapi.Jurisdiction,
-		MaxAgeDays:   90,
-		NewSource:    func() votes.Source { return zurichapi.NewClient() },
+		Jurisdiction:    zurichapi.Jurisdiction,
+		MaxAgeDays:      90,
+		NewSource:       func() votes.Source { return zurichapi.NewClient() },
+		NewMemberSource: func() votes.MemberSource { return zurichapi.NewClient() },
 	},
 	ZurichCantonKey: {
 		Jurisdiction: zurichCanton,
@@ -108,6 +116,9 @@ var jurisdictions = map[string]Jurisdiction{
 		NewSource: func() votes.Source {
 			return openparldata.New(zurichCanton, zurichCantonBodyKey).
 				WithDetails(cantonVoteDetails{recapp.New()})
+		},
+		NewMemberSource: func() votes.MemberSource {
+			return openparldata.New(zurichCanton, zurichCantonBodyKey)
 		},
 	},
 }

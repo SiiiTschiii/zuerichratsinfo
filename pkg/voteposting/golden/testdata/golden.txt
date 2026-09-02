@@ -2411,6 +2411,109 @@ AL 5/0
 🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
 Source: OpenParlData.ch
 
+################ FIXTURE kantonsrat-member-business ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Kantonsrat ZH | Abstimmung vom 31.08.2026 (10:21)
+
+Postulat von Tobias Weidmann @Z7f3a94241 (SVP)
+Verbindliche Richtlinien – keine Smartphones an Volksschulen
+
+👇 Details im Thread
+
+[post 1]
+📊 92 Ja | 82 Nein | 2 Enthaltung | 4 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 46/0/0/1
+SP 0/35/0/1
+FDP 29/0/0/1
+Grünliberale 0/23/0/0
+Grüne 0/19/0/0
+Die Mitte 10/0/1/1
+EVP 6/0/1/0
+AL 0/5/0/0
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+Source: OpenParlData.ch
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Kantonsrat ZH | Abstimmung vom 31.08.2026 (10:21)
+
+Postulat von Tobias Weidmann @Z7f3a94241 (SVP)
+Verbindliche Richtlinien – keine Smartphones an Volksschulen
+
+👇 Details im Thread
+
+[post 1]
+📊 92 Ja | 82 Nein | 2 Enthaltung | 4 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 46/0/0/1
+SP 0/35/0/1
+FDP 29/0/0/1
+Grünliberale 0/23/0/0
+Grüne 0/19/0/0
+Die Mitte 10/0/1/1
+EVP 6/0/1/0
+AL 0/5/0/0
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+Source: OpenParlData.ch
+
+---- Bluesky ----
+[post 0]
+🗳️ Kantonsrat ZH | Abstimmung vom 31.08.2026 (10:21)
+
+Postulat von Tobias Weidmann (SVP)
+Verbindliche Richtlinien – keine Smartphones an Volksschulen
+
+👇 Details im Thread
+[mention] zri-testbot-7f3a.bsky.social @ 72-87
+
+[post 1]
+📊 92 Ja | 82 Nein | 2 Enth. | 4 Abw.
+
+[post 2]
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 46/0/0/1
+SP 0/35/0/1
+FDP 29/0/0/1
+Grünliberale 0/23/0/0
+Grüne 0/19/0/0
+Die Mitte 10/0/1/1
+EVP 6/0/1/0
+AL 0/5/0/0
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+Source: OpenParlData.ch
+[facet] {Index:{ByteStart:164 ByteEnd:250} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1 DID: Tag:}]}
+
+---- Instagram ----
+[images] 1
+[caption]
+🗳️ Kantonsrat ZH | Abstimmung vom 31.08.2026 (10:21)
+
+Postulat von Tobias Weidmann @zueri835 (SVP)
+Verbindliche Richtlinien – keine Smartphones an Volksschulen
+
+📊 92 Ja | 82 Nein | 2 Enthaltung | 4 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SVP 46/0/0/1
+SP 0/35/0/1
+FDP 29/0/0/1
+Grünliberale 0/23/0/0
+Grüne 0/19/0/0
+Die Mitte 10/0/1/1
+EVP 6/0/1/0
+AL 0/5/0/0
+
+🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+Source: OpenParlData.ch
+
 ################ FIXTURE instagram-long-multi-vote-truncation ################
 
 ---- X (limit 280) ----

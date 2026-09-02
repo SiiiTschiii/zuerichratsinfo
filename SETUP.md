@@ -135,6 +135,45 @@ for p in x bluesky instagram; do
 done
 ```
 
+### Curating who gets tagged
+
+Tagging works by matching names in a post against `data/<jurisdiction>/contacts.yaml`.
+The names come from the parliament; the handles do not, and never can — no source
+publishes them for the Kantonsrat, so every one is found and verified by a human.
+
+`update_contacts` refreshes the names from the body's own roster. It is
+append-only: it never deletes a curated entry, so a member who has left is
+removed by hand, deliberately.
+
+```bash
+# See what would change first — it writes to a hand-curated file
+go run ./cmd/update_contacts -jurisdiction zurich-canton -dry-run
+
+go run ./cmd/update_contacts -jurisdiction zurich-canton
+```
+
+For Stadt Zürich it also imports the accounts PARIS publishes; for the Kantonsrat
+there are none to import, and the 180 names arrive bare.
+
+`generate_search_urls` prints the search links for the manual half, with party,
+Fraktion and the member's page on the parliament's own site pulled live — which
+is what settles whether the "Anna Müller" you found is the one who sits in the
+chamber.
+
+```bash
+go run ./cmd/generate_search_urls -jurisdiction zurich-canton -platform instagram
+```
+
+Validate before committing. CI runs the same check on every `data/*/contacts.yaml`:
+
+```bash
+go run ./cmd/validate_contacts data/zurich-canton/contacts.yaml
+```
+
+An entry with no handles is valid and costs nothing: the post names that member
+without tagging them. Tagging the wrong account is the failure that matters —
+it puts a real person's handle next to a vote they did not cast.
+
 ### Comparing the two data sources
 
 Stadt Zürich is served by both PARIS and OpenParlData, which is what makes the

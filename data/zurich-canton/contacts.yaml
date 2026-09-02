@@ -1,11 +1,198 @@
 # Social media handles for members of the Kantonsrat Zürich.
 #
-# Deliberately empty: the 180 members have not been curated yet, and curating
-# them is the dominant human cost of adding a jurisdiction — it is not a reason
-# to hold back the votes themselves. Until entries appear here, Kantonsrat posts
-# simply name politicians without tagging them.
+# The 180 names are seeded from the parliament's own roster and refreshed with:
 #
-# The schema matches data/zurich-city/contacts.yaml. Add entries as they are
-# verified; the tagger picks them up with no code change.
+#     go run ./cmd/update_contacts -jurisdiction zurich-canton
+#
+# The handles are not, and cannot be: OpenParlData publishes no social media
+# fields, so every account here was found and verified by a human. Partial and
+# correct beats complete and guessed — tagging the wrong account puts a real
+# person's handle next to a vote they did not cast. An entry with no handles is
+# valid and does exactly what it should: the post names that member without
+# tagging them.
+#
+# Party and Fraktion are deliberately absent. The parliament publishes both, so
+# a copy here could only go stale; run cmd/generate_search_urls, which reads
+# them live, when you need them for curation.
 version: "1.0"
-contacts: []
+contacts:
+  - name: Advije Delihasani-Ajdari
+  - name: Alan David Sangines
+  - name: Alexander Jäger
+  - name: Alexander Seiler
+  - name: Alexia Bischof
+  - name: Andrea Gisler
+  - name: Andrea Grossen-Aerni
+  - name: Andreas Daurù
+  - name: Andreas Hasler
+  - name: Andreas Juchli
+  - name: Andreas Keiser
+  - name: André Bender
+  - name: Angie Romero
+  - name: Anita Borer
+  - name: Astrid Furrer
+  - name: Barbara Dietrich
+  - name: Barbara Franzen
+  - name: Barbara Grüter
+  - name: Beat Habegger
+  - name: Beat Hauser
+  - name: Beatrice Derrer
+  - name: Benjamin Krähenmann
+  - name: Benjamin Walder
+  - name: Benno Scherrer
+  - name: Bernhard im Oberdorf
+  - name: Birgit Tognella-Geertsen
+  - name: Brigitte Röösli
+  - name: Carmen Marty Fässler
+  - name: Chantal Galladé
+  - name: Christa Stünzi
+  - name: Christian Pfaller
+  - name: Christina Zurfluh Fraefel
+  - name: Christoph Fischbach
+  - name: Christoph Marty
+  - name: Claudia Bodmer-Furrer
+  - name: Claudia Frei
+  - name: Claudia Hollenstein
+  - name: Claudio Zihlmann
+  - name: Corinne Hoss-Blatter
+  - name: Cristina Cortellini
+  - name: Daniel Heierli
+  - name: Daniel Rensch
+  - name: Daniel Sommer
+  - name: Daniel Wäfler
+  - name: Daniela Sun-Güller
+  - name: David Garcia Nuñez
+  - name: David John Galeuchet
+  - name: Davide Loss
+  - name: Dieter Kläy
+  - name: Dimitri Witzig
+  - name: Domenik Ledergerber
+  - name: Donato Flavio Scognamiglio
+  - name: Doris Meier
+  - name: Edith Häusler
+  - name: Elisabeth Pflugshaupt
+  - name: Fabian Müller
+  - name: Felix Hoesch
+  - name: Florian Heer
+  - name: Gabi Petri
+  - name: Gabriel Mäder
+  - name: Gianna Berger
+  - name: Hans Egli
+  - name: Hanspeter Hugentobler
+  - name: Isabel Garcia
+  - name: Ivo Hasler
+  - name: Jacqueline Hofer
+  - name: Janine Vannaz
+  - name: Jasmin Pokerschnig
+  - name: Jean-Daniel Strub
+  - name: Jeannette Büsser
+  - name: Jeannette Wibmer
+  - name: Jonas Erni
+  - name: Jonas Pfister
+  - name: Josef Widler
+  - name: Judith Anna Stofer
+  - name: Jörg Kündig
+  - name: Karin Fehr Thoma
+  - name: Karl Heinz Meyer
+  - name: Kathrin Wydler
+  - name: Kurt Altenburger
+  - name: Leandra Columberg
+  - name: Lejla Salihu
+  - name: Linda Camenisch
+  - name: Livia Knüsel
+  - name: Lorenz Habicher
+  - name: Luisa Schwegler
+  - name: Mandy Abou Shoak
+  - name: Manuel Sahli
+  - name: Manuela Tremonte
+  - name: Marc Bochsler
+  - name: Marc Bourgeois
+  - name: Marcel Suter
+  - name: Mario Senn
+  - name: Marion Matter
+  - name: Marion Schmid
+  - name: Markus Bopp
+  - name: Markus Bärtschiger
+  - name: Markus Schaaf
+  - name: Martin Huber
+  - name: Martin Steiner
+  - name: Martina Novak
+  - name: Marzena Kopp
+  - name: Matthias Stutz
+  - name: Michael Biber
+  - name: Michael Bänninger
+  - name: Monica Sanesi Muri
+  - name: Monika Keller
+  - name: Monika Wicki
+  - name: Nadia Koch
+  - name: Nadja Wirth
+  - name: Nick Glättli
+  - name: Nicola Siegrist
+  - name: Nicole Wyss
+  - name: Patricia Bernet
+  - name: Patrick Walder
+  - name: Paul von Euw
+  - name: Peter Schick
+  - name: Philipp Müller
+  - name: Pia Ackermann
+  - name: Pierre Dalcher
+  - name: Priska Hänni-Mathis
+  - name: Priska Lötscher
+  - name: Rafael Mörgeli
+  - name: Raffaela Fehr
+  - name: Renata Grünenfelder
+  - name: Renato Pfeffer-Becker
+  - name: René Isler
+  - name: René Schweizer
+  - name: René Truninger
+  - name: Reto Agosti
+  - name: Rochus Burtscher
+  - name: Roger Cadonau
+  - name: Roger Schmidinger
+  - name: Roger Schmutz
+  - name: Roland Kappeler
+  - name: Roland Scheck
+  - name: Romaine Rogenmoser
+  - name: Roman Schmid
+  - name: Ronald Alder
+  - name: Ruth Ackermann
+  - name: Ruth Büchi-Vögeli
+  - name: Sabine Arnold
+  - name: Sandra Bienek
+  - name: Sandra Bossert
+  - name: Sarah Fuchs
+  - name: Sascha Ullmann
+  - name: Selma L'Orange Seigo
+  - name: Sibylle Jüttner
+  - name: Sibylle Marti
+  - name: Silvia Rigoni
+  - name: Simon Vlk
+  - name: Songül Viridén
+  - name: Sonja Rueff-Frenkel
+  - name: Stefan Schmid
+  - name: Stefanie Huber
+  - name: Stephan Hegetschweiler
+  - name: Stephan Weber
+  - name: Stephanie Hugentobler
+  - name: Susanne Brunner
+  - name: Tamara Fakhreddine
+  - name: Thomas Anwander
+  - name: Thomas Forrer
+  - name: Thomas Huber
+  - name: Thomas Lamprecht
+  - name: Thomas Schweizer
+  - name: Thomas Wolf
+  - name: Tina Deplazes
+  - name: Tobias Infortuna
+  - name: Tobias Weidmann
+  - name: Tumasch Mischol
+  - name: Ueli Bamert
+  - name: Ulrich Pfister
+  - name: Urs Glättli
+  - name: Urs Waser
+  - name: Urs Wegmann
+  - name: Ursula Junker
+  - name: Viviane Kägi
+  - name: Walter Staub
+  - name: Wilma Willi
+  - name: Yiea Wey Te

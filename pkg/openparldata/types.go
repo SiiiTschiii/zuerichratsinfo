@@ -109,3 +109,99 @@ func deref(s *string) string {
 	}
 	return *s
 }
+
+// --- Roster (see members.go) ---
+//
+// The three listings below are read only by the roster tooling a human runs
+// after an election, never by the bot's own run.
+
+type groupsResponse struct {
+	Data []groupDTO `json:"data"`
+	Meta meta       `json:"meta"`
+}
+
+func (r *groupsResponse) pageMeta() meta { return r.Meta }
+
+// groupDTO covers the chamber, its committees and its parliamentary groups
+// alike; TypeHarmonized is what tells them apart.
+type groupDTO struct {
+	ID     int64 `json:"id"`
+	Active bool  `json:"active"`
+
+	// TypeHarmonized is OpenParlData's cross-body classification, e.g.
+	// "council_legislative" for the chamber itself, "committee" for a
+	// Kommission and "parliamentary_group" for a Fraktion. The harmonised
+	// value is used rather than the body's own name because that name is
+	// "Kantonsrat Zürich" here and something else in every other canton.
+	TypeHarmonized string `json:"type_harmonized"`
+}
+
+type membershipsResponse struct {
+	Data []membershipDTO `json:"data"`
+	Meta meta            `json:"meta"`
+}
+
+func (r *membershipsResponse) pageMeta() meta { return r.Meta }
+
+type membershipDTO struct {
+	PersonID int64 `json:"person_id"`
+
+	// Active reports an open seat: it is true exactly when end_date is null.
+	// It is trusted only in combination with the person's own flag — see
+	// Client.FetchMembers.
+	Active bool `json:"active"`
+}
+
+type personsResponse struct {
+	Data []personDTO `json:"data"`
+	Meta meta        `json:"meta"`
+}
+
+func (r *personsResponse) pageMeta() meta { return r.Meta }
+
+type personDTO struct {
+	ID       int64  `json:"id"`
+	Fullname string `json:"fullname"`
+	Active   bool   `json:"active"`
+
+	PartyDe                  *string `json:"party_de"`
+	ParliamentaryGroupNameDe *string `json:"parliamentary_group_name_de"`
+
+	// WebsiteParliamentURLDe is the member's page on the parliament's own site.
+	// It is the first place a curator looks for a published account, and the
+	// only such link the API carries: website_personal is null for every member
+	// of Kanton Zürich.
+	WebsiteParliamentURLDe *string `json:"website_parliament_url_de"`
+}
+
+// --- Authorship (see Client.affairAuthors) ---
+
+type contributorsResponse struct {
+	Data []contributorDTO `json:"data"`
+	Meta meta             `json:"meta"`
+}
+
+// contributorDTO is one entry on an affair's contributor list, which mixes
+// people with organisations — the Regierungsrat and its Direktionen file most
+// of the chamber's business.
+type contributorDTO struct {
+	// Type is "person" or "group".
+	Type string `json:"type"`
+
+	// RoleHarmonized is "author" for everyone who signed, first or otherwise,
+	// so it separates authorship from the other roles but not the first
+	// signatory from the co-signatories.
+	RoleHarmonized string `json:"role_harmonized"`
+	// RoleDe is the body's own label and is the only field that makes that
+	// distinction: "Erstunterzeichnerin / Erstunterzeichner" against
+	// "Mitunterzeichnerin / Mitunterzeichner".
+	RoleDe *string `json:"role_de"`
+
+	Fullname string  `json:"fullname"`
+	PartyDe  *string `json:"party_de"`
+
+	// Position orders the signatories as the parliament lists them, first
+	// signatory last. Sorting by it keeps a co-signed business reading the same
+	// way twice running.
+	Position *int `json:"position"`
+}

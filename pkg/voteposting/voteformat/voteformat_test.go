@@ -854,3 +854,109 @@ func TestGroupPrefixLineNamesTheKindOfBusiness(t *testing.T) {
 		})
 	}
 }
+
+// TestGroupPrefixLineNamesWhoFiledIt pins the other half of the label line.
+//
+// Stadt Zürich's titles carry their submitters and Kanton Zürich's do not, so
+// without this a cantonal post names nobody — and a post that names nobody tags
+// nobody, however well curated the contacts file is.
+func TestGroupPrefixLineNamesWhoFiledIt(t *testing.T) {
+	vote := func(affairType, subtitle string, authors ...votes.Author) votes.Vote {
+		return votes.Vote{
+			Subtitle: subtitle,
+			Affair:   votes.Affair{Type: affairType, Authors: authors},
+		}
+	}
+
+	weidmann := votes.Author{Name: "Tobias Weidmann", Party: "SVP"}
+	koch := votes.Author{Name: "Nadia Koch", Party: "GLP"}
+
+	tests := []struct {
+		name  string
+		group []votes.Vote
+		want  string
+	}{
+		{
+			name:  "one author",
+			group: []votes.Vote{vote("Postulat", "", weidmann)},
+			want:  "Postulat von Tobias Weidmann (SVP)",
+		},
+		{
+			name:  "two are joined as German prose",
+			group: []votes.Vote{vote("Motion", "", weidmann, koch)},
+			want:  "Motion von Tobias Weidmann (SVP) und Nadia Koch (GLP)",
+		},
+		{
+			// The Abstimmungsgegenstand still comes last: it identifies the
+			// question, not the business or who filed it.
+			name:  "the subtitle keeps its place after the authors",
+			group: []votes.Vote{vote("Motion", "Dringlicherklärung", weidmann)},
+			want:  "Motion von Tobias Weidmann (SVP) · Dringlicherklärung",
+		},
+		{
+			// Government business: the Regierungsrat and its Direktionen are
+			// not people and are not named here.
+			name:  "no authors leaves the line as it was",
+			group: []votes.Vote{vote("Vorlage", "")},
+			want:  "Vorlage",
+		},
+		{
+			// "von Tobias Weidmann (SVP)" alone reads as a sentence missing its
+			// subject. The two arrive from the same call, so this is a guard.
+			name:  "authors without a business type are not rendered alone",
+			group: []votes.Vote{vote("", "", weidmann)},
+			want:  "",
+		},
+		{
+			// Several votes on one business share the post, and the authors are
+			// a property of the business rather than of any one vote.
+			name:  "a group is labelled once, from its business",
+			group: []votes.Vote{vote("Motion", "", weidmann), vote("Motion", "", weidmann)},
+			want:  "Motion von Tobias Weidmann (SVP)",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GroupPrefixLine(tt.group); got != tt.want {
+				t.Errorf("GroupPrefixLine() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAuthorList(t *testing.T) {
+	tests := []struct {
+		name    string
+		authors []votes.Author
+		want    string
+	}{
+		{name: "nobody", want: ""},
+		{
+			name:    "three take a comma and a und",
+			authors: []votes.Author{{Name: "A", Party: "SP"}, {Name: "B", Party: "FDP"}, {Name: "C", Party: "AL"}},
+			want:    "A (SP), B (FDP) und C (AL)",
+		},
+		{
+			// The party is what tells two politicians of the same name apart,
+			// but its absence is not a reason to drop the name here — the
+			// adapter has already decided who may be named.
+			name:    "a missing party leaves the bare name",
+			authors: []votes.Author{{Name: "A"}},
+			want:    "A",
+		},
+		{
+			name:    "an empty name is skipped rather than rendered as a party alone",
+			authors: []votes.Author{{Name: "  ", Party: "SP"}, {Name: "B", Party: "FDP"}},
+			want:    "B (FDP)",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := AuthorList(tt.authors); got != tt.want {
+				t.Errorf("AuthorList() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}

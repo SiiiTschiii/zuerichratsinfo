@@ -71,6 +71,14 @@ func IsDecisionConsistent(decision string, ja, nein *int) bool {
 // follows a verdict on single-vote posts: folding it in produced "✅ Angenommen:
 // Vorlage: Rahmenkredit …", two colons deep before the subject appears.
 //
+// It also names who filed the business, when the source says. That is the other
+// half of what a vote means, and Stadt Zürich already has it: PARIS writes the
+// submitters into the title, so a city post reads "Postulat von Ivo Bieri (SP)
+// und …" without this line doing anything. Kanton Zürich serves the same fact
+// separately and leaves its titles a bare subject, so the names are put back
+// here — which is also what lets the tagger find them, since it matches names
+// in the text of a post and cannot tag what the post never says.
+//
 // Bodies whose source reports no business type are unaffected — Stadt Zürich's
 // PARIS adapter never fills Affair.Type, so its posts keep exactly the line they
 // had.
@@ -80,6 +88,15 @@ func GroupPrefixLine(group []votes.Vote) string {
 	}
 
 	prefix := strings.TrimSpace(group[0].Affair.Type)
+
+	// Only alongside the type, which is where the "von" attaches: the two
+	// arrive from the same call, and "von Marc Bourgeois (FDP)" standing on its
+	// own would read as a sentence with its subject missing.
+	if prefix != "" {
+		if authors := AuthorList(group[0].Affair.Authors); authors != "" {
+			prefix += " von " + authors
+		}
+	}
 
 	// The Abstimmungsgegenstand identifies a question within the business, which
 	// is meaningless when several votes share the post; the per-vote headings
@@ -99,6 +116,34 @@ func GroupPrefixLine(group []votes.Vote) string {
 		}
 	}
 	return prefix
+}
+
+// AuthorList renders who filed a business as German prose: "Nadia Koch (GLP)",
+// or "Marc Bourgeois (FDP) und Tobias Weidmann (SVP)" for several.
+//
+// The party in brackets is the same shape Stadt Zürich's titles already use, so
+// one account posting for two chambers reads as one voice.
+func AuthorList(authors []votes.Author) string {
+	names := make([]string, 0, len(authors))
+	for _, a := range authors {
+		name := strings.TrimSpace(a.Name)
+		if name == "" {
+			continue
+		}
+		if party := strings.TrimSpace(a.Party); party != "" {
+			name += " (" + party + ")"
+		}
+		names = append(names, name)
+	}
+
+	switch len(names) {
+	case 0:
+		return ""
+	case 1:
+		return names[0]
+	default:
+		return strings.Join(names[:len(names)-1], ", ") + " und " + names[len(names)-1]
+	}
 }
 
 // CleanVoteTitle removes newlines, extra whitespace, and Geschäft number from titles
