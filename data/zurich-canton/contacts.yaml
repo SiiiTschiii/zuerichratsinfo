@@ -26,16 +26,13 @@ contacts:
   - name: Advije Delihasani-Ajdari
     facebook:
       - url: https://www.facebook.com/advije.delihasaniajdari/
-        verified: false
-        confidence: medium
+        verified: true
     instagram:
       - url: https://www.instagram.com/advije_delihasani/
-        verified: false
-        confidence: low
+        verified: true
     linkedin:
       - url: https://ch.linkedin.com/in/advije-delihasani-1b4171125
-        verified: false
-        confidence: low
+        verified: true
   - name: Alan David Sangines
     facebook:
       - url: https://www.facebook.com/alan.d.sangines
