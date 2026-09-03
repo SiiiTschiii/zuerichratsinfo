@@ -880,8 +880,13 @@ func TestGroupByAffairAppliesDetailTypes(t *testing.T) {
 	if found.Type != "Quorum" {
 		t.Errorf("Type = %q, want %q", found.Type, "Quorum")
 	}
-	if found.Decision != "angenommen" {
-		t.Errorf("Decision = %q, want %q", found.Decision, "angenommen")
+	// The type is applied; the verdict offered alongside it is not. This is a
+	// threshold vote, and the archive reports one as carried whether or not it
+	// cleared its threshold — see binaryBallotTypes. The verdict that *is* kept
+	// on an ordinary ballot is covered by
+	// TestGroupByAffairWithholdsVerdictFromAnInitiative.
+	if found.Decision != "" {
+		t.Errorf("Decision = %q, want none on a threshold vote", found.Decision)
 	}
 
 	// A vote the source says nothing about keeps what the API gave it.
@@ -1033,6 +1038,83 @@ func TestDetailVerdictOnlyWhereItIsHonest(t *testing.T) {
 					tt.affairType, got, tt.wantVerdict)
 			}
 		})
+	}
+}
+
+func TestDetailVerdictOnlyFromABinaryBallot(t *testing.T) {
+	tests := []struct {
+		voteType    string
+		wantVerdict bool
+	}{
+		// Ja and Nein are the two sides of one question.
+		{"Normal", true},
+
+		// Threshold ballots. The archive reports these as carried whether or
+		// not the threshold was met, so its outcome says nothing.
+		{"Quorum", false},
+		{"Ausgabenbremse", false},
+		// A knockout round between competing proposals has no yes/no outcome.
+		{"Cup-Abstimmung", false},
+		// Not a vote on anything.
+		{"Anwesenheitsermittlung", false},
+		// An unrecognised or absent type is not assumed to be binary.
+		{"", false},
+		{"   ", false},
+		{"Wahlgang", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.voteType, func(t *testing.T) {
+			if got := ballotStatesItsOutcome(tt.voteType); got != tt.wantVerdict {
+				t.Errorf("ballotStatesItsOutcome(%q) = %v, want %v",
+					tt.voteType, got, tt.wantVerdict)
+			}
+		})
+	}
+}
+
+// TestGroupByAffairWithholdsVerdictFromAThresholdVote covers the case that
+// makes the ballot gate worth having: an Ausgabenbremse sits on a Vorlage, so
+// the affair gate alone lets it through, and a spending brake that failed its
+// 91-vote threshold would be published as "angenommen".
+func TestGroupByAffairWithholdsVerdictFromAThresholdVote(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(12)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+
+	// Offer every vote a threshold ballot with a verdict attached; the affair
+	// type arrives with enrichment, so which of them is a Vorlage is checked
+	// after grouping rather than assumed from the listing.
+	byVoting := make(map[string]VoteDetail, len(vs))
+	for _, v := range vs {
+		byVoting[v.SourceID] = VoteDetail{Type: "Ausgabenbremse", Decision: "angenommen"}
+	}
+	c.WithDetails(&stubDetails{byVoting: byVoting})
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+
+	var checked bool
+	for _, g := range groups {
+		for _, v := range g {
+			if !affairStatesItsOutcome(v.Affair.Type) {
+				continue
+			}
+			// The business would take a verdict; the ballot must not give one.
+			if v.Decision != "" {
+				t.Errorf("vote %s (%s, %s): Decision = %q, want none — a threshold vote states no outcome",
+					v.SourceID, v.Affair.Type, v.Type, v.Decision)
+			}
+			checked = true
+		}
+	}
+	if !checked {
+		t.Fatal("fixtures no longer contain a verdict-bearing business to test the ballot gate against")
 	}
 }
 

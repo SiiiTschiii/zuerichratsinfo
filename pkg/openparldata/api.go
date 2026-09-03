@@ -136,7 +136,12 @@ func (c *Client) applyDetails(vs []votes.Vote) {
 		// stops the vote publishing. Votes the source says nothing about never
 		// reach here.
 		vs[i].Type = d.Type
-		if d.Decision != "" && vs[i].Decision == "" && affairStatesItsOutcome(vs[i].Affair.Type) {
+		// Two independent gates, and a verdict needs both: the business has to
+		// be one an "angenommen" is honest for, and the ballot has to be one
+		// whose reported outcome means what it says. A threshold vote fails the
+		// second even on a Vorlage, which passes the first.
+		if d.Decision != "" && vs[i].Decision == "" &&
+			affairStatesItsOutcome(vs[i].Affair.Type) && ballotStatesItsOutcome(vs[i].Type) {
 			vs[i].Decision = d.Decision
 		}
 	}
@@ -395,4 +400,40 @@ var verdictBearingAffairTypes = map[string]bool{
 // label for a vote on this kind of business.
 func affairStatesItsOutcome(affairType string) bool {
 	return verdictBearingAffairTypes[strings.TrimSpace(affairType)]
+}
+
+// binaryBallotTypes are the ballot types whose reported outcome can be taken at
+// face value, because Ja and Nein are the two sides of one question: "more Ja
+// than Nein" and "the question carried" are then the same statement.
+//
+// It is an allowlist because the detail source's outcome cannot be trusted
+// anywhere else. On a threshold vote the archive reports the question carried
+// whether or not the threshold was met — measured over the 200 most recent
+// Kanton Zürich votings, every quorum vote came back "yes", including an
+// Einzelinitiative at 13 supporters of 180 where 60 are needed, and one at 59
+// that missed by a single supporter. The affair's own state corroborates that
+// threshold exactly: every one below 60 is "Erledigt", every one at or above it
+// went on to the Kommission. The archive appears to derive its result from
+// Ja > Nein, which is trivially true where Nein is structurally 0 — the same
+// derivation this package removed from decision(), for the same reason.
+//
+// What makes that urgent rather than theoretical is the Ausgabenbremse. It is
+// a threshold vote, needing 91 of 180, and it sits on a Vorlage, which
+// verdictBearingAffairTypes does allow — so without this second gate a
+// spending brake that failed would be published as "✅ Angenommen". Every
+// Ausgabenbremse in that window cleared 91, so nothing wrong has gone out.
+//
+// Deriving the outcome ourselves is possible in principle, since the
+// thresholds are fixed, but is deliberately not done here: neither source
+// publishes them, and hard-coding them into an adapter is a separate decision
+// with its own way of going wrong.
+var binaryBallotTypes = map[string]bool{
+	"Normal": true,
+}
+
+// ballotStatesItsOutcome reports whether a vote of this ballot type reports an
+// outcome that means what it says. Threshold and knockout ballots do not, and
+// an unrecognised type is not assumed to.
+func ballotStatesItsOutcome(voteType string) bool {
+	return binaryBallotTypes[strings.TrimSpace(voteType)]
 }
