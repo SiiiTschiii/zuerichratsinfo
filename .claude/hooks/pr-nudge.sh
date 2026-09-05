@@ -7,10 +7,33 @@
 # not an error here.
 set -uo pipefail
 
-mode=${1:-opened}
+# The mode is decided from the command rather than by a matcher in
+# settings.json. That pattern is fuzzy — `git status` matches `git push *` —
+# and a reminder delivered on an unrelated command is noise the agent carries
+# for the rest of the session.
+payload=""
+[ -t 0 ] || payload=$(cat)
+cmd=$(printf '%s' "$payload" | jq -r '.tool_input.command // ""' 2>/dev/null)
+
+mode=${1:-}
+case "$cmd" in
+  *--dry-run*)      exit 0 ;;
+  *"gh pr create"*) mode=opened ;;
+  *"git push"*)     mode=pushed ;;
+esac
+[ -n "$mode" ] || exit 0
 
 pr=$(gh pr view --json number,state -q 'select(.state == "OPEN") | .number' 2>/dev/null) || exit 0
 [ -n "$pr" ] || exit 0
+
+# One reminder per head commit per mode. Without this a re-push of an unchanged
+# branch, or a matcher that fires twice for one tool call, repeats a paragraph
+# the agent has already read.
+if git_dir=$(git rev-parse --git-dir 2>/dev/null) && head=$(git rev-parse HEAD 2>/dev/null); then
+  marker="$git_dir/pr-nudge-$pr-$mode-$head"
+  [ -e "$marker" ] && exit 0
+  : > "$marker"
+fi
 
 case "$mode" in
   opened)
