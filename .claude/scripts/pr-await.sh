@@ -54,7 +54,15 @@ while :; do
     exit 2
   fi
 
-  read -r total pending <<<"$(checks_state)"
+  # Assigned before the read: a here-string hides the failure, because the
+  # command that set -e sees is `read`, which succeeds on the awk fallback of
+  # "0 0" — and a failed query would then be indistinguishable from a sha with
+  # no checks yet.
+  if ! state=$(checks_state); then
+    echo "querying check runs for $head failed"
+    exit 1
+  fi
+  read -r total pending <<<"$state"
   reviewed=0
   [ "$want_review" -eq 1 ] && reviewed=$(copilot_reviewed)
 
