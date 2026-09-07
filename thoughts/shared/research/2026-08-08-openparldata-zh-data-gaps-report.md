@@ -678,7 +678,9 @@ below are templates whose output has to be pasted in before filing.
 1. **Are the fields still null for ZH?** The finding is carried over from the
    [feasibility pass](2026-08-05-openparldata-federal-kantonsrat-feasibility.md)
    of 2026-08-05 (§2.2 and the gap list), not re-measured. #178 shipped within
-   hours, so a month-old null is not safe to assert.
+   hours, so a month-old null is not safe to assert. The sweep in the draft
+   covers all 2,626 ZH votings rather than a sample, because the title claims
+   every one of them.
 2. **Do other bodies populate them?** That is what makes this a ZH pipeline gap
    rather than a schema-wide one. The feasibility pass saw
    `meaning_of_yes_de: "Annahme der Vorlage"` on Nationalrat votings, but
@@ -722,10 +724,29 @@ for, so it is as much a question as a report.
 
 #### The fields are null for ZH
 
+"Every voting" is a claim a 200-record sample cannot carry — ZH had 2,626 votings
+at last count (`meta.total_records`) — so this sweeps all of them:
+
 ```bash
-curl -s "https://api.openparldata.ch/v1/votings/?body_key=ZH&limit=200&lang_format=flat" \
+offset=0
+while :; do
+  page=$(curl -s "https://api.openparldata.ch/v1/votings/?body_key=ZH&limit=200&offset=$offset&lang_format=flat")
+  jq -c '.data[] | {y: .meaning_of_yes_de, n: .meaning_of_no_de}' <<<"$page"
+  [ "$(jq -r '.meta.has_more' <<<"$page")" = true ] || break
+  offset=$((offset + 200))
+done | sort | uniq -c | sort -rn
+```
+
+The comparison against a body that does populate the fields needs no sweep, because
+one non-null row settles it:
+
+```bash
+curl -s "https://api.openparldata.ch/v1/votings/?body_key=CHE&limit=200&lang_format=flat" \
   | jq '[.data[] | {y: .meaning_of_yes_de, n: .meaning_of_no_de}] | group_by(.) | map({v: .[0], n: length})'
 ```
+
+If ZH comes back all-null and CHE does not, the gap is in the ZH pipeline rather
+than the schema.
 
 #### Why it matters more than it looks
 
