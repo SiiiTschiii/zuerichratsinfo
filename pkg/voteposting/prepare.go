@@ -26,9 +26,11 @@ var ErrUnsupportedVoteType = errors.New("unsupported vote type")
 // day and skipping them is the intended behaviour, not a fault to report.
 var ErrUnpostableVoteType = errors.New("vote type not published")
 
-// ErrInconsistentDecision is returned when a vote's Decision field contradicts
-// its raw vote counts (e.g. the source says "Ja" but Nein > Ja). The entire run
-// is aborted so no platform posts incorrect results.
+// ErrInconsistentDecision is returned for a vote whose Decision field
+// contradicts its raw counts (e.g. the source says "Ja" but Nein > Ja). The
+// vote is skipped rather than posted — publishing a verdict the counts do not
+// support is the one outcome this pipeline must never produce — and the run
+// ends non-zero so the failure reaches somebody.
 var ErrInconsistentDecision = errors.New("decision contradicts vote counts")
 
 // PrepareVoteGroups fetches recent votes from a source, drops the ones already
@@ -65,21 +67,6 @@ func PrepareVoteGroups(
 	groups, err := src.GroupByAffair(unposted)
 	if err != nil {
 		return nil, err
-	}
-
-	// Validate every vote's Decision against its counts. If the source has
-	// published wrong data (e.g. "Ja" when Nein > Ja), abort before posting
-	// anything so the workflow fails and alerts the operator.
-	for _, group := range groups {
-		for _, v := range group {
-			if !voteformat.IsDecisionConsistent(v.Decision, v.Yes, v.No) {
-				return nil, fmt.Errorf("%w: %s (%s) has Decision=%q but Ja=%d Nein=%d",
-					ErrInconsistentDecision,
-					v.Affair.Number, v.Title,
-					v.Decision, *v.Yes, *v.No,
-				)
-			}
-		}
 	}
 
 	applyCompletenessGate(groups)
@@ -214,14 +201,14 @@ func PostToPlatform(
 ) (int, error) {
 	posted := 0
 
-	var firstUnsupportedErr error
+	var firstRejection error
 
 	for _, group := range groups {
 		if len(group) == 0 {
 			continue
 		}
 		// Drop votes no formatter can render, keeping the rest of the group.
-		group := postableVotes(group, &firstUnsupportedErr)
+		group := postableVotes(group, &firstRejection)
 		if len(group) == 0 {
 			continue
 		}
@@ -293,8 +280,8 @@ func PostToPlatform(
 		}
 	}
 
-	if firstUnsupportedErr != nil {
-		return posted, firstUnsupportedErr
+	if firstRejection != nil {
+		return posted, firstRejection
 	}
 	return posted, nil
 }
@@ -318,13 +305,14 @@ func postableVotes(group []votes.Vote, firstErr *error) []votes.Vote {
 	postable := make([]votes.Vote, 0, len(group))
 	for _, v := range group {
 		if err := validateVote(v); err != nil {
-			log.Printf("⚠️  Skipping vote: %v\n   %s", err, v.SourceURL)
-			// Only an unrecognised type ends the run non-zero. A type we know
-			// and have chosen not to publish is routine — every sitting opens
-			// with an attendance roll call — and failing on those would leave
-			// the run permanently red while the bot behaves exactly as
-			// intended.
-			if errors.Is(err, ErrUnsupportedVoteType) && *firstErr == nil {
+			log.Printf("⚠️  Skipping vote: %v", err)
+			// A type we know and have chosen not to publish is routine —
+			// every sitting opens with an attendance roll call — and failing
+			// on those would leave the run permanently red while the bot
+			// behaves exactly as intended. The other two rejections mean the
+			// source is serving something we cannot vouch for, and nobody
+			// finds out unless the run reports it.
+			if !errors.Is(err, ErrUnpostableVoteType) && *firstErr == nil {
 				*firstErr = err
 			}
 			continue
@@ -332,6 +320,14 @@ func postableVotes(group []votes.Vote, firstErr *error) []votes.Vote {
 		postable = append(postable, v)
 	}
 	return postable
+}
+
+// IsRejectedVoteError reports whether an error is the pipeline refusing to
+// publish a vote, as opposed to a platform failing to post one. The two need
+// different words in the log: the first means the run did its job on everything
+// else, the second means it did not.
+func IsRejectedVoteError(err error) bool {
+	return errors.Is(err, ErrUnsupportedVoteType) || errors.Is(err, ErrInconsistentDecision)
 }
 
 // PostableGroups applies the posting filter without posting, so a preview shows
@@ -349,14 +345,20 @@ func PostableGroups(groups [][]votes.Vote) [][]votes.Vote {
 	return out
 }
 
-// validateVote checks that one vote is something the formatters can render: a
-// type on the handled list, and a recognisable count format (standard Ja/Nein
-// or Auswahl A-E).
+// validateVote checks that one vote is something this pipeline can publish: a
+// type on the handled list, a recognisable count format (standard Ja/Nein or
+// Auswahl A-E), and a stated decision its own counts support.
 //
 // The type check is what catches a source starting to serve something new. The
 // count check alone would not: an attendance determination and a quorum vote
 // both look like a perfectly ordinary lopsided Ja/Nein tally, and would post
 // happily while saying something untrue about how parliament voted.
+//
+// The decision check catches the other direction, a type we render correctly
+// carrying a verdict the source got wrong — PARIS reported the 02.09.2026
+// Zuweisung on 2026/408 as carried at 56 Ja to 58 Nein, and corrected it days
+// later. Rendering that would have published the opposite of what the council
+// decided.
 func validateVote(v votes.Vote) error {
 	// A stille Wahl is an Anwesenheitsermittlung that IsKnownUnpostableType
 	// would otherwise reject: an uncontested election whose title names who
@@ -367,18 +369,44 @@ func validateVote(v votes.Vote) error {
 		return nil
 	}
 	if voteformat.IsKnownUnpostableType(v.Type) {
-		return fmt.Errorf("%w: vote %s (%q, %s) has type %q, which is not published",
+		return withVoteLink(v, "%w: vote %s (%q, %s) has type %q, which is not published",
 			ErrUnpostableVoteType, v.SourceID, voteDescription(v), countsSummary(v), v.Type)
 	}
 	if !voteformat.IsHandledVoteType(v.Type) {
-		return fmt.Errorf("%w: vote %s (%q, %s) has type %q, which no formatter handles",
+		return withVoteLink(v, "%w: vote %s (%q, %s) has type %q, which no formatter handles",
 			ErrUnsupportedVoteType, v.SourceID, voteDescription(v), countsSummary(v), v.Type)
 	}
 	if voteformat.IsUnsupportedVoteType(voteformat.CountsOf(v)) {
-		return fmt.Errorf("%w: vote %s (%q, type=%q) has all-zero counts",
+		return withVoteLink(v, "%w: vote %s (%q, type=%q) has all-zero counts",
 			ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)
 	}
+	// Last, so that a vote we would not publish anyway is reported as the
+	// routine skip it is rather than as a data fault that reddens the run.
+	if !voteformat.IsDecisionConsistent(v.Decision, v.Yes, v.No) {
+		return withVoteLink(v, "%w: %s %q (%s) has Decision=%q but Ja=%d Nein=%d",
+			ErrInconsistentDecision,
+			v.Affair.Number,
+			voteformat.CleanVoteSubtitle(voteDescription(v)),
+			voteformat.CleanVoteTitle(v.Affair.Title),
+			v.Decision, *v.Yes, *v.No,
+		)
+	}
 	return nil
+}
+
+// withVoteLink formats a rejection and hangs the source's own page for the vote
+// underneath it.
+//
+// Every rejection here is read by somebody who then has to decide whether the
+// source is wrong or we are, and the only way to decide is to look at the vote.
+// Identifying it from a business number and a title used to take three API calls
+// by hand. Sources that publish no per-vote page get the message alone.
+func withVoteLink(v votes.Vote, format string, args ...any) error {
+	err := fmt.Errorf(format, args...)
+	if v.SourceURL == "" {
+		return err
+	}
+	return fmt.Errorf("%w\n   %s", err, v.SourceURL)
 }
 
 // voteDescription names the vote for a log line, preferring whichever of the

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
@@ -621,5 +622,118 @@ func TestPostToPlatform_AttendanceRollCallDoesNotMaskAnUnknownType(t *testing.T)
 
 	if !errors.Is(err, ErrUnsupportedVoteType) {
 		t.Fatalf("expected the unknown type to still fail the run, got %v", err)
+	}
+}
+
+// TestPostToPlatform_InconsistentDecisionIsSkippedButStillFailsTheRun covers the
+// 08.09.2026 run, which aborted on one bad record from PARIS.
+//
+// The source reported the 02.09.2026 Zuweisung on 2026/408 as carried at 56 Ja
+// to 58 Nein, and corrected it days later. Publishing that verdict was never an
+// option — but neither was what happened instead: the whole run died before its
+// first post, taking both jurisdictions and every other platform with it, on
+// data nobody here could fix.
+//
+// So the vote is dropped like any other the pipeline will not render, and the
+// run still ends non-zero, because a silent skip on wrong data is how a
+// correction goes unnoticed for a fortnight.
+func TestPostToPlatform_InconsistentDecisionIsSkippedButStillFailsTheRun(t *testing.T) {
+	defer setupTempDir(t)()
+
+	sound := createVote("2026-408-schluss", "2026/408", "2026-09-02")
+	contradictory := createVote("2026-408-zuweisung", "2026/408", "2026-09-02")
+	ja, nein := 56, 58
+	contradictory.Yes, contradictory.No = &ja, &nein
+	contradictory.Decision = "Ja"
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	posted, err := PostToPlatform([][]votes.Vote{{sound, contradictory}}, mockPlatform,
+		SingleLog(testJurisdiction, voteLog), false)
+
+	if !errors.Is(err, ErrInconsistentDecision) {
+		t.Fatalf("expected ErrInconsistentDecision, got %v", err)
+	}
+	if !IsRejectedVoteError(err) {
+		t.Error("an inconsistent decision must read as a rejected vote, not a posting failure")
+	}
+	// The rest of the business is published rather than held hostage by it.
+	if posted != 1 {
+		t.Errorf("posted = %d, want the sound vote posted anyway", posted)
+	}
+	if !voteLog.IsPosted("2026-408-schluss") {
+		t.Error("sound vote was not marked as posted")
+	}
+	if voteLog.IsPosted("2026-408-zuweisung") {
+		t.Error("contradictory vote was marked as posted; it would never be revisited")
+	}
+	if got := len(mockPlatform.lastGroup); got != 1 {
+		t.Errorf("formatter received %d votes, want only the consistent one", got)
+	}
+}
+
+// The message a rejection carries is the whole interface an operator gets from a
+// failed run: they have to look at the vote on the source's own site to decide
+// whether PARIS is wrong or we are. Identifying the 2026/408 Zuweisung from an
+// error that named only the business number and a Traktandum title full of
+// literal newlines took three API calls by hand.
+func TestValidateVoteRejectionNamesTheVoteAndLinksToIt(t *testing.T) {
+	ja, nein := 56, 58
+	v := votes.Vote{
+		SourceID:  "ab0946e0bffb459dafd828d032627edb",
+		Type:      "Normal",
+		Title:     "2026/408 Weisung vom 19.08.2026:\nPräsidialdepartement, Stadtkanzlei,\r\nErklärvideos",
+		Subtitle:  "2026_0408 Zuweisung",
+		Yes:       &ja,
+		No:        &nein,
+		Decision:  "Ja",
+		SourceURL: "https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=ab0946e0bffb459dafd828d032627edb",
+		Affair: votes.Affair{
+			Number: "2026/408",
+			Title:  "Präsidialdepartement, Stadtkanzlei, Erklärvideos zu den kommunalen Abstimmungsvorlagen, neue wiederkehrende Ausgaben",
+		},
+	}
+
+	err := validateVote(v)
+	if !errors.Is(err, ErrInconsistentDecision) {
+		t.Fatalf("validateVote() = %v, want ErrInconsistentDecision", err)
+	}
+
+	msg := err.Error()
+	for _, want := range []string{
+		v.SourceURL,     // the link that makes it debuggable
+		"2026/408",      // which business
+		"Zuweisung",     // which ballot within it
+		`Decision="Ja"`, // what the source claims
+		"Ja=56 Nein=58", // and what its own counts say
+	} {
+		if !strings.Contains(msg, want) {
+			t.Errorf("error message missing %q:\n%s", want, msg)
+		}
+	}
+
+	// Everything but the link stays on one line: PARIS titles carry literal
+	// newlines, and folding them in stranded the counts several lines below the
+	// vote they belong to.
+	head, _, _ := strings.Cut(msg, "\n")
+	if !strings.Contains(head, "Ja=56 Nein=58") {
+		t.Errorf("counts are not on the first line of the message:\n%s", msg)
+	}
+}
+
+// A source with no per-vote page must not leave a rejection trailing an empty
+// line where the link would be.
+func TestValidateVoteRejectionWithoutASourceURL(t *testing.T) {
+	v := createVote("no-link", "250999", "2026-08-17")
+	v.Type = "Anwesenheitsermittlung"
+	v.SourceURL = ""
+
+	err := validateVote(v)
+	if !errors.Is(err, ErrUnpostableVoteType) {
+		t.Fatalf("validateVote() = %v, want ErrUnpostableVoteType", err)
+	}
+	if strings.Contains(err.Error(), "\n") {
+		t.Errorf("message has a dangling line for the absent link:\n%q", err.Error())
 	}
 }

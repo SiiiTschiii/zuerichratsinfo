@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -221,7 +220,11 @@ func runChannelPlatform(
 
 	posted, err := voteposting.PostToPlatform(merged, p.poster, logs, false)
 	if err != nil {
-		if errors.Is(err, voteposting.ErrUnsupportedVoteType) && posted > 0 {
+		// A vote the pipeline refused to publish does not undo the ones it
+		// did: say what went out before reporting the failure, or the log
+		// reads as though the run posted nothing. A genuine posting failure
+		// gets no such line — there "some skipped" would be a lie.
+		if voteposting.IsRejectedVoteError(err) && posted > 0 {
 			fmt.Printf("Posted %d group(s) to %s (some skipped — see warnings above)\n", posted, p.displayName)
 		}
 		log.Printf("❌ Error posting to %s: %v", p.displayName, err)
