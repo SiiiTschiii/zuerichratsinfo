@@ -728,3 +728,29 @@ func TestFormatVoteThread_CantonPostsWithinLimit(t *testing.T) {
 		})
 	}
 }
+
+// TestFormatVoteThread_NoDuplicateFacetOffsets pins the faceting half of the
+// duplicate-link problem: buildLinkFacets locates a URL with strings.Index, so
+// two identical URLs in one block would both facet the first occurrence,
+// leaving overlapping ranges and the second copy unlinked. voteformat drops the
+// duplicate; this fails if it ever stops.
+func TestFormatVoteThread_NoDuplicateFacetOffsets(t *testing.T) {
+	const segment = "https://zh.recapp.ch/shareparl?agendaItemUid=i&segmentUid=s"
+	group := []votes.Vote{{
+		SourceID: "no-affair", Title: "Mitteilungen", Body: "Kantonsrat ZH",
+		Date: testfixtures.MustDate("2026-08-31"),
+		Yes:  intPtr(100), No: intPtr(50), Abstention: intPtr(0), Absent: intPtr(30),
+		SourceURL: segment, GroupURL: segment, ArchiveURL: segment,
+		SessionURL: "https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?d=1",
+	}}
+
+	seen := map[int]bool{}
+	for _, post := range FormatVoteThread(group, nil) {
+		for _, f := range post.Facets {
+			if seen[f.Index.ByteStart] {
+				t.Errorf("two facets start at byte %d\n%s", f.Index.ByteStart, post.Text)
+			}
+			seen[f.Index.ByteStart] = true
+		}
+	}
+}

@@ -1171,6 +1171,22 @@ func TestGroupLinks(t *testing.T) {
 		}
 	})
 
+	t.Run("a vote with no business matter is not labelled as one", func(t *testing.T) {
+		// applyAffair never ran, so both URL fields still hold the archive link.
+		noAffair := votes.Vote{
+			SourceURL: segment, GroupURL: segment,
+			ArchiveURL: segment, SessionURL: sitting,
+		}
+		got := GroupLinks([]votes.Vote{noAffair})
+		want := []Link{
+			{Icon: "🎬", Name: "Video", URL: segment},
+			{Icon: "📄", Name: "Sitzung", URL: sitting},
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("GroupLinks() = %+v, want the archive named once and no Geschäft: %+v", got, want)
+		}
+	})
+
 	t.Run("a group whose archive has no agenda item drops the entry", func(t *testing.T) {
 		noItem := canton
 		noItem.ArchiveGroupURL = ""

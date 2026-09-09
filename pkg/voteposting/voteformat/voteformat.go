@@ -809,9 +809,20 @@ func GroupLinks(group []votes.Vote) []Link {
 		archive = first.ArchiveGroupURL
 	}
 
+	// A vote that belongs to no business matter never had its URLs replaced by
+	// an affair page, so both fields still hold the archive link the listing
+	// supplied — 47 Kanton Zürich votings carry no affair_id at all. Printing it
+	// twice would label the first copy "Geschäft", which it is not, and give
+	// Bluesky two facets hunting the same byte offset. The archive naming is the
+	// honest one, so that is the copy that survives.
+	business := GroupLink(group)
+	if business == archive {
+		business = ""
+	}
+
 	var out []Link
 	for _, l := range []Link{
-		{Icon: "🔗", Name: "Geschäft", URL: GroupLink(group)},
+		{Icon: "🔗", Name: "Geschäft", URL: business},
 		{Icon: "🎬", Name: "Video", URL: archive},
 		{Icon: "📄", Name: "Sitzung", URL: first.SessionURL},
 	} {
