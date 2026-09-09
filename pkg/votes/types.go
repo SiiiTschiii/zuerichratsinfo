@@ -67,6 +67,29 @@ type Vote struct {
 	SourceURL string
 	GroupURL  string
 
+	// ArchiveURL links to the parliament's own record of the vote itself,
+	// rather than of the business it belongs to: the debate, the tally and,
+	// where the body publishes one, the Namensliste. ArchiveGroupURL is the
+	// same thing widened to the agenda item, for a post covering several votes.
+	//
+	// They exist because the business page is the durable link but not the
+	// prompt one. Kanton Zürich adds a vote to its Geschäft page ten to sixteen
+	// days after the sitting, so for the first fortnight the permalink a post
+	// carries says nothing about the vote the post is about. The archive has it
+	// within the hour.
+	//
+	// Empty when the source publishes no such page.
+	ArchiveURL      string
+	ArchiveGroupURL string
+
+	// SessionURL links to the sitting this vote was taken in, where the body
+	// publishes the Traktandenliste, the Bulletin and the recording as one
+	// entry. It is per-sitting rather than per-vote, so every vote of a day
+	// carries the same value.
+	//
+	// Empty when the source has no sitting page.
+	SessionURL string
+
 	// Totals. Nil means "not reported", which is distinct from zero.
 	Yes, No, Abstention, Absent *int
 	ChoiceA, ChoiceB, ChoiceC   *int

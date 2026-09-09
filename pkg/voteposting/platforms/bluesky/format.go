@@ -37,11 +37,13 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 	// verdict emoji, none of which mean anything for an uncontested election.
 	if len(group) == 1 {
 		if sw, ok := voteformat.AsStilleWahl(group[0]); ok {
-			post := buildStilleWahlPost(group, sw)
+			posts := buildStilleWahlPosts(group, sw)
 			if contactMapper != nil {
-				post.Mentions = contactMapper.FindBlueskyMentions(post.Text)
+				for _, post := range posts {
+					post.Mentions = contactMapper.FindBlueskyMentions(post.Text)
+				}
 			}
-			return []*BlueskyPost{post}
+			return posts
 		}
 	}
 
@@ -58,7 +60,7 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 	// line here, where truncating the title to keep them would have cost the
 	// subject of the vote.
 	replies := buildReplyPosts(group, voteformat.SignatoryLine(deferred),
-		voteformat.LinkLine(group), voteformat.GroupLink(group))
+		voteformat.LinkLine(group), linkURLs(group))
 
 	thread := make([]*BlueskyPost, 0, 1+len(replies))
 	thread = append(thread, root)
@@ -74,28 +76,39 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 	return thread
 }
 
-// buildStilleWahlPost builds the single post announcing a stille Wahl: the
-// office and who was elected to it, and a link — no counts, no verdict emoji,
-// no thread. See voteformat.AsStilleWahl/StilleWahlBody for why.
-func buildStilleWahlPost(group []votes.Vote, sw voteformat.StilleWahl) *BlueskyPost {
+// buildStilleWahlPosts announces a stille Wahl: the office and who was elected
+// to it, and the links — no counts, no verdict emoji, no "Details im Thread".
+// See voteformat.AsStilleWahl/StilleWahlBody for why.
+//
+// It stays one post wherever the links fit on it, which is what a stille Wahl
+// should be: there is nothing to put in a thread. Where they do not — Kanton
+// Zürich carries three links plus the licence credit, some 380 graphemes
+// against a 300 limit — they spill into replies rather than the post going to
+// the API at a length it rejects.
+func buildStilleWahlPosts(group []votes.Vote, sw voteformat.StilleWahl) []*BlueskyPost {
 	header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
 	link := voteformat.LinkLine(group)
 	body := voteformat.StilleWahlBody(sw)
+	urls := linkURLs(group)
 
-	fullText := header + body + link
-	if graphemeLen(fullText) > maxGraphemes {
-		// Extremely unlikely (every Amt seen in practice is well under this
-		// budget), but truncate rather than post something the API rejects.
-		// truncateText appends its own "…", so that has to come out of the
-		// budget too, or the truncated post still overruns by its length.
-		available := maxGraphemes - graphemeLen(header) - graphemeLen(link) - graphemeLen("…")
-		if available > 0 {
-			body = truncateText(body, available)
-		}
-		fullText = header + body + link
+	if graphemeLen(header+body+link) <= maxGraphemes {
+		return []*BlueskyPost{makePost(header+body+link, urls...)}
 	}
 
-	return makePost(fullText, voteformat.GroupLink(group))
+	// The body is budgeted against the header alone, because the links are no
+	// longer riding on this post. truncateText appends its own "…", so that has
+	// to come out of the budget too, or the truncated post still overruns by
+	// its length. Truncating at all is extremely unlikely — every Amt seen in
+	// practice is well under this budget.
+	if available := maxGraphemes - graphemeLen(header) - graphemeLen("…"); available > 0 {
+		body = truncateText(body, available)
+	}
+
+	posts := []*BlueskyPost{makePost(header + body)}
+	for _, chunk := range linkChunks(link) {
+		posts = append(posts, makePost(chunk, urls...))
+	}
+	return posts
 }
 
 // buildRootPost creates the root post with header, title, result, and thread hint.
@@ -163,7 +176,7 @@ func buildRootPost(group []votes.Vote, title string) (*BlueskyPost, []votes.Auth
 // buildReplyPosts creates reply posts with vote details and link.
 // Packs as many vote entries as fit into each reply (≤300 graphemes).
 // The link is appended to the last reply.
-func buildReplyPosts(group []votes.Vote, signatoryLine, linkLine, linkURL string) []*BlueskyPost {
+func buildReplyPosts(group []votes.Vote, signatoryLine, linkLine string, linkURLs []string) []*BlueskyPost {
 
 	// Build individual vote entry strings
 	var entries []string
@@ -233,7 +246,7 @@ func buildReplyPosts(group []votes.Vote, signatoryLine, linkLine, linkURL string
 		if currentLen+separatorLen+entryLen+extraLen > maxGraphemes && len(currentEntries) > 0 {
 			// Flush current reply (without link — not the last entry yet)
 			replyText := strings.Join(currentEntries, "\n\n")
-			replies = append(replies, makePost(replyText, ""))
+			replies = append(replies, makePost(replyText))
 			currentEntries = nil
 			currentLen = 0
 		}
@@ -251,38 +264,93 @@ func buildReplyPosts(group []votes.Vote, signatoryLine, linkLine, linkURL string
 	if len(currentEntries) > 0 {
 		body := strings.Join(currentEntries, "\n\n")
 		if graphemeLen(body+linkLine) <= maxGraphemes {
-			replies = append(replies, makePost(body+linkLine, linkURL))
-		} else {
-			replies = append(replies, makePost(body, ""))
-			replies = append(replies, makePost(strings.TrimLeft(linkLine, "\n"), linkURL))
+			return append(replies, makePost(body+linkLine, linkURLs...))
 		}
+		replies = append(replies, makePost(body))
+	}
+	for _, chunk := range linkChunks(linkLine) {
+		replies = append(replies, makePost(chunk, linkURLs...))
 	}
 
 	return replies
 }
 
-// makePost creates a BlueskyPost with optional link facet.
-func makePost(text, link string) *BlueskyPost {
-	post := &BlueskyPost{Text: text}
-	if link != "" {
-		post.Facets = buildLinkFacets(text, link)
-	}
-	return post
-}
-
-// buildLinkFacets finds the URL in the text and creates a link facet for it.
-func buildLinkFacets(text, url string) []bskyapi.Facet {
-	idx := strings.Index(text, url)
-	if idx < 0 {
+// linkChunks packs the trailing link block into as few posts as hold it,
+// splitting only between lines.
+//
+// Bluesky counts graphemes where X charges a flat 23 per URL, so a link block
+// that costs 128 characters of an X post costs nearly 380 of a Bluesky one —
+// more than a post can hold. The block therefore has to be able to span
+// replies, and it has to break between lines: a URL cut in half is a URL nobody
+// can click, and the second half posts as plain text.
+//
+// A single line longer than the limit is returned as it stands. No source
+// produces one — the longest link this posts is a recapp deep link at about 130
+// graphemes with its label — and there is nothing truthful to do with it here
+// anyway, since a URL cannot be shortened without breaking it.
+func linkChunks(block string) []string {
+	block = strings.Trim(block, "\n")
+	if block == "" {
 		return nil
 	}
 
-	byteStart := len(text[:idx])
-	byteEnd := byteStart + len(url)
-
-	return []bskyapi.Facet{
-		bskyapi.LinkFacet(byteStart, byteEnd, url),
+	var out []string
+	current := ""
+	for _, line := range strings.Split(block, "\n") {
+		if current == "" {
+			current = line
+			continue
+		}
+		if graphemeLen(current+"\n"+line) > maxGraphemes {
+			out = append(out, current)
+			current = line
+			continue
+		}
+		current += "\n" + line
 	}
+	return append(out, current)
+}
+
+// linkURLs is the URLs of the trailing link block, in render order, for
+// faceting.
+func linkURLs(group []votes.Vote) []string {
+	links := voteformat.GroupLinks(group)
+	out := make([]string, 0, len(links))
+	for _, l := range links {
+		out = append(out, l.URL)
+	}
+	return out
+}
+
+// makePost creates a BlueskyPost with a link facet per URL it carries.
+func makePost(text string, links ...string) *BlueskyPost {
+	return &BlueskyPost{Text: text, Facets: buildLinkFacets(text, links)}
+}
+
+// buildLinkFacets locates each URL in the text and creates a link facet for it.
+//
+// Bluesky renders no URL as a link unless a facet says so, so a post carrying
+// three links needs three facets: miss one and that line publishes as plain
+// text a reader has to copy by hand. Facets must also arrive in ascending byte
+// order, which they do here because the links are searched in the order
+// voteformat.GroupLinks rendered them.
+//
+// A URL the text does not contain is skipped rather than faceted at a wrong
+// offset — a facet whose range does not cover its own URL would linkify some
+// neighbouring stretch of the post.
+func buildLinkFacets(text string, urls []string) []bskyapi.Facet {
+	var facets []bskyapi.Facet
+	for _, u := range urls {
+		if u == "" {
+			continue
+		}
+		idx := strings.Index(text, u)
+		if idx < 0 {
+			continue
+		}
+		facets = append(facets, bskyapi.LinkFacet(idx, idx+len(u), u))
+	}
+	return facets
 }
 
 // truncateText truncates a string to fit within maxRunes graphemes, adding "…".

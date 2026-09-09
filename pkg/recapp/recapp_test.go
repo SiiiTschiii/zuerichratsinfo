@@ -214,3 +214,25 @@ func TestVoteTypeFromTitle(t *testing.T) {
 		}
 	}
 }
+
+func TestItemURL(t *testing.T) {
+	const item = "https://zh.recapp.ch/shareparl?agendaItemUid=c1c8edec-fde9-47ac-884a-987165474821"
+
+	got := ItemURL("https://zh.recapp.ch/shareparl?agendaItemUid=c1c8edec-fde9-47ac-884a-987165474821" +
+		"&segmentUid=c838b2b9-f98b-49e2-8843-81adb1b5b3f3")
+	if got != item {
+		t.Errorf("ItemURL() = %q, want the segment dropped: %q", got, item)
+	}
+
+	for _, in := range []string{
+		"",
+		"https://zh.recapp.ch/shareparl?segmentUid=c838b2b9-f98b-49e2-8843-81adb1b5b3f3",
+		"https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=374e1a29c38343e8b4ee2ef8acb6ed0c",
+	} {
+		if got := ItemURL(in); got != "" {
+			// Returning the input, or a bare shareparl URL, would publish a
+			// link to the archive's front door as if it named this vote.
+			t.Errorf("ItemURL(%q) = %q, want no link at all", in, got)
+		}
+	}
+}

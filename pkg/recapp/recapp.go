@@ -29,6 +29,32 @@ import (
 // DefaultBaseURL is the archive's viewer API root.
 const DefaultBaseURL = "https://zh.recapp.ch/viewer/api/shareparl"
 
+// shareBaseURL is the archive's reader-facing viewer, which is a different host
+// path from the API above and is never redirected to a test server: ItemURL
+// produces a link for publication, not a request this package makes.
+const shareBaseURL = "https://zh.recapp.ch/shareparl"
+
+// ItemURL widens a vote's archive URL to the agenda item that holds it.
+//
+// The URL the source publishes for a vote names two things — the agenda item
+// and the one segment within it where that vote was taken. Dropping the segment
+// leaves a page covering the whole item: the same debate, opened at the top
+// instead of at one tally. That is what a post covering several votes of one
+// business matter should link to, because linking to the first vote's segment
+// would be arbitrary and linking to none of them loses the archive entirely.
+//
+// Returns "" for a URL that names no agenda item, which callers must treat as
+// "no such page" rather than substituting the vote's own link.
+func ItemURL(voteURL string) string {
+	uid := agendaItemUID(voteURL)
+	if uid == "" {
+		return ""
+	}
+	q := url.Values{}
+	q.Set("agendaItemUid", uid)
+	return shareBaseURL + "?" + q.Encode()
+}
+
 // Vote types in the neutral vocabulary the formatters already speak. Mapping
 // into it here keeps the archive's naming from leaking downstream.
 const (

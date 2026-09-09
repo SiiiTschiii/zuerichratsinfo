@@ -10,6 +10,7 @@ package testfixtures
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
@@ -550,6 +551,23 @@ func PostulatWithGrNrPrefix() []votes.Vote {
 // canton's own page is used for a single vote as well as a group, rather than
 // the zh.recapp.ch deep link the source supplies per vote. See
 // openparldata.applyAffair.
+// withCantonLinks fills the archive and sitting links every Kanton Zürich vote
+// carries beside its Geschäft permalink: the recapp segment for this one vote,
+// the agenda item for a post covering several of them, and the sitting list
+// narrowed to the day. config.cantonLinks derives all three in production, so a
+// fixture that left them empty would render a link block no cantonal post has.
+func withCantonLinks(v *votes.Vote, agendaItemUID, segmentUID string) {
+	item := "https://zh.recapp.ch/shareparl?agendaItemUid=" + agendaItemUID
+	v.ArchiveURL = item + "&segmentUid=" + segmentUID
+	v.ArchiveGroupURL = item
+
+	day := v.Date.Format("2006-01-02")
+	q := url.Values{}
+	q.Set("startDate", day)
+	q.Set("endDate", day)
+	v.SessionURL = "https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?" + q.Encode()
+}
+
 func KantonsratVote() []votes.Vote {
 	const title = "Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienergänzender Betreuung im Kanton Zürich"
 
@@ -600,6 +618,8 @@ func KantonsratVote() []votes.Vote {
 	// totals, which the source reports independently.
 	v.MemberVotes = append(v.MemberVotes, votes.MemberVote{Name: "Fraktionslos", Choice: "Ja"})
 
+	withCantonLinks(&v, "89f5a593-67ad-4ff5-82b4-818a2bab741a", "921ebc9c-1891-4d4e-bd8f-12d0ab2a7353")
+
 	return []votes.Vote{v}
 }
 
@@ -621,7 +641,8 @@ func KantonsratVote() []votes.Vote {
 // this vote the official record says 6 and 46, where the API says 52.
 func KantonsratMultiVote() []votes.Vote {
 	const title = "Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Objektkredite Velohauptverbindung und Hochwasserschutzmassnahmen in Kloten"
-	const agendaItem = "https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13"
+	const agendaItemUID = "c2c4b880-e83b-4ecc-aadb-5895d0f80f13"
+	const geschaeft = "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2"
 
 	type sub struct {
 		id                  string
@@ -656,16 +677,17 @@ func KantonsratMultiVote() []votes.Vote {
 			No:          intPtr(sv.nein),
 			Abstention:  intPtr(sv.enth),
 			Absent:      intPtr(sv.abw),
-			SourceURL:   agendaItem + "&segmentUid=" + sv.segment,
-			GroupURL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2",
+			SourceURL:   geschaeft,
+			GroupURL:    geschaeft,
 			Attribution: "Source: OpenParlData.ch",
 			Affair: votes.Affair{
 				Number: "6031",
 				Title:  title,
 				ID:     "247676",
-				URL:    "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2",
+				URL:    geschaeft,
 			},
 		}
+		withCantonLinks(&v, agendaItemUID, sv.segment)
 		v.MemberVotes = kantonsratRoster(sv.ja, sv.nein, sv.abw)
 		group = append(group, v)
 	}
@@ -758,6 +780,8 @@ func KantonsratMemberBusiness() []votes.Vote {
 	// The unattached member, as in KantonsratVote: about 1% of the chamber.
 	v.MemberVotes = append(v.MemberVotes, votes.MemberVote{Name: "Fraktionslos", Choice: "Ja"})
 
+	withCantonLinks(&v, "d7dc2b4b-51b2-4c4f-bf9b-9d9b0e1a2c73", "4f0a1d6e-2a83-4b02-9f52-1c6d9f39a5b1")
+
 	return []votes.Vote{v}
 }
 
@@ -826,6 +850,8 @@ func KantonsratCoSignedBusiness() []votes.Vote {
 		{"AL", 5, 0, 0, 0},
 	})
 	v.MemberVotes = append(v.MemberVotes, votes.MemberVote{Name: "Fraktionslos", Choice: "Ja"})
+
+	withCantonLinks(&v, "1a6f4c92-77ad-4e05-8b3c-52b1a0f4d8e6", "8c31b5d0-9e64-4a71-b0d8-3f2a7c6e15b9")
 
 	return []votes.Vote{v}
 }
@@ -907,6 +933,8 @@ func KantonsratCupVote() []votes.Vote {
 		},
 	}
 
+	withCantonLinks(&v, "6b2e8f14-3c57-4d90-a1e6-0d84b7f2c395", "e5470a2d-1b68-4c3f-9a07-6d2e83f14bc0")
+
 	return []votes.Vote{v}
 }
 
@@ -927,7 +955,7 @@ func KantonsratStilleWahl() []votes.Vote {
 	const title = "Wahl Mitglied Obergericht (100%) für Roland Schmid"
 	const geschaeftURL = "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188"
 
-	return []votes.Vote{{
+	v := votes.Vote{
 		SourceID:     "A6172102-0F8C-4C1A-C772-79EB0EA2DE9D",
 		Jurisdiction: "zurich-canton",
 		Body:         "Kantonsrat ZH",
@@ -955,7 +983,11 @@ func KantonsratStilleWahl() []votes.Vote {
 			URL:    geschaeftURL,
 			Type:   "Wahl",
 		},
-	}}
+	}
+
+	withCantonLinks(&v, "f0c93a57-8d21-4e6b-b74a-25c81f0d6e39", "3d18e6b4-5a09-4f27-8c61-b9d047a2e58c")
+
+	return []votes.Vote{v}
 }
 
 // kantonsratRoster spreads a tally across the chamber's factions in roughly

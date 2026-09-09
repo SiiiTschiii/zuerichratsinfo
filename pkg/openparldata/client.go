@@ -53,6 +53,10 @@ type Client struct {
 	// details optionally supplies the vote type and outcome this API omits.
 	// Nil for every body that has no such source, which is all but one.
 	details DetailSource
+
+	// links optionally derives the archive and sitting pages a body publishes
+	// alongside its business pages. Nil for a body that publishes neither.
+	links LinkSource
 }
 
 // VoteDetail is what an out-of-band source knows about a voting beyond what
@@ -81,6 +85,28 @@ type DetailSource interface {
 // can be wired in one expression.
 func (c *Client) WithDetails(d DetailSource) *Client {
 	c.details = d
+	return c
+}
+
+// LinkSource derives the pages a body publishes beside the business page, from
+// what this API already serves about a vote.
+//
+// It is an injected dependency rather than a table in this package because the
+// URLs are properties of one parliament's website, and this adapter serves
+// twenty-odd of them. Both methods return "" when the body has no such page,
+// and callers must publish nothing rather than guessing a URL.
+type LinkSource interface {
+	// ItemURL widens a vote's own archive URL to the page covering every vote
+	// of that agenda item.
+	ItemURL(voteURL string) string
+	// SessionURL returns the page for the sitting held on a date.
+	SessionURL(date time.Time) string
+}
+
+// WithLinks attaches a LinkSource. It returns the client so a jurisdiction can
+// be wired in one expression.
+func (c *Client) WithLinks(l LinkSource) *Client {
+	c.links = l
 	return c
 }
 

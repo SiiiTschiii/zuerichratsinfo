@@ -1752,6 +1752,7 @@ Einzelinitiative betreffend Ausbau des Angebots an Tagesschulen und familienerg�
 [post 1]
 📊 83 Ja | 87 Nein | 0 Enthaltung | 10 Abwesend
 
+[post 2]
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SVP 44/0/0/3
 SP 0/35/0/1
@@ -1762,7 +1763,10 @@ Die Mitte 11/0/0/1
 EVP 0/6/0/1
 AL 0/5/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
+[post 3]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=921ebc9c-1891-4d4e-bd8f-12d0ab2a7353
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
@@ -1786,7 +1790,9 @@ Die Mitte 11/0/0/1
 EVP 0/6/0/1
 AL 0/5/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=921ebc9c-1891-4d4e-bd8f-12d0ab2a7353
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
 Source: OpenParlData.ch
 
 ---- Bluesky ----
@@ -1811,9 +1817,16 @@ Die Mitte 11/0/0/1
 EVP 0/6/0/1
 AL 0/5/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
+[post 3]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=921ebc9c-1891-4d4e-bd8f-12d0ab2a7353
+[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e DID: Tag:}]}
+[facet] {Index:{ByteStart:115 ByteEnd:244} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=921ebc9c-1891-4d4e-bd8f-12d0ab2a7353 DID: Tag:}]}
+
+[post 4]
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:164 ByteEnd:250} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e DID: Tag:}]}
+[facet] {Index:{ByteStart:14 ByteEnd:118} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06 DID: Tag:}]}
 
 ---- Instagram ----
 [images] 1
@@ -1834,7 +1847,9 @@ Die Mitte 11/0/0/1
 EVP 0/6/0/1
 AL 0/5/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=89f5a593-67ad-4ff5-82b4-818a2bab741a&segmentUid=921ebc9c-1891-4d4e-bd8f-12d0ab2a7353
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
 Source: OpenParlData.ch
 
 ################ FIXTURE kantonsrat-multi-vote ################
@@ -1917,7 +1932,9 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
@@ -1994,7 +2011,9 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
 
 ---- Bluesky ----
@@ -2075,9 +2094,16 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+[post 6]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13
+[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2 DID: Tag:}]}
+[facet] {Index:{ByteStart:115 ByteEnd:196} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13 DID: Tag:}]}
+
+[post 7]
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:126 ByteEnd:212} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2 DID: Tag:}]}
+[facet] {Index:{ByteStart:14 ByteEnd:118} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15 DID: Tag:}]}
 
 ---- Instagram ----
 [images] 6
@@ -2151,7 +2177,9 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
 
 ################ FIXTURE kantonsrat-lone-quorum-vote ################
@@ -2168,6 +2196,7 @@ Staatsbeitrag Bau Verlängerung Glattalbahn, Flughafen bis Kloten Industrie, Obj
 Ausgabenbremse
 📊 129 Zustimmungen | 51 ohne Zustimmung
 
+[post 2]
 🏛️ Fraktionen (Zust./ohne):
 SVP 0/47
 SP 32/4
@@ -2178,7 +2207,9 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
@@ -2203,7 +2234,9 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
 
 ---- Bluesky ----
@@ -2229,9 +2262,16 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+[post 3]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2 DID: Tag:}]}
+[facet] {Index:{ByteStart:115 ByteEnd:244} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59 DID: Tag:}]}
+
+[post 4]
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:126 ByteEnd:255} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59 DID: Tag:}]}
+[facet] {Index:{ByteStart:14 ByteEnd:118} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15 DID: Tag:}]}
 
 ---- Instagram ----
 [images] 1
@@ -2253,7 +2293,9 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
 
 ################ FIXTURE kantonsrat-decision-reported ################
@@ -2284,6 +2326,7 @@ AL 5/0/0/0
 ✅ Abstimmung 2 (11:30) · Quorum
 📊 129 Zustimmungen | 51 ohne Zustimmung
 
+[post 3]
 🏛️ Fraktionen (Zust./ohne):
 SVP 0/47
 SP 32/4
@@ -2294,7 +2337,9 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
@@ -2332,7 +2377,9 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
 
 ---- Bluesky ----
@@ -2371,9 +2418,16 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+[post 3]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13
+[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2 DID: Tag:}]}
+[facet] {Index:{ByteStart:115 ByteEnd:196} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13 DID: Tag:}]}
+
+[post 4]
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:126 ByteEnd:212} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2 DID: Tag:}]}
+[facet] {Index:{ByteStart:14 ByteEnd:118} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15 DID: Tag:}]}
 
 ---- Instagram ----
 [images] 3
@@ -2408,7 +2462,9 @@ Die Mitte 12/0
 EVP 7/0
 AL 5/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-15&startDate=2026-06-15
 Source: OpenParlData.ch
 
 ################ FIXTURE kantonsrat-member-business ################
@@ -2425,6 +2481,7 @@ Verbindliche Richtlinien – keine Smartphones an Volksschulen
 [post 1]
 📊 92 Ja | 82 Nein | 2 Enthaltung | 4 Abwesend
 
+[post 2]
 🏛️ Fraktionen (Ja/Nein/Enth/Abw):
 SVP 46/0/0/1
 SP 0/35/0/1
@@ -2435,7 +2492,10 @@ Die Mitte 10/0/1/1
 EVP 6/0/1/0
 AL 0/5/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+[post 3]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=d7dc2b4b-51b2-4c4f-bf9b-9d9b0e1a2c73&segmentUid=4f0a1d6e-2a83-4b02-9f52-1c6d9f39a5b1
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-08-31&startDate=2026-08-31
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
@@ -2460,7 +2520,9 @@ Die Mitte 10/0/1/1
 EVP 6/0/1/0
 AL 0/5/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=d7dc2b4b-51b2-4c4f-bf9b-9d9b0e1a2c73&segmentUid=4f0a1d6e-2a83-4b02-9f52-1c6d9f39a5b1
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-08-31&startDate=2026-08-31
 Source: OpenParlData.ch
 
 ---- Bluesky ----
@@ -2487,9 +2549,16 @@ Die Mitte 10/0/1/1
 EVP 6/0/1/0
 AL 0/5/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+[post 3]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=d7dc2b4b-51b2-4c4f-bf9b-9d9b0e1a2c73&segmentUid=4f0a1d6e-2a83-4b02-9f52-1c6d9f39a5b1
+[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1 DID: Tag:}]}
+[facet] {Index:{ByteStart:115 ByteEnd:244} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=d7dc2b4b-51b2-4c4f-bf9b-9d9b0e1a2c73&segmentUid=4f0a1d6e-2a83-4b02-9f52-1c6d9f39a5b1 DID: Tag:}]}
+
+[post 4]
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-08-31&startDate=2026-08-31
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:164 ByteEnd:250} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1 DID: Tag:}]}
+[facet] {Index:{ByteStart:14 ByteEnd:118} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-08-31&startDate=2026-08-31 DID: Tag:}]}
 
 ---- Instagram ----
 [images] 1
@@ -2511,7 +2580,9 @@ Die Mitte 10/0/1/1
 EVP 6/0/1/0
 AL 0/5/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=d7dc2b4b-51b2-4c4f-bf9b-9d9b0e1a2c73&segmentUid=4f0a1d6e-2a83-4b02-9f52-1c6d9f39a5b1
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-08-31&startDate=2026-08-31
 Source: OpenParlData.ch
 
 ################ FIXTURE kantonsrat-co-signed-business ################
@@ -2541,7 +2612,10 @@ Die Mitte 0/11/0/1
 EVP 0/7/0/0
 AL 5/0/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
+[post 3]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=1a6f4c92-77ad-4e05-8b3c-52b1a0f4d8e6&segmentUid=8c31b5d0-9e64-4a71-b0d8-3f2a7c6e15b9
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-08&startDate=2026-06-08
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
@@ -2566,7 +2640,9 @@ Die Mitte 0/11/0/1
 EVP 0/7/0/0
 AL 5/0/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=1a6f4c92-77ad-4e05-8b3c-52b1a0f4d8e6&segmentUid=8c31b5d0-9e64-4a71-b0d8-3f2a7c6e15b9
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-08&startDate=2026-06-08
 Source: OpenParlData.ch
 
 ---- Bluesky ----
@@ -2592,9 +2668,16 @@ Die Mitte 0/11/0/1
 EVP 0/7/0/0
 AL 5/0/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
+[post 3]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=1a6f4c92-77ad-4e05-8b3c-52b1a0f4d8e6&segmentUid=8c31b5d0-9e64-4a71-b0d8-3f2a7c6e15b9
+[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01 DID: Tag:}]}
+[facet] {Index:{ByteStart:115 ByteEnd:244} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=1a6f4c92-77ad-4e05-8b3c-52b1a0f4d8e6&segmentUid=8c31b5d0-9e64-4a71-b0d8-3f2a7c6e15b9 DID: Tag:}]}
+
+[post 4]
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-08&startDate=2026-06-08
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:164 ByteEnd:250} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01 DID: Tag:}]}
+[facet] {Index:{ByteStart:14 ByteEnd:118} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-08&startDate=2026-06-08 DID: Tag:}]}
 
 ---- Instagram ----
 [images] 1
@@ -2616,7 +2699,9 @@ Die Mitte 0/11/0/1
 EVP 0/7/0/0
 AL 5/0/0/0
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=1a6f4c92-77ad-4e05-8b3c-52b1a0f4d8e6&segmentUid=8c31b5d0-9e64-4a71-b0d8-3f2a7c6e15b9
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-08&startDate=2026-06-08
 Source: OpenParlData.ch
 
 ################ FIXTURE kantonsrat-stille-wahl ################
@@ -2630,7 +2715,9 @@ Mitglied Obergericht (100%)
 
 ✅ Gewählt: Roland Schmid
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
@@ -2642,7 +2729,9 @@ Mitglied Obergericht (100%)
 
 ✅ Gewählt: Roland Schmid
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
 Source: OpenParlData.ch
 
 ---- Bluesky ----
@@ -2654,9 +2743,16 @@ Mitglied Obergericht (100%)
 
 ✅ Gewählt: Roland Schmid
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+[post 1]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c
+[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188 DID: Tag:}]}
+[facet] {Index:{ByteStart:115 ByteEnd:244} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c DID: Tag:}]}
+
+[post 2]
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:149 ByteEnd:235} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188 DID: Tag:}]}
+[facet] {Index:{ByteStart:14 ByteEnd:118} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06 DID: Tag:}]}
 
 ---- Instagram ----
 [images] 1
@@ -2668,7 +2764,9 @@ Mitglied Obergericht (100%)
 
 ✅ Gewählt: Roland Schmid
 
-🔗 https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c
+📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
 Source: OpenParlData.ch
 
 ################ FIXTURE instagram-long-multi-vote-truncation ################

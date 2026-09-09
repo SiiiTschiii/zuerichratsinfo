@@ -763,19 +763,82 @@ func PostHeadline(group []votes.Vote) string {
 	return headline
 }
 
-// LinkLine returns the trailing block of a post: the link, plus the source
+// Link is one entry of a post's trailing link block: where it goes, and what to
+// call it when the post carries more than one.
+type Link struct {
+	// Icon prefixes the URL on every post.
+	Icon string
+	// Name is the German noun for what the link opens. It is rendered only
+	// where a post carries several links, because that is the only place it
+	// earns its characters: three bare URLs one under the other tell a reader
+	// nothing about which to open, while a lone link needs no disambiguating
+	// and every published post so far has rendered it without one.
+	Name string
+	URL  string
+}
+
+// Line renders one entry. labelled says whether the post carries several links.
+func (l Link) Line(labelled bool) string {
+	if labelled && l.Name != "" {
+		return l.Icon + " " + l.Name + ": " + l.URL
+	}
+	return l.Icon + " " + l.URL
+}
+
+// GroupLinks returns every link a post about this group carries, in the order
+// LinkLine renders them.
+//
+// The order is the argument. The Geschäft permalink comes first because it is
+// the one that will still resolve in a decade and the one a reader should keep;
+// the archive and the sitting follow because they are the ones that have the
+// vote this week. Sources that publish only a business page produce a
+// single-entry block, exactly as before.
+//
+// The archive entry follows GroupLink's rule: a post covering several votes
+// points at the agenda item holding them, not at whichever of them happened to
+// sort first.
+func GroupLinks(group []votes.Vote) []Link {
+	if len(group) == 0 {
+		return nil
+	}
+	first := group[0]
+
+	archive := first.ArchiveURL
+	if len(group) > 1 {
+		// No widened link means no archive entry rather than an arbitrary one.
+		archive = first.ArchiveGroupURL
+	}
+
+	var out []Link
+	for _, l := range []Link{
+		{Icon: "🔗", Name: "Geschäft", URL: GroupLink(group)},
+		{Icon: "🎬", Name: "Video", URL: archive},
+		{Icon: "📄", Name: "Sitzung", URL: first.SessionURL},
+	} {
+		if l.URL != "" {
+			out = append(out, l)
+		}
+	}
+	return out
+}
+
+// LinkLine returns the trailing block of a post: the links, plus the source
 // credit when the data's licence requires one.
 //
-// The two are built together so that the platforms' character-budget
-// arithmetic accounts for the credit. Appending it afterwards would make posts
-// overflow exactly on the votes that need it.
+// They are built together so that the platforms' character-budget arithmetic
+// accounts for the credit. Appending it afterwards would make posts overflow
+// exactly on the votes that need it.
 func LinkLine(group []votes.Vote) string {
-	link := GroupLink(group)
-	if link == "" {
+	links := GroupLinks(group)
+	if len(links) == 0 {
 		return ""
 	}
-	out := "\n\n🔗 " + link
-	if len(group) > 0 && group[0].Attribution != "" {
+	out := "\n"
+	labelled := len(links) > 1
+	for _, l := range links {
+		out += "\n" + l.Line(labelled)
+	}
+	if group[0].Attribution != "" {
 		out += "\n" + group[0].Attribution
 	}
 	return out
