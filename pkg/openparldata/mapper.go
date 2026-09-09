@@ -91,10 +91,18 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 	// Provisional until the affair is fetched, which replaces it.
 	out.GroupURL = out.SourceURL
 
-	// The archive link is kept in its own field because enrichment is about to
-	// overwrite SourceURL with the business page, and a post carries both.
-	out.ArchiveURL = out.SourceURL
 	if c.links != nil {
+		// The archive link is kept in its own field because enrichment is about
+		// to overwrite SourceURL with the business page, and a post carries
+		// both.
+		//
+		// It is filled only for a body with a LinkSource even though url_external_de
+		// needs no deriving, because publishing it is a claim about what it
+		// opens: posts label this link "Video", which is true of the
+		// Kantonsrat's audio archive and not of whatever page the other twenty-odd
+		// bodies put there. A LinkSource is how a body says its archive is
+		// understood.
+		out.ArchiveURL = out.SourceURL
 		out.ArchiveGroupURL = c.links.ItemURL(out.ArchiveURL)
 		if !date.IsZero() {
 			// A vote whose date would not parse has no sitting to point at.

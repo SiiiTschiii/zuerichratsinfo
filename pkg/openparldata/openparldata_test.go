@@ -391,9 +391,9 @@ func TestNoLinkSourceLeavesTheExtraLinksEmpty(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FetchRecent: %v", err)
 	}
-	if vs[0].ArchiveGroupURL != "" || vs[0].SessionURL != "" {
-		t.Errorf("got ArchiveGroupURL %q and SessionURL %q, want both empty",
-			vs[0].ArchiveGroupURL, vs[0].SessionURL)
+	if vs[0].ArchiveURL != "" || vs[0].ArchiveGroupURL != "" || vs[0].SessionURL != "" {
+		t.Errorf("got ArchiveURL %q, ArchiveGroupURL %q and SessionURL %q, want all empty",
+			vs[0].ArchiveURL, vs[0].ArchiveGroupURL, vs[0].SessionURL)
 	}
 }
 
