@@ -36,53 +36,42 @@ contacts:
   - name: Alan David Sangines
     facebook:
       - url: https://www.facebook.com/alan.d.sangines
-        verified: false
-        confidence: high
-      - url: https://www.facebook.com/adsangines/
-        verified: false
-        confidence: medium
+        verified: true
     x:
       - url: https://x.com/adsangines
-        verified: false
-        confidence: high
+        verified: true
   - name: Alexander Jäger
     facebook:
       - url: https://www.facebook.com/ajzuerich/
-        verified: false
-        confidence: medium
+        verified: true
     linkedin:
       - url: https://www.linkedin.com/in/alexanderjaeger/
-        verified: false
-        confidence: medium
-  - name: Alexander Seiler
+        verified: true
   - name: Alexia Bischof
+    linkedin:
+      - url: https://www.linkedin.com/in/alexia-bischof-20b9a1379/
+        verified: true
   - name: Andrea Gisler
     facebook:
-      - url: https://www.facebook.com/glp.gisler/
-        verified: false
-        confidence: medium
+      - url: https://www.facebook.com/andrea.gisler.9
+        verified: true
     instagram:
       - url: https://www.instagram.com/andrea_gisler_glp/
-        verified: false
-        confidence: high
+        verified: true
   - name: Andrea Grossen-Aerni
     facebook:
       - url: https://www.facebook.com/AndreaGrossenAerni/
-        verified: false
-        confidence: medium
+        verified: true
     instagram:
       - url: https://www.instagram.com/andrea_grossen_aerni/
-        verified: false
-        confidence: medium
+        verified: true
     linkedin:
       - url: https://www.linkedin.com/in/andrea-grossen-aerni-1439701b6/
-        verified: false
-        confidence: high
+        verified: true
   - name: Andreas Daurù
     linkedin:
-      - url: https://ch.linkedin.com/in/andreas-daur%C3%B9-94381296
-        verified: false
-        confidence: high
+      - url: https://www.linkedin.com/in/andreas-daur%C3%B9-94381296/
+        verified: true
   - name: Andreas Hasler
   - name: Andreas Juchli
     facebook:
