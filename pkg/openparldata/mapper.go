@@ -91,6 +91,26 @@ func (c *Client) toVote(v votingDTO) votes.Vote {
 	// Provisional until the affair is fetched, which replaces it.
 	out.GroupURL = out.SourceURL
 
+	if c.links != nil {
+		// The archive link is kept in its own field because enrichment is about
+		// to overwrite SourceURL with the business page, and a post carries
+		// both.
+		//
+		// It is filled only for a body with a LinkSource even though url_external_de
+		// needs no deriving, because publishing it is a claim about what it
+		// opens: posts label this link "Video", which is true of the
+		// Kantonsrat's audio archive and not of whatever page the other twenty-odd
+		// bodies put there. A LinkSource is how a body says its archive is
+		// understood.
+		out.ArchiveURL = out.SourceURL
+		out.ArchiveGroupURL = c.links.ItemURL(out.ArchiveURL)
+		if !date.IsZero() {
+			// A vote whose date would not parse has no sitting to point at.
+			// Guessing one would send a reader to an empty list.
+			out.SessionURL = c.links.SessionURL(date)
+		}
+	}
+
 	return out
 }
 
@@ -111,8 +131,8 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 	if u := deref(a.URLExternalDe); u != "" {
 		v.Affair.URL = u
 
-		// Every post about this business links to the parliament's own Geschäft
-		// page, whether it covers one vote or five.
+		// Every post about this business leads with the parliament's own
+		// Geschäft page, whether it covers one vote or five.
 		//
 		// It is not the page where a tally is easiest to read — that is the
 		// vote's own archive page, and this one gives the totals in prose with
@@ -123,12 +143,17 @@ func applyAffair(v *votes.Vote, a affairDTO) {
 		// that rots or points at a third party in a year cannot be repaired
 		// after the fact; a number that takes one more click can.
 		//
-		// Both URLs get it, because the reason applies to both. What the source
-		// gives a single vote is a zh.recapp.ch deep link keyed by two opaque
-		// uuids — precisely the third-party link the paragraph above rules out,
-		// and letting a group of one keep it would make durability depend on how
-		// many votes a sitting happened to hold. The recapp link stays available
-		// through Affair and the source; it just does not go in a post.
+		// Both URLs get it, because the reason applies to both.
+		//
+		// What that reasoning got wrong is the click. The canton does not add a
+		// vote to this page until ten to sixteen days after the sitting — the
+		// 31.08.2026 votes were still absent on 09.09 — so for the first
+		// fortnight the permalink leads to a business matter with no sign of the
+		// vote the post is about. Durability was never the whole requirement.
+		// So the archive and sitting links ride alongside in their own fields
+		// (see ArchiveURL, SessionURL): the permalink stays first and stays the
+		// one that will still resolve in a decade, and the links that have the
+		// vote today follow it.
 		v.GroupURL = u
 		v.SourceURL = u
 	}

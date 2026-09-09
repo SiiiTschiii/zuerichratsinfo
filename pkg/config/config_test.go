@@ -1,6 +1,10 @@
 package config
 
-import "testing"
+import (
+	"net/url"
+	"testing"
+	"time"
+)
 
 func TestValidate(t *testing.T) {
 	if err := Validate(); err != nil {
@@ -151,4 +155,31 @@ func TestJurisdictionsSwitchIndependently(t *testing.T) {
 	if j, _ := LookupJurisdiction(ZurichCantonKey); !j.Enabled {
 		t.Error("pausing the city must not affect the canton")
 	}
+}
+
+func TestCantonLinks(t *testing.T) {
+	t.Run("SessionURL narrows the sitting list to the day", func(t *testing.T) {
+		// 16:39 local: the sitting is the calendar day the vote was taken on,
+		// not a UTC day that a late-afternoon vote would fall off the end of.
+		date := time.Date(2026, 8, 31, 16, 39, 38, 0, time.FixedZone("CEST", 2*60*60))
+		got := cantonLinks{}.SessionURL(date)
+
+		u, err := url.Parse(got)
+		if err != nil {
+			t.Fatalf("SessionURL() = %q, which does not parse: %v", got, err)
+		}
+		if u.Host != "www.kantonsrat.zh.ch" || u.Path != "/ratsbetrieb/sitzungenundprotokolle/" {
+			t.Errorf("SessionURL() = %q, want the canton's own sitting list", got)
+		}
+		if s, e := u.Query().Get("startDate"), u.Query().Get("endDate"); s != "2026-08-31" || e != "2026-08-31" {
+			t.Errorf("SessionURL() range = %s..%s, want both 2026-08-31", s, e)
+		}
+	})
+
+	t.Run("ItemURL widens a vote link to its agenda item", func(t *testing.T) {
+		got := cantonLinks{}.ItemURL("https://zh.recapp.ch/shareparl?agendaItemUid=item&segmentUid=seg")
+		if got != "https://zh.recapp.ch/shareparl?agendaItemUid=item" {
+			t.Errorf("ItemURL() = %q", got)
+		}
+	})
 }

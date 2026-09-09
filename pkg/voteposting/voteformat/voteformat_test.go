@@ -2,6 +2,7 @@ package voteformat
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -1137,4 +1138,98 @@ func TestAuthorListCapped(t *testing.T) {
 	if got, want := AuthorList(three, 5), "A (SP), B (FDP) und C (AL)"; got != want {
 		t.Errorf("a cap above the count = %q, want no 'u. a.': %q", got, want)
 	}
+}
+
+func TestGroupLinks(t *testing.T) {
+	const (
+		geschaeft = "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=abc"
+		segment   = "https://zh.recapp.ch/shareparl?agendaItemUid=item&segmentUid=seg"
+		item      = "https://zh.recapp.ch/shareparl?agendaItemUid=item"
+		sitting   = "https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-08-31&startDate=2026-08-31"
+	)
+	canton := votes.Vote{
+		SourceURL: geschaeft, GroupURL: geschaeft,
+		ArchiveURL: segment, ArchiveGroupURL: item, SessionURL: sitting,
+	}
+
+	t.Run("a lone vote links its own segment", func(t *testing.T) {
+		got := GroupLinks([]votes.Vote{canton})
+		want := []Link{
+			{Icon: "🔗", Name: "Geschäft", URL: geschaeft},
+			{Icon: "🎬", Name: "Video", URL: segment},
+			{Icon: "📄", Name: "Sitzung", URL: sitting},
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("GroupLinks() = %+v, want %+v", got, want)
+		}
+	})
+
+	t.Run("a group links the agenda item, not the first vote", func(t *testing.T) {
+		got := GroupLinks([]votes.Vote{canton, canton})
+		if len(got) != 3 || got[1].URL != item {
+			t.Errorf("archive link = %+v, want the widened %q", got, item)
+		}
+	})
+
+	t.Run("a vote with no business matter is not labelled as one", func(t *testing.T) {
+		// applyAffair never ran, so both URL fields still hold the archive link.
+		noAffair := votes.Vote{
+			SourceURL: segment, GroupURL: segment,
+			ArchiveURL: segment, SessionURL: sitting,
+		}
+		got := GroupLinks([]votes.Vote{noAffair})
+		want := []Link{
+			{Icon: "🎬", Name: "Video", URL: segment},
+			{Icon: "📄", Name: "Sitzung", URL: sitting},
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("GroupLinks() = %+v, want the archive named once and no Geschäft: %+v", got, want)
+		}
+	})
+
+	t.Run("a group whose archive has no agenda item drops the entry", func(t *testing.T) {
+		noItem := canton
+		noItem.ArchiveGroupURL = ""
+		got := GroupLinks([]votes.Vote{noItem, noItem})
+		for _, l := range got {
+			if l.URL == segment {
+				t.Errorf("GroupLinks() = %+v, want no fallback to one vote's segment", got)
+			}
+		}
+		if len(got) != 2 {
+			t.Errorf("GroupLinks() = %+v, want the Geschäft and the sitting", got)
+		}
+	})
+}
+
+func TestLinkLine(t *testing.T) {
+	const geschaeft = "https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=1"
+
+	t.Run("a lone link stays unlabelled", func(t *testing.T) {
+		city := []votes.Vote{{SourceURL: geschaeft, Attribution: "Source: X"}}
+		want := "\n\n🔗 " + geschaeft + "\nSource: X"
+		if got := LinkLine(city); got != want {
+			t.Errorf("LinkLine() = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("several links are named so a reader can tell them apart", func(t *testing.T) {
+		canton := []votes.Vote{{
+			SourceURL:  geschaeft,
+			ArchiveURL: "https://zh.recapp.ch/shareparl?agendaItemUid=item&segmentUid=seg",
+			SessionURL: "https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?d=1",
+		}}
+		got := LinkLine(canton)
+		for _, want := range []string{"🔗 Geschäft: ", "🎬 Video: ", "📄 Sitzung: "} {
+			if !strings.Contains(got, want) {
+				t.Errorf("LinkLine() = %q, want it to contain %q", got, want)
+			}
+		}
+	})
+
+	t.Run("a source with no links at all posts no block", func(t *testing.T) {
+		if got := LinkLine([]votes.Vote{{Attribution: "Source: X"}}); got != "" {
+			t.Errorf("LinkLine() = %q, want nothing — a credit with no link is not a link block", got)
+		}
+	})
 }

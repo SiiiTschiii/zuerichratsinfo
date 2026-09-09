@@ -8,10 +8,12 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/openparldata"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/recapp"
@@ -96,6 +98,36 @@ func (d cantonVoteDetails) Lookup(voteURLs map[string]string) (map[string]openpa
 	return out, err
 }
 
+// cantonLinks supplies the two pages the Kantonsrat publishes beside a Geschäft.
+//
+// It lives here rather than in either package it draws on, for the same reason
+// cantonVoteDetails does: openparldata serves twenty-odd bodies and must not
+// learn one parliament's URLs, and recapp has no reason to know which API needs
+// them.
+type cantonLinks struct{}
+
+// ItemURL hands the widening straight to the archive, which owns the URL shape.
+func (cantonLinks) ItemURL(voteURL string) string { return recapp.ItemURL(voteURL) }
+
+// SessionURL points at the sitting list narrowed to one day.
+//
+// The Kantonsrat gives a sitting no permalink of its own: the list is a single
+// page whose date filter lives in the query string, so a one-day range is the
+// closest thing to an address a sitting has. It is a real link and not a guess
+// — the site builds exactly this URL when a reader uses the filter — and it
+// lands on the day's sittings with their Traktandenliste, Bulletin and
+// recording. What it does not do is open them; a reader clicks the sitting.
+//
+// A day holding two sittings shows both, which is honest: the morning and
+// afternoon of one day are one entry in every other respect the post makes.
+func (cantonLinks) SessionURL(date time.Time) string {
+	day := date.Format("2006-01-02")
+	q := url.Values{}
+	q.Set("startDate", day)
+	q.Set("endDate", day)
+	return "https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?" + q.Encode()
+}
+
 // jurisdictions is the registry, keyed by Jurisdiction.Key.
 var jurisdictions = map[string]Jurisdiction{
 	zurichapi.JurisdictionKey: {
@@ -115,7 +147,8 @@ var jurisdictions = map[string]Jurisdiction{
 		MaxAgeDays: 14,
 		NewSource: func() votes.Source {
 			return openparldata.New(zurichCanton, zurichCantonBodyKey).
-				WithDetails(cantonVoteDetails{recapp.New()})
+				WithDetails(cantonVoteDetails{recapp.New()}).
+				WithLinks(cantonLinks{})
 		},
 		NewMemberSource: func() votes.MemberSource {
 			return openparldata.New(zurichCanton, zurichCantonBodyKey)

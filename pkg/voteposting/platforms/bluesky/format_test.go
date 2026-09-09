@@ -7,6 +7,7 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
@@ -663,6 +664,93 @@ func TestFormatVoteThread_LongSignatoryListNeverTruncatesTheTitle(t *testing.T) 
 	for _, a := range group[0].Affair.Authors {
 		if !strings.Contains(all.String(), a.Name) {
 			t.Errorf("%s is named nowhere in the thread", a.Name)
+		}
+	}
+}
+
+// TestFormatVoteThread_EveryLinkIsFaceted guards the failure mode that has no
+// visible symptom on our side: Bluesky renders a URL as plain text unless a
+// facet covers it, so a link block that grew a third entry while the faceting
+// stayed on one would publish two URLs a reader has to copy by hand.
+//
+// The links may be spread over several posts (see linkChunks), so this counts
+// facets across the whole thread rather than on the last reply.
+func TestFormatVoteThread_EveryLinkIsFaceted(t *testing.T) {
+	for name, group := range map[string][]votes.Vote{
+		"single vote": testfixtures.KantonsratVote(),
+		"group":       testfixtures.KantonsratMultiVote(),
+		"stille Wahl": testfixtures.KantonsratStilleWahl(),
+	} {
+		t.Run(name, func(t *testing.T) {
+			links := voteformat.GroupLinks(group)
+			if len(links) != 3 {
+				t.Fatalf("fixture carries %d links, want the cantonal three", len(links))
+			}
+
+			faceted := map[string]int{}
+			for _, post := range FormatVoteThread(group, nil) {
+				for _, f := range post.Facets {
+					covered := post.Text[f.Index.ByteStart:f.Index.ByteEnd]
+					for _, feat := range f.Features {
+						if feat.URI != covered {
+							t.Errorf("facet covers %q but points at %q", covered, feat.URI)
+						}
+					}
+					faceted[covered]++
+				}
+			}
+
+			for _, l := range links {
+				if faceted[l.URL] != 1 {
+					t.Errorf("%q faceted %d times, want exactly once", l.URL, faceted[l.URL])
+				}
+			}
+		})
+	}
+}
+
+// TestFormatVoteThread_CantonPostsWithinLimit covers what the existing stress
+// test does not: the cantonal link block is around 380 graphemes on Bluesky,
+// which no single post can hold. An over-length post is rejected by the API
+// mid-thread, leaving a published root with no results under it.
+func TestFormatVoteThread_CantonPostsWithinLimit(t *testing.T) {
+	for name, group := range testfixtures.AllFixtures() {
+		if len(group) == 0 || group[0].Jurisdiction != "zurich-canton" {
+			continue
+		}
+		t.Run(name, func(t *testing.T) {
+			for i, post := range FormatVoteThread(group, nil) {
+				if gl := graphemeLen(post.Text); gl > maxGraphemes {
+					t.Errorf("post %d is %d graphemes, over the %d limit:\n%s",
+						i, gl, maxGraphemes, post.Text)
+				}
+			}
+		})
+	}
+}
+
+// TestFormatVoteThread_NoDuplicateFacetOffsets pins the faceting half of the
+// duplicate-link problem: buildLinkFacets locates a URL with strings.Index, so
+// two identical URLs in one block would both facet the first occurrence,
+// leaving overlapping ranges and the second copy unlinked. voteformat drops the
+// duplicate; this fails if it ever stops.
+func TestFormatVoteThread_NoDuplicateFacetOffsets(t *testing.T) {
+	const segment = "https://zh.recapp.ch/shareparl?agendaItemUid=i&segmentUid=s"
+	group := []votes.Vote{{
+		SourceID: "no-affair", Title: "Mitteilungen", Body: "Kantonsrat ZH",
+		Date: testfixtures.MustDate("2026-08-31"),
+		Yes:  intPtr(100), No: intPtr(50), Abstention: intPtr(0), Absent: intPtr(30),
+		SourceURL: segment, GroupURL: segment, ArchiveURL: segment,
+		SessionURL: "https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?d=1",
+	}}
+
+	seen := map[int]bool{}
+	for _, post := range FormatVoteThread(group, nil) {
+		for _, f := range post.Facets {
+			if seen[f.Index.ByteStart] {
+				t.Errorf("two facets start at byte %d\n%s", f.Index.ByteStart, post.Text)
+			}
+			seen[f.Index.ByteStart] = true
 		}
 	}
 }

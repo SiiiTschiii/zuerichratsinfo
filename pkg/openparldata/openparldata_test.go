@@ -351,6 +351,67 @@ func TestAffairURLReplacesBothURLs(t *testing.T) {
 	}
 }
 
+// The archive link is the reason the Geschäft permalink can be the durable one:
+// the permalink does not carry the vote for a fortnight after the sitting, and
+// enrichment is exactly where the recapp URL used to be lost.
+func TestArchiveAndSessionLinksSurviveEnrichment(t *testing.T) {
+	c, _ := newTestClient(t)
+	c.WithLinks(testLinks{})
+
+	vs, err := c.FetchRecent(12)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	groups, err := c.GroupByAffair(vs[:1])
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+
+	got := groups[0][0]
+	if !strings.Contains(got.SourceURL, "kantonsrat.zh.ch") {
+		t.Fatalf("precondition: SourceURL = %q, want enrichment to have replaced it", got.SourceURL)
+	}
+	if !strings.Contains(got.ArchiveURL, "zh.recapp.ch") {
+		t.Errorf("ArchiveURL = %q, want the vote's own archive link kept", got.ArchiveURL)
+	}
+	if want := "item:" + got.ArchiveURL; got.ArchiveGroupURL != want {
+		t.Errorf("ArchiveGroupURL = %q, want the LinkSource's widening %q", got.ArchiveGroupURL, want)
+	}
+	if want := "session:" + got.Date.Format("2006-01-02"); got.SessionURL != want {
+		t.Errorf("SessionURL = %q, want %q", got.SessionURL, want)
+	}
+}
+
+// A body with no LinkSource must publish no archive or sitting link rather than
+// a guessed one — most of the twenty-odd bodies this adapter serves have neither.
+func TestNoLinkSourceLeavesTheExtraLinksEmpty(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(12)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	if vs[0].ArchiveURL != "" || vs[0].ArchiveGroupURL != "" || vs[0].SessionURL != "" {
+		t.Errorf("got ArchiveURL %q, ArchiveGroupURL %q and SessionURL %q, want all empty",
+			vs[0].ArchiveURL, vs[0].ArchiveGroupURL, vs[0].SessionURL)
+	}
+}
+
+// testLinks is a LinkSource whose output is recognisable in an assertion, so
+// the test pins that the mapper calls it rather than what the canton's URLs are.
+type testLinks struct{}
+
+func (testLinks) ItemURL(voteURL string) string {
+	if voteURL == "" {
+		return ""
+	}
+	return "item:" + voteURL
+}
+
+func (testLinks) SessionURL(date time.Time) string {
+	return "session:" + date.Format("2006-01-02")
+}
+
 // Grouping and the enrichment calls both key on the numeric API id. Looking it
 // up per vote would double the request count for no benefit.
 func TestVotingIDIsRememberedFromTheListing(t *testing.T) {
