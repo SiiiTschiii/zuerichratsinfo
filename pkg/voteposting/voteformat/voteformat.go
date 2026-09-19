@@ -601,52 +601,28 @@ type StilleWahl struct {
 	Name string
 }
 
-// stilleWahlTitlePattern matches the fixed shape Kanton Zürich gives an
-// uncontested-election business: "Wahl <Amt> für <Name>".
-var stilleWahlTitlePattern = regexp.MustCompile(`(?i)^Wahl\s+(.+?)\s+für\s+(.+)$`)
-
-// implausibleStilleWahlName rejects a capture that is grammatically in the
-// "für ..." slot but is not a person's name — a business's Amtsdauer,
-// Legislatur or Amtsjahr, not its candidate. Seen live: "Wahl Mitglieder
-// Schiedsgericht in Sozialversicherungsstreitigkeiten für die Amtsdauer
-// 2025-2031", which without this guard would extract the "name"
-// "die Amtsdauer 2025-2031".
-var implausibleStilleWahlName = regexp.MustCompile(`(?i)\d|Amtsdauer|Legislatur|Amtsjahr`)
-
-// AsStilleWahl reports whether v is a silent/uncontested election — a "Wahl"
-// business resolved by acclamation under § 124 KRG, whose only recorded vote
-// is the quorum roll call rather than a ballot on the candidate — and, if so,
-// the office and name its title names.
+// AsStilleWahl reports whether v is a silent/uncontested election that should
+// be announced with its own post. It currently never does: detection is
+// switched off because both signals it relied on proved wrong on live data.
 //
-// All three conditions matter. Affair.Type == "Wahl" alone would also fire on
-// the routine roll call opening a sitting, if that business happened to be
-// misfiled; the title parse alone can misfire on text that only looks like
-// this shape ("... für die Amtsdauer ..." names a term, not a person); and
-// Type == "Anwesenheitsermittlung" is what actually tells a stille Wahl apart
-// from a genuinely contested election, which instead produces a "Normal" or
-// Auswahl-typed vote. Checked against ~2000 historical Kanton Zürich votings:
-// this combination never once fired on a contested race, even when the title
-// was otherwise identical in shape (e.g. "Wahl Mitglied Bankrat ZKB für
-// Walter Schoch", a real 41/109/10/19 contest, came back typed "Normal").
+// The detector read a "Wahl" business whose only recorded vote was an
+// Anwesenheitsermittlung as an election by acclamation under § 124 KRG, and
+// took the name after "für" in "Wahl <Amt> für <Name>" as the person elected.
+// The 14.09.2026 sitting broke both. KR-Nr. 20/2026, "Wahl Mitglied
+// Baurekursgericht (BRG) für Adrian Bergmann", was a secret ballot under § 125
+// KRG: the 157-member roll call was the headcount taken before the ballots,
+// and Marco Bühler was elected with 145 votes. "Für Adrian Bergmann" names the
+// member being replaced. The bot announced Bergmann as elected unopposed.
+// An actual stille Wahl, like the WAK seat filled on 07.09.2026, seems to
+// leave no vote record at all, so this route may never have fired on one.
 //
-// ok is false whenever any part of the pattern doesn't hold, including a
-// title that doesn't name an individual (a collective appointment like "Wahl
-// Geschäftsleitung (GL) Kantonsrat Amtsjahr 2026/2027" names no one to credit
-// and is left for a future, harder feature); callers must then fall back to
-// treating the vote as an ordinary (silently skipped) Anwesenheitsermittlung.
-func AsStilleWahl(v votes.Vote) (StilleWahl, bool) {
-	if strings.TrimSpace(v.Affair.Type) != "Wahl" || v.Type != "Anwesenheitsermittlung" {
-		return StilleWahl{}, false
-	}
-	m := stilleWahlTitlePattern.FindStringSubmatch(CleanVoteTitle(v.Title))
-	if m == nil {
-		return StilleWahl{}, false
-	}
-	name := strings.TrimSpace(m[2])
-	if implausibleStilleWahlName.MatchString(name) {
-		return StilleWahl{}, false
-	}
-	return StilleWahl{Amt: strings.TrimSpace(m[1]), Name: name}, true
+// With ok always false, such a roll call falls back to being an ordinary
+// Anwesenheitsermittlung, which validateVote skips without posting. The
+// formatters' stille Wahl branches and StilleWahlBody are left in place for a
+// detector that takes the elected name from a source that states it — the
+// Bulletin or the IFK nomination — rather than from the business title.
+func AsStilleWahl(_ votes.Vote) (StilleWahl, bool) {
+	return StilleWahl{}, false
 }
 
 // StilleWahlBody renders the reader-facing text for a stille Wahl: what was

@@ -175,9 +175,11 @@ func TestFormatVoteThread_StilleWahlTruncation(t *testing.T) {
 		},
 	}
 
-	thread := FormatVoteThread(group, nil)
-	if len(thread) != 1 {
-		t.Fatalf("want a single post, got %d", len(thread))
+	// Called directly: voteformat.AsStilleWahl no longer routes any vote here.
+	sw := voteformat.StilleWahl{Amt: strings.TrimSpace(longAmt), Name: "Roland Schmid"}
+	thread := buildStilleWahlPosts(group, sw)
+	if len(thread) == 0 {
+		t.Fatal("want a post, got none")
 	}
 
 	post := thread[0].Text
@@ -679,7 +681,6 @@ func TestFormatVoteThread_EveryLinkIsFaceted(t *testing.T) {
 	for name, group := range map[string][]votes.Vote{
 		"single vote": testfixtures.KantonsratVote(),
 		"group":       testfixtures.KantonsratMultiVote(),
-		"stille Wahl": testfixtures.KantonsratStilleWahl(),
 	} {
 		t.Run(name, func(t *testing.T) {
 			links := voteformat.GroupLinks(group)
