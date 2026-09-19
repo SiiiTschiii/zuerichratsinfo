@@ -9,6 +9,7 @@ import (
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
@@ -339,12 +340,9 @@ func TestFormatVoteThread_StilleWahlTruncation(t *testing.T) {
 		},
 	}
 
-	thread := FormatVoteThread(group, nil, DefaultMaxChars)
-	if len(thread) != 1 {
-		t.Fatalf("want a single post, got %d", len(thread))
-	}
-
-	post := thread[0].Text
+	// Called directly: voteformat.AsStilleWahl no longer routes any vote here.
+	sw := voteformat.StilleWahl{Amt: strings.TrimSpace(longAmt), Name: "Roland Schmid"}
+	post := buildStilleWahlPost(group, sw, nil, DefaultMaxChars).Text
 	if got := weightedLen(post); got > DefaultMaxChars {
 		t.Errorf("stille Wahl post exceeds DefaultMaxChars: %d > %d", got, DefaultMaxChars)
 	}

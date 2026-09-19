@@ -565,40 +565,36 @@ func TestPostToPlatform_AttendanceRollCallIsSkippedWithoutFailingTheRun(t *testi
 	}
 }
 
-// TestPostToPlatform_StilleWahlIsPostedWithoutTally covers the opposite case
-// from TestPostToPlatform_AttendanceRollCallIsSkippedWithoutFailingTheRun: an
-// Anwesenheitsermittlung whose business names a real council decision — an
-// uncontested election under § 124 KRG — must reach the formatter and get
-// posted like any other vote, not be swallowed as a routine roll call. See
+// TestPostToPlatform_ElectionRollCallIsSkipped pins that the roll call taken
+// before a Kantonsrat election is skipped like any other
+// Anwesenheitsermittlung. It used to be announced as a stille Wahl, which on
+// 14.09.2026 published the member being replaced as the one elected — see
 // voteformat.AsStilleWahl.
-func TestPostToPlatform_StilleWahlIsPostedWithoutTally(t *testing.T) {
+func TestPostToPlatform_ElectionRollCallIsSkipped(t *testing.T) {
 	defer setupTempDir(t)()
 
-	stilleWahl := createVote("stille-wahl-1", "31/2026", "2026-07-06")
-	stilleWahl.Type = "Anwesenheitsermittlung"
-	stilleWahl.Title = "Wahl Mitglied Obergericht (100%) für Roland Schmid"
-	stilleWahl.Affair.Type = "Wahl"
+	rollCall := createVote("wahl-praesenz-1", "20/2026", "2026-09-14")
+	rollCall.Type = "Anwesenheitsermittlung"
+	rollCall.Title = "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann"
+	rollCall.Affair.Type = "Wahl"
 
 	mockPlatform := &MockPlatform{maxPosts: 10}
 	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
-	posted, err := PostToPlatform([][]votes.Vote{{stilleWahl}}, mockPlatform,
+	posted, err := PostToPlatform([][]votes.Vote{{rollCall}}, mockPlatform,
 		SingleLog(testJurisdiction, voteLog), false)
 
 	if err != nil {
-		t.Fatalf("a stille Wahl must not fail the run, got %v", err)
+		t.Fatalf("an election roll call must not fail the run, got %v", err)
 	}
-	if posted != 1 {
-		t.Errorf("stille Wahl was not published: posted=%d", posted)
+	if posted != 0 {
+		t.Errorf("an election roll call was published: posted=%d", posted)
 	}
-	if mockPlatform.formatCalls != 1 {
-		t.Errorf("stille Wahl never reached the formatter: formatCalls=%d", mockPlatform.formatCalls)
+	if mockPlatform.formatCalls != 0 {
+		t.Errorf("the election roll call reached the formatter: formatCalls=%d", mockPlatform.formatCalls)
 	}
-	if len(mockPlatform.lastGroup) != 1 || mockPlatform.lastGroup[0].SourceID != stilleWahl.SourceID {
-		t.Errorf("formatter was handed the wrong group: %+v", mockPlatform.lastGroup)
-	}
-	if !voteLog.IsPosted(stilleWahl.SourceID) {
-		t.Error("published stille Wahl was not marked as posted")
+	if voteLog.IsPosted(rollCall.SourceID) {
+		t.Error("skipped election roll call was marked as posted")
 	}
 }
 

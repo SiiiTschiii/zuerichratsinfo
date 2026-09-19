@@ -361,10 +361,9 @@ func PostableGroups(groups [][]votes.Vote) [][]votes.Vote {
 // decided.
 func validateVote(v votes.Vote) error {
 	// A stille Wahl is an Anwesenheitsermittlung that IsKnownUnpostableType
-	// would otherwise reject: an uncontested election whose title names who
-	// was elected. It gets its own post instead of the usual Ja/Nein
-	// rendering — see voteformat.AsStilleWahl and the formatters that check
-	// for it before touching any counts.
+	// would otherwise reject, and gets its own post instead of the usual
+	// Ja/Nein rendering. Detection is currently switched off, so nothing takes
+	// this branch — see voteformat.AsStilleWahl.
 	if _, ok := voteformat.AsStilleWahl(v); ok {
 		return nil
 	}

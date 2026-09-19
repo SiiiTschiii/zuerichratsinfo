@@ -926,10 +926,9 @@ func TestGroupPrefixLineNamesWhoFiledIt(t *testing.T) {
 	}
 }
 
-// TestAsStilleWahl pins the detector's three conditions and the
-// name-plausibility guard against the real titles pulled from OpenParlData
-// while building this feature — see the package doc on AsStilleWahl for the
-// data these are drawn from.
+// TestAsStilleWahl pins that detection is switched off: no vote is announced
+// as a stille Wahl, including the shapes the detector used to accept. The first
+// case is the 14.09.2026 secret ballot it misreported — see AsStilleWahl.
 func TestAsStilleWahl(t *testing.T) {
 	stilleWahl := func(affairType, voteType, title string) votes.Vote {
 		return votes.Vote{
@@ -943,66 +942,31 @@ func TestAsStilleWahl(t *testing.T) {
 	}
 
 	tests := []struct {
-		name   string
-		v      votes.Vote
-		want   StilleWahl
-		wantOK bool
+		name string
+		v    votes.Vote
 	}{
 		{
-			name:   "real example: Roland Schmid",
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglied Obergericht (100%) für Roland Schmid"),
-			want:   StilleWahl{Amt: "Mitglied Obergericht (100%)", Name: "Roland Schmid"},
-			wantOK: true,
+			name: "roll call before a secret ballot: 20/2026",
+			v:    stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann"),
 		},
 		{
-			name:   "real example: Claude Reinhardt",
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Abteilungspräsidium Baurekursgericht (BRG) für Claude Reinhardt"),
-			want:   StilleWahl{Amt: "Abteilungspräsidium Baurekursgericht (BRG)", Name: "Claude Reinhardt"},
-			wantOK: true,
+			name: "formerly detected: Roland Schmid",
+			v:    stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglied Obergericht (100%) für Roland Schmid"),
 		},
 		{
-			name:   "wrong affair type: a routine roll call opening a sitting",
-			v:      stilleWahl("", "Anwesenheitsermittlung", ""),
-			wantOK: false,
+			name: "routine roll call opening a sitting",
+			v:    stilleWahl("", "Anwesenheitsermittlung", ""),
 		},
 		{
-			name: "wrong vote type: a real contested election",
-			// The real "Wahl Mitglied Bankrat ZKB für Walter Schoch" (41/109/10/19)
-			// carries this exact title shape but was typed Normal, not
-			// Anwesenheitsermittlung — this is the case IsKnownUnpostableType
-			// must never widen to cover.
-			v:      stilleWahl("Wahl", "Normal", "Wahl Mitglied Bankrat ZKB für Walter Schoch"),
-			wantOK: false,
-		},
-		{
-			name:   "no individual named: a collective appointment",
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Geschäftsleitung (GL) Kantonsrat Amtsjahr 2026/2027"),
-			wantOK: false,
-		},
-		{
-			name: "implausible name: a term of office, not a person",
-			// The real "Wahl Mitglieder Schiedsgericht in
-			// Sozialversicherungsstreitigkeiten für die Amtsdauer 2025-2031" —
-			// without the plausibility guard this would extract the "name"
-			// "die Amtsdauer 2025-2031".
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglieder Schiedsgericht für die Amtsdauer 2025-2031"),
-			wantOK: false,
-		},
-		{
-			name:   "implausible name: a legislature reference",
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl acht Mitglieder Obergericht für die Legislatur 2019-2025"),
-			wantOK: false,
+			name: "contested election",
+			v:    stilleWahl("Wahl", "Normal", "Wahl Mitglied Bankrat ZKB für Walter Schoch"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, ok := AsStilleWahl(tt.v)
-			if ok != tt.wantOK {
-				t.Fatalf("AsStilleWahl() ok = %v, want %v", ok, tt.wantOK)
-			}
-			if ok && got != tt.want {
-				t.Errorf("AsStilleWahl() = %+v, want %+v", got, tt.want)
+			if got, ok := AsStilleWahl(tt.v); ok {
+				t.Errorf("AsStilleWahl() = %+v, true; detection is switched off", got)
 			}
 		})
 	}
