@@ -630,13 +630,12 @@ func AsStilleWahl(_ votes.Vote) (StilleWahl, bool) {
 // (attendance, not an election result) that unpostableVoteTypes exists to
 // keep off the timeline in the first place.
 //
-// "Gewählt" is safe to assert without a Decision field on the vote: per
-// § 124 KRG, reaching this fact pattern at all — a Wahl business whose only
-// vote is a quorum roll call, no ballot — means the president already
-// declared the candidate elected by construction of the rule. A contested
-// race takes the other branch of the rule and produces a Normal or
-// Auswahl-typed vote instead, never Anwesenheitsermittlung; there is no third
-// outcome the rule allows for here.
+// It asserts "Gewählt" unconditionally, so sw must come from a source that
+// states the outcome: that the election was uncontested, and the name of the
+// person elected. The Bulletin or the IFK nomination do; the vote does not. A
+// Wahl business whose only vote is an Anwesenheitsermittlung can be a secret
+// ballot under § 125 KRG, and the name in its title can be the member being
+// replaced — both true of 20/2026 on 14.09.2026. See AsStilleWahl.
 func StilleWahlBody(sw StilleWahl) string {
 	return fmt.Sprintf("Stille Wahl (unbestritten)\n%s\n\n✅ Gewählt: %s", sw.Amt, sw.Name)
 }
