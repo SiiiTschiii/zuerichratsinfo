@@ -926,49 +926,42 @@ func TestGroupPrefixLineNamesWhoFiledIt(t *testing.T) {
 	}
 }
 
-// TestAsStilleWahl pins that detection is switched off: no vote is announced
-// as a stille Wahl, including the shapes the detector used to accept. The first
-// case is the 14.09.2026 secret ballot it misreported — see AsStilleWahl.
-func TestAsStilleWahl(t *testing.T) {
-	stilleWahl := func(affairType, voteType, title string) votes.Vote {
-		return votes.Vote{
-			Title: title,
-			Type:  voteType,
-			Affair: votes.Affair{
-				Type:  affairType,
-				Title: title,
-			},
-		}
+// TestWahlgeschaeftBody pins what an election post says: the business title
+// exactly as the parliament wrote it, and one sentence about our data. In
+// particular the "für <Name>" tail survives intact — it names the member being
+// replaced, and editing official wording is the thing this post does not do.
+func TestWahlgeschaeftBody(t *testing.T) {
+	group := []votes.Vote{{
+		Title:  "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann",
+		Type:   votes.AttendanceType,
+		Affair: votes.Affair{Type: votes.WahlAffairType},
+	}}
+
+	want := "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann\n\n" + WahlgeschaeftNoResult
+	if got := WahlgeschaeftBody(group); got != want {
+		t.Errorf("WahlgeschaeftBody() =\n%q\nwant\n%q", got, want)
 	}
 
-	tests := []struct {
-		name string
-		v    votes.Vote
-	}{
-		{
-			name: "roll call before a secret ballot: 20/2026",
-			v:    stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann"),
-		},
-		{
-			name: "formerly detected: Roland Schmid",
-			v:    stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglied Obergericht (100%) für Roland Schmid"),
-		},
-		{
-			name: "routine roll call opening a sitting",
-			v:    stilleWahl("", "Anwesenheitsermittlung", ""),
-		},
-		{
-			name: "contested election",
-			v:    stilleWahl("Wahl", "Normal", "Wahl Mitglied Bankrat ZKB für Walter Schoch"),
-		},
+	if got := WahlgeschaeftBody(nil); got != WahlgeschaeftNoResult {
+		t.Errorf("WahlgeschaeftBody(nil) = %q, want the bare sentence", got)
 	}
+}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got, ok := AsStilleWahl(tt.v); ok {
-				t.Errorf("AsStilleWahl() = %+v, true; detection is switched off", got)
-			}
-		})
+// TestPostHeadline_Wahlgeschaeft pins that an election post is not labelled an
+// Abstimmung and carries no clock time: the only timestamp available is the
+// roll call's, which is not when anything was decided.
+func TestPostHeadline_Wahlgeschaeft(t *testing.T) {
+	group := []votes.Vote{{
+		Body:   "Kantonsrat ZH",
+		Date:   time.Date(2026, 9, 14, 8, 19, 0, 0, time.UTC),
+		Title:  "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann",
+		Type:   votes.AttendanceType,
+		Affair: votes.Affair{Type: votes.WahlAffairType},
+	}}
+
+	want := "Kantonsrat ZH | Wahlgeschäft vom 14.09.2026"
+	if got := PostHeadline(group); got != want {
+		t.Errorf("PostHeadline() = %q, want %q", got, want)
 	}
 }
 

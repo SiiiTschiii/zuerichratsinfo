@@ -205,3 +205,26 @@ type contributorDTO struct {
 	// way twice running.
 	Position *int `json:"position"`
 }
+
+type meetingsResponse struct {
+	Data []meetingDTO `json:"data"`
+}
+
+// meetingDTO is a sitting an affair was on the agenda of. An affair can have
+// many across years, so BeginDate is what picks the one a vote was taken in.
+type meetingDTO struct {
+	ID        int64   `json:"id"`
+	BeginDate *string `json:"begin_date"`
+}
+
+type meetingDocsResponse struct {
+	Data []meetingDocDTO `json:"data"`
+}
+
+// meetingDocDTO is one document filed against a sitting. CategoryDe is the
+// body's own filing label — "Bulletin", "Traktandenliste", "Vorschau" — and is
+// what tells them apart; the API serves no extracted text for any of them.
+type meetingDocDTO struct {
+	CategoryDe *string `json:"category_de"`
+	URL        *string `json:"url"`
+}

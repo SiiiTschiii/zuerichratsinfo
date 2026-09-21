@@ -565,36 +565,36 @@ func TestPostToPlatform_AttendanceRollCallIsSkippedWithoutFailingTheRun(t *testi
 	}
 }
 
-// TestPostToPlatform_ElectionRollCallIsSkipped pins that the roll call taken
-// before a Kantonsrat election is skipped like any other
-// Anwesenheitsermittlung. It used to be announced as a stille Wahl, which on
-// 14.09.2026 published the member being replaced as the one elected — see
-// voteformat.AsStilleWahl.
-func TestPostToPlatform_ElectionRollCallIsSkipped(t *testing.T) {
+// TestPostToPlatform_WahlgeschaeftIsPosted covers the opposite case from
+// TestPostToPlatform_AttendanceRollCallIsSkippedWithoutFailingTheRun: the roll
+// call taken on an election business is the only trace that election leaves,
+// so it reaches the formatter and is posted — as a notice carrying no result,
+// not as a vote. See votes.IsWahlgeschaeft.
+func TestPostToPlatform_WahlgeschaeftIsPosted(t *testing.T) {
 	defer setupTempDir(t)()
 
-	rollCall := createVote("wahl-praesenz-1", "20/2026", "2026-09-14")
-	rollCall.Type = "Anwesenheitsermittlung"
-	rollCall.Title = "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann"
-	rollCall.Affair.Type = "Wahl"
+	wahl := createVote("wahl-praesenz-1", "20/2026", "2026-09-14")
+	wahl.Type = votes.AttendanceType
+	wahl.Title = "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann"
+	wahl.Affair.Type = votes.WahlAffairType
 
 	mockPlatform := &MockPlatform{maxPosts: 10}
 	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
 
-	posted, err := PostToPlatform([][]votes.Vote{{rollCall}}, mockPlatform,
+	posted, err := PostToPlatform([][]votes.Vote{{wahl}}, mockPlatform,
 		SingleLog(testJurisdiction, voteLog), false)
 
 	if err != nil {
-		t.Fatalf("an election roll call must not fail the run, got %v", err)
+		t.Fatalf("a Wahlgeschäft must not fail the run, got %v", err)
 	}
-	if posted != 0 {
-		t.Errorf("an election roll call was published: posted=%d", posted)
+	if posted != 1 {
+		t.Errorf("Wahlgeschäft was not published: posted=%d", posted)
 	}
-	if mockPlatform.formatCalls != 0 {
-		t.Errorf("the election roll call reached the formatter: formatCalls=%d", mockPlatform.formatCalls)
+	if mockPlatform.formatCalls != 1 {
+		t.Errorf("Wahlgeschäft never reached the formatter: formatCalls=%d", mockPlatform.formatCalls)
 	}
-	if voteLog.IsPosted(rollCall.SourceID) {
-		t.Error("skipped election roll call was marked as posted")
+	if !voteLog.IsPosted(wahl.SourceID) {
+		t.Error("published Wahlgeschäft was not marked as posted")
 	}
 }
 

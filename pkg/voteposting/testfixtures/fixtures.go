@@ -938,6 +938,55 @@ func KantonsratCupVote() []votes.Vote {
 	return []votes.Vote{v}
 }
 
+// KantonsratWahlgeschaeft is the real 14.09.2026 roll call (external id
+// EA7109F3-...) on KR-Nr. 20/2026, the Baurekursgericht seat.
+//
+// It is the fact pattern an election leaves behind: a Wahl business whose only
+// recorded vote is the roll call taken before the ballot. Its 157/0 counts are
+// the headcount, and the post built from it reports no result at all — the
+// ballot elected Marco Bühler with 145 votes, which appears in none of the
+// data and only in the linked Bulletin. The title names Adrian Bergmann, the
+// member being replaced, and is published exactly as the parliament wrote it.
+// See votes.IsWahlgeschaeft and voteformat.WahlgeschaeftBody.
+func KantonsratWahlgeschaeft() []votes.Vote {
+	const title = "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann"
+	const geschaeftURL = "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7"
+
+	v := votes.Vote{
+		SourceID:     "EA7109F3-A57B-F1FB-5617-EFCE652A7545",
+		Jurisdiction: "zurich-canton",
+		Body:         "Kantonsrat ZH",
+		Date:         time.Date(2026, 9, 14, 6, 19, 39, 0, time.UTC),
+		Sequence:     "1789366779",
+		Title:        title,
+		Type:         votes.AttendanceType,
+		// Withheld for every Wahl affair, same as KantonsratVote — see
+		// openparldata.affairStatesItsOutcome.
+		Decision: "",
+		// The roll call's own tally: who was in the chamber, not a ballot on
+		// any candidate. Nothing on this path renders them.
+		Yes:         intPtr(157),
+		No:          intPtr(0),
+		Abstention:  intPtr(0),
+		Absent:      intPtr(23),
+		SourceURL:   geschaeftURL,
+		GroupURL:    geschaeftURL,
+		BulletinURL: "https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf",
+		Attribution: "Source: OpenParlData.ch",
+		Affair: votes.Affair{
+			Number: "20/2026",
+			Title:  title,
+			ID:     "337845",
+			URL:    geschaeftURL,
+			Type:   votes.WahlAffairType,
+		},
+	}
+
+	withCantonLinks(&v, "5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f", "287041e6-dc9a-428b-9c29-a37570e5f7ff")
+
+	return []votes.Vote{v}
+}
+
 // kantonsratRoster spreads a tally across the chamber's factions in roughly
 // their real proportions. Exact per-faction figures are not the point here —
 // the group exists to exercise labelling and layout — but the total must match
@@ -989,6 +1038,7 @@ var FixtureNames = []string{
 	"kantonsrat-decision-reported",
 	"kantonsrat-member-business",
 	"kantonsrat-co-signed-business",
+	"kantonsrat-wahlgeschaeft",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
@@ -1013,5 +1063,6 @@ func AllFixtures() map[string][]votes.Vote {
 		"kantonsrat-decision-reported":    KantonsratDecisionReported(),
 		"kantonsrat-member-business":      KantonsratMemberBusiness(),
 		"kantonsrat-co-signed-business":   KantonsratCoSignedBusiness(),
+		"kantonsrat-wahlgeschaeft":        KantonsratWahlgeschaeft(),
 	}
 }

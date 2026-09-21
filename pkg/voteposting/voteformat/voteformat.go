@@ -594,50 +594,33 @@ func IsKnownUnpostableType(voteType string) bool {
 	return unpostableVoteTypes[strings.TrimSpace(voteType)]
 }
 
-// StilleWahl is what a silent/uncontested election's title tells a reader:
-// the office and the person elected to it. See AsStilleWahl.
-type StilleWahl struct {
-	Amt  string
-	Name string
-}
+// WahlgeschaeftNoResult is the one statement a Wahlgeschäft post makes. It is
+// about this project's data, not about the chamber, because the chamber's
+// decision is the part nothing here can see: the ballot is not recorded, so
+// neither the outcome nor the person elected is available to assert. See
+// votes.IsWahlgeschaeft.
+const WahlgeschaeftNoResult = "Zu dieser Wahl liegen uns keine Ergebnisdaten vor."
 
-// AsStilleWahl reports whether v is a silent/uncontested election that should
-// be announced with its own post. It currently never does: detection is
-// switched off because both signals it relied on proved wrong on live data.
+// WahlgeschaeftBody renders the reader-facing text of a Wahlgeschäft post: the
+// business title exactly as the parliament writes it, then the sentence above.
 //
-// The detector read a "Wahl" business whose only recorded vote was an
-// Anwesenheitsermittlung as an election by acclamation under § 124 KRG, and
-// took the name after "für" in "Wahl <Amt> für <Name>" as the person elected.
-// The 14.09.2026 sitting broke both. KR-Nr. 20/2026, "Wahl Mitglied
-// Baurekursgericht (BRG) für Adrian Bergmann", was a secret ballot under § 125
-// KRG: the 157-member roll call was the headcount taken before the ballots,
-// and Marco Bühler was elected with 145 votes. "Für Adrian Bergmann" names the
-// member being replaced. The bot announced Bergmann as elected unopposed.
-// An actual stille Wahl, like the WAK seat filled on 07.09.2026, seems to
-// leave no vote record at all, so this route may never have fired on one.
-//
-// With ok always false, such a roll call falls back to being an ordinary
-// Anwesenheitsermittlung, which validateVote skips without posting. The
-// formatters' stille Wahl branches and StilleWahlBody are left in place for a
-// detector that takes the elected name from a source that states it — the
-// Bulletin or the IFK nomination — rather than from the business title.
-func AsStilleWahl(_ votes.Vote) (StilleWahl, bool) {
-	return StilleWahl{}, false
-}
-
-// StilleWahlBody renders the reader-facing text for a stille Wahl: what was
-// filled and who filled it — deliberately omitting the roll-call numbers
-// (attendance, not an election result) that unpostableVoteTypes exists to
-// keep off the timeline in the first place.
-//
-// It asserts "Gewählt" unconditionally, so sw must come from a source that
-// states the outcome: that the election was uncontested, and the name of the
-// person elected. The Bulletin or the IFK nomination do; the vote does not. A
-// Wahl business whose only vote is an Anwesenheitsermittlung can be a secret
-// ballot under § 125 KRG, and the name in its title can be the member being
-// replaced — both true of 20/2026 on 14.09.2026. See AsStilleWahl.
-func StilleWahlBody(sw StilleWahl) string {
-	return fmt.Sprintf("Stille Wahl (unbestritten)\n%s\n\n✅ Gewählt: %s", sw.Amt, sw.Name)
+// The title is published verbatim, including its "für <Name>" tail. That tail
+// names the member being replaced rather than the one elected, which reads the
+// wrong way round to anyone who does not know the convention — but the wording
+// is the canton's, the post makes no claim about it, and every alternative
+// tried so far meant this project deciding which half of an official title to
+// print. A misleading sentence quoted intact is a fault in the source that a
+// reader can check against the linked Bulletin; the same sentence edited by us
+// is a fault in the post.
+func WahlgeschaeftBody(group []votes.Vote) string {
+	if len(group) == 0 {
+		return WahlgeschaeftNoResult
+	}
+	title := CleanVoteTitle(group[0].Title)
+	if title == "" {
+		return WahlgeschaeftNoResult
+	}
+	return title + "\n\n" + WahlgeschaeftNoResult
 }
 
 // IsHandledVoteType reports whether the formatters know how to render a vote of
@@ -729,8 +712,19 @@ func PostHeadline(group []votes.Vote) string {
 		prefix = body + " | "
 	}
 	if len(group) == 0 || group[0].Date.IsZero() {
+		if len(group) > 0 && votes.IsWahlgeschaeft(group[0]) {
+			return prefix + "Wahlgeschäft"
+		}
 		return prefix + "Abstimmung"
 	}
+	// A Wahlgeschäft post reports no vote, so it is not labelled as one, and it
+	// carries no clock time: the only timestamp available is the roll call's,
+	// and printing it would date an election to the minute the chamber was
+	// counted.
+	if votes.IsWahlgeschaeft(group[0]) {
+		return prefix + "Wahlgeschäft vom " + FormatVoteDate(group[0].Date)
+	}
+
 	headline := prefix + "Abstimmung vom " + FormatVoteDate(group[0].Date)
 	if len(group) == 1 && hasClockTime(group[0].Date) {
 		headline += fmt.Sprintf(" (%s)", group[0].Date.Format("15:04"))
@@ -795,11 +789,20 @@ func GroupLinks(group []votes.Vote) []Link {
 		business = ""
 	}
 
+	// The Bulletin stands in for the sitting page where one was fetched, rather
+	// than joining it: it is the same sitting, one click deeper, and it is the
+	// only reason a Wahlgeschäft post exists at all. Every other vote leaves
+	// the field empty and keeps the sitting link.
+	sitting := Link{Icon: "📄", Name: "Sitzung", URL: first.SessionURL}
+	if first.BulletinURL != "" {
+		sitting = Link{Icon: "📄", Name: "Bulletin", URL: first.BulletinURL}
+	}
+
 	var out []Link
 	for _, l := range []Link{
 		{Icon: "🔗", Name: "Geschäft", URL: business},
 		{Icon: "🎬", Name: "Video", URL: archive},
-		{Icon: "📄", Name: "Sitzung", URL: first.SessionURL},
+		sitting,
 	} {
 		if l.URL != "" {
 			out = append(out, l)

@@ -360,11 +360,12 @@ func PostableGroups(groups [][]votes.Vote) [][]votes.Vote {
 // later. Rendering that would have published the opposite of what the council
 // decided.
 func validateVote(v votes.Vote) error {
-	// A stille Wahl is an Anwesenheitsermittlung that IsKnownUnpostableType
-	// would otherwise reject, and gets its own post instead of the usual
-	// Ja/Nein rendering. Detection is currently switched off, so nothing takes
-	// this branch — see voteformat.AsStilleWahl.
-	if _, ok := voteformat.AsStilleWahl(v); ok {
+	// An election business is an Anwesenheitsermittlung that
+	// IsKnownUnpostableType would otherwise reject. It gets a post that
+	// reports no result instead of the usual Ja/Nein rendering, because the
+	// roll call is the only trace an election leaves — see
+	// votes.IsWahlgeschaeft and voteformat.WahlgeschaeftBody.
+	if votes.IsWahlgeschaeft(v) {
 		return nil
 	}
 	if voteformat.IsKnownUnpostableType(v.Type) {

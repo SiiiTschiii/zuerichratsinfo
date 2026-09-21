@@ -35,10 +35,8 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 	// enough to need the "Details im Thread" hint. This must run before
 	// anything below touches voteformat.CountsOf/FormatVoteCounts* or a
 	// verdict emoji, none of which mean anything for an uncontested election.
-	if len(group) == 1 {
-		if sw, ok := voteformat.AsStilleWahl(group[0]); ok {
-			return []*XPost{buildStilleWahlPost(group, sw, contactMapper, charLimit)}
-		}
+	if len(group) == 1 && votes.IsWahlgeschaeft(group[0]) {
+		return []*XPost{buildWahlgeschaeftPost(group, charLimit)}
 	}
 
 	firstVote := group[0]
@@ -75,27 +73,33 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 	return thread
 }
 
-// buildStilleWahlPost builds the single post announcing a stille Wahl: the
-// office and who was elected to it, and a link — no counts, no verdict emoji,
-// no thread. See voteformat.AsStilleWahl/StilleWahlBody for why.
-func buildStilleWahlPost(group []votes.Vote, sw voteformat.StilleWahl, contactMapper *contacts.Mapper, charLimit int) *XPost {
-	if contactMapper != nil {
-		sw.Name = contactMapper.TagXHandlesInText(sw.Name)
-	}
-
+// buildWahlgeschaeftPost builds the single post reporting that an election
+// business was before the chamber: its title, the sentence saying we have no
+// result, and the links — no counts, no verdict emoji, no thread.
+//
+// No contact mapper reaches this text, deliberately. The only name in it is
+// the one in the business title, which belongs to the member being replaced,
+// and tagging them would notify a person about somebody else's election. See
+// voteformat.WahlgeschaeftBody.
+func buildWahlgeschaeftPost(group []votes.Vote, charLimit int) *XPost {
 	header := fmt.Sprintf("🗳️  %s\n\n", voteformat.PostHeadline(group))
 	link := voteformat.LinkLine(group)
-	body := voteformat.StilleWahlBody(sw)
+	body := voteformat.WahlgeschaeftBody(group)
 
 	fullText := header + body + link
 	if weightedLen(fullText) > charLimit {
-		// Extremely unlikely (every Amt seen in practice is well under this
-		// budget), but truncate rather than post something the API rejects.
-		// truncateText appends its own "…", so that has to come out of the
-		// budget too, or the truncated post still overruns by its weight.
-		available := charLimit - weightedLen(header) - weightedLen(link) - weightedLen("…")
+		// The title gives way, never the sentence: a reader who loses half the
+		// business title still has the links, while a reader who loses the
+		// sentence is looking at an election post that says nothing about why
+		// it reports no result. truncateText appends its own "…", so that
+		// comes out of the budget too.
+		sentence := voteformat.WahlgeschaeftNoResult
+		available := charLimit - weightedLen(header+link+sentence+"\n\n") - weightedLen("…")
+		title := voteformat.CleanVoteTitle(group[0].Title)
 		if available > 0 {
-			body = truncateText(body, available)
+			body = truncateText(title, available) + "\n\n" + sentence
+		} else {
+			body = sentence
 		}
 		fullText = header + body + link
 	}
