@@ -987,6 +987,28 @@ func KantonsratWahlgeschaeft() []votes.Vote {
 	return []votes.Vote{v}
 }
 
+// KantonsratWahlgeschaeftTwoRounds is KantonsratWahlgeschaeft with a second
+// roll call on the same business and day, as a second ballot round would add.
+// The second record is synthetic; no such round happened on 14.09.2026.
+//
+// It exists because votes are grouped by business and sitting day, and a
+// formatter that recognised a Wahlgeschäft only as a single-vote group would
+// send this one down the ordinary multi-vote path, publishing both headcounts
+// as results. See votes.IsWahlgeschaeftGroup.
+func KantonsratWahlgeschaeftTwoRounds() []votes.Vote {
+	first := KantonsratWahlgeschaeft()[0]
+
+	second := first
+	second.SourceID = "EA7109F3-0000-0000-0000-000000000002"
+	second.Date = first.Date.Add(40 * time.Minute)
+	second.Sequence = "1789369179"
+	second.Yes = intPtr(151)
+	second.Absent = intPtr(29)
+	withCantonLinks(&second, "5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f", "00000000-0000-0000-0000-000000000002")
+
+	return []votes.Vote{first, second}
+}
+
 // kantonsratRoster spreads a tally across the chamber's factions in roughly
 // their real proportions. Exact per-faction figures are not the point here —
 // the group exists to exercise labelling and layout — but the total must match
@@ -1039,30 +1061,32 @@ var FixtureNames = []string{
 	"kantonsrat-member-business",
 	"kantonsrat-co-signed-business",
 	"kantonsrat-wahlgeschaeft",
+	"kantonsrat-wahlgeschaeft-two-rounds",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
 func AllFixtures() map[string][]votes.Vote {
 	return map[string][]votes.Vote{
-		"single-vote-angenommen":          SingleVoteAngenommen(),
-		"single-vote-abgelehnt":           SingleVoteAbgelehnt(),
-		"single-vote-dringlicherklaerung": SingleVoteDringlicherklaerung(),
-		"long-title-truncation":           LongTitleTruncation(),
-		"tall-title-band-clearance":       TallTitleBandClearance(),
-		"extreme-title-full-roster":       ExtremeTitleFullRoster(),
-		"multi-vote-group":                MultiVoteGroup(),
-		"generic-antrag-fallback":         GenericAntragFallback(),
-		"ten-vote-stress-test":            TenVoteStressTest(),
-		"vote-with-mentions":              VoteWithMentions(),
-		"auswahl-vote":                    AuswahlVote(),
-		"mixed-multi-vote":                MixedMultiVote(),
-		"postulat-with-grnr-prefix":       PostulatWithGrNrPrefix(),
-		"kantonsrat-vote":                 KantonsratVote(),
-		"kantonsrat-multi-vote":           KantonsratMultiVote(),
-		"kantonsrat-lone-quorum-vote":     KantonsratLoneQuorumVote(),
-		"kantonsrat-decision-reported":    KantonsratDecisionReported(),
-		"kantonsrat-member-business":      KantonsratMemberBusiness(),
-		"kantonsrat-co-signed-business":   KantonsratCoSignedBusiness(),
-		"kantonsrat-wahlgeschaeft":        KantonsratWahlgeschaeft(),
+		"single-vote-angenommen":              SingleVoteAngenommen(),
+		"single-vote-abgelehnt":               SingleVoteAbgelehnt(),
+		"single-vote-dringlicherklaerung":     SingleVoteDringlicherklaerung(),
+		"long-title-truncation":               LongTitleTruncation(),
+		"tall-title-band-clearance":           TallTitleBandClearance(),
+		"extreme-title-full-roster":           ExtremeTitleFullRoster(),
+		"multi-vote-group":                    MultiVoteGroup(),
+		"generic-antrag-fallback":             GenericAntragFallback(),
+		"ten-vote-stress-test":                TenVoteStressTest(),
+		"vote-with-mentions":                  VoteWithMentions(),
+		"auswahl-vote":                        AuswahlVote(),
+		"mixed-multi-vote":                    MixedMultiVote(),
+		"postulat-with-grnr-prefix":           PostulatWithGrNrPrefix(),
+		"kantonsrat-vote":                     KantonsratVote(),
+		"kantonsrat-multi-vote":               KantonsratMultiVote(),
+		"kantonsrat-lone-quorum-vote":         KantonsratLoneQuorumVote(),
+		"kantonsrat-decision-reported":        KantonsratDecisionReported(),
+		"kantonsrat-member-business":          KantonsratMemberBusiness(),
+		"kantonsrat-co-signed-business":       KantonsratCoSignedBusiness(),
+		"kantonsrat-wahlgeschaeft":            KantonsratWahlgeschaeft(),
+		"kantonsrat-wahlgeschaeft-two-rounds": KantonsratWahlgeschaeftTwoRounds(),
 	}
 }

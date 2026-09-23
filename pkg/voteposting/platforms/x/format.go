@@ -30,12 +30,13 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 		return nil
 	}
 
-	// A stille Wahl gets its own single post, not a thread: there are no
-	// per-vote counts to put in replies, and nothing here is misleading
-	// enough to need the "Details im Thread" hint. This must run before
-	// anything below touches voteformat.CountsOf/FormatVoteCounts* or a
-	// verdict emoji, none of which mean anything for an uncontested election.
-	if len(group) == 1 && votes.IsWahlgeschaeft(group[0]) {
+	// A Wahlgeschäft gets one notice, not a thread: its only votes are
+	// attendance roll calls, so there are no counts to put in replies. This
+	// must run before anything below touches voteformat.CountsOf,
+	// FormatVoteCounts* or a verdict emoji, none of which mean anything for a
+	// headcount. It is checked on the whole group because a second ballot
+	// round adds a second roll call to the same business.
+	if votes.IsWahlgeschaeftGroup(group) {
 		return []*XPost{buildWahlgeschaeftPost(group, charLimit)}
 	}
 

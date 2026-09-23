@@ -319,7 +319,30 @@ func postableVotes(group []votes.Vote, firstErr *error) []votes.Vote {
 		}
 		postable = append(postable, v)
 	}
-	return postable
+	return withoutMixedRollCalls(postable)
+}
+
+// withoutMixedRollCalls drops election roll calls from a group that also holds
+// real votes.
+//
+// A roll call is posted only as a Wahlgeschäft notice, and a notice needs the
+// whole group to be roll calls — see votes.IsWahlgeschaeftGroup. Beside a real
+// vote it would take the ordinary path instead, and its headcount would be
+// rendered next to an actual result as if it were one. The real votes carry
+// counts that mean something, so they are what the post keeps.
+func withoutMixedRollCalls(group []votes.Vote) []votes.Vote {
+	if len(group) == 0 || votes.IsWahlgeschaeftGroup(group) {
+		return group
+	}
+	kept := make([]votes.Vote, 0, len(group))
+	for _, v := range group {
+		if votes.IsWahlgeschaeft(v) {
+			log.Printf("⚠️  Skipping vote: %s is an election roll call in a group with real votes, so it is not posted", v.SourceID)
+			continue
+		}
+		kept = append(kept, v)
+	}
+	return kept
 }
 
 // IsRejectedVoteError reports whether an error is the pipeline refusing to

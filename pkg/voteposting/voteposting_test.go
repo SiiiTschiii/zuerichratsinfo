@@ -598,6 +598,72 @@ func TestPostToPlatform_WahlgeschaeftIsPosted(t *testing.T) {
 	}
 }
 
+// TestPostToPlatform_WahlgeschaeftRollCallsInOneGroup covers the two ways an
+// election roll call can share a group, since votes are grouped by business
+// and sitting day. Two roll calls — a second ballot round — are one notice
+// covering both. A roll call beside a real vote is dropped, because the notice
+// path needs the whole group to be roll calls and the ordinary path would
+// render its headcount next to a real result.
+func TestPostToPlatform_WahlgeschaeftRollCallsInOneGroup(t *testing.T) {
+	rollCall := func(id string) votes.Vote {
+		v := createVote(id, "20/2026", "2026-09-14")
+		v.Type = votes.AttendanceType
+		v.Title = "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann"
+		v.Affair.Type = votes.WahlAffairType
+		return v
+	}
+
+	t.Run("two roll calls are one notice", func(t *testing.T) {
+		defer setupTempDir(t)()
+		first, second := rollCall("wahl-round-1"), rollCall("wahl-round-2")
+
+		mockPlatform := &MockPlatform{maxPosts: 10}
+		voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+		posted, err := PostToPlatform([][]votes.Vote{{first, second}}, mockPlatform,
+			SingleLog(testJurisdiction, voteLog), false)
+
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if posted != 1 || len(mockPlatform.lastGroup) != 2 {
+			t.Fatalf("want one post covering both roll calls, got posted=%d group=%d", posted, len(mockPlatform.lastGroup))
+		}
+		if !votes.IsWahlgeschaeftGroup(mockPlatform.lastGroup) {
+			t.Error("the formatter was handed a group that does not take the notice path")
+		}
+		for _, id := range []string{first.SourceID, second.SourceID} {
+			if !voteLog.IsPosted(id) {
+				t.Errorf("%s was not marked as posted", id)
+			}
+		}
+	})
+
+	t.Run("a roll call beside a real vote is dropped", func(t *testing.T) {
+		defer setupTempDir(t)()
+		call := rollCall("wahl-praesenz-mixed")
+		real := createVote("wahl-real-mixed", "20/2026", "2026-09-14")
+		real.Affair.Type = votes.WahlAffairType
+
+		mockPlatform := &MockPlatform{maxPosts: 10}
+		voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+		posted, err := PostToPlatform([][]votes.Vote{{call, real}}, mockPlatform,
+			SingleLog(testJurisdiction, voteLog), false)
+
+		if err != nil {
+			t.Fatalf("a dropped roll call must not fail the run, got %v", err)
+		}
+		if posted != 1 {
+			t.Fatalf("the real vote was not published: posted=%d", posted)
+		}
+		if len(mockPlatform.lastGroup) != 1 || mockPlatform.lastGroup[0].SourceID != real.SourceID {
+			t.Errorf("formatter was handed %+v, want the real vote alone", mockPlatform.lastGroup)
+		}
+		if voteLog.IsPosted(call.SourceID) {
+			t.Error("the dropped roll call was marked as posted")
+		}
+	})
+}
+
 // TestPostToPlatform_AttendanceRollCallDoesNotMaskAnUnknownType pins that the
 // two rejection kinds stay distinguishable when both occur in one run. A roll
 // call must not swallow the signal that the source served something new.

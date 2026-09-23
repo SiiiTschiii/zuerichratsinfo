@@ -28,11 +28,14 @@ func TestGenerateCarousel_ValidJPEG(t *testing.T) {
 			if len(images) == 0 {
 				t.Fatal("expected at least one image")
 			}
-			// Single vote: 1 combined image. Multi-vote: 1 title + 1 result per vote.
+			// Single vote: 1 combined image. Multi-vote: 1 title + 1 result per
+			// vote. A Wahlgeschäft is one text card however many roll calls it
+			// holds, because a result card would render a headcount as a result.
 			var expected int
-			if len(group) == 1 {
+			switch {
+			case votes.IsWahlgeschaeftGroup(group), len(group) == 1:
 				expected = 1
-			} else {
+			default:
 				expected = 1 + len(group)
 			}
 			if len(images) != expected {

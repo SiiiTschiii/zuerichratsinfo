@@ -30,14 +30,15 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 		return nil
 	}
 
-	// A stille Wahl gets its own single post, not a thread: there are no
-	// per-vote counts to put in replies, and nothing here is misleading
-	// enough to need the "Details im Thread" hint. This must run before
-	// anything below touches voteformat.CountsOf/FormatVoteCounts* or a
-	// verdict emoji, none of which mean anything for an uncontested election.
+	// A Wahlgeschäft gets one notice, not a thread: its only votes are
+	// attendance roll calls, so there are no counts to put in replies. This
+	// must run before anything below touches voteformat.CountsOf,
+	// FormatVoteCounts* or a verdict emoji, none of which mean anything for a
+	// headcount. It is checked on the whole group because a second ballot
+	// round adds a second roll call to the same business.
 	// No mentions are resolved on this path, deliberately: the only name in
 	// the text belongs to the member being replaced, not to anyone elected.
-	if len(group) == 1 && votes.IsWahlgeschaeft(group[0]) {
+	if votes.IsWahlgeschaeftGroup(group) {
 		return buildWahlgeschaeftPosts(group)
 	}
 
@@ -74,8 +75,8 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 // to it, and the links — no counts, no verdict emoji, no "Details im Thread".
 // See voteformat.AsStilleWahl/StilleWahlBody for why.
 //
-// It stays one post wherever the links fit on it, which is what a stille Wahl
-// should be: there is nothing to put in a thread. Where they do not — Kanton
+// It stays one post wherever the links fit on it, which is what a Wahlgeschäft
+// notice should be: there is nothing to put in a thread. Where they do not — Kanton
 // Zürich carries three links plus the licence credit, some 380 graphemes
 // against a 300 limit — they spill into replies rather than the post going to
 // the API at a length it rejects.

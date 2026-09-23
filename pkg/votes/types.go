@@ -206,3 +206,23 @@ func IsWahlgeschaeft(v Vote) bool {
 	return strings.TrimSpace(v.Affair.Type) == WahlAffairType &&
 		strings.TrimSpace(v.Type) == AttendanceType
 }
+
+// IsWahlgeschaeftGroup reports whether every vote in a posting group is an
+// election roll call, which is what makes the group one Wahlgeschäft notice
+// rather than a vote post.
+//
+// A group can hold several: votes are grouped by business and sitting day, and
+// a second ballot round takes a second roll call on the same business. Each of
+// them would otherwise take the ordinary multi-vote path and publish its
+// headcount as though it were a result.
+func IsWahlgeschaeftGroup(group []Vote) bool {
+	if len(group) == 0 {
+		return false
+	}
+	for _, v := range group {
+		if !IsWahlgeschaeft(v) {
+			return false
+		}
+	}
+	return true
+}

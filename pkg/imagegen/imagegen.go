@@ -436,17 +436,19 @@ func GenerateCarousel(group []votes.Vote) ([][]byte, error) {
 
 	var images [][]byte
 
-	if len(group) == 1 {
-		if votes.IsWahlgeschaeft(group[0]) {
-			// An election business gets a text-only card, not the usual stats
-			// dashboard: the only recorded vote is the roll call, and none of
-			// its counts mean anything here — see votes.IsWahlgeschaeft.
-			img, err := renderWahlgeschaeftCard(&group[0], bgColor, fonts)
-			if err != nil {
-				return nil, fmt.Errorf("rendering Wahlgeschäft card: %w", err)
-			}
-			return [][]byte{img}, nil
+	// An election business gets one text-only card, not the usual stats
+	// dashboard: its only votes are attendance roll calls, and none of their
+	// counts mean anything here. Checked on the whole group, because a second
+	// ballot round adds a second roll call — see votes.IsWahlgeschaeftGroup.
+	if votes.IsWahlgeschaeftGroup(group) {
+		img, err := renderWahlgeschaeftCard(&group[0], bgColor, fonts)
+		if err != nil {
+			return nil, fmt.Errorf("rendering Wahlgeschäft card: %w", err)
 		}
+		return [][]byte{img}, nil
+	}
+
+	if len(group) == 1 {
 		// Single vote: combine title + results into one image
 		combinedImg, err := renderCombinedCard(&group[0], bgColor, fonts)
 		if err != nil {

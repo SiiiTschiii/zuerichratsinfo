@@ -712,7 +712,7 @@ func PostHeadline(group []votes.Vote) string {
 		prefix = body + " | "
 	}
 	if len(group) == 0 || group[0].Date.IsZero() {
-		if len(group) > 0 && votes.IsWahlgeschaeft(group[0]) {
+		if votes.IsWahlgeschaeftGroup(group) {
 			return prefix + "Wahlgeschäft"
 		}
 		return prefix + "Abstimmung"
@@ -721,7 +721,7 @@ func PostHeadline(group []votes.Vote) string {
 	// carries no clock time: the only timestamp available is the roll call's,
 	// and printing it would date an election to the minute the chamber was
 	// counted.
-	if votes.IsWahlgeschaeft(group[0]) {
+	if votes.IsWahlgeschaeftGroup(group) {
 		return prefix + "Wahlgeschäft vom " + FormatVoteDate(group[0].Date)
 	}
 
