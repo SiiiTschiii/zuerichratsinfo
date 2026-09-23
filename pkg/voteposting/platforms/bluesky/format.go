@@ -30,21 +30,16 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 		return nil
 	}
 
-	// A stille Wahl gets its own single post, not a thread: there are no
-	// per-vote counts to put in replies, and nothing here is misleading
-	// enough to need the "Details im Thread" hint. This must run before
-	// anything below touches voteformat.CountsOf/FormatVoteCounts* or a
-	// verdict emoji, none of which mean anything for an uncontested election.
-	if len(group) == 1 {
-		if sw, ok := voteformat.AsStilleWahl(group[0]); ok {
-			posts := buildStilleWahlPosts(group, sw)
-			if contactMapper != nil {
-				for _, post := range posts {
-					post.Mentions = contactMapper.FindBlueskyMentions(post.Text)
-				}
-			}
-			return posts
-		}
+	// A Wahlgeschäft gets one notice, not a thread: its only votes are
+	// attendance roll calls, so there are no counts to put in replies. This
+	// must run before anything below touches voteformat.CountsOf,
+	// FormatVoteCounts* or a verdict emoji, none of which mean anything for a
+	// headcount. It is checked on the whole group because a second ballot
+	// round adds a second roll call to the same business.
+	// No mentions are resolved on this path, deliberately: the only name in
+	// the text belongs to the member being replaced, not to anyone elected.
+	if votes.IsWahlgeschaeftGroup(group) {
+		return buildWahlgeschaeftPosts(group)
 	}
 
 	firstVote := group[0]
@@ -80,15 +75,15 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 // to it, and the links — no counts, no verdict emoji, no "Details im Thread".
 // See voteformat.AsStilleWahl/StilleWahlBody for why.
 //
-// It stays one post wherever the links fit on it, which is what a stille Wahl
-// should be: there is nothing to put in a thread. Where they do not — Kanton
+// It stays one post wherever the links fit on it, which is what a Wahlgeschäft
+// notice should be: there is nothing to put in a thread. Where they do not — Kanton
 // Zürich carries three links plus the licence credit, some 380 graphemes
 // against a 300 limit — they spill into replies rather than the post going to
 // the API at a length it rejects.
-func buildStilleWahlPosts(group []votes.Vote, sw voteformat.StilleWahl) []*BlueskyPost {
+func buildWahlgeschaeftPosts(group []votes.Vote) []*BlueskyPost {
 	header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
 	link := voteformat.LinkLine(group)
-	body := voteformat.StilleWahlBody(sw)
+	body := voteformat.WahlgeschaeftBody(group)
 	urls := linkURLs(group)
 
 	if graphemeLen(header+body+link) <= maxGraphemes {
@@ -96,12 +91,16 @@ func buildStilleWahlPosts(group []votes.Vote, sw voteformat.StilleWahl) []*Blues
 	}
 
 	// The body is budgeted against the header alone, because the links are no
-	// longer riding on this post. truncateText appends its own "…", so that has
-	// to come out of the budget too, or the truncated post still overruns by
-	// its length. Truncating at all is extremely unlikely — every Amt seen in
-	// practice is well under this budget.
-	if available := maxGraphemes - graphemeLen(header) - graphemeLen("…"); available > 0 {
-		body = truncateText(body, available)
+	// longer riding on this post. Within it the title gives way and the
+	// sentence does not: an election post that loses the sentence says nothing
+	// about why it reports no result. truncateText appends its own "…", so
+	// that comes out of the budget too.
+	sentence := voteformat.WahlgeschaeftNoResult
+	available := maxGraphemes - graphemeLen(header+sentence+"\n\n") - graphemeLen("…")
+	if available > 0 {
+		body = truncateText(voteformat.CleanVoteTitle(group[0].Title), available) + "\n\n" + sentence
+	} else {
+		body = sentence
 	}
 
 	posts := []*BlueskyPost{makePost(header + body)}

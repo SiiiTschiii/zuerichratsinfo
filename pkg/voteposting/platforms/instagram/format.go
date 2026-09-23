@@ -68,19 +68,19 @@ func FormatCarouselWithContacts(group []votes.Vote, contactMapper *contacts.Mapp
 // buildCaption creates the caption text for an Instagram carousel post.
 // Includes vote details (similar to X/Bluesky thread text flattened) + vote page link.
 func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
-	// A stille Wahl gets its own caption: the office and who was elected to
-	// it, and a link — no counts, no verdict emoji. This must run before
-	// anything below touches voteformat.CountsOf/FormatVoteCounts* or a
-	// verdict emoji, none of which mean anything for an uncontested election.
-	// The carousel image is handled the same way, in imagegen.GenerateCarousel.
-	if len(group) == 1 {
-		if sw, ok := voteformat.AsStilleWahl(group[0]); ok {
-			if contactMapper != nil {
-				sw.Name = contactMapper.TagInstagramHandlesInText(sw.Name)
-			}
-			header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
-			return header + voteformat.StilleWahlBody(sw) + voteformat.LinkLine(group)
-		}
+	// A Wahlgeschäft gets its own caption: the title, the sentence saying we
+	// have no result, and the links — no counts, no verdict emoji. Its only
+	// votes are attendance roll calls, so this must run before anything below
+	// touches voteformat.CountsOf, FormatVoteCounts* or a verdict emoji, none of
+	// which mean anything for a headcount. It is checked on the whole group
+	// because a second ballot round adds a second roll call to the same
+	// business. The carousel image is handled the same way, in
+	// imagegen.GenerateCarousel.
+	// No handles are tagged on this path, deliberately: the only name in the
+	// text belongs to the member being replaced, not to anyone elected.
+	if votes.IsWahlgeschaeftGroup(group) {
+		header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
+		return header + voteformat.WahlgeschaeftBody(group) + voteformat.LinkLine(group)
 	}
 
 	firstVote := group[0]

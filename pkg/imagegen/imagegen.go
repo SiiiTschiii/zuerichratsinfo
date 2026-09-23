@@ -436,17 +436,19 @@ func GenerateCarousel(group []votes.Vote) ([][]byte, error) {
 
 	var images [][]byte
 
-	if len(group) == 1 {
-		if sw, ok := voteformat.AsStilleWahl(group[0]); ok {
-			// A stille Wahl gets a text-only announcement card, not the usual
-			// stats dashboard: there are no counts that mean anything here —
-			// see voteformat.AsStilleWahl.
-			img, err := renderStilleWahlCard(&group[0], sw, bgColor, fonts)
-			if err != nil {
-				return nil, fmt.Errorf("rendering stille Wahl card: %w", err)
-			}
-			return [][]byte{img}, nil
+	// An election business gets one text-only card, not the usual stats
+	// dashboard: its only votes are attendance roll calls, and none of their
+	// counts mean anything here. Checked on the whole group, because a second
+	// ballot round adds a second roll call — see votes.IsWahlgeschaeftGroup.
+	if votes.IsWahlgeschaeftGroup(group) {
+		img, err := renderWahlgeschaeftCard(&group[0], bgColor, fonts)
+		if err != nil {
+			return nil, fmt.Errorf("rendering Wahlgeschäft card: %w", err)
 		}
+		return [][]byte{img}, nil
+	}
+
+	if len(group) == 1 {
 		// Single vote: combine title + results into one image
 		combinedImg, err := renderCombinedCard(&group[0], bgColor, fonts)
 		if err != nil {
@@ -1137,55 +1139,46 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 	}
 }
 
-func renderStilleWahlCard(v *votes.Vote, sw voteformat.StilleWahl, bg color.RGBA, fonts *fontSet) ([]byte, error) {
+func renderWahlgeschaeftCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
 	inset := bandInset(*v)
 
 	// Dry run to measure content height
 	dry := newCursor(inset, imgHeight)
-	layoutStilleWahlCard(nil, dry, v, sw, bg, fonts)
+	layoutWahlgeschaeftCard(nil, dry, v, bg, fonts)
 
 	startY := centredStart(inset, dry.contentHeight())
 	img := newImage(bg)
 	drawBodyBand(img, fonts.bandLabel, *v)
 
 	cur := newCursor(startY, imgHeight)
-	layoutStilleWahlCard(img, cur, v, sw, bg, fonts)
+	layoutWahlgeschaeftCard(img, cur, v, bg, fonts)
 
 	return encodeJPEG(img)
 }
 
-// layoutStilleWahlCard draws a large ✅ (an uncontested election is exactly
-// the outcome a verdict emoji marks elsewhere, just with no tally behind it),
-// then the vote's title, a divider, and the stille-Wahl announcement (office
-// and who was elected) below it.
+// layoutWahlgeschaeftCard draws a large 🗳️, then the business title, a
+// divider, and the sentence saying the result is not in our data.
 //
-// The shape follows layoutCombinedCard's — verdict, title, divider, result —
-// rather than layoutTitleCard's plainer one, so a stille Wahl reads as the
-// same kind of card as everything else on the timeline instead of a visibly
-// thinner one. There is still no stats dashboard or Fraktion table: no count
-// here means anything, because the only recorded vote is a quorum roll call,
-// not a ballot on the candidate (see voteformat.AsStilleWahl).
-func layoutStilleWahlCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, sw voteformat.StilleWahl, bg color.RGBA, fonts *fontSet) {
+// The marker is a ballot box rather than the ✅ an accepted vote carries:
+// nothing on this card is a decision. The shape still follows
+// layoutCombinedCard's — marker, title, divider, text — rather than
+// layoutTitleCard's plainer one, so the card reads as the same kind of thing
+// as everything else on the timeline instead of a visibly thinner one. There
+// is no stats dashboard and no Fraktion table, because the only recorded vote
+// is the roll call taken before the ballot (see votes.IsWahlgeschaeft).
+func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg color.RGBA, fonts *fontSet) {
 	maxTextWidth := imgWidth - 2*padding
 
-	// The announcement is built first: it is what the title has to leave room
-	// for, and it does not depend on the size the title ends up at. A blank
-	// line in voteformat.StilleWahlBody (the paragraph break before "Gewählt")
-	// becomes a half-line gap rather than a wrapped, empty text line.
-	var bodyLines []string
-	for _, raw := range strings.Split(voteformat.StilleWahlBody(sw), "\n") {
-		if raw == "" {
-			bodyLines = append(bodyLines, "")
-			continue
-		}
-		bodyLines = append(bodyLines, wrapText(fonts.regular, raw, maxTextWidth)...)
-	}
+	// The sentence is built first: it is what the title has to leave room for,
+	// and it does not depend on the size the title ends up at. The card draws
+	// the title itself, so this is the sentence alone rather than
+	// voteformat.WahlgeschaeftBody, which carries both.
+	bodyLines := wrapText(fonts.regular, voteformat.WahlgeschaeftNoResult, maxTextWidth)
 
-	// Reserve, mirroring combinedBottomReserve: the verdict sits above the
+	// Reserve, mirroring combinedBottomReserve: the marker sits above the
 	// title but its space is just as unavailable, so it is charged here too,
-	// then the gap and divider after the title, one line per announcement
-	// line (a blank marker costs a half-line gap instead of a full line), and
-	// the bottom padding.
+	// then the gap and divider after the title, one line per sentence line,
+	// and the bottom padding.
 	bodyReserve := lineHeight(fonts.verdict) + frac(fonts.verdict, 0.75)
 	bodyReserve += titleTrailingGap() + frac(fonts.regular, 0.75)
 	for _, line := range bodyLines {
@@ -1204,9 +1197,10 @@ func layoutStilleWahlCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, sw 
 		return
 	}
 
-	// Verdict: large centered ✅ above the title, same as an accepted vote.
+	// Marker: large centered 🗳️ above the title, where an ordinary vote card
+	// carries its verdict.
 	if img != nil {
-		drawCenteredText(img, fonts.verdict, fonts.emojiVerdict, cur.baseline(fonts.verdict), "✅", bg)
+		drawCenteredText(img, fonts.verdict, fonts.emojiVerdict, cur.baseline(fonts.verdict), "🗳️", bg)
 	}
 	cur.advance(fonts.verdict)
 	cur.gap(fonts.verdict, 0.75)
@@ -1225,7 +1219,7 @@ func layoutStilleWahlCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, sw 
 	}
 	cur.gap(fonts.regular, 0.75)
 
-	// Announcement: centered, plain text, an emoji face for the "✅ Gewählt" line.
+	// The sentence: centered, plain text.
 	for _, line := range bodyLines {
 		if line == "" {
 			cur.gap(fonts.regular, 0.5)

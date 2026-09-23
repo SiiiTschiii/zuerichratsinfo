@@ -7,7 +7,10 @@
 // package, never the other way round.
 package votes
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // Jurisdiction identifies one parliamentary body whose votes are posted as a
 // unit: its own vote log, its own contacts file and its own age guard.
@@ -90,6 +93,14 @@ type Vote struct {
 	// Empty when the source has no sitting page.
 	SessionURL string
 
+	// BulletinURL links to the sitting's Bulletin, the parliament's own
+	// summary of what it decided that day. It is filled only where a post
+	// needs the reader to look the outcome up themselves, because the source
+	// serves the document but not its text — see IsWahlgeschaeft.
+	//
+	// Empty for every other vote, which is nearly all of them.
+	BulletinURL string
+
 	// Totals. Nil means "not reported", which is distinct from zero.
 	Yes, No, Abstention, Absent *int
 	ChoiceA, ChoiceB, ChoiceC   *int
@@ -170,4 +181,48 @@ func (v Vote) DateString() string {
 		return ""
 	}
 	return v.Date.Format("2006-01-02")
+}
+
+// AttendanceType is the roll call establishing who is in the chamber. It is
+// not a vote on anything, and its lopsided Ja tally must never be published as
+// one.
+const AttendanceType = "Anwesenheitsermittlung"
+
+// WahlAffairType is the Kantonsrat's own Geschäftsart for an election.
+const WahlAffairType = "Wahl"
+
+// IsWahlgeschaeft reports whether v is the roll call taken on an election
+// business — the only trace an election leaves in the data.
+//
+// Both halves are stated by a source, not inferred: the Geschäftsart comes
+// from the canton's own business record, and the vote type from the
+// parliament's archive. What the combination does *not* say is how the
+// election ended. The ballot itself is never recorded: a secret ballot under
+// § 125 KRG leaves only this roll call, and an uncontested election under
+// § 124 leaves nothing at all. So a post about one can report that the
+// business was before the chamber and link the sitting's Bulletin, and must
+// claim nothing else — see voteformat.WahlgeschaeftBody.
+func IsWahlgeschaeft(v Vote) bool {
+	return strings.TrimSpace(v.Affair.Type) == WahlAffairType &&
+		strings.TrimSpace(v.Type) == AttendanceType
+}
+
+// IsWahlgeschaeftGroup reports whether every vote in a posting group is an
+// election roll call, which is what makes the group one Wahlgeschäft notice
+// rather than a vote post.
+//
+// A group can hold several: votes are grouped by business and sitting day, and
+// a second ballot round takes a second roll call on the same business. Each of
+// them would otherwise take the ordinary multi-vote path and publish its
+// headcount as though it were a result.
+func IsWahlgeschaeftGroup(group []Vote) bool {
+	if len(group) == 0 {
+		return false
+	}
+	for _, v := range group {
+		if !IsWahlgeschaeft(v) {
+			return false
+		}
+	}
+	return true
 }

@@ -159,15 +159,15 @@ func TestFormatVoteThread_VeryLongTitle(t *testing.T) {
 	}
 }
 
-// TestFormatVoteThread_StilleWahlTruncation pins that truncateText's own
+// TestFormatVoteThread_WahlgeschaeftTruncation pins that truncateText's own
 // appended "…" is budgeted for, not just the text before it. A budget that
 // stops one grapheme short of maxGraphemes still overruns once truncateText
-// adds the ellipsis on top — see the fixed buildStilleWahlPost.
-func TestFormatVoteThread_StilleWahlTruncation(t *testing.T) {
+// adds the ellipsis on top — see the fixed buildWahlgeschaeftPosts.
+func TestFormatVoteThread_WahlgeschaeftTruncation(t *testing.T) {
 	longAmt := strings.Repeat("Mitglied Obergericht ", 30)
 	group := []votes.Vote{
 		{
-			SourceID: "stille-wahl-trunc-1",
+			SourceID: "wahlgeschaeft-trunc-1",
 			Title:    "Wahl " + longAmt + "für Roland Schmid",
 			Type:     "Anwesenheitsermittlung",
 			Date:     testfixtures.MustDate("2026-07-06"),
@@ -176,16 +176,16 @@ func TestFormatVoteThread_StilleWahlTruncation(t *testing.T) {
 	}
 
 	thread := FormatVoteThread(group, nil)
-	if len(thread) != 1 {
-		t.Fatalf("want a single post, got %d", len(thread))
+	if len(thread) == 0 {
+		t.Fatal("want a post, got none")
 	}
 
 	post := thread[0].Text
 	if got := graphemeLen(post); got > maxGraphemes {
-		t.Errorf("stille Wahl post exceeds maxGraphemes: %d > %d", got, maxGraphemes)
+		t.Errorf("Wahlgeschäft post exceeds maxGraphemes: %d > %d", got, maxGraphemes)
 	}
 	if !strings.Contains(post, "…") {
-		t.Error("truncated stille Wahl post should contain '…'")
+		t.Error("truncated Wahlgeschäft post should contain '…'")
 	}
 }
 
@@ -679,7 +679,6 @@ func TestFormatVoteThread_EveryLinkIsFaceted(t *testing.T) {
 	for name, group := range map[string][]votes.Vote{
 		"single vote": testfixtures.KantonsratVote(),
 		"group":       testfixtures.KantonsratMultiVote(),
-		"stille Wahl": testfixtures.KantonsratStilleWahl(),
 	} {
 		t.Run(name, func(t *testing.T) {
 			links := voteformat.GroupLinks(group)

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
@@ -86,8 +87,81 @@ func (c *Client) GroupByAffair(vs []votes.Vote) ([][]votes.Vote, error) {
 	// published depends on the affair type that enrichment fetches.
 	c.applyDetails(complete)
 
+	// After applyDetails, because which votes need a Bulletin depends on the
+	// vote type only the detail source knows.
+	c.applyBulletins(complete)
+
 	return votes.GroupByAffairAndDate(complete), nil
 }
+
+// applyBulletins fills BulletinURL for the votes whose post has to send the
+// reader to the parliament's own summary because the data has no outcome.
+//
+// That is the Wahl business whose only recorded vote is the roll call taken
+// before the ballot: nothing in this API or in the archive says who was
+// elected, or whether the ballot carried at all. The Bulletin says both, in
+// prose nothing extracts — the document's text field is null — so the post
+// links it rather than quoting it.
+//
+// Two calls per such vote, and they are rare: eight businesses in the thirteen
+// months to September 2026. A failure costs the link, not the post.
+func (c *Client) applyBulletins(vs []votes.Vote) {
+	for i := range vs {
+		if !votes.IsWahlgeschaeft(vs[i]) || vs[i].Affair.ID == "" {
+			continue
+		}
+		affairID, err := strconv.ParseInt(vs[i].Affair.ID, 10, 64)
+		if err != nil {
+			continue
+		}
+		vs[i].BulletinURL = c.bulletinURL(affairID, vs[i].Date)
+	}
+}
+
+// bulletinURL returns the Bulletin of the sitting held on date, or "" when the
+// affair names no such sitting or the sitting has no Bulletin filed yet.
+//
+// The sitting is matched on the calendar day rather than taken as the affair's
+// first: a Kantonsrat business is on the agenda of sittings years apart, and
+// the Bulletin of the wrong one would report somebody else's decisions.
+func (c *Client) bulletinURL(affairID int64, date time.Time) string {
+	if date.IsZero() {
+		return ""
+	}
+
+	var meetings meetingsResponse
+	if err := c.get(fmt.Sprintf("/affairs/%d/meetings", affairID), nil, &meetings); err != nil {
+		log.Printf("⚠️  openparldata: could not fetch meetings for affair %d: %v", affairID, err)
+		return ""
+	}
+
+	day := date.Format("2006-01-02")
+	var meetingID int64
+	for _, m := range meetings.Data {
+		if begin := deref(m.BeginDate); len(begin) >= 10 && begin[:10] == day {
+			meetingID = m.ID
+			break
+		}
+	}
+	if meetingID == 0 {
+		return ""
+	}
+
+	var docs meetingDocsResponse
+	if err := c.get(fmt.Sprintf("/meetings/%d/docs", meetingID), nil, &docs); err != nil {
+		log.Printf("⚠️  openparldata: could not fetch documents for meeting %d: %v", meetingID, err)
+		return ""
+	}
+	for _, d := range docs.Data {
+		if deref(d.CategoryDe) == bulletinCategory {
+			return deref(d.URL)
+		}
+	}
+	return ""
+}
+
+// bulletinCategory is the body's own filing label for the sitting summary.
+const bulletinCategory = "Bulletin"
 
 // applyDetails fills in what the configured DetailSource knows and this API
 // does not.

@@ -2704,69 +2704,126 @@ AL 5/0/0/0
 📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-06-08&startDate=2026-06-08
 Source: OpenParlData.ch
 
-################ FIXTURE kantonsrat-stille-wahl ################
+################ FIXTURE kantonsrat-wahlgeschaeft ################
 
 ---- X (limit 280) ----
 [post 0]
-🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026 (06:21)
+🗳️  Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
 
-Stille Wahl (unbestritten)
-Mitglied Obergericht (100%)
+Wahl Mitglied Baurekursgericht (BRG)…
 
-✅ Gewählt: Roland Schmid
+Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
 
-🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
-🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c
-📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f&segmentUid=287041e6-dc9a-428b-9c29-a37570e5f7ff
+📄 Bulletin: https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf
 Source: OpenParlData.ch
 
 ---- X (limit 2000) ----
 [post 0]
-🗳️  Kantonsrat ZH | Abstimmung vom 06.07.2026 (06:21)
+🗳️  Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
 
-Stille Wahl (unbestritten)
-Mitglied Obergericht (100%)
+Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann
 
-✅ Gewählt: Roland Schmid
+Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
 
-🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
-🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c
-📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f&segmentUid=287041e6-dc9a-428b-9c29-a37570e5f7ff
+📄 Bulletin: https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf
 Source: OpenParlData.ch
 
 ---- Bluesky ----
 [post 0]
-🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026 (06:21)
+🗳️ Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
 
-Stille Wahl (unbestritten)
-Mitglied Obergericht (100%)
+Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann
 
-✅ Gewählt: Roland Schmid
+Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
 
 [post 1]
-🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
-🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c
-[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188 DID: Tag:}]}
-[facet] {Index:{ByteStart:115 ByteEnd:244} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c DID: Tag:}]}
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f&segmentUid=287041e6-dc9a-428b-9c29-a37570e5f7ff
+[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7 DID: Tag:}]}
+[facet] {Index:{ByteStart:115 ByteEnd:244} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f&segmentUid=287041e6-dc9a-428b-9c29-a37570e5f7ff DID: Tag:}]}
 
 [post 2]
-📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
+📄 Bulletin: https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf
 Source: OpenParlData.ch
-[facet] {Index:{ByteStart:14 ByteEnd:118} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06 DID: Tag:}]}
+[facet] {Index:{ByteStart:15 ByteEnd:107} Features:[{Type:app.bsky.richtext.facet#link URI:https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf DID: Tag:}]}
 
 ---- Instagram ----
 [images] 1
 [caption]
-🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026 (06:21)
+🗳️ Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
 
-Stille Wahl (unbestritten)
-Mitglied Obergericht (100%)
+Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann
 
-✅ Gewählt: Roland Schmid
+Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
 
-🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188
-🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=f0c93a57-8d21-4e6b-b74a-25c81f0d6e39&segmentUid=3d18e6b4-5a09-4f27-8c61-b9d047a2e58c
-📄 Sitzung: https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?endDate=2026-07-06&startDate=2026-07-06
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f&segmentUid=287041e6-dc9a-428b-9c29-a37570e5f7ff
+📄 Bulletin: https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf
+Source: OpenParlData.ch
+
+################ FIXTURE kantonsrat-wahlgeschaeft-two-rounds ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
+
+Wahl Mitglied Baurekursgericht (BRG)…
+
+Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
+
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f
+📄 Bulletin: https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf
+Source: OpenParlData.ch
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
+
+Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann
+
+Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
+
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f
+📄 Bulletin: https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf
+Source: OpenParlData.ch
+
+---- Bluesky ----
+[post 0]
+🗳️ Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
+
+Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann
+
+Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
+
+[post 1]
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f
+📄 Bulletin: https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf
+[facet] {Index:{ByteStart:16 ByteEnd:102} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7 DID: Tag:}]}
+[facet] {Index:{ByteStart:115 ByteEnd:196} Features:[{Type:app.bsky.richtext.facet#link URI:https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f DID: Tag:}]}
+[facet] {Index:{ByteStart:212 ByteEnd:304} Features:[{Type:app.bsky.richtext.facet#link URI:https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf DID: Tag:}]}
+
+[post 2]
+Source: OpenParlData.ch
+
+---- Instagram ----
+[images] 1
+[caption]
+🗳️ Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
+
+Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann
+
+Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
+
+🔗 Geschäft: https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f
+📄 Bulletin: https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf
 Source: OpenParlData.ch
 
 ################ FIXTURE instagram-long-multi-vote-truncation ################

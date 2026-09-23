@@ -926,85 +926,42 @@ func TestGroupPrefixLineNamesWhoFiledIt(t *testing.T) {
 	}
 }
 
-// TestAsStilleWahl pins the detector's three conditions and the
-// name-plausibility guard against the real titles pulled from OpenParlData
-// while building this feature — see the package doc on AsStilleWahl for the
-// data these are drawn from.
-func TestAsStilleWahl(t *testing.T) {
-	stilleWahl := func(affairType, voteType, title string) votes.Vote {
-		return votes.Vote{
-			Title: title,
-			Type:  voteType,
-			Affair: votes.Affair{
-				Type:  affairType,
-				Title: title,
-			},
-		}
+// TestWahlgeschaeftBody pins what an election post says: the business title
+// exactly as the parliament wrote it, and one sentence about our data. In
+// particular the "für <Name>" tail survives intact — it names the member being
+// replaced, and editing official wording is the thing this post does not do.
+func TestWahlgeschaeftBody(t *testing.T) {
+	group := []votes.Vote{{
+		Title:  "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann",
+		Type:   votes.AttendanceType,
+		Affair: votes.Affair{Type: votes.WahlAffairType},
+	}}
+
+	want := "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann\n\n" + WahlgeschaeftNoResult
+	if got := WahlgeschaeftBody(group); got != want {
+		t.Errorf("WahlgeschaeftBody() =\n%q\nwant\n%q", got, want)
 	}
 
-	tests := []struct {
-		name   string
-		v      votes.Vote
-		want   StilleWahl
-		wantOK bool
-	}{
-		{
-			name:   "real example: Roland Schmid",
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglied Obergericht (100%) für Roland Schmid"),
-			want:   StilleWahl{Amt: "Mitglied Obergericht (100%)", Name: "Roland Schmid"},
-			wantOK: true,
-		},
-		{
-			name:   "real example: Claude Reinhardt",
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Abteilungspräsidium Baurekursgericht (BRG) für Claude Reinhardt"),
-			want:   StilleWahl{Amt: "Abteilungspräsidium Baurekursgericht (BRG)", Name: "Claude Reinhardt"},
-			wantOK: true,
-		},
-		{
-			name:   "wrong affair type: a routine roll call opening a sitting",
-			v:      stilleWahl("", "Anwesenheitsermittlung", ""),
-			wantOK: false,
-		},
-		{
-			name: "wrong vote type: a real contested election",
-			// The real "Wahl Mitglied Bankrat ZKB für Walter Schoch" (41/109/10/19)
-			// carries this exact title shape but was typed Normal, not
-			// Anwesenheitsermittlung — this is the case IsKnownUnpostableType
-			// must never widen to cover.
-			v:      stilleWahl("Wahl", "Normal", "Wahl Mitglied Bankrat ZKB für Walter Schoch"),
-			wantOK: false,
-		},
-		{
-			name:   "no individual named: a collective appointment",
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Geschäftsleitung (GL) Kantonsrat Amtsjahr 2026/2027"),
-			wantOK: false,
-		},
-		{
-			name: "implausible name: a term of office, not a person",
-			// The real "Wahl Mitglieder Schiedsgericht in
-			// Sozialversicherungsstreitigkeiten für die Amtsdauer 2025-2031" —
-			// without the plausibility guard this would extract the "name"
-			// "die Amtsdauer 2025-2031".
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl Mitglieder Schiedsgericht für die Amtsdauer 2025-2031"),
-			wantOK: false,
-		},
-		{
-			name:   "implausible name: a legislature reference",
-			v:      stilleWahl("Wahl", "Anwesenheitsermittlung", "Wahl acht Mitglieder Obergericht für die Legislatur 2019-2025"),
-			wantOK: false,
-		},
+	if got := WahlgeschaeftBody(nil); got != WahlgeschaeftNoResult {
+		t.Errorf("WahlgeschaeftBody(nil) = %q, want the bare sentence", got)
 	}
+}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, ok := AsStilleWahl(tt.v)
-			if ok != tt.wantOK {
-				t.Fatalf("AsStilleWahl() ok = %v, want %v", ok, tt.wantOK)
-			}
-			if ok && got != tt.want {
-				t.Errorf("AsStilleWahl() = %+v, want %+v", got, tt.want)
-			}
-		})
+// TestPostHeadline_Wahlgeschaeft pins that an election post is not labelled an
+// Abstimmung and carries no clock time: the only timestamp available is the
+// roll call's, which is not when anything was decided.
+func TestPostHeadline_Wahlgeschaeft(t *testing.T) {
+	group := []votes.Vote{{
+		Body:   "Kantonsrat ZH",
+		Date:   time.Date(2026, 9, 14, 8, 19, 0, 0, time.UTC),
+		Title:  "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann",
+		Type:   votes.AttendanceType,
+		Affair: votes.Affair{Type: votes.WahlAffairType},
+	}}
+
+	want := "Kantonsrat ZH | Wahlgeschäft vom 14.09.2026"
+	if got := PostHeadline(group); got != want {
+		t.Errorf("PostHeadline() = %q, want %q", got, want)
 	}
 }
 

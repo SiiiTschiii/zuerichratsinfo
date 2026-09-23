@@ -319,7 +319,30 @@ func postableVotes(group []votes.Vote, firstErr *error) []votes.Vote {
 		}
 		postable = append(postable, v)
 	}
-	return postable
+	return withoutMixedRollCalls(postable)
+}
+
+// withoutMixedRollCalls drops election roll calls from a group that also holds
+// real votes.
+//
+// A roll call is posted only as a Wahlgeschäft notice, and a notice needs the
+// whole group to be roll calls — see votes.IsWahlgeschaeftGroup. Beside a real
+// vote it would take the ordinary path instead, and its headcount would be
+// rendered next to an actual result as if it were one. The real votes carry
+// counts that mean something, so they are what the post keeps.
+func withoutMixedRollCalls(group []votes.Vote) []votes.Vote {
+	if len(group) == 0 || votes.IsWahlgeschaeftGroup(group) {
+		return group
+	}
+	kept := make([]votes.Vote, 0, len(group))
+	for _, v := range group {
+		if votes.IsWahlgeschaeft(v) {
+			log.Printf("⚠️  Skipping vote: %s is an election roll call in a group with real votes, so it is not posted", v.SourceID)
+			continue
+		}
+		kept = append(kept, v)
+	}
+	return kept
 }
 
 // IsRejectedVoteError reports whether an error is the pipeline refusing to
@@ -360,12 +383,12 @@ func PostableGroups(groups [][]votes.Vote) [][]votes.Vote {
 // later. Rendering that would have published the opposite of what the council
 // decided.
 func validateVote(v votes.Vote) error {
-	// A stille Wahl is an Anwesenheitsermittlung that IsKnownUnpostableType
-	// would otherwise reject: an uncontested election whose title names who
-	// was elected. It gets its own post instead of the usual Ja/Nein
-	// rendering — see voteformat.AsStilleWahl and the formatters that check
-	// for it before touching any counts.
-	if _, ok := voteformat.AsStilleWahl(v); ok {
+	// An election business is an Anwesenheitsermittlung that
+	// IsKnownUnpostableType would otherwise reject. It gets a post that
+	// reports no result instead of the usual Ja/Nein rendering, because the
+	// roll call is the only trace an election leaves — see
+	// votes.IsWahlgeschaeft and voteformat.WahlgeschaeftBody.
+	if votes.IsWahlgeschaeft(v) {
 		return nil
 	}
 	if voteformat.IsKnownUnpostableType(v.Type) {

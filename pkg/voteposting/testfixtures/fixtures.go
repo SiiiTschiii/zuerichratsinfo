@@ -938,56 +938,75 @@ func KantonsratCupVote() []votes.Vote {
 	return []votes.Vote{v}
 }
 
-// KantonsratStilleWahl is the real 06.07.2026 vote (external id A6172102-...):
-// Roland Schmid's uncontested election to the Obergericht.
+// KantonsratWahlgeschaeft is the real 14.09.2026 roll call (external id
+// EA7109F3-...) on KR-Nr. 20/2026, the Baurekursgericht seat.
 //
-// Kanton Zürich fills an uncontested seat by declaring the candidate elected
-// on the spot (§ 124 KRG) rather than holding a ballot, so the only vote
-// OpenParlData/recapp record against the business is the quorum roll call —
-// typed Anwesenheitsermittlung, same as the roll call opening a sitting. Left
-// alone, that type would make this business get silently skipped like any
-// other attendance check (voteformat.unpostableVoteTypes) — wrong here, since
-// unlike a plain roll call this one names a real council decision.
-// voteformat.AsStilleWahl is what tells the two apart: Affair.Type == "Wahl"
-// plus a title that parses as "Wahl <Amt> für <Name>" is a fact pattern a
-// routine roll call never has.
-func KantonsratStilleWahl() []votes.Vote {
-	const title = "Wahl Mitglied Obergericht (100%) für Roland Schmid"
-	const geschaeftURL = "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=a186b212bc374ead91dae392c6135188"
+// It is the fact pattern an election leaves behind: a Wahl business whose only
+// recorded vote is the roll call taken before the ballot. Its 157/0 counts are
+// the headcount, and the post built from it reports no result at all — the
+// ballot elected Marco Bühler with 145 votes, which appears in none of the
+// data and only in the linked Bulletin. The title names Adrian Bergmann, the
+// member being replaced, and is published exactly as the parliament wrote it.
+// See votes.IsWahlgeschaeft and voteformat.WahlgeschaeftBody.
+func KantonsratWahlgeschaeft() []votes.Vote {
+	const title = "Wahl Mitglied Baurekursgericht (BRG) für Adrian Bergmann"
+	const geschaeftURL = "https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7"
 
 	v := votes.Vote{
-		SourceID:     "A6172102-0F8C-4C1A-C772-79EB0EA2DE9D",
+		SourceID:     "EA7109F3-A57B-F1FB-5617-EFCE652A7545",
 		Jurisdiction: "zurich-canton",
 		Body:         "Kantonsrat ZH",
-		Date:         time.Date(2026, 7, 6, 6, 21, 46, 0, time.UTC),
-		Sequence:     "1783318906",
+		Date:         time.Date(2026, 9, 14, 6, 19, 39, 0, time.UTC),
+		Sequence:     "1789366779",
 		Title:        title,
-		Type:         "Anwesenheitsermittlung",
+		Type:         votes.AttendanceType,
 		// Withheld for every Wahl affair, same as KantonsratVote — see
 		// openparldata.affairStatesItsOutcome.
 		Decision: "",
 		// The roll call's own tally: who was in the chamber, not a ballot on
-		// the candidate. AsStilleWahl-routed formatters must never render
-		// these — see voteformat.StilleWahlBody.
-		Yes:         intPtr(165),
+		// any candidate. Nothing on this path renders them.
+		Yes:         intPtr(157),
 		No:          intPtr(0),
 		Abstention:  intPtr(0),
-		Absent:      intPtr(15),
+		Absent:      intPtr(23),
 		SourceURL:   geschaeftURL,
 		GroupURL:    geschaeftURL,
+		BulletinURL: "https://parlzhcdws.cmicloud.ch/parlzh3/cdws/Files/6e3f5290635f44f596a3f967499979bb-332/1/pdf",
 		Attribution: "Source: OpenParlData.ch",
 		Affair: votes.Affair{
-			Number: "31/2026",
+			Number: "20/2026",
 			Title:  title,
-			ID:     "335625",
+			ID:     "337845",
 			URL:    geschaeftURL,
-			Type:   "Wahl",
+			Type:   votes.WahlAffairType,
 		},
 	}
 
-	withCantonLinks(&v, "f0c93a57-8d21-4e6b-b74a-25c81f0d6e39", "3d18e6b4-5a09-4f27-8c61-b9d047a2e58c")
+	withCantonLinks(&v, "5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f", "287041e6-dc9a-428b-9c29-a37570e5f7ff")
 
 	return []votes.Vote{v}
+}
+
+// KantonsratWahlgeschaeftTwoRounds is KantonsratWahlgeschaeft with a second
+// roll call on the same business and day, as a second ballot round would add.
+// The second record is synthetic; no such round happened on 14.09.2026.
+//
+// It exists because votes are grouped by business and sitting day, and a
+// formatter that recognised a Wahlgeschäft only as a single-vote group would
+// send this one down the ordinary multi-vote path, publishing both headcounts
+// as results. See votes.IsWahlgeschaeftGroup.
+func KantonsratWahlgeschaeftTwoRounds() []votes.Vote {
+	first := KantonsratWahlgeschaeft()[0]
+
+	second := first
+	second.SourceID = "EA7109F3-0000-0000-0000-000000000002"
+	second.Date = first.Date.Add(40 * time.Minute)
+	second.Sequence = "1789369179"
+	second.Yes = intPtr(151)
+	second.Absent = intPtr(29)
+	withCantonLinks(&second, "5bb43fa5-18bd-4f5d-b501-28ee1eca8f2f", "00000000-0000-0000-0000-000000000002")
+
+	return []votes.Vote{first, second}
 }
 
 // kantonsratRoster spreads a tally across the chamber's factions in roughly
@@ -1041,31 +1060,33 @@ var FixtureNames = []string{
 	"kantonsrat-decision-reported",
 	"kantonsrat-member-business",
 	"kantonsrat-co-signed-business",
-	"kantonsrat-stille-wahl",
+	"kantonsrat-wahlgeschaeft",
+	"kantonsrat-wahlgeschaeft-two-rounds",
 }
 
 // AllFixtures returns all fixtures keyed by kebab-case name.
 func AllFixtures() map[string][]votes.Vote {
 	return map[string][]votes.Vote{
-		"single-vote-angenommen":          SingleVoteAngenommen(),
-		"single-vote-abgelehnt":           SingleVoteAbgelehnt(),
-		"single-vote-dringlicherklaerung": SingleVoteDringlicherklaerung(),
-		"long-title-truncation":           LongTitleTruncation(),
-		"tall-title-band-clearance":       TallTitleBandClearance(),
-		"extreme-title-full-roster":       ExtremeTitleFullRoster(),
-		"multi-vote-group":                MultiVoteGroup(),
-		"generic-antrag-fallback":         GenericAntragFallback(),
-		"ten-vote-stress-test":            TenVoteStressTest(),
-		"vote-with-mentions":              VoteWithMentions(),
-		"auswahl-vote":                    AuswahlVote(),
-		"mixed-multi-vote":                MixedMultiVote(),
-		"postulat-with-grnr-prefix":       PostulatWithGrNrPrefix(),
-		"kantonsrat-vote":                 KantonsratVote(),
-		"kantonsrat-multi-vote":           KantonsratMultiVote(),
-		"kantonsrat-lone-quorum-vote":     KantonsratLoneQuorumVote(),
-		"kantonsrat-decision-reported":    KantonsratDecisionReported(),
-		"kantonsrat-member-business":      KantonsratMemberBusiness(),
-		"kantonsrat-co-signed-business":   KantonsratCoSignedBusiness(),
-		"kantonsrat-stille-wahl":          KantonsratStilleWahl(),
+		"single-vote-angenommen":              SingleVoteAngenommen(),
+		"single-vote-abgelehnt":               SingleVoteAbgelehnt(),
+		"single-vote-dringlicherklaerung":     SingleVoteDringlicherklaerung(),
+		"long-title-truncation":               LongTitleTruncation(),
+		"tall-title-band-clearance":           TallTitleBandClearance(),
+		"extreme-title-full-roster":           ExtremeTitleFullRoster(),
+		"multi-vote-group":                    MultiVoteGroup(),
+		"generic-antrag-fallback":             GenericAntragFallback(),
+		"ten-vote-stress-test":                TenVoteStressTest(),
+		"vote-with-mentions":                  VoteWithMentions(),
+		"auswahl-vote":                        AuswahlVote(),
+		"mixed-multi-vote":                    MixedMultiVote(),
+		"postulat-with-grnr-prefix":           PostulatWithGrNrPrefix(),
+		"kantonsrat-vote":                     KantonsratVote(),
+		"kantonsrat-multi-vote":               KantonsratMultiVote(),
+		"kantonsrat-lone-quorum-vote":         KantonsratLoneQuorumVote(),
+		"kantonsrat-decision-reported":        KantonsratDecisionReported(),
+		"kantonsrat-member-business":          KantonsratMemberBusiness(),
+		"kantonsrat-co-signed-business":       KantonsratCoSignedBusiness(),
+		"kantonsrat-wahlgeschaeft":            KantonsratWahlgeschaeft(),
+		"kantonsrat-wahlgeschaeft-two-rounds": KantonsratWahlgeschaeftTwoRounds(),
 	}
 }
