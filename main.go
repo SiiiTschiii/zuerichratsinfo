@@ -173,7 +173,7 @@ func loadContacts(jurisdictions []config.Jurisdiction) *contacts.Mapper {
 
 // runChannelPlatform posts one channel's jurisdictions to one platform,
 // sharing a single per-run budget across them. It returns true if anything
-// went wrong.
+// went wrong, including a jurisdiction whose votes could not be fetched.
 func runChannelPlatform(
 	channel config.Channel,
 	jurisdictions []config.Jurisdiction,
@@ -185,6 +185,7 @@ func runChannelPlatform(
 
 	logs := make(voteposting.VoteLogs, len(jurisdictions))
 	var perJurisdiction [][][]votes.Vote
+	failed := false
 
 	for _, j := range jurisdictions {
 		var vl *votelog.VoteLog
@@ -204,7 +205,12 @@ func runChannelPlatform(
 
 		groups, err := voteposting.PrepareVoteGroups(j.NewSource(), vl, maxVotesToCheck, j.MaxAgeDays)
 		if err != nil {
-			log.Fatalf("Error preparing %s votes for %s: %v", j.Key, p.displayName, err)
+			// One body's source being down must not silence the others: they
+			// share a channel, not a data source. Skip it for this run and let
+			// the exit code carry the failure, so the outage is still visible.
+			log.Printf("❌ Error preparing %s votes for %s, skipping %s this run: %v", j.Key, p.displayName, j.Key, err)
+			failed = true
+			continue
 		}
 		if len(groups) > 0 {
 			fmt.Printf("Found %d group(s) from %s\n", len(groups), j.Key)
@@ -215,7 +221,7 @@ func runChannelPlatform(
 	merged := voteposting.MergeOldestFirst(perJurisdiction...)
 	if len(merged) == 0 {
 		fmt.Printf("No new votes to post on %s!\n", p.displayName)
-		return false
+		return failed
 	}
 
 	posted, err := voteposting.PostToPlatform(merged, p.poster, logs, false)
@@ -232,7 +238,7 @@ func runChannelPlatform(
 	}
 
 	fmt.Printf("🎉 Posted %d new group(s) to %s!\n", posted, p.displayName)
-	return false
+	return failed
 }
 
 // getEnvInt gets an integer from environment variable with a default value
