@@ -85,6 +85,26 @@ func TestLookupSeparatesOrdinaryVotesFromThresholdVotes(t *testing.T) {
 	}
 }
 
+// TestLookupMarksAGenericLabelUnqualified covers the archive's most common
+// title. "Abstimmung" is what the Kantonsrat calls a threshold ballot on the
+// preliminary support of an Einzelinitiative as well as an ordinary vote, so
+// the type it yields must be marked as the fallback it is.
+func TestLookupMarksAGenericLabelUnqualified(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	const ordinary = "8FDBDDFC-C068-420D-476A-F704C08D005B"
+
+	got, err := c.Lookup(map[string]string{
+		ordinary: archiveURL(sihlItem, "d694e78d-5c6c-4d81-9f16-1ca42bc76c54"),
+	})
+	if err != nil {
+		t.Fatalf("Lookup: %v", err)
+	}
+	if !got[ordinary].TypeUnqualified {
+		t.Errorf("a segment titled only \"Abstimmung\" reported a qualified type %q", got[ordinary].Type)
+	}
+}
+
 // TestLookupMarksAttendanceRollCalls is the one that protects the account. An
 // attendance roll call is not a political vote, but it reports as a lopsided
 // Ja tally and would publish as a near-unanimous decision on nothing.
@@ -184,33 +204,43 @@ func TestLookupSurvivesAFailedAgendaItem(t *testing.T) {
 // variants the archive actually uses. The attendance cases are the ones that
 // matter: "Präsenzabstimmung" contains "abstimmung" and must not fall through
 // to an ordinary vote.
+//
+// The unqualified flag is the other half. A title that names a ballot type is
+// authoritative; a bare "Abstimmung" is a fallback, because the Kantonsrat
+// titles threshold votes that way too.
 func TestVoteTypeFromTitle(t *testing.T) {
 	tests := []struct {
-		title string
-		want  string
+		title           string
+		want            string
+		wantUnqualified bool
 	}{
-		{"Abstimmung", TypeNormal},
-		{"Schlussabstimmung", TypeNormal},
-		{"Abstimmung Ausgabenbremse", TypeAusgabenbremse},
-		{"Quorumsabstimmung", TypeQuorum},
-		{"Anwesenheitsermittlung", TypeAttendance},
-		{"Präsenzermittlung", TypeAttendance},
-		{"Präsenzabstimmung", TypeAttendance},
-		{"Ermittlung der Anwesenden", TypeAttendance},
-		{"Cupabstimmung", TypeCup},
-		{"Cupabstimmung 3", TypeCup},
-		{"Abstimmung Cup-System", TypeCup},
+		{"Abstimmung", TypeNormal, true},
+		{"Schlussabstimmung", TypeNormal, true},
+		{"Abstimmung über Eintreten", TypeNormal, true},
+		{"Abstimmung Ausgabenbremse", TypeAusgabenbremse, false},
+		{"Quorumsabstimmung", TypeQuorum, false},
+		{"Anwesenheitsermittlung", TypeAttendance, false},
+		{"Präsenzermittlung", TypeAttendance, false},
+		{"Präsenzabstimmung", TypeAttendance, false},
+		{"Ermittlung der Anwesenden", TypeAttendance, false},
+		{"Cupabstimmung", TypeCup, false},
+		{"Cupabstimmung 3", TypeCup, false},
+		{"Abstimmung Cup-System", TypeCup, false},
 		// Case and padding are editorial noise, not meaning.
-		{"  ABSTIMMUNG AUSGABENBREMSE  ", TypeAusgabenbremse},
+		{"  ABSTIMMUNG AUSGABENBREMSE  ", TypeAusgabenbremse, false},
 		// A label we have never seen must stay unpublishable rather than
-		// guessing its way into a post.
-		{"Wahlgang", ""},
-		{"", ""},
+		// guessing its way into a post. The archive also titles some segments
+		// with the business matter itself, which is the same case.
+		{"Wahlgang", "", false},
+		{"Bargeldannahmepflicht im Kanton Zürich", "", false},
+		{"", "", false},
 	}
 
 	for _, tt := range tests {
-		if got := voteTypeFromTitle(tt.title); got != tt.want {
-			t.Errorf("voteTypeFromTitle(%q) = %q, want %q", tt.title, got, tt.want)
+		got, unqualified := voteTypeFromTitle(tt.title)
+		if got != tt.want || unqualified != tt.wantUnqualified {
+			t.Errorf("voteTypeFromTitle(%q) = (%q, %v), want (%q, %v)",
+				tt.title, got, unqualified, tt.want, tt.wantUnqualified)
 		}
 	}
 }

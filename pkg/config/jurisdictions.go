@@ -91,8 +91,9 @@ func (d cantonVoteDetails) Lookup(voteURLs map[string]string) (map[string]openpa
 	out := make(map[string]openparldata.VoteDetail, len(found))
 	for id, info := range found {
 		out[id] = openparldata.VoteDetail{
-			Type:     info.Type,
-			Decision: info.Decision,
+			Type:            info.Type,
+			TypeUnqualified: info.TypeUnqualified,
+			Decision:        info.Decision,
 		}
 	}
 	return out, err
