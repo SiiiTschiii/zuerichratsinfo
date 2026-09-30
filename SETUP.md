@@ -144,7 +144,10 @@ This needs the vote logs on disk. They live on the `state-log` branch, not in
 git fetch origin state-log
 mkdir -p data/zurich-city
 for p in x bluesky instagram linkedin; do
-  git show "FETCH_HEAD:data/zurich-city/posted_votes_$p.json" > "data/zurich-city/posted_votes_$p.json"
+  f="data/zurich-city/posted_votes_$p.json"
+  # A platform with no log on the branch yet (LinkedIn, before its first post) has
+  # nothing to fetch; an empty file left by the redirect would fail to load.
+  git cat-file -e "FETCH_HEAD:$f" 2>/dev/null && git show "FETCH_HEAD:$f" > "$f"
 done
 ```
 
