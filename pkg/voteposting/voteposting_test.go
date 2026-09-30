@@ -799,3 +799,39 @@ func TestValidateVoteRejectionWithoutASourceURL(t *testing.T) {
 		t.Errorf("message has a dangling line for the absent link:\n%q", err.Error())
 	}
 }
+
+// The Kantonsrat repeats a quorum round until enough members have voted, and
+// the archive keeps the attempt that drew no votes. Rejecting it as an
+// unfamiliar format reddened every run until it left the window, although the
+// round that counted was posted.
+func TestValidateVoteEmptyQuorumRoundIsRoutine(t *testing.T) {
+	v := createVote("quorum-0", "6099", "2026-09-28")
+	v.Type = "Quorum"
+	zero := 0
+	v.Yes, v.No, v.Abstention = &zero, &zero, &zero
+
+	if err := validateVote(v); !errors.Is(err, ErrUnpostableVoteType) {
+		t.Fatalf("validateVote() = %v, want ErrUnpostableVoteType", err)
+	}
+
+	// Anything else with nothing counted is still a source fault: another
+	// type, the Ausgabenbremse (no such empty round has been seen), or a
+	// negative count hiding among zeros.
+	for _, tc := range []struct {
+		name string
+		typ  string
+		ja   int
+	}{
+		{"normal", "Normal", 0},
+		{"ausgabenbremse", "Ausgabenbremse", 0},
+		{"negative", "Quorum", -1},
+	} {
+		w := v
+		w.Type = tc.typ
+		ja := tc.ja
+		w.Yes = &ja
+		if err := validateVote(w); !errors.Is(err, ErrUnsupportedVoteType) {
+			t.Errorf("%s: validateVote() = %v, want ErrUnsupportedVoteType", tc.name, err)
+		}
+	}
+}

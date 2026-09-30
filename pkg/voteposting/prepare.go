@@ -399,6 +399,14 @@ func validateVote(v votes.Vote) error {
 		return withVoteLink(v, "%w: vote %s (%q, %s) has type %q, which no formatter handles",
 			ErrUnsupportedVoteType, v.SourceID, voteDescription(v), countsSummary(v), v.Type)
 	}
+	// A quorum round nobody voted in is an attempt the chamber repeats, not a
+	// format we fail to read: on 2026-09-28 the Kantonsrat opened three
+	// rounds within a minute and the first recorded 0 Ja. The round that
+	// counts arrives as its own vote and is posted.
+	if voteformat.IsEmptyQuorumRound(voteformat.CountsOf(v)) {
+		return withVoteLink(v, "%w: vote %s (%q, type=%q) is a quorum round with no votes cast",
+			ErrUnpostableVoteType, v.SourceID, v.Subtitle, v.Type)
+	}
 	if voteformat.IsUnsupportedVoteType(voteformat.CountsOf(v)) {
 		return withVoteLink(v, "%w: vote %s (%q, type=%q) has all-zero counts",
 			ErrUnsupportedVoteType, v.SourceID, v.Subtitle, v.Type)
