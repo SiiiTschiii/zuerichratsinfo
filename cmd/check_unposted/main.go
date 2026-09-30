@@ -4,7 +4,7 @@
 //
 // Usage:
 //
-//	go run ./cmd/check_unposted [-platform x|bluesky] [-jurisdiction KEY] [-n N] [-max-posts M]
+//	go run ./cmd/check_unposted [-platform x|bluesky|linkedin] [-jurisdiction KEY] [-n N] [-max-posts M]
 //
 // Flags override the corresponding environment variables.
 package main
@@ -23,12 +23,13 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/linkedin"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 func main() {
-	platformFlag := flag.String("platform", "", "platform to check: x, bluesky (default: all)")
+	platformFlag := flag.String("platform", "", "platform to check: x, bluesky, linkedin (default: all)")
 	jurisdictionFlag := flag.String("jurisdiction", "", "limit to one jurisdiction (default: every jurisdiction on the channel)")
 	nFlag := flag.Int("n", 0, "override MAX_VOTES_TO_CHECK")
 	maxPostsFlag := flag.Int("max-posts", 0, "override MAX_POSTS_PER_RUN for the chosen platform")
@@ -36,8 +37,9 @@ func main() {
 
 	showX := *platformFlag == "" || strings.EqualFold(*platformFlag, "x")
 	showBluesky := *platformFlag == "" || strings.EqualFold(*platformFlag, "bluesky") || strings.EqualFold(*platformFlag, "bsky")
-	if !showX && !showBluesky {
-		log.Fatalf("Unknown platform %q. Use: x, bluesky", *platformFlag)
+	showLinkedIn := *platformFlag == "" || strings.EqualFold(*platformFlag, "linkedin")
+	if !showX && !showBluesky && !showLinkedIn {
+		log.Fatalf("Unknown platform %q. Use: x, bluesky, linkedin", *platformFlag)
 	}
 
 	if err := config.Validate(); err != nil {
@@ -79,6 +81,12 @@ func main() {
 			maxPosts := pick(*maxPostsFlag, channel.EnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10))
 			check(channel.Key, "Bluesky", votelog.PlatformBluesky, jurisdictions, maxVotesToCheck, maxPosts,
 				bluesky.NewBlueskyPlatform("", "", maxPosts, contactMapper))
+		}
+
+		if showLinkedIn {
+			maxPosts := pick(*maxPostsFlag, channel.EnvInt("LINKEDIN_MAX_POSTS_PER_RUN", 5))
+			check(channel.Key, "LinkedIn", votelog.PlatformLinkedIn, jurisdictions, maxVotesToCheck, maxPosts,
+				linkedin.NewLinkedInPlatform("", "", maxPosts))
 		}
 	}
 }

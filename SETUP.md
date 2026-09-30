@@ -57,6 +57,19 @@ source .env
 
 **Important**: Never commit your `.env` file to git! It's already in `.gitignore`.
 
+### LinkedIn (optional)
+
+LinkedIn posts as a person, through the *Share on LinkedIn* product:
+
+1. In the [LinkedIn Developer Portal](https://www.linkedin.com/developers/apps), create an app and add the **Share on LinkedIn** product (scope `w_member_social`; add **Sign In with LinkedIn using OpenID Connect** to read your member id).
+2. Authorise once through the OAuth 2.0 authorization-code flow to get an access token, then read your member id from `GET https://api.linkedin.com/v2/userinfo` (`sub`).
+3. Set `ZURICH_LINKEDIN_ACCESS_TOKEN` (secret) and `ZURICH_LINKEDIN_AUTHOR_URN=urn:li:person:<sub>` (variable). `ZURICH_LINKEDIN_MAX_POSTS_PER_RUN` is optional (default 5).
+
+**The token lasts 60 days and cannot be refreshed** for this product. When it
+expires the run fails with a 401 that says so; repeat step 2 and replace the
+secret. Politicians are not tagged on LinkedIn: a mention needs the member's
+URN, which this API cannot look up from a profile URL.
+
 ## 4. Preview Posts Locally
 
 Nothing here posts anywhere or needs credentials — every command below prints to
@@ -88,7 +101,7 @@ go run ./cmd/generate_vote_post -jurisdiction zurich-canton -platform x -n 1
 ```
 
 Flags: `-jurisdiction` (`zurich-city`, `zurich-canton`), `-platform`
-(`x`, `bluesky`, `instagram`; default all), `-n` groups to show, `-fetch` how
+(`x`, `bluesky`, `instagram`, `linkedin`; default all), `-n` groups to show, `-fetch` how
 many individual votes to pull from the API.
 
 ### Images, from fixtures
@@ -130,7 +143,7 @@ This needs the vote logs on disk. They live on the `state-log` branch, not in
 ```bash
 git fetch origin state-log
 mkdir -p data/zurich-city
-for p in x bluesky instagram; do
+for p in x bluesky instagram linkedin; do
   git show "FETCH_HEAD:data/zurich-city/posted_votes_$p.json" > "data/zurich-city/posted_votes_$p.json"
 done
 ```
