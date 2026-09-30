@@ -4,7 +4,7 @@ researcher: claude
 topic: "OpenParlData Kanton Zürich importer — data gaps, verified and reported upstream"
 tags: [openparldata, kantonsrat, data-quality, upstream, bug-report]
 status: complete
-last_updated: 2026-08-09
+last_updated: 2026-09-07
 issue: https://github.com/SiiiTschiii/zuerichratsinfo/issues/46
 follows_up: thoughts/shared/research/2026-08-05-openparldata-federal-kantonsrat-feasibility.md
 upstream_tracker: https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/issues
@@ -43,10 +43,12 @@ Filing needs a GitLab account, so it is a manual step.
 | B | `results_absent` conflates "nicht abgestimmt" with "nicht anwesend" | [#179](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/179) | open |
 | C | Cup-Abstimmung has null aggregates; multi-option votes collapse under `vote` | [#180](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/180) | open |
 | D | `decision` is null for every ZH voting, though recapp publishes `votingResult` | [#181](https://gitlab.com/opendata.ch/openparldatach/data-infrastructure/-/work_items/181) | open |
+| E | `meaning_of_yes_de` / `meaning_of_no_de` are null, leaving Ja/Nein uninterpretable | — | **drafted 2026-09-07, not filed** |
 
-All four were filed on 2026-08-09. The "as filed" sections below are the text as
+A–D were filed on 2026-08-09. The "as filed" sections below are the text as
 submitted; each was written before the next was filed, so their closing
-cross-references name siblings without numbers.
+cross-references name siblings without numbers. Report E came later and is
+drafted rather than filed — it still needs the measurements named there.
 
 ### The #179 reply, and what it changes
 
@@ -665,3 +667,113 @@ curl -s "https://api.openparldata.ch/v1/votings/98765/votes?limit=600&lang_forma
 **Warum ich das hier anhänge und nicht separat melde:** es betrifft dieselben vier Abstimmungen wie die fehlenden Summen, und für die Weiterverwendung hängen die beiden Punkte zusammen. Selbst wenn `results_yes` und die übrigen Summen nachgeliefert würden, liessen sich aus den Einzelstimmen weiterhin keine Fraktionsauswertungen bilden: die Zahlen gehen nicht auf, und ein Grossteil der Mitglieder würde als "Enthaltung" gezählt, obwohl sie eine Option gewählt haben.
 
 Bei mir werden Cup-Abstimmungen derzeit gar nicht publiziert — der Abstimmungstyp steht auf einer Positivliste, und was nicht darauf steht, wird übersprungen und im Lauf als Fehler gemeldet. Das ist kein Drängen: die Steuerfuss-Abstimmung vom 15.12.2025 bleibt damit unberichtet, was mir lieber ist, als eine Ausmehrung als gewöhnliche Ja/Nein-Abstimmung darzustellen.
+
+## Report E — drafted, not yet filed
+
+Unlike A–D this one is unfiled, and it needs two measurements first. Both were
+out of reach when it was written: the session drafting it had no route to
+`api.openparldata.ch`, `zh.recapp.ch` or `kantonsrat.zh.ch`, so the curl blocks
+below are templates whose output has to be pasted in before filing.
+
+1. **Are the fields still null for ZH?** The finding is carried over from the
+   [feasibility pass](2026-08-05-openparldata-federal-kantonsrat-feasibility.md)
+   of 2026-08-05 (§2.2 and the gap list), not re-measured. #178 shipped within
+   hours, so a month-old null is not safe to assert. The sweep in the draft
+   covers all 2,626 ZH votings rather than a sample, because the title claims
+   every one of them.
+2. **Do other bodies populate them?** That is what makes this a ZH pipeline gap
+   rather than a schema-wide one. The feasibility pass saw
+   `meaning_of_yes_de: "Annahme der Vorlage"` on Nationalrat votings, but
+   recorded it as captured before a regression, so it needs re-checking against
+   `body_key=CHE`.
+
+### Why it is weaker than #181, and what that changes
+
+#181 works because it points at a field the ZH pipeline already fetches and
+drops: recapp serves `votingResult` next to the `votingScheme` that #178
+adopted, keyed by the same `voting_uid`. There is no equivalent here.
+
+`pkg/recapp` reads the same segments endpoint, and a vote segment carries
+exactly `entryDate`, `entryTitle`, `segmentUid`, `textFormat`, `title`,
+`agendaItemUid`, `extVotingUid`, `votingScheme`, `votingResult`, `type`. Its
+only free text is the result sentence, and that sentence is generic by
+construction:
+
+```
+<p><b>Der Kantonsrat stimmt dem Antrag mit 128: 46 Stimmen (bei 0 Enthaltungen) zu. </b></p>
+```
+
+"dem Antrag" — never which Antrag. The Antragstext is not in the payload.
+
+The one remaining lead is the speaker segments: the chair's announcement before
+a ballot normally names what is being voted on. That is HTML prose in
+`speakerTag` / `textFormat`, not a field, and deriving "Ja = Kommissionsantrag"
+from it would mean asserting the meaning of a vote from parsed speech. It sits
+below the bar `voteTypeFromTitle` already sets for itself, which returns `""`
+on an unrecognised label rather than guess.
+
+So E is an ask rather than a "you already have this", and its most useful
+content is the question of where the Antragstext lives in the ZH ingest.
+
+### The draft
+
+> **Title:** Kanton Zürich (`body_key=ZH`): `meaning_of_yes_de` / `meaning_of_no_de` are null for every voting, leaving Ja/Nein uninterpretable
+
+Thanks again for #178. This one is a gap I have not been able to find a source
+for, so it is as much a question as a report.
+
+#### The fields are null for ZH
+
+"Every voting" is a claim a 200-record sample cannot carry — ZH had 2,626 votings
+at last count (`meta.total_records`) — so this sweeps all of them:
+
+```bash
+offset=0
+while :; do
+  page=$(curl -s "https://api.openparldata.ch/v1/votings/?body_key=ZH&limit=200&offset=$offset&lang_format=flat")
+  jq -c '.data[] | {y: .meaning_of_yes_de, n: .meaning_of_no_de}' <<<"$page"
+  [ "$(jq -r '.meta.has_more' <<<"$page")" = true ] || break
+  offset=$((offset + 200))
+done | sort | uniq -c | sort -rn
+```
+
+The comparison against a body that does populate the fields needs no sweep, because
+one non-null row settles it:
+
+```bash
+curl -s "https://api.openparldata.ch/v1/votings/?body_key=CHE&limit=200&lang_format=flat" \
+  | jq '[.data[] | {y: .meaning_of_yes_de, n: .meaning_of_no_de}] | group_by(.) | map({v: .[0], n: length})'
+```
+
+If ZH comes back all-null and CHE does not, the gap is in the ZH pipeline rather
+than the schema.
+
+#### Why it matters more than it looks
+
+Without it a tally is not merely incomplete, it is readable backwards. The
+Kantonsrat vote of 31.08.2026 on the parliamentary initiative "Ökologischer
+Ausgleich im Siedlungsraum" came out 89 Ja / 88 Nein. Ja was assent to the
+*Kommissionsantrag* — that is, rejection of the initiative; Nein was the
+Minderheitsantrag supporting it. A reader who takes Ja for support of the
+business named in the title gets the outcome exactly inverted.
+
+This is not a rare shape. On a Kommissionsantrag/Minderheitsantrag pair the sign
+of Ja flips relative to the affair title, and nothing in the API marks which
+case a given voting is. A reader of our published post spotted it and corrected
+us publicly, which is how the gap surfaced.
+
+#### Where I looked for a source
+
+The recapp segments response, which the ZH pipeline already reads and which
+supplied `votingScheme` for #178, does not carry it. A vote segment has `title`,
+`votingScheme`, `votingResult` and a `textFormat` reading "Der Kantonsrat stimmt
+dem Antrag mit 128: 46 Stimmen (bei 0 Enthaltungen) zu" — "dem Antrag", never
+which one. So unlike #181 I cannot point at a field you already fetch.
+
+My question: is the Antragstext available anywhere in the ZH ingest — the
+sitting protocol, the Traktandum records, the Geschäft documents? If it is not,
+documenting the fields as structurally unavailable for ZH would already help
+consumers, who otherwise reasonably read null as "not yet mapped".
+
+Downstream we drop the information from the post format and link the official
+Geschäft page instead.
