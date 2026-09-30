@@ -814,9 +814,24 @@ func TestValidateVoteEmptyQuorumRoundIsRoutine(t *testing.T) {
 		t.Fatalf("validateVote() = %v, want ErrUnpostableVoteType", err)
 	}
 
-	// Zero counts on any other type are still a source fault.
-	v.Type = "Normal"
-	if err := validateVote(v); !errors.Is(err, ErrUnsupportedVoteType) {
-		t.Fatalf("validateVote() on a Normal vote = %v, want ErrUnsupportedVoteType", err)
+	// Anything else with nothing counted is still a source fault: another
+	// type, the Ausgabenbremse (no such empty round has been seen), or a
+	// negative count hiding among zeros.
+	for _, tc := range []struct {
+		name string
+		typ  string
+		ja   int
+	}{
+		{"normal", "Normal", 0},
+		{"ausgabenbremse", "Ausgabenbremse", 0},
+		{"negative", "Quorum", -1},
+	} {
+		w := v
+		w.Type = tc.typ
+		ja := tc.ja
+		w.Yes = &ja
+		if err := validateVote(w); !errors.Is(err, ErrUnsupportedVoteType) {
+			t.Errorf("%s: validateVote() = %v, want ErrUnsupportedVoteType", tc.name, err)
+		}
 	}
 }

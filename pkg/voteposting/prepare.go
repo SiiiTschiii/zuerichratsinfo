@@ -403,7 +403,7 @@ func validateVote(v votes.Vote) error {
 	// format we fail to read: on 2026-09-28 the Kantonsrat opened three
 	// rounds within a minute and the first recorded 0 Ja. The round that
 	// counts arrives as its own vote and is posted.
-	if voteformat.IsQuorumVote(voteformat.CountsOf(v)) && voteformat.IsUnsupportedVoteType(voteformat.CountsOf(v)) {
+	if voteformat.IsEmptyQuorumRound(voteformat.CountsOf(v)) {
 		return withVoteLink(v, "%w: vote %s (%q, type=%q) is a quorum round with no votes cast",
 			ErrUnpostableVoteType, v.SourceID, v.Subtitle, v.Type)
 	}

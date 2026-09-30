@@ -444,6 +444,22 @@ func IsUnsupportedVoteType(c VoteCounts) bool {
 	return true
 }
 
+// IsEmptyQuorumRound reports whether these counts belong to a quorum round in
+// which nobody voted: type "Quorum" exactly (not the Ausgabenbremse, which
+// shares its rendering but not its history) and every count nil or zero. A
+// negative count is a fault in the source, not an empty round.
+func IsEmptyQuorumRound(c VoteCounts) bool {
+	if strings.TrimSpace(c.Type) != voteTypeQuorum {
+		return false
+	}
+	for _, f := range []*int{c.Ja, c.Nein, c.Enthaltung, c.A, c.B, c.C, c.D, c.E} {
+		if f != nil && *f != 0 {
+			return false
+		}
+	}
+	return true
+}
+
 // FormatVoteCounts returns the 📊 summary line for a vote.
 // Detects Auswahl A/B/C/D votes vs standard Ja/Nein automatically.
 // Call IsUnsupportedVoteType first if you need to guard against unknown formats.
