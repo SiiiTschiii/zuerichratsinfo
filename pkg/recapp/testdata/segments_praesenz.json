@@ -1,0 +1,26 @@
+[
+  {
+    "entryDate": "2026-03-09",
+    "entryTitle": "146. KR-Sitzung vom 09.03.2026",
+    "segmentUid": "b86a166b-f485-41a3-a23d-8531969067f3",
+    "textFormat": "<p>Quorum:\t159 Ja-Stimmen.</p>",
+    "title": "Präsenzabstimmung",
+    "agendaItemUid": "96e0b324-74e7-484f-bb4a-2e4d906cb545",
+    "extVotingUid": "36188051-92F9-87F4-5D7B-B7DCD27BE7DF",
+    "votingScheme": "quorum",
+    "votingResult": "yes",
+    "type": "vote"
+  },
+  {
+    "entryDate": "2026-03-09",
+    "entryTitle": "146. KR-Sitzung vom 09.03.2026",
+    "segmentUid": "8a3813fb-51e1-42b1-ac5e-2e7c123e058b",
+    "textFormat": "<p>Quorum:\t153 Ja-Stimmen.</p>",
+    "title": "Quorumsabstimmung",
+    "agendaItemUid": "96e0b324-74e7-484f-bb4a-2e4d906cb545",
+    "extVotingUid": "3C90F992-ED88-2470-AFAA-F9B441B69B0D",
+    "votingScheme": "quorum",
+    "votingResult": "yes",
+    "type": "vote"
+  }
+]
