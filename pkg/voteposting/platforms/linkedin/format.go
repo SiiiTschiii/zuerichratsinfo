@@ -39,7 +39,7 @@ func FormatVotePost(group []votes.Vote) *LinkedInPost {
 	// A Wahlgeschäft reports no counts and no verdict, only that the business
 	// was before the chamber; see voteformat.WahlgeschaeftBody.
 	if votes.IsWahlgeschaeftGroup(group) {
-		post.Text = fit(header, voteformat.WahlgeschaeftBody(group), nil, links, tags)
+		post.Text = fitTitle(header, voteformat.WahlgeschaeftBody(group), nil, links, tags)
 		return post
 	}
 
@@ -52,20 +52,26 @@ func FormatVotePost(group []votes.Vote) *LinkedInPost {
 		title = prefix + "\n" + title
 	}
 
-	post.Text = fit(header, title, voteSections(group, true), links, tags)
-	if runeLen(post.Text) > maxChars {
-		// The Fraktion tables go first: they are the long part, and the totals
-		// they break down are still there.
-		sections := voteSections(group, false)
-		post.Text = fit(header, title, sections, links, tags)
-		// Then trailing votes, with a line saying so. The link block still
-		// leads to all of them.
-		for n := len(sections) - 1; runeLen(post.Text) > maxChars && n >= 1; n-- {
-			shown := append(append([]string{}, sections[:n]...),
-				fmt.Sprintf("… und %d weitere Abstimmungen (siehe Links)", len(sections)-n))
-			post.Text = fit(header, title, shown, links, tags)
+	// Reductions run in order, each measured without truncating the title, so
+	// that truncation comes last rather than masking an overrun that dropping
+	// detail would have fixed: Fraktion tables, then trailing votes, then the
+	// title. The link block still leads to every vote that was dropped.
+	sections := voteSections(group, true)
+	text := assemble(header, title, sections, links, tags)
+	if runeLen(text) > maxChars {
+		sections = voteSections(group, false)
+		text = assemble(header, title, sections, links, tags)
+	}
+	for n := len(sections) - 1; runeLen(text) > maxChars && n >= 1; n-- {
+		shown := append(append([]string{}, sections[:n]...),
+			fmt.Sprintf("… und %d weitere Abstimmungen (siehe Links)", len(sections)-n))
+		text = assemble(header, title, shown, links, tags)
+		if runeLen(text) <= maxChars {
+			sections = shown
+			break
 		}
 	}
+	post.Text = fitTitle(header, title, sections, links, tags)
 	return post
 }
 
@@ -95,24 +101,25 @@ func voteSections(group []votes.Vote, withBreakdown bool) []string {
 	return out
 }
 
-// fit joins the parts and, when that overruns, gives way in a fixed order: the
-// title is truncated, since the counts and links are what the post is for. The
-// links and hashtags are never cut — a URL cut in half is not a link.
-func fit(header, title string, sections []string, links, tags string) string {
+// assemble joins the parts. The links and hashtags come last and are never cut:
+// a URL cut in half is not a link.
+func assemble(header, title string, sections []string, links, tags string) string {
+	parts := []string{header, title}
+	if len(sections) > 0 {
+		parts = append(parts, strings.Join(sections, "\n\n"))
+	}
 	tail := links
 	if tags != "" {
 		tail += "\n\n" + tags
 	}
-	middle := strings.Join(sections, "\n\n")
-	build := func(title string) string {
-		parts := []string{header, title}
-		if middle != "" {
-			parts = append(parts, middle)
-		}
-		return strings.Join(parts, "\n\n") + tail
-	}
+	return strings.Join(parts, "\n\n") + tail
+}
 
-	text := build(title)
+// fitTitle is assemble with the title truncated by whatever the rest overruns,
+// which is the last thing to give way: the counts and links are what the post
+// is for.
+func fitTitle(header, title string, sections []string, links, tags string) string {
+	text := assemble(header, title, sections, links, tags)
 	over := runeLen(text) - maxChars
 	if over <= 0 {
 		return text
@@ -120,9 +127,9 @@ func fit(header, title string, sections []string, links, tags string) string {
 	// Truncating the title also adds the "…".
 	room := runeLen(title) - over - 1
 	if room < 1 {
-		return text // the title cannot absorb it; the caller drops detail instead
+		return text
 	}
-	return build(truncate(title, room))
+	return assemble(header, truncate(title, room), sections, links, tags)
 }
 
 // firstLink is the page to preview: the first entry of the link block, which is

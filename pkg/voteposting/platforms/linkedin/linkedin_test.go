@@ -97,3 +97,27 @@ func TestPlatform_PostFailure(t *testing.T) {
 		t.Fatal("expected error")
 	}
 }
+
+// TestFormatVotePost_DropsDetailBeforeTruncatingTitle pins the order of give:
+// when removing the Fraktion table is enough, the title must survive intact.
+func TestFormatVotePost_DropsDetailBeforeTruncatingTitle(t *testing.T) {
+	group := testfixtures.SingleVoteAngenommen()
+	full := FormatVotePost(group).Text
+	if !strings.Contains(full, "🏛️") {
+		t.Fatal("fixture should carry a Fraktion table")
+	}
+	// Sized so the table is what tips the post over the limit.
+	filler := maxChars - runeLen(full) + 100
+	group[0].Title += " " + strings.Repeat("x", filler)
+
+	text := FormatVotePost(group).Text
+	if runeLen(text) > maxChars {
+		t.Fatalf("over limit: %d", runeLen(text))
+	}
+	if strings.Contains(text, "🏛️") {
+		t.Error("table should have been dropped")
+	}
+	if strings.Contains(text, "…") || !strings.Contains(text, strings.Repeat("x", filler)) {
+		t.Error("title was truncated although dropping the table sufficed")
+	}
+}
