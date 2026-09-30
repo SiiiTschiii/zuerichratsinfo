@@ -46,7 +46,7 @@ the text and on the image, so the two are never confused.
 
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
-| LinkedIn    | 🚧 Built, awaiting credentials | 116                     | -                                                                                    |
+| LinkedIn    | 🚧 Built, awaiting credentials | 0 (no tagging)          | -                                                                                    |
 | Facebook    | ❌ Planned | 91                                  | -                                                                                    |
 | Instagram   | ✅ Active  | 99                                  | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
 | X (Twitter) | ✅ Active  | 65                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
