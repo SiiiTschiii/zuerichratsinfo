@@ -78,7 +78,7 @@ See [SETUP.md](SETUP.md) for installation and configuration instructions.
 
 ## Project Progress
 
-See [TODO.md](TODO.md) for current tasks and roadmap.
+See the [open issues](https://github.com/SiiiTschiii/zuerichratsinfo/issues) for current tasks and roadmap.
 
 ## Recognition
 
