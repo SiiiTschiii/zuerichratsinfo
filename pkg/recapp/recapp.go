@@ -1,16 +1,20 @@
 // Package recapp adapts the Kantonsrat Zürich audio archive (zh.recapp.ch) to
 // the vote information OpenParlData omits.
 //
-// It exists because OpenParlData's type_de is both incomplete and unreliable
-// for Kanton Zürich. Whole sittings arrive with a null type — the 17.08.2026
-// sitting served all five of its votes that way — and the values it does serve
-// disagree with the official archive often enough to matter: in a 94-vote
-// sample, three votes typed "Quorum" were plain Abstimmungen and one typed
-// "Normal" was a Quorumsabstimmung.
+// It exists because OpenParlData's type_de is incomplete for Kanton Zürich —
+// whole sittings arrive with a null type, the 17.08.2026 sitting having served
+// all five of its votes that way — and because it cannot express distinctions
+// the parliament makes: the attendance roll call, which it publishes as an
+// ordinary or a quorum voting, and the Ausgabenbremse, which it folds into
+// "Quorum" or "Normal" depending on how the ballot was run.
 //
-// The archive is authoritative for both, because it is what OpenParlData
-// harvests from. Every vote segment carries the parliament's own label for what
-// kind of vote it was and its outcome.
+// The archive is what OpenParlData harvests from, and each vote segment
+// carries two signals. votingScheme is structured and is what type_de is
+// derived from: over the 300 most recent ZH votings on 2026-09-30 the two
+// agreed in every case where both were set. The segment title is editorial free
+// text, and loose — 219 of those 300 read only "Abstimmung", the preliminary
+// support of an Einzelinitiative included, which is a threshold vote. See
+// voteType for how the two are combined.
 //
 // The join is exact rather than heuristic: a segment's extVotingUid is the same
 // identifier OpenParlData publishes as external_id.
@@ -82,7 +86,7 @@ const (
 // "unknown" and not as any particular type.
 type Info struct {
 	// Type is the vote type in the neutral vocabulary, or "" when the archive
-	// used a label this package does not recognise.
+	// used a label or a votingScheme this package does not recognise.
 	Type string
 	// Decision is "angenommen" or "abgelehnt", or "" when the archive reports
 	// no outcome. OpenParlData leaves this null for every Kanton Zürich vote.
@@ -236,6 +240,10 @@ type segment struct {
 	// "Abstimmung Ausgabenbremse", "Ermittlung der Anwesenden".
 	Title string `json:"title"`
 
+	// VotingScheme is how the ballot was run: "binary", "quorum" or "cup".
+	// Absent on segments before 11.09.2023 and on some roll calls since.
+	VotingScheme string `json:"votingScheme"`
+
 	// VotingResult is "yes" or "no" and refers to whether the question carried,
 	// not to how any member voted.
 	VotingResult string `json:"votingResult"`
@@ -243,7 +251,7 @@ type segment struct {
 
 func (s segment) info() Info {
 	return Info{
-		Type:     voteTypeFromTitle(s.Title),
+		Type:     voteType(s.Title, s.VotingScheme),
 		Decision: decisionFrom(s.VotingResult),
 	}
 }
@@ -258,6 +266,49 @@ func decisionFrom(result string) string {
 		return ""
 	}
 }
+
+// voteType combines a segment's scheme and title into one type.
+//
+// The scheme decides, and the title can only make the type stricter than the
+// scheme says, never looser. A title that names a kind of ballot — attendance,
+// cup, Ausgabenbremse, quorum — wins, because each of those occurs under a
+// scheme that would misrepresent it: Präsenzabstimmung 101308 ran as "quorum",
+// Cupabstimmung 2 on 15.12.2025 as "binary", the two Ausgabenbremse votes of
+// 17.08.2026 as "binary". A generic title — "Abstimmung", "Schlussabstimmung" —
+// yields to the scheme. Reading "Abstimmung" as an ordinary vote over a
+// "quorum" scheme is how voting 100969, an Einzelinitiative supported by 41 of
+// 180, would have published as "41 Ja | 0 Nein | 139 Abwesend".
+//
+// A title this package does not recognise stays unrecognised whatever the
+// scheme: of the three recent ones, voting 99904 is titled with its business
+// matter, ran as "binary", and records 8 Ja to 0 with 172 absent — not a tally
+// to publish as a decision on the strength of the scheme alone. Nor does a
+// scheme this package does not know fall back on a generic title. Without any
+// scheme the title is all there is and is read as before.
+func voteType(title, scheme string) string {
+	fromTitle := voteTypeFromTitle(title)
+	if fromTitle != TypeNormal {
+		return fromTitle
+	}
+	switch strings.TrimSpace(scheme) {
+	case "", schemeBinary:
+		return TypeNormal
+	case schemeQuorum:
+		return TypeQuorum
+	case schemeCup:
+		return TypeCup
+	default:
+		return ""
+	}
+}
+
+// The archive's votingScheme values. OpenParlData checked all 1568 Kantonsrat
+// agenda items and found exactly these three.
+const (
+	schemeBinary = "binary"
+	schemeQuorum = "quorum"
+	schemeCup    = "cup"
+)
 
 // voteTypeFromTitle maps the archive's label onto the neutral vocabulary.
 //

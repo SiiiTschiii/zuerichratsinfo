@@ -958,9 +958,8 @@ func TestGroupByAffairAppliesDetailTypes(t *testing.T) {
 }
 
 // TestGroupByAffairDetailTypeOverridesTheAPI pins that the detail source wins a
-// disagreement. The API's type_de is not merely incomplete for Kanton Zürich —
-// in a 94-vote sample three votes typed "Quorum" were ordinary Abstimmungen and
-// one typed "Normal" was a Quorumsabstimmung.
+// disagreement. It knows distinctions type_de cannot carry: an attendance roll
+// call and an Ausgabenbremse both arrive as "Normal" or "Quorum".
 func TestGroupByAffairDetailTypeOverridesTheAPI(t *testing.T) {
 	c, _ := newTestClient(t)
 

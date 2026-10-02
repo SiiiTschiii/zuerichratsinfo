@@ -1,0 +1,14 @@
+[
+  {
+    "entryDate": "2026-02-23",
+    "entryTitle": "144. KR-Sitzung vom 23.02.2026, Nachmittag",
+    "segmentUid": "a30add5b-c490-48c0-93d7-7777510c8317",
+    "textFormat": "<p>Quorum:\t41 Ja-Stimmen.</p>",
+    "title": "Abstimmung",
+    "agendaItemUid": "d5414a84-7da0-403e-81ad-8081ebc3f219",
+    "extVotingUid": "BF99B79E-4CE7-1E27-2B42-926C87E3E9B9",
+    "votingScheme": "quorum",
+    "votingResult": "yes",
+    "type": "vote"
+  }
+]

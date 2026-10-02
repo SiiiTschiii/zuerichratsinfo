@@ -167,11 +167,10 @@ const bulletinCategory = "Bulletin"
 // does not.
 //
 // The type takes precedence over type_de rather than merely filling its gaps.
-// For Kanton Zürich the API's own value is not only incomplete — whole sittings
-// arrive null — but wrong often enough to matter: in a 94-vote sample three
-// votes typed "Quorum" were ordinary Abstimmungen and one typed "Normal" was a
-// Quorumsabstimmung. The detail source is the record those values are derived
-// from, so where the two disagree it is the one to believe.
+// The detail source is the record type_de is derived from, it is read at post
+// time rather than whenever the API last harvested — whole Kanton Zürich
+// sittings arrive with a null type_de — and it knows distinctions type_de
+// cannot carry, the attendance roll call and the Ausgabenbremse among them.
 //
 // A vote the source says nothing about keeps everything it already had, and a
 // source that fails entirely costs nothing but the enrichment: the pipeline

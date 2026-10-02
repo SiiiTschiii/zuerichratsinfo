@@ -14,12 +14,16 @@ const (
 	sihlItem         = "6e20a24f-3a9e-49ab-a855-269abd8457cd"
 	mitteilungenItem = "86a9e704-63f8-41c5-8223-c30eb56ac4bc"
 	cupItem          = "ffcd1ff7-fb00-475a-82c8-141b9d5bb054"
+	initiativeItem   = "d5414a84-7da0-403e-81ad-8081ebc3f219"
+	praesenzItem     = "96e0b324-74e7-484f-bb4a-2e4d906cb545"
 )
 
 var fixtures = map[string]string{
 	sihlItem:         "segments_sihl.json",
 	mitteilungenItem: "segments_mitteilungen.json",
 	cupItem:          "segments_cup.json",
+	initiativeItem:   "segments_einzelinitiative.json",
+	praesenzItem:     "segments_praesenz.json",
 }
 
 func archiveURL(agendaItem, segment string) string {
@@ -101,6 +105,53 @@ func TestLookupMarksAttendanceRollCalls(t *testing.T) {
 	}
 	if got[rollCall].Type != TypeAttendance {
 		t.Errorf("roll call: got type %q, want %q", got[rollCall].Type, TypeAttendance)
+	}
+}
+
+// TestLookupReadsThresholdVotesFromTheScheme is the bug that made the scheme
+// worth reading. Voting 100969, the preliminary support of an Einzelinitiative,
+// is titled only "Abstimmung" and ran as a "quorum" ballot; it failed with 41
+// of the 60 members it needed. Typed from its title it read as
+// "41 Ja | 0 Nein | 139 Abwesend" — unanimous approval of something that fell.
+func TestLookupReadsThresholdVotesFromTheScheme(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	const initiative = "BF99B79E-4CE7-1E27-2B42-926C87E3E9B9"
+
+	got, err := c.Lookup(map[string]string{
+		initiative: archiveURL(initiativeItem, "a30add5b-c490-48c0-93d7-7777510c8317"),
+	})
+	if err != nil {
+		t.Fatalf("Lookup: %v", err)
+	}
+	if got[initiative].Type != TypeQuorum {
+		t.Errorf("Einzelinitiative: got type %q, want %q", got[initiative].Type, TypeQuorum)
+	}
+}
+
+// TestLookupKeepsRollCallsOverTheScheme is the reverse, and the reason the
+// title is still read first. Präsenzabstimmung 101308 ran as a "quorum" ballot,
+// and trusting the scheme would publish the roll call as a threshold vote.
+func TestLookupKeepsRollCallsOverTheScheme(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	const (
+		rollCall = "36188051-92F9-87F4-5D7B-B7DCD27BE7DF"
+		quorum   = "3C90F992-ED88-2470-AFAA-F9B441B69B0D"
+	)
+
+	got, err := c.Lookup(map[string]string{
+		rollCall: archiveURL(praesenzItem, "b86a166b-f485-41a3-a23d-8531969067f3"),
+		quorum:   archiveURL(praesenzItem, "8a3813fb-51e1-42b1-ac5e-2e7c123e058b"),
+	})
+	if err != nil {
+		t.Fatalf("Lookup: %v", err)
+	}
+	if got[rollCall].Type != TypeAttendance {
+		t.Errorf("roll call: got type %q, want %q", got[rollCall].Type, TypeAttendance)
+	}
+	if got[quorum].Type != TypeQuorum {
+		t.Errorf("quorum vote beside it: got type %q, want %q", got[quorum].Type, TypeQuorum)
 	}
 }
 
@@ -211,6 +262,49 @@ func TestVoteTypeFromTitle(t *testing.T) {
 	for _, tt := range tests {
 		if got := voteTypeFromTitle(tt.title); got != tt.want {
 			t.Errorf("voteTypeFromTitle(%q) = %q, want %q", tt.title, got, tt.want)
+		}
+	}
+}
+
+// TestVoteType pins how scheme and title combine: the title can make a type
+// stricter than the scheme, never looser. Every row with a scheme is a pairing
+// the 300 most recent ZH votings actually contain.
+func TestVoteType(t *testing.T) {
+	tests := []struct {
+		title, scheme string
+		want          string
+	}{
+		// A title naming no ballot type yields to the scheme.
+		{"Abstimmung", "binary", TypeNormal},
+		{"Abstimmung", "quorum", TypeQuorum},
+		{"Abstimmung über Rückkommen", "quorum", TypeQuorum},
+		{"Schlussabstimmung", "binary", TypeNormal},
+		// A title naming one wins, whatever the scheme says.
+		{"Präsenzabstimmung", "quorum", TypeAttendance},
+		{"Präsenzermittlung", "quorum", TypeAttendance},
+		{"Cupabstimmung 2", "binary", TypeCup},
+		{"Abstimmung Ausgabenbremse", "binary", TypeAusgabenbremse},
+		{"Abstimmung Ausgabenbremse", "quorum", TypeAusgabenbremse},
+		{"Quorumsabstimmung", "binary", TypeQuorum},
+		{"Cupabstimmung", "cup", TypeCup},
+		// No scheme: the title alone, as before. Roll calls since 2023 arrive
+		// like this.
+		{"Anwesenheitsermittlung", "", TypeAttendance},
+		{"Quorumsabstimmung", "", TypeQuorum},
+		{"Abstimmung", "", TypeNormal},
+		{"Wahlgang", "", ""},
+		// An unrecognised title is not rescued by the scheme. Voting 99904
+		// is titled with its business matter and records 8 Ja to 0 with 172
+		// absent; the scheme calling it binary does not make that a result.
+		{"Bargeldannahmepflicht im Kanton Zürich", "binary", ""},
+		// A scheme nobody has mapped is a structured signal disagreeing with a
+		// plain title, so the vote stays unpublishable.
+		{"Abstimmung", "weighted", ""},
+	}
+
+	for _, tt := range tests {
+		if got := voteType(tt.title, tt.scheme); got != tt.want {
+			t.Errorf("voteType(%q, %q) = %q, want %q", tt.title, tt.scheme, got, tt.want)
 		}
 	}
 }
