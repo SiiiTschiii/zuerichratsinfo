@@ -48,7 +48,7 @@ the text and on the image, so the two are never confused.
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
 | LinkedIn    | ❌ Planned | 116                                 | -                                                                                    |
 | Facebook    | ❌ Planned | 91                                  | -                                                                                    |
-| Instagram   | ✅ Active  | 99                                  | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
+| Instagram   | ✅ Active  | 100                                 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
 | X (Twitter) | ✅ Active  | 65                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
 | Bluesky     | ✅ Active  | 28                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
 | TikTok      | ❌ Planned | 18                                  | -                                                                                    |
