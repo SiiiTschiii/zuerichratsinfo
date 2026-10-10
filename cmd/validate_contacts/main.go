@@ -206,6 +206,13 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 		}
 		seenNames[contact.Name] = true
 
+		if contact.Kind != "" && !contact.IsOrganization() {
+			errors = append(errors, ValidationError{
+				ContactName: contact.Name,
+				Message:     fmt.Sprintf("Unknown kind %q: leave it out for a person, or use %q", contact.Kind, contacts.KindOrganization),
+			})
+		}
+
 		// Validate platforms and URLs
 		errors = append(errors, validateContactPlatforms(contact)...)
 

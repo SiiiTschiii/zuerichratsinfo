@@ -397,3 +397,26 @@ func TestAddAccounts_LeavesAVerifiedAccountAlone(t *testing.T) {
 		t.Errorf("X = %+v, want no duplicate", c.X)
 	}
 }
+
+// A refresh rewrites the whole file, so a field it does not know about by name
+// is lost on the first run after someone adds it.
+func TestMerge_KeepsAnOrganizationMarkedAsOne(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "contacts.yaml")
+	if err := save(path, "", []Contact{{Name: "SP Stadt Zürich", Kind: contacts.KindOrganization}}); err != nil {
+		t.Fatalf("save: %v", err)
+	}
+
+	existing, header, err := loadExisting(path)
+	if err != nil {
+		t.Fatalf("loadExisting: %v", err)
+	}
+	merged, _, _ := merge(existing, nil)
+	if err := save(path, header, merged); err != nil {
+		t.Fatalf("save: %v", err)
+	}
+
+	written, _ := os.ReadFile(path)
+	if !strings.Contains(string(written), "  - name: SP Stadt Zürich\n    kind: organization\n") {
+		t.Errorf("kind was lost on rewrite:\n%s", written)
+	}
+}

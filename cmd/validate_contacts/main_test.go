@@ -545,3 +545,37 @@ func TestCheckAccountShape(t *testing.T) {
 		})
 	}
 }
+
+func TestKindMustBeOrganizationOrAbsent(t *testing.T) {
+	file := func(kind string) string {
+		return `version: "1.0"
+contacts:
+  - name: "SP Stadt Zürich"
+` + kind + `    x:
+      - url: https://x.com/sp
+        verified: true
+`
+	}
+
+	tests := []struct {
+		name       string
+		kind       string
+		wantErrors int
+	}{
+		{"a person has no kind", "", 0},
+		{"organization is accepted", "    kind: organization\n", 0},
+		{"a typo is rejected, not read as a person", "    kind: organisation\n", 1},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "contacts.yaml")
+			if err := os.WriteFile(path, []byte(file(tt.kind)), 0644); err != nil {
+				t.Fatal(err)
+			}
+			if got := validateContactsFile(path, false); len(got) != tt.wantErrors {
+				t.Errorf("got %d errors, want %d: %v", len(got), tt.wantErrors, got)
+			}
+		})
+	}
+}
