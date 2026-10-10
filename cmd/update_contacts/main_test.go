@@ -420,3 +420,18 @@ func TestMerge_KeepsAnOrganizationMarkedAsOne(t *testing.T) {
 		t.Errorf("kind was lost on rewrite:\n%s", written)
 	}
 }
+
+func TestDeparted_ListsPeopleWhoNoLongerSit(t *testing.T) {
+	cs := []Contact{
+		{Name: "Anna Aktiv"},
+		{Name: "Bern Hard"},
+		{Name: "Weg Gegangen"},
+		{Name: "SP Stadt Zürich", Kind: contacts.KindOrganization},
+	}
+	// The source writes the surname first, and has never heard of the party.
+	got := departed(cs, []string{"Aktiv Anna", "Hard Bern"})
+
+	if len(got) != 1 || got[0] != "Weg Gegangen" {
+		t.Errorf("departed() = %v, want [Weg Gegangen]", got)
+	}
+}

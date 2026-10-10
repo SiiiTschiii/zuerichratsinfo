@@ -48,3 +48,14 @@ type Account struct {
 type MemberSource interface {
 	FetchMembers() ([]Member, error)
 }
+
+// SittingLister is implemented by a source that can name everyone who sits,
+// including members it publishes no account for.
+//
+// It is separate from MemberSource because a roster can be narrower than the
+// chamber: PARIS's FetchMembers lists only the members with a published channel,
+// so a curated name missing from it may well be sitting. Telling who has left
+// needs the full list.
+type SittingLister interface {
+	SittingNames() ([]string, error)
+}

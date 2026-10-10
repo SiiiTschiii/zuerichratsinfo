@@ -69,6 +69,7 @@ func main() {
 	merged, added, accounts := merge(existing, members)
 
 	fmt.Printf("\n✅ %d contacts total, %d new, %d accounts added\n", len(merged), added, accounts)
+	reportDeparted(j, merged)
 	if *dryRun {
 		fmt.Println("🔍 Dry run — nothing written.")
 		return
@@ -81,6 +82,44 @@ func main() {
 		log.Fatalf("❌ %v", err)
 	}
 	fmt.Printf("💾 Saved to %s\n", path)
+}
+
+// reportDeparted prints the people on file who no longer sit, for a human to
+// decide about. It never changes the file: the mapping is append-only.
+func reportDeparted(j config.Jurisdiction, cs []Contact) {
+	lister, ok := j.NewMemberSource().(votes.SittingLister)
+	if !ok {
+		return
+	}
+	sitting, err := lister.SittingNames()
+	if err != nil {
+		log.Fatalf("❌ failed to fetch who sits: %v", err)
+	}
+
+	gone := departed(cs, sitting)
+	fmt.Printf("\n👋 %d on file who no longer sit (left office, or the source spells the name differently):\n", len(gone))
+	for _, name := range gone {
+		fmt.Printf("   - %s\n", name)
+	}
+}
+
+// departed returns the curated people the source no longer lists as sitting.
+// Party and Fraktion accounts are skipped: no roster lists them, and they are
+// not members.
+func departed(cs []Contact, sitting []string) []string {
+	sits := make(map[string]bool, len(sitting))
+	for _, name := range sitting {
+		sits[contacts.NameKey(name)] = true
+	}
+
+	var gone []string
+	for _, c := range cs {
+		if c.IsOrganization() || sits[contacts.NameKey(c.Name)] {
+			continue
+		}
+		gone = append(gone, c.Name)
+	}
+	return gone
 }
 
 // loadExisting reads the curated file, returning the contacts by name and the

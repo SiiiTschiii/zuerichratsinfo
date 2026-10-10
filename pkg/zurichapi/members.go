@@ -10,7 +10,10 @@ import (
 )
 
 // Client enumerates the city council's roster.
-var _ votes.MemberSource = (*Client)(nil)
+var (
+	_ votes.MemberSource  = (*Client)(nil)
+	_ votes.SittingLister = (*Client)(nil)
+)
 
 // FetchMembers returns the sitting council members PARIS publishes an account
 // for.
@@ -46,6 +49,24 @@ func (c *Client) FetchMembers() ([]votes.Member, error) {
 	}
 
 	return sittingMembers(kontakte, mandates), nil
+}
+
+// SittingNames returns everyone holding an active Gemeinderat mandate, whether
+// or not PARIS publishes an account for them.
+func (c *Client) SittingNames() ([]string, error) {
+	mandates, err := c.FetchActiveGemeinderatMandates()
+	if err != nil {
+		return nil, err
+	}
+	if len(mandates) == 0 {
+		return nil, fmt.Errorf("zurichapi: no active Gemeinderat mandates returned")
+	}
+
+	names := make([]string, 0, len(mandates))
+	for _, m := range mandates {
+		names = append(names, strings.TrimSpace(m.Vorname+" "+m.Name))
+	}
+	return names, nil
 }
 
 // sittingMembers keeps the contacts that publish an account and hold one of the
