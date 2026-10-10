@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/url"
 	"os"
 	"sort"
 	"strings"
@@ -33,15 +32,6 @@ var (
 		"linkedin":  true,
 		"bluesky":   true,
 		"tiktok":    true,
-	}
-
-	platformDomains = map[string][]string{
-		"x":         {"x.com", "twitter.com"},
-		"facebook":  {"facebook.com", "www.facebook.com"},
-		"instagram": {"instagram.com", "www.instagram.com"},
-		"linkedin":  {"linkedin.com", "www.linkedin.com"},
-		"bluesky":   {"bsky.app", "web-cdn.bsky.app"},
-		"tiktok":    {"tiktok.com", "www.tiktok.com"},
 	}
 )
 
@@ -206,6 +196,13 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 		}
 		seenNames[contact.Name] = true
 
+		if contact.Kind != "" && !contact.IsOrganization() {
+			errors = append(errors, ValidationError{
+				ContactName: contact.Name,
+				Message:     fmt.Sprintf("Unknown kind %q: leave it out for a person, or use %q", contact.Kind, contacts.KindOrganization),
+			})
+		}
+
 		// Validate platforms and URLs
 		errors = append(errors, validateContactPlatforms(contact)...)
 
@@ -320,7 +317,7 @@ func validateContactPlatforms(contact Contact) []ValidationError {
 		}
 
 		for _, account := range contact.Accounts(platform) {
-			if err := validateURL(account.URL, platform); err != nil {
+			if err := contacts.ValidateURL(platform, account.URL); err != nil {
 				errors = append(errors, ValidationError{
 					ContactName: contact.Name,
 					Platform:    platform,
@@ -353,43 +350,6 @@ func validateContactPlatforms(contact Contact) []ValidationError {
 	}
 
 	return errors
-}
-
-func validateURL(urlStr, platform string) error {
-	// Check if URL is empty
-	if strings.TrimSpace(urlStr) == "" {
-		return fmt.Errorf("empty URL")
-	}
-
-	// Parse URL
-	parsedURL, err := url.Parse(urlStr)
-	if err != nil {
-		return fmt.Errorf("invalid URL format: %v", err)
-	}
-
-	// Check scheme
-	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
-		return fmt.Errorf("URL must use http or https scheme, got: %s", parsedURL.Scheme)
-	}
-
-	// Check hostname matches platform
-	hostname := strings.ToLower(parsedURL.Hostname())
-	allowedDomains := platformDomains[platform]
-
-	validDomain := false
-	for _, domain := range allowedDomains {
-		if hostname == domain || strings.HasSuffix(hostname, "."+domain) {
-			validDomain = true
-			break
-		}
-	}
-
-	if !validDomain {
-		return fmt.Errorf("URL domain '%s' does not match platform '%s' (expected one of: %v)",
-			hostname, platform, allowedDomains)
-	}
-
-	return nil
 }
 
 func checkPlatformOrderInFile(filepath string, contactName string, skipOrderCheck bool) *ValidationError {

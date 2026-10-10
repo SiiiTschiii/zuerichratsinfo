@@ -152,8 +152,20 @@ go run ./cmd/update_contacts -jurisdiction zurich-canton -dry-run
 go run ./cmd/update_contacts -jurisdiction zurich-canton
 ```
 
-For Stadt Zürich it also imports the accounts PARIS publishes; for the Kantonsrat
-there are none to import, and the 180 names arrive bare.
+For Stadt Zürich it also imports the accounts PARIS publishes, for sitting
+Gemeinderäte only; for the Kantonsrat there are none to import, and the 180 names
+arrive bare. Each run ends by listing the people on file who no longer sit. Party
+and Fraktion accounts carry `kind: organization` so that list leaves them out.
+
+A handle found by search goes in as an unverified candidate, never by editing the
+file. It attaches to someone already on file, cannot be written as verified, and
+leaves an account already there untouched; confirming it is a human's edit.
+
+```bash
+go run ./cmd/update_contacts -jurisdiction zurich-canton -add-candidate \
+  -name "Anna Müller" -platform instagram -confidence medium \
+  -url https://www.instagram.com/anna.mueller/
+```
 
 `generate_search_urls` prints the search links for the manual half, with party,
 Fraktion and the member's page on the parliament's own site pulled live — which

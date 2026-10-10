@@ -41,6 +41,11 @@ func main() {
 	jurisdiction := flag.String("jurisdiction", "zurich-city",
 		"jurisdiction to refresh ("+strings.Join(config.JurisdictionKeys(), ", ")+")")
 	dryRun := flag.Bool("dry-run", false, "report what would change without writing the file")
+	candidate := flag.Bool("add-candidate", false, "record one unverified candidate account for a person already on file, instead of refreshing the roster")
+	candName := flag.String("name", "", "with -add-candidate: the person, as named in the file")
+	candPlatform := flag.String("platform", "", "with -add-candidate: "+strings.Join(contacts.Platforms, ", "))
+	candURL := flag.String("url", "", "with -add-candidate: the profile URL")
+	candConfidence := flag.String("confidence", "", "with -add-candidate: how well the profile matched the person: high, medium or low")
 	flag.Parse()
 
 	j, err := config.LookupJurisdiction(*jurisdiction)
@@ -57,6 +62,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("❌ %v", err)
 	}
+
+	if *candidate {
+		if err := runAddCandidate(path, header, existing, *candName, *candPlatform, *candURL, *candConfidence, *dryRun); err != nil {
+			log.Fatalf("❌ %v", err)
+		}
+		return
+	}
 	fmt.Printf("📋 %s: %d existing contacts\n", path, len(existing))
 
 	fmt.Printf("📥 Fetching the %s roster...\n", j.Name)
@@ -69,6 +81,7 @@ func main() {
 	merged, added, accounts := merge(existing, members)
 
 	fmt.Printf("\n✅ %d contacts total, %d new, %d accounts added\n", len(merged), added, accounts)
+	reportDeparted(j, merged)
 	if *dryRun {
 		fmt.Println("🔍 Dry run — nothing written.")
 		return
@@ -81,6 +94,109 @@ func main() {
 		log.Fatalf("❌ %v", err)
 	}
 	fmt.Printf("💾 Saved to %s\n", path)
+}
+
+// validConfidence are the levels a candidate may carry, matching what
+// cmd/validate_contacts accepts.
+var validConfidence = map[string]bool{"high": true, "medium": true, "low": true}
+
+// runAddCandidate records one candidate and writes the file, or says why not.
+func runAddCandidate(path, header string, existing map[string]*Contact, name, platform, rawURL, confidence string, dryRun bool) error {
+	added, err := addCandidate(existing, name, platform, rawURL, confidence)
+	if err != nil {
+		return err
+	}
+	if !added {
+		fmt.Printf("💤 %s: %s already on file, nothing to add\n", name, rawURL)
+		return nil
+	}
+
+	// A checklist line, so the pull request can ask the reviewer to open it.
+	fmt.Printf("- [ ] %s — %s candidate (%s): %s\n", name, platform, confidence, stripTracking(rawURL))
+	if dryRun {
+		fmt.Println("🔍 Dry run — nothing written.")
+		return nil
+	}
+
+	merged, _, _ := merge(existing, nil)
+	return save(path, header, merged)
+}
+
+// addCandidate appends an unverified account to a person already on file.
+//
+// It is the only way a handle that nobody has confirmed reaches the file, and it
+// cannot write a verified one: Verified is never set here, and an account
+// already on file is left exactly as it is, so a candidate cannot demote or
+// overwrite a confirmed handle either. Confirming is a human's edit.
+func addCandidate(existing map[string]*Contact, name, platform, rawURL, confidence string) (bool, error) {
+	c, ok := existing[contacts.NameKey(name)]
+	if !ok {
+		return false, fmt.Errorf("%q is not on file: candidates attach to people already in it", name)
+	}
+	if c.IsOrganization() {
+		return false, fmt.Errorf("%q is a party or Fraktion account, not a person", name)
+	}
+	field := platformField(c, platform)
+	if field == nil {
+		return false, fmt.Errorf("unknown platform %q, want one of %s", platform, strings.Join(contacts.Platforms, ", "))
+	}
+	if !validConfidence[confidence] {
+		return false, fmt.Errorf("confidence %q must be high, medium or low", confidence)
+	}
+	// The rule CI applies to the file, so a candidate cannot be saved only for
+	// cmd/validate_contacts to reject the rewritten file.
+	if err := contacts.ValidateURL(platform, rawURL); err != nil {
+		return false, fmt.Errorf("url %q: %w", rawURL, err)
+	}
+
+	url := stripTracking(rawURL)
+	key := accountKey(url)
+	for _, have := range *field {
+		if accountKey(have.URL) == key {
+			return false, nil
+		}
+	}
+
+	*field = append(*field, Account{URL: url, Confidence: confidence})
+	return true, nil
+}
+
+// reportDeparted prints the people on file who no longer sit, for a human to
+// decide about. It never changes the file: the mapping is append-only.
+func reportDeparted(j config.Jurisdiction, cs []Contact) {
+	lister, ok := j.NewMemberSource().(votes.SittingLister)
+	if !ok {
+		return
+	}
+	sitting, err := lister.SittingNames()
+	if err != nil {
+		log.Fatalf("❌ failed to fetch who sits: %v", err)
+	}
+
+	gone := departed(cs, sitting)
+	fmt.Printf("\n👋 %d on file who no longer sit (left office, or the source spells the name differently):\n", len(gone))
+	for _, name := range gone {
+		fmt.Printf("   - %s\n", name)
+	}
+}
+
+// departed returns the curated people the source no longer lists as sitting.
+// Party and Fraktion accounts are skipped: no roster lists them, and they are
+// not members.
+func departed(cs []Contact, sitting []string) []string {
+	sits := make(map[string]bool, len(sitting))
+	for _, name := range sitting {
+		sits[contacts.NameKey(name)] = true
+	}
+
+	var gone []string
+	for _, c := range cs {
+		if c.IsOrganization() || sits[contacts.NameKey(c.Name)] {
+			continue
+		}
+		gone = append(gone, c.Name)
+	}
+	return gone
 }
 
 // loadExisting reads the curated file, returning the contacts by name and the
@@ -260,6 +376,11 @@ func accountKey(raw string) string {
 	host := strings.ToLower(u.Hostname())
 	host = strings.TrimPrefix(host, "www.")
 	host = strings.TrimPrefix(host, "m.")
+	// X's old name: both spellings are valid for the platform and reach the same
+	// profile.
+	if host == "twitter.com" {
+		host = "x.com"
+	}
 	// Bluesky's CDN host serves the same profile as the canonical one.
 	host = strings.TrimPrefix(host, "web-cdn.")
 	// Country subdomains address the same profile: ch.linkedin.com and

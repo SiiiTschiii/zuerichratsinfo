@@ -1,37 +1,86 @@
 package zurichapi
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 // Client enumerates the city council's roster.
-var _ votes.MemberSource = (*Client)(nil)
+var (
+	_ votes.MemberSource  = (*Client)(nil)
+	_ votes.SittingLister = (*Client)(nil)
+)
 
-// FetchMembers returns the council members PARIS publishes an account for.
+// FetchMembers returns the sitting council members PARIS publishes an account
+// for.
 //
-// PARIS serves a contact archive rather than a roster: it has no field saying
-// who currently sits, and it keeps members who left years ago. So the accounts
-// are used as the relevance signal — someone PARIS publishes a channel for is
-// someone worth having in the mapping, and the rest would arrive as several
-// hundred bare names of people who may no longer be in the chamber.
+// Two sources are needed because neither answers the question alone. The contact
+// archive carries the accounts but has no field saying who currently sits, and
+// keeps members who left years ago; the mandate register says who sits but
+// carries no accounts. A contact is therefore kept only when it has a published
+// account and holds an active Gemeinderat mandate.
 //
-// The cost of that is a sitting member who publishes nothing never appears
-// here, and is added by hand when a handle is found for them. It is the same
-// bargain this tool has always struck; a body whose source does list its
-// sitting members — see openparldata.Client.FetchMembers — is seeded whole.
+// The cost is that a sitting member who publishes nothing never appears here,
+// and is added by hand when a handle is found for them. A name the two sources
+// spell differently is dropped the same way. Both err towards omitting someone
+// who sits rather than adding someone who does not, which is the right way
+// round for a file that is append-only: an entry added in error stays forever,
+// while a member missed today is picked up on the next run. A body whose source
+// lists its sitting members outright — see openparldata.Client.FetchMembers —
+// is seeded whole.
 func (c *Client) FetchMembers() ([]votes.Member, error) {
 	kontakte, err := c.FetchAllKontakte()
 	if err != nil {
 		return nil, err
 	}
 
-	out := make([]votes.Member, 0, len(kontakte))
+	mandates, err := c.FetchActiveGemeinderatMandates()
+	if err != nil {
+		return nil, err
+	}
+	if len(mandates) == 0 {
+		// Filtering by an empty register would drop everyone, and reporting a
+		// chamber with no members is indistinguishable from a source outage.
+		return nil, fmt.Errorf("zurichapi: no active Gemeinderat mandates returned")
+	}
+
+	return sittingMembers(kontakte, mandates), nil
+}
+
+// SittingNames returns everyone holding an active Gemeinderat mandate, whether
+// or not PARIS publishes an account for them.
+func (c *Client) SittingNames() ([]string, error) {
+	mandates, err := c.FetchActiveGemeinderatMandates()
+	if err != nil {
+		return nil, err
+	}
+	if len(mandates) == 0 {
+		return nil, fmt.Errorf("zurichapi: no active Gemeinderat mandates returned")
+	}
+
+	names := make([]string, 0, len(mandates))
+	for _, m := range mandates {
+		names = append(names, strings.TrimSpace(m.Vorname+" "+m.Name))
+	}
+	return names, nil
+}
+
+// sittingMembers keeps the contacts that publish an account and hold one of the
+// given mandates, matching on the person rather than the spelling of the name.
+func sittingMembers(kontakte []Kontakt, mandates []Behoerdenmandat) []votes.Member {
+	sitting := make(map[string]bool, len(mandates))
+	for _, m := range mandates {
+		sitting[contacts.NameKey(m.Vorname+" "+m.Name)] = true
+	}
+
+	out := make([]votes.Member, 0, len(sitting))
 	for _, k := range kontakte {
 		name := memberName(k)
-		if name == "" {
+		if name == "" || !sitting[contacts.NameKey(name)] {
 			continue
 		}
 
@@ -49,7 +98,7 @@ func (c *Client) FetchMembers() ([]votes.Member, error) {
 	}
 
 	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
-	return out, nil
+	return out
 }
 
 // memberName renders a contact the way the curated mapping and the council's
