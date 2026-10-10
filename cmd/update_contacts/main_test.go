@@ -295,6 +295,7 @@ func TestAccountKey_SameAccountDifferentSpellings(t *testing.T) {
 		{"https://www.instagram.com/perparim.avdili/?hl=de", "https://www.instagram.com/perparim.avdili/"},
 		{"https://www.instagram.com/alex.guggenheim?igsh=abc&utm_source=qr", "https://instagram.com/alex.guggenheim"},
 		{"https://x.com/MoritzBoegli", "https://x.com/moritzboegli"},
+		{"https://twitter.com/MoritzBoegli", "https://x.com/moritzboegli"},
 		// Bluesky's CDN host: the same profile, and PARIS publishes both.
 		{"https://bsky.app/profile/michaamstad.bsky.social", "https://web-cdn.bsky.app/profile/michaamstad.bsky.social"},
 	}

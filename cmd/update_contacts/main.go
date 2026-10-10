@@ -376,6 +376,11 @@ func accountKey(raw string) string {
 	host := strings.ToLower(u.Hostname())
 	host = strings.TrimPrefix(host, "www.")
 	host = strings.TrimPrefix(host, "m.")
+	// X's old name: both spellings are valid for the platform and reach the same
+	// profile.
+	if host == "twitter.com" {
+		host = "x.com"
+	}
 	// Bluesky's CDN host serves the same profile as the canonical one.
 	host = strings.TrimPrefix(host, "web-cdn.")
 	// Country subdomains address the same profile: ch.linkedin.com and
