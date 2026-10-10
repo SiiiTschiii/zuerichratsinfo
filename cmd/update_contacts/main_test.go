@@ -470,10 +470,14 @@ func TestAddCandidate_LeavesAnAccountOnFileAlone(t *testing.T) {
 }
 
 func TestAddCandidate_RefusesWhatItCannotPlaceSafely(t *testing.T) {
-	existing := map[string]*Contact{contacts.NameKey("Anna Aktiv"): {Name: "Anna Aktiv"}}
+	existing := map[string]*Contact{
+		contacts.NameKey("Anna Aktiv"):      {Name: "Anna Aktiv"},
+		contacts.NameKey("SP Stadt Zürich"): {Name: "SP Stadt Zürich", Kind: contacts.KindOrganization},
+	}
 
 	for name, args := range map[string][4]string{
 		"a person not on file":   {"Wer Anders", "x", "https://x.com/w", "low"},
+		"a party account":        {"SP Stadt Zürich", "x", "https://x.com/sp", "low"},
 		"an unknown platform":    {"Anna Aktiv", "myspace", "https://myspace.com/a", "low"},
 		"an invented confidence": {"Anna Aktiv", "x", "https://x.com/a", "certain"},
 		"a URL with no scheme":   {"Anna Aktiv", "x", "x.com/a", "low"},

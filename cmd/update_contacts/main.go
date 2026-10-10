@@ -133,6 +133,9 @@ func addCandidate(existing map[string]*Contact, name, platform, rawURL, confiden
 	if !ok {
 		return false, fmt.Errorf("%q is not on file: candidates attach to people already in it", name)
 	}
+	if c.IsOrganization() {
+		return false, fmt.Errorf("%q is a party or Fraktion account, not a person", name)
+	}
 	field := platformField(c, platform)
 	if field == nil {
 		return false, fmt.Errorf("unknown platform %q, want one of %s", platform, strings.Join(contacts.Platforms, ", "))
