@@ -41,6 +41,11 @@ func main() {
 	jurisdiction := flag.String("jurisdiction", "zurich-city",
 		"jurisdiction to refresh ("+strings.Join(config.JurisdictionKeys(), ", ")+")")
 	dryRun := flag.Bool("dry-run", false, "report what would change without writing the file")
+	candidate := flag.Bool("add-candidate", false, "record one unverified candidate account for a person already on file, instead of refreshing the roster")
+	candName := flag.String("name", "", "with -add-candidate: the person, as named in the file")
+	candPlatform := flag.String("platform", "", "with -add-candidate: "+strings.Join(contacts.Platforms, ", "))
+	candURL := flag.String("url", "", "with -add-candidate: the profile URL")
+	candConfidence := flag.String("confidence", "", "with -add-candidate: how well the profile matched the person: high, medium or low")
 	flag.Parse()
 
 	j, err := config.LookupJurisdiction(*jurisdiction)
@@ -56,6 +61,13 @@ func main() {
 	existing, header, err := loadExisting(path)
 	if err != nil {
 		log.Fatalf("❌ %v", err)
+	}
+
+	if *candidate {
+		if err := runAddCandidate(path, header, existing, *candName, *candPlatform, *candURL, *candConfidence, *dryRun); err != nil {
+			log.Fatalf("❌ %v", err)
+		}
+		return
 	}
 	fmt.Printf("📋 %s: %d existing contacts\n", path, len(existing))
 
@@ -82,6 +94,66 @@ func main() {
 		log.Fatalf("❌ %v", err)
 	}
 	fmt.Printf("💾 Saved to %s\n", path)
+}
+
+// validConfidence are the levels a candidate may carry, matching what
+// cmd/validate_contacts accepts.
+var validConfidence = map[string]bool{"high": true, "medium": true, "low": true}
+
+// runAddCandidate records one candidate and writes the file, or says why not.
+func runAddCandidate(path, header string, existing map[string]*Contact, name, platform, rawURL, confidence string, dryRun bool) error {
+	added, err := addCandidate(existing, name, platform, rawURL, confidence)
+	if err != nil {
+		return err
+	}
+	if !added {
+		fmt.Printf("💤 %s: %s already on file, nothing to add\n", name, rawURL)
+		return nil
+	}
+
+	// A checklist line, so the pull request can ask the reviewer to open it.
+	fmt.Printf("- [ ] %s — %s candidate (%s): %s\n", name, platform, confidence, stripTracking(rawURL))
+	if dryRun {
+		fmt.Println("🔍 Dry run — nothing written.")
+		return nil
+	}
+
+	merged, _, _ := merge(existing, nil)
+	return save(path, header, merged)
+}
+
+// addCandidate appends an unverified account to a person already on file.
+//
+// It is the only way a handle that nobody has confirmed reaches the file, and it
+// cannot write a verified one: Verified is never set here, and an account
+// already on file is left exactly as it is, so a candidate cannot demote or
+// overwrite a confirmed handle either. Confirming is a human's edit.
+func addCandidate(existing map[string]*Contact, name, platform, rawURL, confidence string) (bool, error) {
+	c, ok := existing[contacts.NameKey(name)]
+	if !ok {
+		return false, fmt.Errorf("%q is not on file: candidates attach to people already in it", name)
+	}
+	field := platformField(c, platform)
+	if field == nil {
+		return false, fmt.Errorf("unknown platform %q, want one of %s", platform, strings.Join(contacts.Platforms, ", "))
+	}
+	if !validConfidence[confidence] {
+		return false, fmt.Errorf("confidence %q must be high, medium or low", confidence)
+	}
+	if !strings.HasPrefix(rawURL, "https://") {
+		return false, fmt.Errorf("url %q must start with https://", rawURL)
+	}
+
+	url := stripTracking(rawURL)
+	key := accountKey(url)
+	for _, have := range *field {
+		if accountKey(have.URL) == key {
+			return false, nil
+		}
+	}
+
+	*field = append(*field, Account{URL: url, Confidence: confidence})
+	return true, nil
 }
 
 // reportDeparted prints the people on file who no longer sit, for a human to

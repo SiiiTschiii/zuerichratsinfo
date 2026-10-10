@@ -435,3 +435,56 @@ func TestDeparted_ListsPeopleWhoNoLongerSit(t *testing.T) {
 		t.Errorf("departed() = %v, want [Weg Gegangen]", got)
 	}
 }
+
+func TestAddCandidate_RecordsAnUnverifiedAccount(t *testing.T) {
+	existing := map[string]*Contact{
+		contacts.NameKey("Alexander Seiler"): {Name: "Alexander Seiler"},
+	}
+
+	added, err := addCandidate(existing, "Seiler Alexander", "instagram", "https://www.instagram.com/aseiler/?igsh=abc", "medium")
+	if err != nil || !added {
+		t.Fatalf("addCandidate = %v, %v; want added", added, err)
+	}
+
+	got := existing[contacts.NameKey("Alexander Seiler")].Instagram
+	if len(got) != 1 || got[0].Verified {
+		t.Fatalf("want one unverified account, got %+v", got)
+	}
+	if got[0].URL != "https://www.instagram.com/aseiler/" || got[0].Confidence != "medium" {
+		t.Errorf("got %+v, want the tracking stripped and the confidence kept", got[0])
+	}
+}
+
+func TestAddCandidate_LeavesAnAccountOnFileAlone(t *testing.T) {
+	existing := map[string]*Contact{
+		contacts.NameKey("Anna Aktiv"): {Name: "Anna Aktiv", X: contacts.VerifiedAccounts("https://x.com/anna")},
+	}
+
+	added, err := addCandidate(existing, "Anna Aktiv", "x", "https://www.x.com/anna/", "low")
+	if err != nil || added {
+		t.Fatalf("addCandidate = %v, %v; want a quiet no-op", added, err)
+	}
+	if got := existing[contacts.NameKey("Anna Aktiv")].X; len(got) != 1 || !got[0].Verified || got[0].Confidence != "" {
+		t.Errorf("the verified account was touched: %+v", got)
+	}
+}
+
+func TestAddCandidate_RefusesWhatItCannotPlaceSafely(t *testing.T) {
+	existing := map[string]*Contact{contacts.NameKey("Anna Aktiv"): {Name: "Anna Aktiv"}}
+
+	for name, args := range map[string][4]string{
+		"a person not on file":   {"Wer Anders", "x", "https://x.com/w", "low"},
+		"an unknown platform":    {"Anna Aktiv", "myspace", "https://myspace.com/a", "low"},
+		"an invented confidence": {"Anna Aktiv", "x", "https://x.com/a", "certain"},
+		"a URL with no scheme":   {"Anna Aktiv", "x", "x.com/a", "low"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			if added, err := addCandidate(existing, args[0], args[1], args[2], args[3]); err == nil || added {
+				t.Errorf("addCandidate = %v, %v; want an error", added, err)
+			}
+		})
+	}
+	if len(existing[contacts.NameKey("Anna Aktiv")].X) != 0 {
+		t.Errorf("a refused candidate was still recorded")
+	}
+}
