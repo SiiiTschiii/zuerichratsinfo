@@ -143,8 +143,10 @@ func addCandidate(existing map[string]*Contact, name, platform, rawURL, confiden
 	if !validConfidence[confidence] {
 		return false, fmt.Errorf("confidence %q must be high, medium or low", confidence)
 	}
-	if !strings.HasPrefix(rawURL, "https://") {
-		return false, fmt.Errorf("url %q must start with https://", rawURL)
+	// The rule CI applies to the file, so a candidate cannot be saved only for
+	// cmd/validate_contacts to reject the rewritten file.
+	if err := contacts.ValidateURL(platform, rawURL); err != nil {
+		return false, fmt.Errorf("url %q: %w", rawURL, err)
 	}
 
 	url := stripTracking(rawURL)

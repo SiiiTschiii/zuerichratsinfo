@@ -481,6 +481,8 @@ func TestAddCandidate_RefusesWhatItCannotPlaceSafely(t *testing.T) {
 		"an unknown platform":    {"Anna Aktiv", "myspace", "https://myspace.com/a", "low"},
 		"an invented confidence": {"Anna Aktiv", "x", "https://x.com/a", "certain"},
 		"a URL with no scheme":   {"Anna Aktiv", "x", "x.com/a", "low"},
+		"another platform's URL": {"Anna Aktiv", "instagram", "https://example.com/a", "low"},
+		"a URL with no host":     {"Anna Aktiv", "x", "https://", "low"},
 	} {
 		t.Run(name, func(t *testing.T) {
 			if added, err := addCandidate(existing, args[0], args[1], args[2], args[3]); err == nil || added {
