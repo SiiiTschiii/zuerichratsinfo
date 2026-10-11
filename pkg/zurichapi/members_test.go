@@ -1,6 +1,7 @@
 package zurichapi
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
@@ -99,13 +100,19 @@ func TestSittingMembers_SeedsEveryoneWhoSitsAndNoOneWhoDoesNot(t *testing.T) {
 		{Vorname: "Véronique", Name: "Wavre"},           // a second mandate is still one person
 	}
 
+	members := sittingMembers(kontakte, mandates)
+
+	var names []string
 	got := map[string]votes.Member{}
-	for _, m := range sittingMembers(kontakte, mandates) {
+	for _, m := range members {
+		names = append(names, m.Name)
 		got[m.Name] = m
 	}
 
-	if len(got) != 4 {
-		t.Fatalf("got %d members, want 4: %v", len(got), got)
+	// The slice, not the map: a map would hide a person returned twice.
+	want := []string{"Moritz Bögli", "Neu Gewählt", "Stefan Stumm", "Véronique Wavre"}
+	if !slices.Equal(names, want) {
+		t.Fatalf("members = %v, want %v (one per person, sorted by name)", names, want)
 	}
 	if _, ok := got["Anna Archiviert"]; ok {
 		t.Errorf("an archived contact with no mandate was returned")
