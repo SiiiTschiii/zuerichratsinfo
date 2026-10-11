@@ -1,6 +1,11 @@
 package zurichapi
 
-import "testing"
+import (
+	"slices"
+	"testing"
+
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+)
 
 func TestMemberName_GivenNameFirst(t *testing.T) {
 	tests := []struct {
@@ -71,7 +76,7 @@ func TestPublishedAccounts(t *testing.T) {
 	}
 }
 
-func TestSittingMembers_RequiresAnActiveMandateAndAnAccount(t *testing.T) {
+func TestSittingMembers_SeedsEveryoneWhoSitsAndNoOneWhoDoesNot(t *testing.T) {
 	withAccount := func(vorname, name string) Kontakt {
 		return Kontakt{
 			Vorname: vorname, Name: name, Partei: "Grüne",
@@ -83,23 +88,45 @@ func TestSittingMembers_RequiresAnActiveMandateAndAnAccount(t *testing.T) {
 
 	kontakte := []Kontakt{
 		withAccount("Véronique", "Wavre"),                 // sits, publishes
-		withAccount("Anna", "Archiviert"),                 // archived: no mandate
+		withAccount("Anna", "Archiviert"),                 // archived: holds no mandate
 		{Vorname: "Stefan", Name: "Stumm", Partei: "SVP"}, // sits, publishes nothing
-		withAccount("Moritz", "Bögli"),                    // sits, mandate spells it surname-first
+		withAccount("Moritz", "Bögli"),                    // sits; the register spells it surname-first
 	}
 	mandates := []Behoerdenmandat{
 		{Vorname: "Véronique", Name: "Wavre"},
 		{Vorname: "Stefan", Name: "Stumm"},
 		{Vorname: "Bögli", Name: "Moritz"},
+		{Vorname: "Neu", Name: "Gewählt", Partei: "SP"}, // sits, not in the archive at all
+		{Vorname: "Véronique", Name: "Wavre"},           // a second mandate is still one person
 	}
 
-	var got []string
-	for _, m := range sittingMembers(kontakte, mandates) {
-		got = append(got, m.Name)
+	members := sittingMembers(kontakte, mandates)
+
+	var names []string
+	got := map[string]votes.Member{}
+	for _, m := range members {
+		names = append(names, m.Name)
+		got[m.Name] = m
 	}
 
-	want := []string{"Moritz Bögli", "Véronique Wavre"}
-	if len(got) != len(want) || got[0] != want[0] || got[1] != want[1] {
-		t.Errorf("sittingMembers() = %v, want %v", got, want)
+	// The slice, not the map: a map would hide a person returned twice.
+	want := []string{"Moritz Bögli", "Neu Gewählt", "Stefan Stumm", "Véronique Wavre"}
+	if !slices.Equal(names, want) {
+		t.Fatalf("members = %v, want %v (one per person, sorted by name)", names, want)
+	}
+	if _, ok := got["Anna Archiviert"]; ok {
+		t.Errorf("an archived contact with no mandate was returned")
+	}
+	if len(got["Véronique Wavre"].Accounts) != 1 {
+		t.Errorf("Wavre's published account was lost: %+v", got["Véronique Wavre"])
+	}
+	if m := got["Moritz Bögli"]; len(m.Accounts) != 1 || m.Party != "Grüne" {
+		t.Errorf("a surname-first mandate did not join its contact: %+v", m)
+	}
+	if m, ok := got["Stefan Stumm"]; !ok || len(m.Accounts) != 0 || m.Party != "SVP" {
+		t.Errorf("a member with no account should arrive bare, with the contact's party: %+v", m)
+	}
+	if m, ok := got["Neu Gewählt"]; !ok || m.Party != "SP" {
+		t.Errorf("a member missing from the archive should still be seeded: %+v", m)
 	}
 }

@@ -15,23 +15,20 @@ var (
 	_ votes.SittingLister = (*Client)(nil)
 )
 
-// FetchMembers returns the sitting council members PARIS publishes an account
-// for.
+// FetchMembers returns everyone who currently sits on the council, with the
+// accounts PARIS publishes for them.
 //
-// Two sources are needed because neither answers the question alone. The contact
-// archive carries the accounts but has no field saying who currently sits, and
-// keeps members who left years ago; the mandate register says who sits but
-// carries no accounts. A contact is therefore kept only when it has a published
-// account and holds an active Gemeinderat mandate.
+// The roster of record is the mandate register: an active Gemeinderat mandate is
+// what makes someone a member. PARIS's contact archive cannot supply that, since
+// it has no current-membership field and keeps members who left years ago; what
+// it does carry is the accounts, and the party and Fraktion in the form the
+// mapping uses. So the two are joined on the person: a member with no account
+// published arrives as a bare name, as in the Kantonsrat, and an archived contact
+// who holds no mandate is left out however many accounts they have.
 //
-// The cost is that a sitting member who publishes nothing never appears here,
-// and is added by hand when a handle is found for them. A name the two sources
-// spell differently is dropped the same way. Both err towards omitting someone
-// who sits rather than adding someone who does not, which is the right way
-// round for a file that is append-only: an entry added in error stays forever,
-// while a member missed today is picked up on the next run. A body whose source
-// lists its sitting members outright — see openparldata.Client.FetchMembers —
-// is seeded whole.
+// A member the archive spells differently from the register is still returned,
+// under the register's name and without accounts. The duplicate that risks is
+// caught by NameKey when the roster is merged.
 func (c *Client) FetchMembers() ([]votes.Member, error) {
 	kontakte, err := c.FetchAllKontakte()
 	if err != nil {
@@ -43,8 +40,8 @@ func (c *Client) FetchMembers() ([]votes.Member, error) {
 		return nil, err
 	}
 	if len(mandates) == 0 {
-		// Filtering by an empty register would drop everyone, and reporting a
-		// chamber with no members is indistinguishable from a source outage.
+		// An empty register is indistinguishable from a source outage, and
+		// reporting a chamber with no members would hide it.
 		return nil, fmt.Errorf("zurichapi: no active Gemeinderat mandates returned")
 	}
 
@@ -69,32 +66,38 @@ func (c *Client) SittingNames() ([]string, error) {
 	return names, nil
 }
 
-// sittingMembers keeps the contacts that publish an account and hold one of the
-// given mandates, matching on the person rather than the spelling of the name.
+// sittingMembers returns one member per person holding a mandate, taking the
+// name, party, Fraktion and accounts from the matching contact when there is one.
 func sittingMembers(kontakte []Kontakt, mandates []Behoerdenmandat) []votes.Member {
-	sitting := make(map[string]bool, len(mandates))
-	for _, m := range mandates {
-		sitting[contacts.NameKey(m.Vorname+" "+m.Name)] = true
+	byPerson := make(map[string]Kontakt, len(kontakte))
+	for _, k := range kontakte {
+		if name := memberName(k); name != "" {
+			byPerson[contacts.NameKey(name)] = k
+		}
 	}
 
-	out := make([]votes.Member, 0, len(sitting))
-	for _, k := range kontakte {
-		name := memberName(k)
-		if name == "" || !sitting[contacts.NameKey(name)] {
+	seen := make(map[string]bool, len(mandates))
+	out := make([]votes.Member, 0, len(mandates))
+	for _, m := range mandates {
+		name := strings.TrimSpace(m.Vorname + " " + m.Name)
+		key := contacts.NameKey(name)
+		if name == "" || seen[key] {
 			continue
 		}
+		seen[key] = true
 
-		accounts := publishedAccounts(k)
-		if len(accounts) == 0 {
-			continue
-		}
-
-		out = append(out, votes.Member{
+		member := votes.Member{
 			Name:     name,
-			Party:    strings.TrimSpace(k.Partei),
-			Fraktion: strings.TrimSpace(k.Fraktion),
-			Accounts: accounts,
-		})
+			Party:    strings.TrimSpace(m.Partei),
+			Fraktion: strings.TrimSpace(m.Fraktion),
+		}
+		if k, ok := byPerson[key]; ok {
+			member.Name = memberName(k)
+			member.Party = strings.TrimSpace(k.Partei)
+			member.Fraktion = strings.TrimSpace(k.Fraktion)
+			member.Accounts = publishedAccounts(k)
+		}
+		out = append(out, member)
 	}
 
 	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
