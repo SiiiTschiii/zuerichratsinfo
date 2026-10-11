@@ -61,19 +61,6 @@ contacts:
     instagram:
       - url: https://www.instagram.com/kingandithefirst/
         verified: true
-  - name: Andreas Hauri
-    facebook:
-      - url: https://www.facebook.com/StadtratHauri
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/andreas_hauri
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/andreas-hauri-02a35217/
-        verified: true
-    x:
-      - url: https://x.com/andreashauri
-        verified: true
   - name: Angelica Eichenberger
     facebook:
       - url: https://www.facebook.com/angelica.eichenberger.908
@@ -121,35 +108,6 @@ contacts:
         verified: true
     tiktok:
       - url: https://www.tiktok.com/@attila.kipfer
-        verified: true
-  - name: Balthasar Glättli
-    bluesky:
-      - url: https://bsky.app/profile/bglaettli.bsky.social
-        verified: true
-    facebook:
-      - url: https://www.facebook.com/glaettli.ch
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/balthasar.glaettli
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/balthasarglaettli/
-        verified: true
-    tiktok:
-      - url: https://www.tiktok.com/@bglaettli
-        verified: true
-    x:
-      - url: https://x.com/bglaettli
-        verified: true
-  - name: Barbara Wiesmann
-    facebook:
-      - url: https://www.facebook.com/barbara.wiesmann
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/barbara_wiesmann/
-        verified: true
-    x:
-      - url: https://x.com/bawizu
         verified: true
   - name: Beat Oberholzer
     bluesky:
@@ -259,44 +217,12 @@ contacts:
       - url: https://www.linkedin.com/in/christoph-riedweg-a280941b5/
         verified: true
   - name: Cordelia Forde
-  - name: Céline Widmer
-    bluesky:
-      - url: https://bsky.app/profile/celinewidmer.bsky.social
-        verified: true
-    facebook:
-      - url: https://www.facebook.com/widmerceline
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/widmerceline
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/c%C3%A9line-widmer-820120254/
-        verified: true
-    x:
-      - url: https://x.com/CelineWidmer1
-        verified: true
   - name: Dafi Muharemi
     facebook:
       - url: https://www.facebook.com/gadaf.muharemi/
         verified: true
     linkedin:
       - url: https://www.linkedin.com/in/dafi-muharemi-2b55a5125/
-        verified: true
-  - name: Daniel Leupi
-    bluesky:
-      - url: https://bsky.app/profile/daniel-leupi.bsky.social
-        verified: true
-    facebook:
-      - url: https://www.facebook.com/stadtratleupi/
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/daniel.leupi/
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/daniel-leupi-34b58b159/
-        verified: true
-    x:
-      - url: https://x.com/danielleupi
         verified: true
   - name: Daria Perez Sanchez-Di Concilio
     facebook:
@@ -307,16 +233,6 @@ contacts:
         verified: true
     linkedin:
       - url: https://www.linkedin.com/in/daria-perez-174240117/
-        verified: true
-  - name: David Garcia Nuñez
-    bluesky:
-      - url: https://bsky.app/profile/thuritch.bsky.social
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/david-garcia-nu%C3%B1ez-2a47694b/
-        verified: true
-    x:
-      - url: https://x.com/thuritch
         verified: true
   - name: Deborah Wettstein
     facebook:
@@ -419,13 +335,6 @@ contacts:
     x:
       - url: https://x.com/AngeleFlorine
         verified: true
-  - name: Frank Rühli
-    instagram:
-      - url: https://www.instagram.com/frank_ruehli/
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/frank-r%C3%BChli-3b0bb182/
-        verified: true
   - name: Frank-Elmar Linxweiler
     linkedin:
       - url: https://www.linkedin.com/in/frank-elmar-linxweiler-frm-0591063/
@@ -459,20 +368,6 @@ contacts:
   - name: Hannah Locher
     facebook:
       - url: https://www.facebook.com/hannah.locher
-        verified: true
-  - name: Hans Dellenbach
-    linkedin:
-      - url: https://www.linkedin.com/in/hansdellenbach
-        verified: true
-    x:
-      - url: https://x.com/HansDellenbach
-        verified: true
-  - name: Heidi Egger
-    facebook:
-      - url: https://www.facebook.com/heidieggerzuerich
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/heidiegger1512/
         verified: true
   - name: Isabel Maiorano
   - name: Ivo Bieri
@@ -554,16 +449,6 @@ contacts:
         verified: true
     x:
       - url: https://x.com/JuliaHofstette6
-        verified: true
-  - name: Karin Rykart
-    facebook:
-      - url: https://www.facebook.com/karinrykart/
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/KarinRykart/
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/karin-rykart-9ab8b480/
         verified: true
   - name: Karin Saxer
     facebook:
@@ -795,19 +680,6 @@ contacts:
     linkedin:
       - url: https://www.linkedin.com/in/micha-amstad-698383141
         verified: true
-  - name: Michael Baumer
-    facebook:
-      - url: https://www.facebook.com/michael.baumer.zuerich
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/baumer.michael/
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/michael-baumer-aa432537/
-        verified: true
-    x:
-      - url: https://x.com/michaelbaumer
-        verified: true
   - name: Michael Schmid
     bluesky:
       - url: https://bsky.app/profile/alternamichi.bsky.social
@@ -980,32 +852,12 @@ contacts:
     x:
       - url: https://x.com/PerparimAvdili
         verified: true
-  - name: Rahel Habegger
-    facebook:
-      - url: https://www.facebook.com/rahelsarahabegger
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/rahel-habegger-03677a1a3
-        verified: true
   - name: Rahel Hofstetter
     instagram:
       - url: https://www.instagram.com/rahelhof/
         verified: true
     linkedin:
       - url: https://ch.linkedin.com/in/rahel-hofstetter
-        verified: true
-  - name: Raphael Golta
-    facebook:
-      - url: https://www.facebook.com/golta
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/raphael.golta/
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/golta/
-        verified: true
-    x:
-      - url: https://x.com/golta
         verified: true
   - name: Reis Luzhnica
     instagram:
@@ -1157,16 +1009,6 @@ contacts:
     linkedin:
       - url: https://www.linkedin.com/in/simon-hatt-613455109
         verified: true
-  - name: Simone Brander
-    facebook:
-      - url: https://www.facebook.com/simonebranderzuerich/
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/simone_brander/
-        verified: true
-    linkedin:
-      - url: https://www.linkedin.com/in/simonebrander/
-        verified: true
   - name: Simone Widmer
     instagram:
       - url: https://www.instagram.com/simonewidmer_official/
@@ -1293,13 +1135,6 @@ contacts:
         verified: true
     linkedin:
       - url: https://www.linkedin.com/in/thomas-hofstetter-11aa07388/
-        verified: true
-  - name: Tobias Langenegger
-    facebook:
-      - url: https://www.facebook.com/profile.php?id=100089351375445
-        verified: true
-    instagram:
-      - url: https://www.instagram.com/tobilangenegger/
         verified: true
   - name: Tom Cassee
     facebook:

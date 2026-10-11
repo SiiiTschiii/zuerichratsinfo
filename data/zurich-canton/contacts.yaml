@@ -379,6 +379,15 @@ contacts:
         verified: false
         confidence: medium
   - name: David Garcia Nuñez
+    bluesky:
+      - url: https://bsky.app/profile/thuritch.bsky.social
+        verified: true
+    linkedin:
+      - url: https://www.linkedin.com/in/david-garcia-nu%C3%B1ez-2a47694b/
+        verified: true
+    x:
+      - url: https://x.com/thuritch
+        verified: true
   - name: David John Galeuchet
     facebook:
       - url: https://www.facebook.com/david.galeuchet
