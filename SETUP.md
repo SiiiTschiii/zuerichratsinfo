@@ -162,6 +162,17 @@ A handle found by search goes in as an unverified candidate, never by editing th
 file. It attaches to someone already on file, cannot be written as verified, and
 leaves an account already there untouched; confirming it is a human's edit.
 
+Members with no account at all are worked through in turns. `-backlog N` prints the
+next N sitting members to search for, never-searched first and then the least
+recently searched, and `-mark-searched` records that people were searched for, with
+a `searched: YYYY-MM-DD` date in the file. Marking is what keeps a search that
+found nothing from putting the same people at the head of the list every time.
+
+```bash
+go run ./cmd/update_contacts -jurisdiction zurich-canton -backlog 5
+go run ./cmd/update_contacts -jurisdiction zurich-canton -mark-searched "Anna Müller" "Beat Keller"
+```
+
 ```bash
 go run ./cmd/update_contacts -jurisdiction zurich-canton -add-candidate \
   -name "Anna Müller" -platform instagram -confidence medium \
