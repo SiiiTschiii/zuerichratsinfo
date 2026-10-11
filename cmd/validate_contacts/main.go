@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"gopkg.in/yaml.v3"
@@ -201,6 +202,15 @@ func validateContactsFile(filepath string, skipOrderCheck bool) []ValidationErro
 				ContactName: contact.Name,
 				Message:     fmt.Sprintf("Unknown kind %q: leave it out for a person, or use %q", contact.Kind, contacts.KindOrganization),
 			})
+		}
+
+		if contact.Searched != "" {
+			if _, err := time.Parse(contacts.SearchedDateLayout, contact.Searched); err != nil {
+				errors = append(errors, ValidationError{
+					ContactName: contact.Name,
+					Message:     fmt.Sprintf("Searched %q is not a date: use YYYY-MM-DD", contact.Searched),
+				})
+			}
 		}
 
 		// Validate platforms and URLs

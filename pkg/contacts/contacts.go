@@ -95,6 +95,12 @@ type Contact struct {
 	// lists and which are not members.
 	Kind string `yaml:"kind,omitempty"`
 
+	// Searched is the date, as YYYY-MM-DD, someone last looked for this person's
+	// accounts. It exists so a backlog of members with none can be worked through
+	// in turn: without it the same few are searched every time and the rest never
+	// are. It says nothing about whether anything was found.
+	Searched string `yaml:"searched,omitempty"`
+
 	Bluesky   []Account `yaml:"bluesky,omitempty"`
 	Facebook  []Account `yaml:"facebook,omitempty"`
 	Instagram []Account `yaml:"instagram,omitempty"`
@@ -108,6 +114,20 @@ type Contact struct {
 func (c Contact) IsOrganization() bool {
 	return c.Kind == KindOrganization
 }
+
+// HasAccounts reports whether any account is recorded on any platform, verified
+// or not.
+func (c Contact) HasAccounts() bool {
+	for _, platform := range Platforms {
+		if len(c.Accounts(platform)) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// SearchedDateLayout is the format of Contact.Searched.
+const SearchedDateLayout = "2006-01-02"
 
 // Platforms are the platform keys the mapping supports, in the order the file
 // carries them.
