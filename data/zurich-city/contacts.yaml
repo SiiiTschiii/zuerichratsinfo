@@ -8,6 +8,7 @@ contacts:
       - url: https://x.com/AdinaRom
         verified: true
   - name: AL Stadt Zürich
+    kind: organization
     bluesky:
       - url: https://bsky.app/profile/alternativeliste.bsky.social
         verified: true
@@ -332,6 +333,7 @@ contacts:
       - url: https://www.linkedin.com/in/derekrichter/
         verified: true
   - name: Die Mitte Stadt Zürich
+    kind: organization
     facebook:
       - url: https://www.facebook.com/DieMitteStadtZH
         verified: true
@@ -376,6 +378,7 @@ contacts:
       - url: https://www.tiktok.com/@fabianstieger.ch
         verified: true
   - name: FDP Stadt Zürich
+    kind: organization
     facebook:
       - url: https://www.facebook.com/fdpstadtzuerich/
         verified: true
@@ -424,6 +427,7 @@ contacts:
       - url: https://www.linkedin.com/in/frank-elmar-linxweiler-frm-0591063/
         verified: true
   - name: GLP Stadt Zürich
+    kind: organization
     facebook:
       - url: https://www.facebook.com/glpStadtZuerich
         verified: true
@@ -434,6 +438,7 @@ contacts:
       - url: https://x.com/glpstadtzuerich
         verified: true
   - name: Grüne Stadt Zürich
+    kind: organization
     facebook:
       - url: https://www.facebook.com/gruenezuerich
         verified: true
@@ -1182,6 +1187,7 @@ contacts:
       - url: https://x.com/SophieBlaser1
         verified: true
   - name: SP Stadt Zürich
+    kind: organization
     bluesky:
       - url: https://bsky.app/profile/spzuerich.ch
         verified: true
@@ -1236,6 +1242,7 @@ contacts:
       - url: https://www.linkedin.com/in/sven-sobernheim-2283521ba/
         verified: true
   - name: SVP Stadt Zürich
+    kind: organization
     facebook:
       - url: https://www.facebook.com/SVPStadtZuerich
         verified: true

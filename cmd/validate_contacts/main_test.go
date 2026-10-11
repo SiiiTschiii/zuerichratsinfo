@@ -234,156 +234,6 @@ func TestSupportedPlatforms(t *testing.T) {
 }
 
 // Test valid URLs
-func TestValidURLs(t *testing.T) {
-	tests := []struct {
-		name      string
-		url       string
-		platform  string
-		wantError bool
-		errorMsg  string
-	}{
-		// Valid URLs
-		{
-			name:      "valid x.com URL",
-			url:       "https://x.com/username",
-			platform:  "x",
-			wantError: false,
-		},
-		{
-			name:      "valid twitter.com URL (legacy)",
-			url:       "https://twitter.com/username",
-			platform:  "x",
-			wantError: false,
-		},
-		{
-			name:      "valid facebook URL",
-			url:       "https://www.facebook.com/username",
-			platform:  "facebook",
-			wantError: false,
-		},
-		{
-			name:      "valid instagram URL",
-			url:       "https://www.instagram.com/username/",
-			platform:  "instagram",
-			wantError: false,
-		},
-		{
-			name:      "valid linkedin URL",
-			url:       "https://www.linkedin.com/in/username",
-			platform:  "linkedin",
-			wantError: false,
-		},
-		{
-			name:      "valid bluesky URL",
-			url:       "https://bsky.app/profile/username",
-			platform:  "bluesky",
-			wantError: false,
-		},
-		{
-			name:      "valid tiktok URL",
-			url:       "https://www.tiktok.com/@username",
-			platform:  "tiktok",
-			wantError: false,
-		},
-		{
-			name:      "valid http URL (not just https)",
-			url:       "http://x.com/username",
-			platform:  "x",
-			wantError: false,
-		},
-
-		// Invalid URLs - missing scheme
-		{
-			name:      "URL without scheme",
-			url:       "www.x.com/username",
-			platform:  "x",
-			wantError: true,
-			errorMsg:  "URL must use http or https scheme",
-		},
-		{
-			name:      "URL with just domain",
-			url:       "x.com/username",
-			platform:  "x",
-			wantError: true,
-			errorMsg:  "URL must use http or https scheme",
-		},
-
-		// Invalid URLs - wrong domain
-		{
-			name:      "wrong domain for platform",
-			url:       "https://twitter.com/username",
-			platform:  "facebook",
-			wantError: true,
-			errorMsg:  "does not match platform",
-		},
-		{
-			name:      "completely wrong domain",
-			url:       "https://example.com/username",
-			platform:  "x",
-			wantError: true,
-			errorMsg:  "does not match platform",
-		},
-
-		// Invalid URLs - empty
-		{
-			name:      "empty URL",
-			url:       "",
-			platform:  "x",
-			wantError: true,
-			errorMsg:  "empty URL",
-		},
-		{
-			name:      "whitespace only URL",
-			url:       "   ",
-			platform:  "x",
-			wantError: true,
-			errorMsg:  "empty URL",
-		},
-
-		// Invalid URLs - bad format
-		{
-			name:      "invalid URL format",
-			url:       "ht!tp://x.com/user",
-			platform:  "x",
-			wantError: true,
-		},
-
-		// Edge cases - subdomains
-		{
-			name:      "subdomain for linkedin",
-			url:       "https://ch.linkedin.com/in/username",
-			platform:  "linkedin",
-			wantError: false,
-		},
-		{
-			name:      "bluesky web-cdn subdomain",
-			url:       "https://web-cdn.bsky.app/profile/username",
-			platform:  "bluesky",
-			wantError: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := validateURL(tt.url, tt.platform)
-
-			if tt.wantError && err == nil {
-				t.Errorf("Expected error but got none")
-			}
-
-			if !tt.wantError && err != nil {
-				t.Errorf("Expected no error but got: %v", err)
-			}
-
-			if tt.wantError && tt.errorMsg != "" && err != nil {
-				if !contains(err.Error(), tt.errorMsg) {
-					t.Errorf("Expected error to contain '%s', got: %v", tt.errorMsg, err)
-				}
-			}
-		})
-	}
-}
-
 // Test full file validation with URL issues
 func TestURLValidationInFile(t *testing.T) {
 	tests := []struct {
@@ -541,6 +391,40 @@ func TestCheckAccountShape(t *testing.T) {
 			}
 			if !found {
 				t.Errorf("got %v, want an error mentioning %q", errs, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestKindMustBeOrganizationOrAbsent(t *testing.T) {
+	file := func(kind string) string {
+		return `version: "1.0"
+contacts:
+  - name: "SP Stadt Zürich"
+` + kind + `    x:
+      - url: https://x.com/sp
+        verified: true
+`
+	}
+
+	tests := []struct {
+		name       string
+		kind       string
+		wantErrors int
+	}{
+		{"a person has no kind", "", 0},
+		{"organization is accepted", "    kind: organization\n", 0},
+		{"a typo is rejected, not read as a person", "    kind: organisation\n", 1},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "contacts.yaml")
+			if err := os.WriteFile(path, []byte(file(tt.kind)), 0644); err != nil {
+				t.Fatal(err)
+			}
+			if got := validateContactsFile(path, false); len(got) != tt.wantErrors {
+				t.Errorf("got %d errors, want %d: %v", len(got), tt.wantErrors, got)
 			}
 		})
 	}

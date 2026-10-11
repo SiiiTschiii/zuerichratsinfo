@@ -79,17 +79,34 @@ func VerifiedAccounts(urls ...string) []Account {
 	return out
 }
 
+// KindOrganization marks an entry that is a party or Fraktion account rather
+// than a person. An entry with no kind is a person.
+const KindOrganization = "organization"
+
 // Contact represents a council member with their social media accounts
-// Fields are declared alphabetically because that order is what gets
-// marshalled, and cmd/validate_contacts requires it in the file.
+// Platforms are declared alphabetically because that order is what gets
+// marshalled, and cmd/validate_contacts requires it in the file. Kind is not a
+// platform, so it sits beside the name.
 type Contact struct {
-	Name      string    `yaml:"name"`
+	Name string `yaml:"name"`
+
+	// Kind is empty for a person. It exists so tooling that compares the file
+	// with a roster of people can leave out the party accounts, which no roster
+	// lists and which are not members.
+	Kind string `yaml:"kind,omitempty"`
+
 	Bluesky   []Account `yaml:"bluesky,omitempty"`
 	Facebook  []Account `yaml:"facebook,omitempty"`
 	Instagram []Account `yaml:"instagram,omitempty"`
 	LinkedIn  []Account `yaml:"linkedin,omitempty"`
 	TikTok    []Account `yaml:"tiktok,omitempty"`
 	X         []Account `yaml:"x,omitempty"`
+}
+
+// IsOrganization reports whether the entry is a party or Fraktion account
+// rather than a person.
+func (c Contact) IsOrganization() bool {
+	return c.Kind == KindOrganization
 }
 
 // Platforms are the platform keys the mapping supports, in the order the file

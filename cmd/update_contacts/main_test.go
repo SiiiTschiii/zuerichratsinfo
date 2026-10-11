@@ -295,6 +295,7 @@ func TestAccountKey_SameAccountDifferentSpellings(t *testing.T) {
 		{"https://www.instagram.com/perparim.avdili/?hl=de", "https://www.instagram.com/perparim.avdili/"},
 		{"https://www.instagram.com/alex.guggenheim?igsh=abc&utm_source=qr", "https://instagram.com/alex.guggenheim"},
 		{"https://x.com/MoritzBoegli", "https://x.com/moritzboegli"},
+		{"https://twitter.com/MoritzBoegli", "https://x.com/moritzboegli"},
 		// Bluesky's CDN host: the same profile, and PARIS publishes both.
 		{"https://bsky.app/profile/michaamstad.bsky.social", "https://web-cdn.bsky.app/profile/michaamstad.bsky.social"},
 	}
@@ -395,5 +396,102 @@ func TestAddAccounts_LeavesAVerifiedAccountAlone(t *testing.T) {
 	}
 	if len(c.X) != 1 {
 		t.Errorf("X = %+v, want no duplicate", c.X)
+	}
+}
+
+// A refresh rewrites the whole file, so a field it does not know about by name
+// is lost on the first run after someone adds it.
+func TestMerge_KeepsAnOrganizationMarkedAsOne(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "contacts.yaml")
+	if err := save(path, "", []Contact{{Name: "SP Stadt Zürich", Kind: contacts.KindOrganization}}); err != nil {
+		t.Fatalf("save: %v", err)
+	}
+
+	existing, header, err := loadExisting(path)
+	if err != nil {
+		t.Fatalf("loadExisting: %v", err)
+	}
+	merged, _, _ := merge(existing, nil)
+	if err := save(path, header, merged); err != nil {
+		t.Fatalf("save: %v", err)
+	}
+
+	written, _ := os.ReadFile(path)
+	if !strings.Contains(string(written), "  - name: SP Stadt Zürich\n    kind: organization\n") {
+		t.Errorf("kind was lost on rewrite:\n%s", written)
+	}
+}
+
+func TestDeparted_ListsPeopleWhoNoLongerSit(t *testing.T) {
+	cs := []Contact{
+		{Name: "Anna Aktiv"},
+		{Name: "Bern Hard"},
+		{Name: "Weg Gegangen"},
+		{Name: "SP Stadt Zürich", Kind: contacts.KindOrganization},
+	}
+	// The source writes the surname first, and has never heard of the party.
+	got := departed(cs, []string{"Aktiv Anna", "Hard Bern"})
+
+	if len(got) != 1 || got[0] != "Weg Gegangen" {
+		t.Errorf("departed() = %v, want [Weg Gegangen]", got)
+	}
+}
+
+func TestAddCandidate_RecordsAnUnverifiedAccount(t *testing.T) {
+	existing := map[string]*Contact{
+		contacts.NameKey("Alexander Seiler"): {Name: "Alexander Seiler"},
+	}
+
+	added, err := addCandidate(existing, "Seiler Alexander", "instagram", "https://www.instagram.com/aseiler/?igsh=abc", "medium")
+	if err != nil || !added {
+		t.Fatalf("addCandidate = %v, %v; want added", added, err)
+	}
+
+	got := existing[contacts.NameKey("Alexander Seiler")].Instagram
+	if len(got) != 1 || got[0].Verified {
+		t.Fatalf("want one unverified account, got %+v", got)
+	}
+	if got[0].URL != "https://www.instagram.com/aseiler/" || got[0].Confidence != "medium" {
+		t.Errorf("got %+v, want the tracking stripped and the confidence kept", got[0])
+	}
+}
+
+func TestAddCandidate_LeavesAnAccountOnFileAlone(t *testing.T) {
+	existing := map[string]*Contact{
+		contacts.NameKey("Anna Aktiv"): {Name: "Anna Aktiv", X: contacts.VerifiedAccounts("https://x.com/anna")},
+	}
+
+	added, err := addCandidate(existing, "Anna Aktiv", "x", "https://www.x.com/anna/", "low")
+	if err != nil || added {
+		t.Fatalf("addCandidate = %v, %v; want a quiet no-op", added, err)
+	}
+	if got := existing[contacts.NameKey("Anna Aktiv")].X; len(got) != 1 || !got[0].Verified || got[0].Confidence != "" {
+		t.Errorf("the verified account was touched: %+v", got)
+	}
+}
+
+func TestAddCandidate_RefusesWhatItCannotPlaceSafely(t *testing.T) {
+	existing := map[string]*Contact{
+		contacts.NameKey("Anna Aktiv"):      {Name: "Anna Aktiv"},
+		contacts.NameKey("SP Stadt Zürich"): {Name: "SP Stadt Zürich", Kind: contacts.KindOrganization},
+	}
+
+	for name, args := range map[string][4]string{
+		"a person not on file":   {"Wer Anders", "x", "https://x.com/w", "low"},
+		"a party account":        {"SP Stadt Zürich", "x", "https://x.com/sp", "low"},
+		"an unknown platform":    {"Anna Aktiv", "myspace", "https://myspace.com/a", "low"},
+		"an invented confidence": {"Anna Aktiv", "x", "https://x.com/a", "certain"},
+		"a URL with no scheme":   {"Anna Aktiv", "x", "x.com/a", "low"},
+		"another platform's URL": {"Anna Aktiv", "instagram", "https://example.com/a", "low"},
+		"a URL with no host":     {"Anna Aktiv", "x", "https://", "low"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			if added, err := addCandidate(existing, args[0], args[1], args[2], args[3]); err == nil || added {
+				t.Errorf("addCandidate = %v, %v; want an error", added, err)
+			}
+		})
+	}
+	if len(existing[contacts.NameKey("Anna Aktiv")].X) != 0 {
+		t.Errorf("a refused candidate was still recorded")
 	}
 }

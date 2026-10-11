@@ -70,3 +70,36 @@ func TestPublishedAccounts(t *testing.T) {
 		t.Errorf("got %q, want web-cdn.bsky.app canonicalised to bsky.app", got[2].URL)
 	}
 }
+
+func TestSittingMembers_RequiresAnActiveMandateAndAnAccount(t *testing.T) {
+	withAccount := func(vorname, name string) Kontakt {
+		return Kontakt{
+			Vorname: vorname, Name: name, Partei: "Grüne",
+			SozialeMedien: SozialeMedienList{Kommunikation: []SozialesMedium{
+				{Typ: "Instagram", Adresse: "https://www.instagram.com/x/"},
+			}},
+		}
+	}
+
+	kontakte := []Kontakt{
+		withAccount("Véronique", "Wavre"),                 // sits, publishes
+		withAccount("Anna", "Archiviert"),                 // archived: no mandate
+		{Vorname: "Stefan", Name: "Stumm", Partei: "SVP"}, // sits, publishes nothing
+		withAccount("Moritz", "Bögli"),                    // sits, mandate spells it surname-first
+	}
+	mandates := []Behoerdenmandat{
+		{Vorname: "Véronique", Name: "Wavre"},
+		{Vorname: "Stefan", Name: "Stumm"},
+		{Vorname: "Bögli", Name: "Moritz"},
+	}
+
+	var got []string
+	for _, m := range sittingMembers(kontakte, mandates) {
+		got = append(got, m.Name)
+	}
+
+	want := []string{"Moritz Bögli", "Véronique Wavre"}
+	if len(got) != len(want) || got[0] != want[0] || got[1] != want[1] {
+		t.Errorf("sittingMembers() = %v, want %v", got, want)
+	}
+}

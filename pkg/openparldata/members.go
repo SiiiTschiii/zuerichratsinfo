@@ -11,7 +11,10 @@ import (
 )
 
 // Client enumerates its body's roster.
-var _ votes.MemberSource = (*Client)(nil)
+var (
+	_ votes.MemberSource  = (*Client)(nil)
+	_ votes.SittingLister = (*Client)(nil)
+)
 
 // rosterPageSize bounds one roster request. The chamber has 180 seats but its
 // membership history runs to nine hundred records, so these calls page.
@@ -77,6 +80,20 @@ func (c *Client) FetchMembers() ([]votes.Member, error) {
 
 	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
 	return out, nil
+}
+
+// SittingNames returns the names FetchMembers does: this source's roster is the
+// whole chamber, so there is no one it lists less of.
+func (c *Client) SittingNames() ([]string, error) {
+	members, err := c.FetchMembers()
+	if err != nil {
+		return nil, err
+	}
+	names := make([]string, len(members))
+	for i, m := range members {
+		names[i] = m.Name
+	}
+	return names, nil
 }
 
 // councilGroupID finds the group that *is* the chamber, as opposed to the
