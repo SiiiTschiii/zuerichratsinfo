@@ -429,3 +429,29 @@ contacts:
 		})
 	}
 }
+
+func TestSearchedMustBeADate(t *testing.T) {
+	tests := []struct {
+		name       string
+		searched   string
+		wantErrors int
+	}{
+		{"never searched", "", 0},
+		{"a date", "    searched: 2026-10-11\n", 0},
+		{"a month is not a date", "    searched: 2026-10\n", 1},
+		{"free text is rejected", "    searched: yesterday\n", 1},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "contacts.yaml")
+			content := "version: \"1.0\"\ncontacts:\n  - name: \"Anna Aktiv\"\n" + tt.searched
+			if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+				t.Fatal(err)
+			}
+			if got := validateContactsFile(path, false); len(got) != tt.wantErrors {
+				t.Errorf("got %d errors, want %d: %v", len(got), tt.wantErrors, got)
+			}
+		})
+	}
+}

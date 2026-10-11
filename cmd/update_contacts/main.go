@@ -23,6 +23,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
@@ -46,7 +47,16 @@ func main() {
 	candPlatform := flag.String("platform", "", "with -add-candidate: "+strings.Join(contacts.Platforms, ", "))
 	candURL := flag.String("url", "", "with -add-candidate: the profile URL")
 	candConfidence := flag.String("confidence", "", "with -add-candidate: how well the profile matched the person: high, medium or low")
+	backlogN := flag.Int("backlog", 0, "print the next N people to search for accounts, instead of refreshing the roster")
+	markSearchedMode := flag.Bool("mark-searched", false, "record that the people named as arguments were searched for, instead of refreshing the roster")
+	searchedDate := flag.String("date", time.Now().UTC().Format(contacts.SearchedDateLayout), "with -mark-searched: the date, YYYY-MM-DD (default today, UTC)")
 	flag.Parse()
+
+	backlogSet := false
+	flag.Visit(func(f *flag.Flag) { backlogSet = backlogSet || f.Name == "backlog" })
+	if err := validateBacklog(backlogSet, *backlogN); err != nil {
+		log.Fatalf("❌ %v", err)
+	}
 
 	j, err := config.LookupJurisdiction(*jurisdiction)
 	if err != nil {
@@ -61,6 +71,20 @@ func main() {
 	existing, header, err := loadExisting(path)
 	if err != nil {
 		log.Fatalf("❌ %v", err)
+	}
+
+	if backlogSet {
+		cs, _, _ := merge(existing, nil)
+		if err := runBacklog(j, cs, *backlogN); err != nil {
+			log.Fatalf("❌ %v", err)
+		}
+		return
+	}
+	if *markSearchedMode {
+		if err := runMarkSearched(path, header, existing, flag.Args(), *searchedDate, *dryRun); err != nil {
+			log.Fatalf("❌ %v", err)
+		}
+		return
 	}
 
 	if *candidate {
