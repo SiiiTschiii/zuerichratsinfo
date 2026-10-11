@@ -141,9 +141,16 @@ Tagging works by matching names in a post against `data/<jurisdiction>/contacts.
 The names come from the parliament; the handles do not, and never can — no source
 publishes them for the Kantonsrat, so every one is found and verified by a human.
 
-`update_contacts` refreshes the names from the body's own roster. It is
-append-only: it never deletes a curated entry, so a member who has left is
-removed by hand, deliberately.
+`update_contacts` refreshes the names from the body's own roster. A refresh only
+ever adds; removing people who have left is the separate `-prune` mode, which
+deletes the entries of people who sit in no chamber and refuses to remove more than
+`-max-prune` (25) at once, since a source returning far fewer people than are on
+file is more likely broken than right. Someone who now sits in the other chamber is
+left in place and reported: move their accounts into that chamber's file by hand.
+
+```bash
+go run ./cmd/update_contacts -jurisdiction zurich-city -prune -dry-run
+```
 
 ```bash
 # See what would change first — it writes to a hand-curated file

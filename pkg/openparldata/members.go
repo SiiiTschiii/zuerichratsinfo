@@ -39,8 +39,8 @@ const rosterMaxPages = 20
 // Their intersection is exactly the sitting chamber — 180, against 181 and 208
 // for the two signals alone, as of writing. Requiring both errs towards omitting
 // someone who has left rather than including them, which is the right way round:
-// the file this feeds is append-only, so an entry added in error stays forever,
-// while a member missed today is picked up on the next run.
+// a refresh only ever adds, so an entry added in error stays until a prune
+// removes it, while a member missed today is picked up on the next run.
 func (c *Client) FetchMembers() ([]votes.Member, error) {
 	council, err := c.councilGroupID()
 	if err != nil {

@@ -5,10 +5,10 @@
 //	go run ./cmd/update_contacts -jurisdiction zurich-canton
 //	go run ./cmd/update_contacts -jurisdiction zurich-canton -dry-run
 //
-// It is append-only by design. The file is a hand-curated mapping in which
-// every handle was verified by a human, and a roster that briefly drops someone
-// — a Nachrücken mid-processing, a source outage — must not be able to delete
-// that work. Members who have left are removed by hand, deliberately.
+// A refresh only ever adds: the file is a hand-curated mapping in which every
+// handle was verified by a human, and a roster that briefly drops someone — a
+// Nachrücken mid-processing, a source outage — must not be able to delete that
+// work. Removing people who have left is a separate, explicit mode, -prune.
 //
 // Party and Fraktion are printed for the run's benefit and never written: the
 // parliament publishes them, so a second copy here could only go stale. See
@@ -50,6 +50,8 @@ func main() {
 	backlogN := flag.Int("backlog", 0, "print the next N people to search for accounts, instead of refreshing the roster")
 	markSearchedMode := flag.Bool("mark-searched", false, "record that the people named as arguments were searched for, instead of refreshing the roster")
 	searchedDate := flag.String("date", time.Now().UTC().Format(contacts.SearchedDateLayout), "with -mark-searched: the date, YYYY-MM-DD (default today, UTC)")
+	pruneMode := flag.Bool("prune", false, "remove the people on file who sit in no chamber, instead of refreshing the roster")
+	maxPrune := flag.Int("max-prune", 25, "with -prune: refuse to remove more people than this in one run")
 	flag.Parse()
 
 	backlogSet := false
@@ -76,6 +78,12 @@ func main() {
 	if backlogSet {
 		cs, _, _ := merge(existing, nil)
 		if err := runBacklog(j, cs, *backlogN); err != nil {
+			log.Fatalf("❌ %v", err)
+		}
+		return
+	}
+	if *pruneMode {
+		if err := runPrune(j, path, header, existing, *maxPrune, *dryRun); err != nil {
 			log.Fatalf("❌ %v", err)
 		}
 		return
@@ -186,7 +194,7 @@ func addCandidate(existing map[string]*Contact, name, platform, rawURL, confiden
 }
 
 // reportDeparted prints the people on file who no longer sit, for a human to
-// decide about. It never changes the file: the mapping is append-only.
+// decide about. It never changes the file; -prune is what removes them.
 func reportDeparted(j config.Jurisdiction, cs []Contact) {
 	lister, ok := j.NewMemberSource().(votes.SittingLister)
 	if !ok {

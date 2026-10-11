@@ -46,12 +46,12 @@ the text and on the image, so the two are never confused.
 
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
-| LinkedIn    | ❌ Planned | 116                                 | -                                                                                    |
-| Facebook    | ❌ Planned | 91                                  | -                                                                                    |
-| Instagram   | ✅ Active  | 100                                 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
-| X (Twitter) | ✅ Active  | 65                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
-| Bluesky     | ✅ Active  | 28                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
-| TikTok      | ❌ Planned | 18                                  | -                                                                                    |
+| LinkedIn    | ❌ Planned | 105                                 | -                                                                                    |
+| Facebook    | ❌ Planned | 79                                  | -                                                                                    |
+| Instagram   | ✅ Active  | 88                                  | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
+| X (Twitter) | ✅ Active  | 57                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| Bluesky     | ✅ Active  | 25                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
+| TikTok      | ❌ Planned | 17                                  | -                                                                                    |
 
 _The count is how many politicians the bot can tag on that platform in case they are mentioned in a post. The curated mapping lives in [data/](data/)._
 
