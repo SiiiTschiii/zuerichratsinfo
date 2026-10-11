@@ -72,6 +72,7 @@ contacts:
       - url: https://x.com/AngelicaEichen1
         verified: true
   - name: Anjushka Früh
+    searched: "2026-10-11"
   - name: Anna Graff
     bluesky:
       - url: https://bsky.app/profile/annagraff.bsky.social
@@ -143,6 +144,7 @@ contacts:
       - url: https://www.linkedin.com/in/brendamaeder/
         verified: true
   - name: Brigitte Fürer
+    searched: "2026-10-11"
   - name: Camille Roseau
     bluesky:
       - url: https://bsky.app/profile/camillero.bsky.social
@@ -217,6 +219,7 @@ contacts:
       - url: https://www.linkedin.com/in/christoph-riedweg-a280941b5/
         verified: true
   - name: Cordelia Forde
+    searched: "2026-10-11"
   - name: Dafi Muharemi
     facebook:
       - url: https://www.facebook.com/gadaf.muharemi/
@@ -297,6 +300,7 @@ contacts:
       - url: https://www.tiktok.com/@fabianstieger.ch
         verified: true
   - name: Fanny de Weck
+    searched: "2026-10-11"
   - name: FDP Stadt Zürich
     kind: organization
     facebook:
@@ -370,6 +374,7 @@ contacts:
       - url: https://www.facebook.com/hannah.locher
         verified: true
   - name: Isabel Maiorano
+    searched: "2026-10-11"
   - name: Ivo Bieri
     linkedin:
       - url: https://www.linkedin.com/in/ivo-bieri/
