@@ -14,6 +14,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/linkedin"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
@@ -81,7 +82,7 @@ func main() {
 			"JURISDICTION_<JURISDICTION>_ENABLED=true", config.JurisdictionKeys())
 	}
 	if !anyPlatformConfigured {
-		log.Fatal("No platform credentials configured for any channel. Set <CHANNEL>_X_API_KEY/<CHANNEL>_X_API_SECRET/<CHANNEL>_X_ACCESS_TOKEN/<CHANNEL>_X_ACCESS_SECRET for X, <CHANNEL>_BLUESKY_HANDLE/<CHANNEL>_BLUESKY_PASSWORD for Bluesky, or <CHANNEL>_IG_USER_ID/<CHANNEL>_IG_ACCESS_TOKEN/<CHANNEL>_IMAGE_HOST_REPO/<CHANNEL>_IMAGE_HOST_TOKEN for Instagram.")
+		log.Fatal("No platform credentials configured for any channel. Set <CHANNEL>_X_API_KEY/<CHANNEL>_X_API_SECRET/<CHANNEL>_X_ACCESS_TOKEN/<CHANNEL>_X_ACCESS_SECRET for X, <CHANNEL>_BLUESKY_HANDLE/<CHANNEL>_BLUESKY_PASSWORD for Bluesky, <CHANNEL>_IG_USER_ID/<CHANNEL>_IG_ACCESS_TOKEN/<CHANNEL>_IMAGE_HOST_REPO/<CHANNEL>_IMAGE_HOST_TOKEN for Instagram, or <CHANNEL>_LINKEDIN_ACCESS_TOKEN/<CHANNEL>_LINKEDIN_AUTHOR_URN for LinkedIn.")
 	}
 
 	if hasErrors {
@@ -150,6 +151,19 @@ func buildPlatforms(channel config.Channel, jurisdictions []config.Jurisdiction)
 		plats = append(plats, channelPlatform{"Instagram", votelog.PlatformInstagram, igPlatform})
 	} else {
 		log.Printf("⚠️  Channel %q: Instagram not configured (missing IG_USER_ID/IG_ACCESS_TOKEN/IMAGE_HOST_REPO/IMAGE_HOST_TOKEN)", channel.Key)
+	}
+
+	// LinkedIn tokens last 60 days and cannot be refreshed, so this is the
+	// credential most likely to go stale; the client's 401 error says so.
+	liToken := channel.Env("LINKEDIN_ACCESS_TOKEN")
+	liAuthor := channel.Env("LINKEDIN_AUTHOR_URN")
+	if liToken != "" && liAuthor != "" {
+		plats = append(plats, channelPlatform{"LinkedIn", votelog.PlatformLinkedIn, linkedin.NewLinkedInPlatform(
+			liToken, liAuthor,
+			channel.EnvInt("LINKEDIN_MAX_POSTS_PER_RUN", 5),
+		)})
+	} else {
+		log.Printf("⚠️  Channel %q: LinkedIn not configured (missing LINKEDIN_ACCESS_TOKEN/LINKEDIN_AUTHOR_URN)", channel.Key)
 	}
 
 	return plats
