@@ -109,3 +109,23 @@ func TestMarkSearched_IsKeptThroughARewriteAndMovesThePersonDown(t *testing.T) {
 		t.Errorf("next up = %v, want the person not yet searched", got)
 	}
 }
+
+func TestValidateBacklog_AGivenValueMustBePositive(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		set     bool
+		n       int
+		wantErr bool
+	}{
+		{"not given", false, 0, false},
+		{"a batch size", true, 5, false},
+		{"zero is not read as absent", true, 0, true},
+		{"negative", true, -3, true},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validateBacklog(tt.set, tt.n); (err != nil) != tt.wantErr {
+				t.Errorf("validateBacklog(%v, %d) = %v, wantErr %v", tt.set, tt.n, err, tt.wantErr)
+			}
+		})
+	}
+}

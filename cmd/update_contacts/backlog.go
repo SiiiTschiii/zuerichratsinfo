@@ -48,6 +48,17 @@ func backlog(cs []Contact, sitting []string, n int) []Contact {
 	return due
 }
 
+// validateBacklog rejects a -backlog that was given but is not a positive
+// number. Without it, 0 or a negative value reads as the flag being absent and
+// the run falls through to a roster refresh, which writes the file, when the
+// caller asked only to see a list.
+func validateBacklog(set bool, n int) error {
+	if set && n <= 0 {
+		return fmt.Errorf("-backlog must be a positive number, got %d", n)
+	}
+	return nil
+}
+
 // runBacklog prints the next batch, one person per line.
 func runBacklog(j config.Jurisdiction, cs []Contact, n int) error {
 	var sitting []string
