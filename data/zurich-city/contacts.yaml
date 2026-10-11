@@ -84,6 +84,7 @@ contacts:
     x:
       - url: https://x.com/AngelicaEichen1
         verified: true
+  - name: Anjushka Früh
   - name: Anna Graff
     bluesky:
       - url: https://bsky.app/profile/annagraff.bsky.social
@@ -183,6 +184,7 @@ contacts:
     linkedin:
       - url: https://www.linkedin.com/in/brendamaeder/
         verified: true
+  - name: Brigitte Fürer
   - name: Camille Roseau
     bluesky:
       - url: https://bsky.app/profile/camillero.bsky.social
@@ -256,6 +258,7 @@ contacts:
     linkedin:
       - url: https://www.linkedin.com/in/christoph-riedweg-a280941b5/
         verified: true
+  - name: Cordelia Forde
   - name: Céline Widmer
     bluesky:
       - url: https://bsky.app/profile/celinewidmer.bsky.social
@@ -377,6 +380,7 @@ contacts:
     tiktok:
       - url: https://www.tiktok.com/@fabianstieger.ch
         verified: true
+  - name: Fanny de Weck
   - name: FDP Stadt Zürich
     kind: organization
     facebook:
@@ -470,6 +474,7 @@ contacts:
     instagram:
       - url: https://www.instagram.com/heidiegger1512/
         verified: true
+  - name: Isabel Maiorano
   - name: Ivo Bieri
     linkedin:
       - url: https://www.linkedin.com/in/ivo-bieri/
@@ -497,6 +502,7 @@ contacts:
     linkedin:
       - url: https://www.linkedin.com/in/janina-flueckiger/
         verified: true
+  - name: Jean-Marc Jung
   - name: Jehuda Spielman
     facebook:
       - url: https://www.facebook.com/JehudaSpielman/
@@ -891,6 +897,7 @@ contacts:
     x:
       - url: https://x.com/ninasuij
         verified: true
+  - name: Niyazi Erdem
   - name: Oliver Heimgartner
     facebook:
       - url: https://www.facebook.com/oliheimgartner
@@ -1020,6 +1027,7 @@ contacts:
     linkedin:
       - url: https://www.linkedin.com/in/reto-br%C3%BCesch-5b1061b1/
         verified: true
+  - name: Roger Bartholdi
   - name: Roger Meier
     facebook:
       - url: https://www.facebook.com/roger.meier.902
@@ -1228,6 +1236,7 @@ contacts:
     instagram:
       - url: https://www.instagram.com/stephanebraune/
         verified: true
+  - name: Susan Wiget
   - name: Sven Sobernheim
     bluesky:
       - url: https://bsky.app/profile/svenzurich.bsky.social
