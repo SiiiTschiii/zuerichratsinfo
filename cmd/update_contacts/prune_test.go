@@ -4,7 +4,9 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 func TestPartition_AMoverIsNotALeaver(t *testing.T) {
@@ -43,5 +45,22 @@ func TestCheckPruneLimit_RefusesWhatLooksLikeABrokenSource(t *testing.T) {
 	}
 	if err := checkPruneLimit(26, 25); err == nil {
 		t.Errorf("over the limit should be refused")
+	}
+}
+
+type rosterOnly struct{}
+
+func (rosterOnly) FetchMembers() ([]votes.Member, error) { return nil, nil }
+
+func TestSittingNames_AJurisdictionThatCannotSayIsAnError(t *testing.T) {
+	for name, j := range map[string]config.Jurisdiction{
+		"no roster":                 {Jurisdiction: votes.Jurisdiction{Key: "a"}},
+		"a roster without who sits": {Jurisdiction: votes.Jurisdiction{Key: "b"}, NewMemberSource: func() votes.MemberSource { return rosterOnly{} }},
+	} {
+		t.Run(name, func(t *testing.T) {
+			if names, err := sittingNames(j); err == nil {
+				t.Errorf("sittingNames = %v, nil; want an error, not an empty chamber", names)
+			}
+		})
 	}
 }

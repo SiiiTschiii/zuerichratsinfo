@@ -8,15 +8,16 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
-// sittingNames returns who sits in a jurisdiction, or nil if its source cannot
-// say.
+// sittingNames returns who sits in a jurisdiction. A jurisdiction whose source
+// cannot say is an error rather than an empty list: read as empty chamber, it
+// would make everyone who moved there look like a leaver.
 func sittingNames(j config.Jurisdiction) ([]string, error) {
 	if j.NewMemberSource == nil {
-		return nil, nil
+		return nil, fmt.Errorf("%s publishes no roster", j.Key)
 	}
 	lister, ok := j.NewMemberSource().(votes.SittingLister)
 	if !ok {
-		return nil, nil
+		return nil, fmt.Errorf("%s cannot say who sits", j.Key)
 	}
 	return lister.SittingNames()
 }
@@ -87,9 +88,6 @@ func runPrune(j config.Jurisdiction, path, header string, existing map[string]*C
 	sitting, err := sittingNames(j)
 	if err != nil {
 		return fmt.Errorf("failed to fetch who sits: %w", err)
-	}
-	if sitting == nil {
-		return fmt.Errorf("%s cannot say who sits, so nobody can be pruned", j.Key)
 	}
 	elsewhere, err := sitsElsewhere(j.Key)
 	if err != nil {
