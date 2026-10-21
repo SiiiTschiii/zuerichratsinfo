@@ -204,12 +204,18 @@ func (c *Client) enrich(v *votes.Vote) error {
 // entity carries no counts, and the member rows are the record — the
 // Parlamentsdienste's own published tally is the same count of the same rows.
 // So the completeness gate passes by construction, and what it guards against
-// elsewhere is guarded here by refusing a row this adapter cannot classify.
+// elsewhere is guarded here, against the one number that does not come from
+// these rows: the chamber's seats. Every vote has a row for every seat, the
+// President's included, so a response with fewer is a partial snapshot and
+// would publish a wrong result with a confident verdict. It is refused, as is a
+// row this adapter cannot classify.
 func applyMemberVotes(v *votes.Vote, rows []votingDTO) {
-	if len(rows) == 0 {
-		// Not published yet, or never. Leaving the type empty refuses the
-		// vote loudly rather than posting a tally of nobody.
-		log.Printf("⚠️  parlamentch: vote %s has no member rows", v.SourceID)
+	if len(rows) != Seats {
+		// Not published yet, cut short, or a vacant seat. Leaving the type
+		// empty refuses the vote loudly rather than posting a tally that
+		// cannot be checked; a vacancy is rare and short enough to be worth
+		// a red run over a wrong post.
+		log.Printf("⚠️  parlamentch: vote %s has %d member rows for %d seats", v.SourceID, len(rows), Seats)
 		v.Type = ""
 		return
 	}
@@ -383,6 +389,10 @@ func deref(s *string) string {
 	}
 	return *s
 }
+
+// Seats is the Nationalrat's size, fixed by Art. 149 of the Federal
+// Constitution.
+const Seats = 200
 
 // BusinessURL is the business's page in Curia Vista, the durable link for
 // every vote taken on it.
