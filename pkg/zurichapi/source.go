@@ -1,6 +1,6 @@
 package zurichapi
 
-import "github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+import "github.com/siiitschiii/parlinfo/pkg/votes"
 
 // Client implements votes.Source for the Stadt Zürich PARIS API.
 var _ votes.Source = (*Client)(nil)

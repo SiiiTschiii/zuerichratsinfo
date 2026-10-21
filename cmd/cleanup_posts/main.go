@@ -6,9 +6,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/xapi"
+	"github.com/siiitschiii/parlinfo/pkg/bskyapi"
+	"github.com/siiitschiii/parlinfo/pkg/config"
+	"github.com/siiitschiii/parlinfo/pkg/xapi"
 )
 
 func main() {

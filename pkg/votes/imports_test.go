@@ -12,14 +12,14 @@ import (
 // the coupling the source-neutral model exists to remove — and would make an
 // import cycle the first symptom rather than a design review.
 var forbidden = []string{
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi",
-	"github.com/siiitschiii/zuerichratsinfo/pkg/openparldata",
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting",
-	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen",
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi",
+	"github.com/siiitschiii/parlinfo/pkg/openparldata",
+	"github.com/siiitschiii/parlinfo/pkg/voteposting",
+	"github.com/siiitschiii/parlinfo/pkg/imagegen",
 }
 
 func TestPackageHasNoSourceDependencies(t *testing.T) {
-	out, err := exec.Command("go", "list", "-deps", "github.com/siiitschiii/zuerichratsinfo/pkg/votes").Output()
+	out, err := exec.Command("go", "list", "-deps", "github.com/siiitschiii/parlinfo/pkg/votes").Output()
 	if err != nil {
 		t.Fatalf("go list -deps: %v", err)
 	}
@@ -38,8 +38,8 @@ func TestPackageHasNoSourceDependencies(t *testing.T) {
 	// Guard against the list above going stale: nothing from this module
 	// belongs in the dependency set at all.
 	for dep := range deps {
-		if strings.HasPrefix(dep, "github.com/siiitschiii/zuerichratsinfo/") &&
-			dep != "github.com/siiitschiii/zuerichratsinfo/pkg/votes" {
+		if strings.HasPrefix(dep, "github.com/siiitschiii/parlinfo/") &&
+			dep != "github.com/siiitschiii/parlinfo/pkg/votes" {
 			t.Errorf("pkg/votes must not depend on module package %s", dep)
 		}
 	}

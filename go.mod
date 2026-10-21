@@ -1,4 +1,4 @@
-module github.com/siiitschiii/zuerichratsinfo
+module github.com/siiitschiii/parlinfo
 
 go 1.25.5
 

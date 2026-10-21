@@ -1,0 +1,143 @@
+name: CH Parl Info Bot
+
+on:
+  schedule:
+    # Half an hour off the Zürich bot, so the two rarely queue behind each
+    # other in the shared concurrency group below.
+    - cron: "6 * * * *"
+
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+
+  # Optional: Also run on push to main for testing
+  # push:
+  #   branches: [ main ]
+
+# Shares the Zürich bot's group rather than having its own. Both publish
+# carousel images to this repo's gh-pages branch, one commit per file through
+# the Contents API, and two runs doing that at once can have a commit rejected
+# for a stale parent — losing the image after the post has been announced. The
+# vote logs do not need this: each workflow has its own state branch.
+concurrency:
+  group: bot
+  cancel-in-progress: false
+
+jobs:
+  post-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      # Isolated branch that holds the mutable state log (posted votes).
+      # Keeping it off `main` lets this Action update state without tripping
+      # the pull request ruleset / branch protection on the primary branch.
+      # Its own branch, so this bot and the Zürich bot never push to the same
+      # ref. It must exist before the first run; see SETUP.md.
+      STATE_BRANCH: state-log-chparl
+      # Vote logs live at data/<jurisdiction>/posted_votes_<platform>.json.
+      STATE_FILES: "data/nationalrat/posted_votes_*.json"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Restore vote log from state branch
+        id: restore
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # '$STATE_BRANCH' holds the only copy of the vote log, so every failure
+          # below is fatal: votelog.Load treats a missing log file as an *empty*
+          # log with no error, which reads as "nothing was ever posted" and would
+          # re-post everything inside MAX_VOTE_AGE_DAYS.
+          if ! state_ref="$(git ls-remote --heads origin "$STATE_BRANCH")"; then
+            echo "::error::Cannot reach origin to look up '$STATE_BRANCH'."
+            exit 1
+          fi
+
+          if [ -z "$state_ref" ]; then
+            echo "::error::State branch '$STATE_BRANCH' does not exist. It holds the only copy of the vote log; running without it would re-post already-published votes. Recreate it from a known-good log before running again."
+            exit 1
+          fi
+
+          echo "State branch '$STATE_BRANCH' found; restoring vote logs from it."
+          git fetch origin "$STATE_BRANCH"
+
+          if ! git checkout FETCH_HEAD -- "$STATE_FILES"; then
+            echo "::error::'$STATE_BRANCH' contains no vote logs matching $STATE_FILES."
+            exit 1
+          fi
+          echo "Restored:"
+          find data -name 'posted_votes_*.json' | sort
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.25.5"
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run bot
+        env:
+          # Only the chparl channel's accounts. main.go walks every channel
+          # when this is unset.
+          CHANNEL: chparl
+          # Only Instagram (@chparlinfo) exists today. The other platforms
+          # skip themselves while their secrets are unset, so adding an
+          # account is a matter of setting them.
+          CHPARL_X_API_KEY: ${{ secrets.CHPARL_X_API_KEY }}
+          CHPARL_X_API_SECRET: ${{ secrets.CHPARL_X_API_SECRET }}
+          CHPARL_X_ACCESS_TOKEN: ${{ secrets.CHPARL_X_ACCESS_TOKEN }}
+          CHPARL_X_ACCESS_SECRET: ${{ secrets.CHPARL_X_ACCESS_SECRET }}
+          CHPARL_BLUESKY_HANDLE: ${{ vars.CHPARL_BLUESKY_HANDLE }}
+          CHPARL_BLUESKY_PASSWORD: ${{ secrets.CHPARL_BLUESKY_PASSWORD }}
+          CHPARL_IG_USER_ID: ${{ secrets.CHPARL_IG_USER_ID }}
+          CHPARL_IG_ACCESS_TOKEN: ${{ secrets.CHPARL_IG_ACCESS_TOKEN }}
+          # See bot.yml: images are hosted on this repo's gh-pages branch, and
+          # github.token can write nowhere else.
+          CHPARL_IMAGE_HOST_REPO: ${{ github.repository }}
+          CHPARL_IMAGE_HOST_TOKEN: ${{ github.token }}
+          CHPARL_X_MAX_POSTS_PER_RUN: ${{ vars.CHPARL_X_MAX_POSTS_PER_RUN }}
+          CHPARL_X_MAX_CHARS: ${{ vars.CHPARL_X_MAX_CHARS }}
+          CHPARL_BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.CHPARL_BLUESKY_MAX_POSTS_PER_RUN }}
+          CHPARL_IG_MAX_POSTS_PER_RUN: ${{ vars.CHPARL_IG_MAX_POSTS_PER_RUN }}
+
+          MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
+          MAX_VOTE_AGE_DAYS_NATIONALRAT: ${{ vars.MAX_VOTE_AGE_DAYS_NATIONALRAT }}
+          # Nothing posts until this is "true". See bot.yml.
+          JURISDICTION_NATIONALRAT_ENABLED: ${{ vars.JURISDICTION_NATIONALRAT_ENABLED }}
+        run: go run main.go
+
+      # Runs even when the bot itself fails, so a partial run still records what
+      # it posted — but not when the restore failed, since the logs on disk would
+      # then be missing or stale rather than the real state.
+      - name: Commit updated vote log to state branch
+        if: always() && steps.restore.outcome == 'success'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Update the state log on the isolated STATE_BRANCH using a dedicated
+          # worktree, so nothing is ever committed to the protected primary branch.
+          # The restore step guarantees the branch exists and is fetched.
+          worktree="$(mktemp -d)"
+          git worktree add -B "$STATE_BRANCH" "$worktree" "origin/$STATE_BRANCH"
+
+          # --parents preserves data/<jurisdiction>/, without which two
+          # jurisdictions' logs would overwrite each other in the state branch
+          # and votes would look unposted on the next run.
+          mapfile -t state_files < <(find data -name 'posted_votes_*.json' | sort)
+          cp --parents "${state_files[@]}" "$worktree/"
+
+          git -C "$worktree" add -- data
+          if git -C "$worktree" diff --staged --quiet; then
+            echo "No vote log changes to commit."
+          else
+            git -C "$worktree" commit -m "Update posted votes log [skip ci]"
+            git -C "$worktree" push origin "$STATE_BRANCH"
+          fi
+
+          git worktree remove --force "$worktree"
