@@ -89,6 +89,7 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 	title := voteformat.CleanVoteTitle(firstVote.Title)
 	if contactMapper != nil {
 		title = contactMapper.TagInstagramHandlesInText(title)
+		title = contactMapper.TagInstagramFraktionen(title, firstVote.Jurisdiction)
 	}
 
 	var sb strings.Builder

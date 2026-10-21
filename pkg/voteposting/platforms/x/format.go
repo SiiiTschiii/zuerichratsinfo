@@ -48,6 +48,7 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 	// Tag X handles in the title if contact mapper is provided
 	if contactMapper != nil {
 		title = contactMapper.TagXHandlesInText(title)
+		title = contactMapper.TagXFraktionen(title, firstVote.Jurisdiction)
 	}
 
 	// --- Build root post ---
