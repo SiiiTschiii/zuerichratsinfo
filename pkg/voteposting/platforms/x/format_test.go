@@ -722,3 +722,24 @@ contacts:
 		t.Errorf("a deferred signatory was named but not tagged:\n%s", all)
 	}
 }
+
+func TestFormatVoteThread_TagsFraktionInSubtitle(t *testing.T) {
+	mapper := contacts.NewMapperForTest([]contacts.Contact{
+		{Name: "AL Stadt Zürich", Kind: contacts.KindOrganization, X: contacts.VerifiedAccounts("https://x.com/al_zuerich")},
+	})
+	group := []votes.Vote{{
+		SourceID:     "sub-1",
+		Jurisdiction: "zurich-city",
+		Title:        "2025/354 Weisung",
+		Subtitle:     "Antrag der AL-Fraktion zu Dispositivziffer 1",
+		Date:         testfixtures.MustDate("2025-11-26"),
+		Decision:     "angenommen",
+		Yes:          intPtr(60),
+		No:           intPtr(50),
+		Abstention:   intPtr(0),
+	}}
+	thread := FormatVoteThread(group, mapper, DefaultMaxChars)
+	if got := allThreadText(thread); !strings.Contains(got, "AL-Fraktion @al_zuerich") {
+		t.Errorf("subtitle Fraktion not tagged:\n%s", got)
+	}
+}

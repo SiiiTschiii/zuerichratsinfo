@@ -89,6 +89,7 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 	title := voteformat.CleanVoteTitle(firstVote.Title)
 	if contactMapper != nil {
 		title = contactMapper.TagInstagramHandlesInText(title)
+		title = contactMapper.TagInstagramFraktionen(title, firstVote.Jurisdiction)
 	}
 
 	var sb strings.Builder
@@ -102,6 +103,7 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 	if prefix := voteformat.GroupPrefixLine(group); prefix != "" {
 		if contactMapper != nil {
 			prefix = contactMapper.TagInstagramHandlesInText(prefix)
+			prefix = contactMapper.TagInstagramFraktionen(prefix, firstVote.Jurisdiction)
 		}
 		sb.WriteString(prefix)
 		sb.WriteString("\n")
@@ -117,6 +119,9 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 		if len(group) > 1 {
 			// Multi-vote: include subtitle
 			voteTitle := voteformat.SubVoteLabel(vote, i, len(group))
+			if contactMapper != nil {
+				voteTitle = contactMapper.TagInstagramFraktionen(voteTitle, vote.Jurisdiction)
+			}
 			if !voteformat.HasVerdict(vote) {
 				sb.WriteString(voteTitle)
 			} else {
