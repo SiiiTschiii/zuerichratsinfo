@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -243,17 +244,47 @@ func TestGroupByAffair_EveryVoteIsPostable(t *testing.T) {
 	}
 }
 
+// fullChamber returns one Ja row per seat, so a test can change the few it is
+// about.
+func fullChamber() []votingDTO {
+	rows := make([]votingDTO, Seats)
+	for i := range rows {
+		rows[i] = votingDTO{FirstName: "A", LastName: strconv.Itoa(i), ParlGroupCode: "S", Decision: 1}
+	}
+	return rows
+}
+
 func TestApplyMemberVotes_RefusesAnUnknownDecision(t *testing.T) {
 	v := votes.Vote{SourceID: "1", Type: "Normal"}
-	applyMemberVotes(&v, []votingDTO{
-		{FirstName: "A", LastName: "B", ParlGroupCode: "S", Decision: 1},
-		{FirstName: "C", LastName: "D", ParlGroupCode: "V", Decision: 4, DecisionText: "?"},
-	})
+	rows := fullChamber()
+	rows[1] = votingDTO{FirstName: "C", LastName: "D", ParlGroupCode: "V", Decision: 4, DecisionText: "?"}
+	applyMemberVotes(&v, rows)
 	if v.Type != "" {
 		t.Errorf("type = %q, want empty so the pipeline refuses the vote", v.Type)
 	}
 	if v.Yes != nil {
 		t.Error("totals were set for a vote that could not be counted")
+	}
+}
+
+func TestApplyMemberVotes_RefusesAPartialSnapshot(t *testing.T) {
+	// One row short of the chamber. Counted, it would still read as a clear
+	// result with a verdict; nothing derived from the rows alone can tell.
+	v := votes.Vote{SourceID: "1", Type: "Normal"}
+	applyMemberVotes(&v, fullChamber()[:Seats-1])
+	if v.Type != "" {
+		t.Errorf("type = %q, want empty so the pipeline refuses the vote", v.Type)
+	}
+	if v.Yes != nil || v.Decision != "" {
+		t.Errorf("a partial snapshot set totals or a verdict: yes=%v decision=%q", v.Yes, v.Decision)
+	}
+}
+
+func TestApplyMemberVotes_FullChamberIsCounted(t *testing.T) {
+	v := votes.Vote{SourceID: "1", Type: "Normal"}
+	applyMemberVotes(&v, fullChamber())
+	if v.Type != "Normal" || v.Yes == nil || *v.Yes != Seats {
+		t.Errorf("type=%q yes=%v, want a counted vote", v.Type, v.Yes)
 	}
 }
 
