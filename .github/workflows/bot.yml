@@ -65,7 +65,14 @@ jobs:
           git fetch origin "$STATE_BRANCH"
 
           if ! git checkout FETCH_HEAD -- "$STATE_FILES"; then
-            echo "::error::'$STATE_BRANCH' contains no vote logs matching $STATE_FILES."
+            echo "::error::'$STATE_BRANCH' contains no logs matching $STATE_FILES."
+            exit 1
+          fi
+          # The glob also matches Geschäft logs, so it succeeding no longer
+          # proves the vote logs came back. Without them the vote bot would
+          # read every recent vote as unposted.
+          if [ -z "$(find data -name 'posted_votes_*.json' -print -quit)" ]; then
+            echo "::error::'$STATE_BRANCH' contains no vote logs (posted_votes_*.json); refusing to run without them."
             exit 1
           fi
           echo "Restored:"
