@@ -141,7 +141,7 @@ func loadCredentials(channel config.Channel) platformCredentials {
 // validatePlatform checks that the selected platform has valid credentials configured.
 func validatePlatform(platform string, creds platformCredentials, channel config.Channel) {
 	prefix := channel.EnvPrefix()
-	if !creds.xEnabled && !creds.bskyEnabled && platform != "instagram" && platform != "facebook" {
+	if !creds.xEnabled && !creds.bskyEnabled && !creds.fbEnabled && platform != "instagram" && platform != "facebook" {
 		log.Fatalf("No platform credentials configured for channel %q. Set %[2]sX_API_KEY/%[2]sX_API_SECRET/%[2]sX_ACCESS_TOKEN/%[2]sX_ACCESS_SECRET for X, or %[2]sBLUESKY_HANDLE/%[2]sBLUESKY_PASSWORD for Bluesky. Instagram (stub mode without %[2]sIG_USER_ID/%[2]sIG_ACCESS_TOKEN/%[2]sIMAGE_HOST_REPO/%[2]sIMAGE_HOST_TOKEN, or real mode with them) is available via -platform instagram, and Facebook (stub mode without %[2]sFB_PAGE_ID/%[2]sFB_ACCESS_TOKEN, real mode with them) via -platform facebook.", channel.Key, prefix)
 	}
 
