@@ -33,6 +33,23 @@ contacts:
     linkedin:
       - url: https://ch.linkedin.com/in/advije-delihasani-1b4171125
         verified: true
+  - name: AL Kanton Zürich
+    kind: organization
+    bluesky:
+      - url: https://bsky.app/profile/alternativelinkezh.bsky.social
+        verified: true
+    facebook:
+      - url: https://www.facebook.com/ALZuerich
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/alternativelinkezh/
+        verified: true
+    tiktok:
+      - url: https://www.tiktok.com/@alternativelinkezh
+        verified: true
+    x:
+      - url: https://x.com/al_zuerich
+        verified: true
   - name: Alan David Sangines
     facebook:
       - url: https://www.facebook.com/alan.d.sangines
@@ -380,6 +397,17 @@ contacts:
       - url: https://www.facebook.com/davideloss/
         verified: false
         confidence: high
+  - name: Die Mitte Kanton Zürich
+    kind: organization
+    facebook:
+      - url: https://www.facebook.com/DieMitteZH
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/diemittezh/
+        verified: true
+    x:
+      - url: https://x.com/DieMitte_ZH
+        verified: true
   - name: Dieter Kläy
     facebook:
       - url: https://www.facebook.com/dieter.klaey.fdp/
@@ -414,12 +442,45 @@ contacts:
         verified: false
         confidence: high
   - name: Edith Häusler
+  - name: EDU Kanton Zürich
+    kind: organization
+    instagram:
+      - url: https://www.instagram.com/edu_kanton_zuerich/
+        verified: true
+    x:
+      - url: https://x.com/EDU_ZH
+        verified: true
   - name: Elisabeth Pflugshaupt
+  - name: EVP Kanton Zürich
+    kind: organization
+    facebook:
+      - url: https://www.facebook.com/evpzh
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/evpzh/
+        verified: true
+    x:
+      - url: https://x.com/evpzh
+        verified: true
   - name: Fabian Müller
     facebook:
       - url: https://www.facebook.com/fabian.mueller.rueschlikon
         verified: false
         confidence: medium
+  - name: FDP Kanton Zürich
+    kind: organization
+    facebook:
+      - url: https://www.facebook.com/fdpzuerich
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/fdp_zh/
+        verified: true
+    linkedin:
+      - url: https://www.linkedin.com/company/fdp-kanton-z%C3%BCrich/
+        verified: true
+    x:
+      - url: https://x.com/FDP_zh
+        verified: true
   - name: Felix Hoesch
     facebook:
       - url: https://www.facebook.com/FelixHoeschSP/
@@ -457,6 +518,28 @@ contacts:
       - url: https://www.instagram.com/gianna.berger_zh/
         verified: false
         confidence: high
+  - name: GLP Kanton Zürich
+    kind: organization
+    facebook:
+      - url: https://www.facebook.com/GrunliberaleZurich
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/glpzh/
+        verified: true
+    x:
+      - url: https://x.com/glpzh
+        verified: true
+  - name: Grüne Kanton Zürich
+    kind: organization
+    facebook:
+      - url: https://www.facebook.com/gruenezuerich
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/gruene.zuerich/
+        verified: true
+    x:
+      - url: https://x.com/gruenezuerich
+        verified: true
   - name: Hans Egli
     facebook:
       - url: https://www.facebook.com/kantonsrathansegli/
@@ -1108,6 +1191,20 @@ contacts:
       - url: https://x.com/sonjarueff
         verified: false
         confidence: medium
+  - name: SP Kanton Zürich
+    kind: organization
+    bluesky:
+      - url: https://bsky.app/profile/spzuerich.ch
+        verified: true
+    facebook:
+      - url: https://www.facebook.com/SPZuerich/
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/spzuerich/
+        verified: true
+    tiktok:
+      - url: https://www.tiktok.com/@spzuerich
+        verified: true
   - name: Stefan Schmid
   - name: Stefanie Huber
     facebook:
@@ -1162,6 +1259,17 @@ contacts:
       - url: https://x.com/susanne_brunner
         verified: false
         confidence: high
+  - name: SVP Kanton Zürich
+    kind: organization
+    facebook:
+      - url: https://www.facebook.com/svpzuerich/
+        verified: true
+    instagram:
+      - url: https://www.instagram.com/svpzuerich/
+        verified: true
+    x:
+      - url: https://x.com/svpzh
+        verified: true
   - name: Tamara Fakhreddine
     linkedin:
       - url: https://www.linkedin.com/in/tamara-fakhreddine-9811a528/

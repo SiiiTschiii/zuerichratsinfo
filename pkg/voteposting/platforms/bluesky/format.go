@@ -64,7 +64,8 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper) []*Blu
 	// Scan all posts for politician mentions with Bluesky accounts
 	if contactMapper != nil {
 		for _, post := range thread {
-			post.Mentions = contactMapper.FindBlueskyMentions(post.Text)
+			post.Mentions = mergeMentions(contactMapper.FindBlueskyMentions(post.Text),
+				contactMapper.FindBlueskyFraktionMentions(post.Text, group[0].Jurisdiction))
 		}
 	}
 
@@ -365,4 +366,22 @@ func truncateText(s string, maxRunes int) string {
 // graphemeLen returns the number of graphemes (runes) in a string.
 func graphemeLen(s string) int {
 	return len([]rune(s))
+}
+
+// mergeMentions adds the extra mentions that do not overlap one already found,
+// so a name inside a Fraktion phrase is never given two facets.
+func mergeMentions(found, extra []contacts.BlueskyMention) []contacts.BlueskyMention {
+	for _, e := range extra {
+		overlaps := false
+		for _, f := range found {
+			if e.ByteStart < f.ByteEnd && f.ByteStart < e.ByteEnd {
+				overlaps = true
+				break
+			}
+		}
+		if !overlaps {
+			found = append(found, e)
+		}
+	}
+	return found
 }

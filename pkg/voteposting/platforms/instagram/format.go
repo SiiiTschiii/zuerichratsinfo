@@ -83,11 +83,14 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 		return header + voteformat.WahlgeschaeftBody(group) + voteformat.LinkLine(group)
 	}
 
-	var tag func(string) string
+	var tags voteformat.Tags
 	if contactMapper != nil {
-		tag = contactMapper.TagInstagramHandlesInText
+		tags.Heading = func(text, jurisdiction string) string {
+			return contactMapper.TagInstagramFraktionen(contactMapper.TagInstagramHandlesInText(text), jurisdiction)
+		}
+		tags.SubVote = contactMapper.TagInstagramFraktionen
 	}
-	return buildCaptionWithPreservedLink(voteformat.LongFormBody(group, tag), voteformat.LinkLine(group))
+	return buildCaptionWithPreservedLink(voteformat.LongFormBody(group, tags), voteformat.LinkLine(group))
 }
 
 func buildCaptionWithPreservedLink(body, linkBlock string) string {

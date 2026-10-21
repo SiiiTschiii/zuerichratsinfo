@@ -7,6 +7,24 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
+// Tags rewrites text to tag the accounts it names. Each func takes the text and
+// the jurisdiction it belongs to, since a Fraktion name maps to a different party
+// account in each chamber. A nil func leaves its text untouched.
+type Tags struct {
+	// Heading tags the title and the label line, the lines that name members.
+	Heading func(text, jurisdiction string) string
+	// SubVote tags each vote's label in a multi-vote group. Those name
+	// Fraktionen at most — "Antrag der SVP-Fraktion" — never members.
+	SubVote func(text, jurisdiction string) string
+}
+
+func orIdentity(f func(string, string) string) func(string, string) string {
+	if f == nil {
+		return func(s, _ string) string { return s }
+	}
+	return f
+}
+
 // LongFormBody renders a group as one block of text, without its links: the
 // headline, the label line, the title, then per vote the verdict, the counts and
 // the Fraktion breakdown.
@@ -16,16 +34,16 @@ import (
 // same facts over a thread. Sharing it keeps the two from drifting apart line
 // by line.
 //
-// tag, when non-nil, rewrites the title and the label line to mark up the names
-// in them; nothing else in the body names anyone.
+// tags mark up the names in the body for platforms that can tag accounts; the
+// zero value leaves the text as it is.
 //
 // A Wahlgeschäft is not rendered here: its only votes are attendance roll
 // calls, and nothing below means anything for a headcount. Callers check
 // votes.IsWahlgeschaeftGroup first.
-func LongFormBody(group []votes.Vote, tag func(string) string) string {
-	if tag == nil {
-		tag = func(s string) string { return s }
-	}
+func LongFormBody(group []votes.Vote, tags Tags) string {
+	tagHeading := orIdentity(tags.Heading)
+	tagSubVote := orIdentity(tags.SubVote)
+	jurisdiction := group[0].Jurisdiction
 
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("🗳️ %s\n\n", PostHeadline(group)))
@@ -36,11 +54,11 @@ func LongFormBody(group []votes.Vote, tag func(string) string) string {
 	// Tagged like the title, and for a body whose titles carry no names — Kanton
 	// Zürich's never do — this is the only line that names anyone at all.
 	if prefix := GroupPrefixLine(group); prefix != "" {
-		sb.WriteString(tag(prefix))
+		sb.WriteString(tagHeading(prefix, jurisdiction))
 		sb.WriteString("\n")
 	}
 
-	sb.WriteString(tag(CleanVoteTitle(group[0].Title)))
+	sb.WriteString(tagHeading(CleanVoteTitle(group[0].Title), jurisdiction))
 	sb.WriteString("\n\n")
 
 	for i, vote := range group {
@@ -48,7 +66,7 @@ func LongFormBody(group []votes.Vote, tag func(string) string) string {
 
 		if len(group) > 1 {
 			// Multi-vote: include subtitle
-			voteTitle := SubVoteLabel(vote, i, len(group))
+			voteTitle := tagSubVote(SubVoteLabel(vote, i, len(group)), vote.Jurisdiction)
 			if !HasVerdict(vote) {
 				sb.WriteString(voteTitle)
 			} else {

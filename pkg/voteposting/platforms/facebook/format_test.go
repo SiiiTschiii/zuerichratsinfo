@@ -65,7 +65,7 @@ func TestFormatPost_MatchesLongFormBody(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FormatPost: %v", err)
 	}
-	body := strings.TrimRight(voteformat.LongFormBody(group, nil), "\n")
+	body := strings.TrimRight(voteformat.LongFormBody(group, voteformat.Tags{}), "\n")
 	if !strings.HasPrefix(content.Message, body+"\n\n") {
 		t.Errorf("message does not start with the long-form body:\n%s", content.Message)
 	}

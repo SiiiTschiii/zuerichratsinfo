@@ -50,7 +50,7 @@ func FormatPost(group []votes.Vote) (*FacebookContent, error) {
 		header := fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group))
 		message = header + voteformat.WahlgeschaeftBody(group) + voteformat.LinkLine(group)
 	} else {
-		body := strings.TrimRight(voteformat.LongFormBody(group, nil), "\n")
+		body := strings.TrimRight(voteformat.LongFormBody(group, voteformat.Tags{}), "\n")
 		message = body + "\n\n" + strings.TrimLeft(voteformat.LinkLine(group), "\n")
 	}
 	message = strings.TrimRight(message, "\n")
