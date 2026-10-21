@@ -37,11 +37,14 @@ A platform whose vote log is missing treats every vote inside
 `MAX_VOTE_AGE_DAYS_*` as unposted — 90 days for Stadt Zürich — and would work
 through that backlog at `ZURICH_FB_MAX_POSTS_PER_RUN` posts an hour. Copy the
 Instagram logs so the Page starts from the votes still to come. Pause the bot
-first: a run that overlaps the push below would have its own push rejected and
-lose its record of what it posted.
+first, then wait for every queued and running run to finish — disabling stops
+new triggers but not those, and a run whose push lands after the seed push is
+rejected and loses its record of what it posted. Do not cancel them instead: a
+run may already have posted.
 
 ```bash
 gh workflow disable bot.yml
+while gh run list --workflow bot.yml --limit 20 --json status -q '.[].status' | grep -qv completed; do sleep 30; done
 git fetch origin state-log
 git worktree add --detach ../state-log-seed origin/state-log
 for j in zurich-city zurich-canton; do
