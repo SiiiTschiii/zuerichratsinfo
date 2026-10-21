@@ -104,6 +104,12 @@ type Poster interface {
 // In a dry run nothing is posted or recorded; the content is printed instead,
 // under the same per-run budget a real run would stop at.
 func Post(gs []zurichapi.Geschaeft, format Formatter, p Poster, log *votelog.VoteLog, dryRun bool) (int, error) {
+	// The budget is otherwise only checked after a post, so a budget of 0 —
+	// the way to pause one platform — would still publish one per run.
+	if p.MaxPostsPerRun() <= 0 {
+		fmt.Printf("⏸️  %s's per-run limit is %d; posting nothing\n", p.Name(), p.MaxPostsPerRun())
+		return 0, nil
+	}
 	posted := 0
 	for _, g := range gs {
 		content, err := format(g)

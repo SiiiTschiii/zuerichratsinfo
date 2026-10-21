@@ -178,3 +178,15 @@ func TestSeedRecordsWithoutPosting(t *testing.T) {
 		t.Errorf("seeded Geschäfte still unposted: %v", grNrs(got))
 	}
 }
+
+func TestPostZeroBudgetPostsNothing(t *testing.T) {
+	gs := []zurichapi.Geschaeft{testfixtures.MotionMember()}
+	for _, dry := range []bool{false, true} {
+		log := votelog.NewEmpty("zurich-city", votelog.PlatformX)
+		p := &fakePoster{budget: 0}
+		n, err := Post(gs, grFormat, p, log, dry)
+		if err != nil || n != 0 || len(p.posted) != 0 || log.Count() != 0 {
+			t.Errorf("dry=%v: Post = %d, %v, posted %v, recorded %d; want nothing", dry, n, err, p.posted, log.Count())
+		}
+	}
+}
