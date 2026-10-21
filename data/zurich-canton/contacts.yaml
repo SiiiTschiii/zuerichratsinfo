@@ -79,108 +79,73 @@ contacts:
   - name: Andreas Juchli
     facebook:
       - url: https://www.facebook.com/ajuchli/
-        verified: false
-        confidence: high
+        verified: true
     linkedin:
       - url: https://www.linkedin.com/in/andreas-juchli-9391a315/
-        verified: false
-        confidence: high
+        verified: true
   - name: Andreas Keiser
     linkedin:
       - url: https://www.linkedin.com/in/937753171/
-        verified: false
-        confidence: medium
+        verified: true
   - name: André Bender
     searched: "2026-10-11"
   - name: Angie Romero
     facebook:
       - url: https://www.facebook.com/profile.php?id=100063907506340
-        verified: false
-        confidence: high
+        verified: true
     instagram:
       - url: https://www.instagram.com/angie_romero_zueri/
-        verified: false
-        confidence: high
+        verified: true
     linkedin:
       - url: https://www.linkedin.com/in/angie-romero-b475161b0/
-        verified: false
-        confidence: high
+        verified: true
     x:
       - url: https://x.com/angieromerofdp
-        verified: false
-        confidence: medium
+        verified: true
   - name: Anita Borer
-    facebook:
-      - url: https://m.facebook.com/people/Anita-Borer/100075305094969/
-        verified: false
-        confidence: high
     instagram:
       - url: https://www.instagram.com/anita.borer.politik/
-        verified: false
-        confidence: high
+        verified: true
     linkedin:
       - url: https://www.linkedin.com/in/anita-borer/
-        verified: false
-        confidence: high
+        verified: true
   - name: Astrid Furrer
     facebook:
       - url: https://www.facebook.com/FurrerAstrid/
-        verified: false
-        confidence: high
+        verified: true
     instagram:
       - url: https://www.instagram.com/furrerastrid/
-        verified: false
-        confidence: high
-    linkedin:
-      - url: https://www.linkedin.com/in/astrid-furrer-55561322/
-        verified: false
-        confidence: high
+        verified: true
   - name: Barbara Dietrich
     instagram:
       - url: https://www.instagram.com/barbara.dietrich/
-        verified: false
-        confidence: high
-    linkedin:
-      - url: https://de.linkedin.com/in/barbara-dietrich-8566a491
-        verified: false
-        confidence: medium
+        verified: true
   - name: Barbara Franzen
     facebook:
       - url: https://www.facebook.com/annbarbara.franzen/
-        verified: false
-        confidence: high
-    instagram:
-      - url: https://www.instagram.com/barbarafranzenn/
-        verified: false
-        confidence: medium
+        verified: true
     linkedin:
       - url: https://www.linkedin.com/in/barbara-franzen-ab762170/
-        verified: false
-        confidence: high
+        verified: true
   - name: Barbara Grüter
     searched: "2026-10-11"
   - name: Beat Habegger
     facebook:
       - url: https://www.facebook.com/beathabegger.ch/
-        verified: false
-        confidence: high
+        verified: true
     instagram:
       - url: https://www.instagram.com/beathabegger/
-        verified: false
-        confidence: high
+        verified: true
     linkedin:
       - url: https://ch.linkedin.com/in/beathabegger
-        verified: false
-        confidence: high
+        verified: true
     x:
       - url: https://x.com/beathabegger
-        verified: false
-        confidence: high
+        verified: true
   - name: Beat Hauser
     linkedin:
       - url: https://www.linkedin.com/in/beathauserrafz/
-        verified: false
-        confidence: high
+        verified: true
   - name: Beatrice Derrer
     searched: "2026-10-11"
   - name: Benjamin Krähenmann
