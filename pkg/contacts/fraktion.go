@@ -219,3 +219,7 @@ func (m *Mapper) FindBlueskyFraktionMentions(text, jurisdiction string) []Bluesk
 	}
 	return out
 }
+
+// NewMapperForTest builds a mapper from contacts in memory, so tests in other
+// packages can exercise tagging without a file on disk.
+func NewMapperForTest(cs []Contact) *Mapper { return newMapper(cs) }
