@@ -47,6 +47,8 @@ func newTestClient(t *testing.T) (*Client, *[]string) {
 		switch r.URL.Path {
 		case "/Vote":
 			name = "votes.json"
+		case "/MemberCouncil":
+			name = "members.json"
 		case "/Voting":
 			m := idVoting.FindStringSubmatch(r.URL.Query().Get("$filter"))
 			if m == nil {
@@ -403,4 +405,50 @@ func firstQueryValue(t *testing.T, raw, key string) string {
 	}
 	t.Fatalf("no %s in %s", key, raw)
 	return ""
+}
+
+func TestFetchMembers_NamesMatchTheVoteRows(t *testing.T) {
+	c, _ := newTestClient(t)
+	names, err := c.SittingNames()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(names) != Seats {
+		t.Fatalf("%d sitting members, want %d", len(names), Seats)
+	}
+
+	// The tagger matches a contact's name against post text, and the post
+	// text comes from the vote rows. A roster that named people differently
+	// would fill the contacts file with names that never match.
+	sitting := make(map[string]bool, len(names))
+	for _, n := range names {
+		sitting[n] = true
+	}
+	groups := fetchAndGroup(t, c)
+	for _, m := range groups[len(groups)-1][0].MemberVotes {
+		if !sitting[m.Name] {
+			t.Errorf("vote row %q is not in the roster", m.Name)
+		}
+	}
+}
+
+func TestFetchMembers_MapsTheRow(t *testing.T) {
+	c, _ := newTestClient(t)
+	members, err := c.FetchMembers()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, m := range members {
+		if m.Name != "Gerhard Pfister" {
+			continue
+		}
+		if m.Party != "Die Mitte" || m.Fraktion != "Mitte-EVP" {
+			t.Errorf("party/fraktion = %q/%q", m.Party, m.Fraktion)
+		}
+		if m.ProfileURL != "https://www.parlament.ch/de/biografie?CouncillorId=1109" {
+			t.Errorf("profile = %q", m.ProfileURL)
+		}
+		return
+	}
+	t.Error("Gerhard Pfister not in the roster")
 }
