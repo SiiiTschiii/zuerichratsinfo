@@ -1503,6 +1503,99 @@ AL 0/8/0/1
 
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-1
 
+################ FIXTURE auswahl-vote-all-fraktionen ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat ZH | Abstimmung vom 30.09.2026
+
+Änderungsanträge 1–2 zum Dispositivpunkt B2 und zu den Dispositivpunkten C1–C2
+Weisung des Stadtrats betreffend Teilrevision der Verordnung über die Schulraumplanung
+
+👇 Details im Thread
+
+[post 1]
+📊 A: 76 | B: 29 | C: 13 | Abwesend 7
+
+🏛️ Fraktionen (Auswahl A/Auswahl B/Auswahl C/Abw):
+SP 38/0/0/3
+FDP 0/22/0/2
+SVP 16/0/0/0
+GLP 0/0/13/2
+Grüne 14/0/0/0
+AL 8/0/0/0
+Die Mitte 0/7/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-all-fraktionen-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat ZH | Abstimmung vom 30.09.2026
+
+Änderungsanträge 1–2 zum Dispositivpunkt B2 und zu den Dispositivpunkten C1–C2
+Weisung des Stadtrats betreffend Teilrevision der Verordnung über die Schulraumplanung
+
+👇 Details im Thread
+
+[post 1]
+📊 A: 76 | B: 29 | C: 13 | Abwesend 7
+
+🏛️ Fraktionen (Auswahl A/Auswahl B/Auswahl C/Abw):
+SP 38/0/0/3
+FDP 0/22/0/2
+SVP 16/0/0/0
+GLP 0/0/13/2
+Grüne 14/0/0/0
+AL 8/0/0/0
+Die Mitte 0/7/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-all-fraktionen-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat ZH | Abstimmung vom 30.09.2026
+
+Änderungsanträge 1–2 zum Dispositivpunkt B2 und zu den Dispositivpunkten C1–C2
+Weisung des Stadtrats betreffend Teilrevision der Verordnung über die Schulraumplanung
+
+👇 Details im Thread
+
+[post 1]
+📊 A: 76 | B: 29 | C: 13 | Abw. 7
+
+🏛️ Fraktionen (Auswahl A/Auswahl B/Auswahl C/Abw):
+SP 38/0/0/3
+FDP 0/22/0/2
+SVP 16/0/0/0
+GLP 0/0/13/2
+Grüne 14/0/0/0
+AL 8/0/0/0
+Die Mitte 0/7/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-all-fraktionen-1
+[facet] {Index:{ByteStart:195 ByteEnd:290} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-all-fraktionen-1 DID: Tag:}]}
+
+---- Instagram ----
+[images] 1
+[caption]
+🗳️ Gemeinderat ZH | Abstimmung vom 30.09.2026
+
+Änderungsanträge 1–2 zum Dispositivpunkt B2 und zu den Dispositivpunkten C1–C2
+Weisung des Stadtrats betreffend Teilrevision der Verordnung über die Schulraumplanung
+
+📊 A: 76 | B: 29 | C: 13 | Abwesend 7
+
+🏛️ Fraktionen (Auswahl A/Auswahl B/Auswahl C/Abw):
+SP 38/0/0/3
+FDP 0/22/0/2
+SVP 16/0/0/0
+GLP 0/0/13/2
+Grüne 14/0/0/0
+AL 8/0/0/0
+Die Mitte 0/7/0/0
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-all-fraktionen-1
+
 ################ FIXTURE mixed-multi-vote ################
 
 ---- X (limit 280) ----

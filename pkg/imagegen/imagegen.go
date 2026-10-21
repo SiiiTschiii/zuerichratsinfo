@@ -971,7 +971,9 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 	var allCols []string // display headers
 	var colKeys []string // actual map keys
 	for _, k := range primary {
-		allCols = append(allCols, k)
+		// "Auswahl A" is too wide for a column and runs into its neighbours;
+		// the option letter alone is unambiguous under the "AUSWAHL" heading.
+		allCols = append(allCols, strings.TrimPrefix(k, "Auswahl "))
 		colKeys = append(colKeys, k)
 	}
 	if hasEnth {

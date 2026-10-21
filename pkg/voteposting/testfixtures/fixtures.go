@@ -468,6 +468,43 @@ func AuswahlVote() []votes.Vote {
 	return []votes.Vote{v}
 }
 
+// AuswahlVoteAllFraktionen returns an Auswahl vote in which every option and
+// "Abw." has a column in the Fraktionen table. Four columns is the tightest
+// the table gets: with "Auswahl A" as a header they ran into one another.
+func AuswahlVoteAllFraktionen() []votes.Vote {
+	const title = "Weisung des Stadtrats betreffend Teilrevision der Verordnung über die Schulraumplanung"
+
+	v := base("auswahl-all-fraktionen-1", title, "2025/108")
+	v.Date = date(2026, 9, 30)
+	v.Type = "Gleichgerichtete Anträge mit 3 Optionen"
+	v.Subtitle = "Änderungsanträge 1–2 zum Dispositivpunkt B2 und zu den Dispositivpunkten C1–C2"
+	v.Decision = "Auswahl A"
+	v.Absent = intPtr(7)
+	v.ChoiceA = intPtr(76)
+	v.ChoiceB = intPtr(29)
+	v.ChoiceC = intPtr(13)
+	v.MemberVotes = makeAuswahlStimmabgaben([]struct {
+		Name         string
+		A, B, C, Abw int
+	}{
+		{"SP", 38, 0, 0, 3},
+		{"FDP", 0, 22, 0, 2},
+		{"SVP", 16, 0, 0, 0},
+		{"GLP", 0, 0, 13, 2},
+		{"Grüne", 14, 0, 0, 0},
+		{"AL", 8, 0, 0, 0},
+		{"Die Mitte", 0, 7, 0, 0},
+	})
+	// The Gemeinderat API reports the option as "Auswahl A", not "A"; the other
+	// fixtures use the bare letter and so never produced the long header.
+	for i, mv := range v.MemberVotes {
+		if mv.Choice != "Abwesend" {
+			v.MemberVotes[i].Choice = "Auswahl " + mv.Choice
+		}
+	}
+	return []votes.Vote{v}
+}
+
 // MixedMultiVote returns one Ja/Nein vote + one Auswahl vote in the same group.
 func MixedMultiVote() []votes.Vote {
 	const title = "Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung, Anpassung der Bestimmungen für Gewerbe- und Industriezonen"
@@ -1052,6 +1089,7 @@ var FixtureNames = []string{
 	"ten-vote-stress-test",
 	"vote-with-mentions",
 	"auswahl-vote",
+	"auswahl-vote-all-fraktionen",
 	"mixed-multi-vote",
 	"postulat-with-grnr-prefix",
 	"kantonsrat-vote",
@@ -1078,6 +1116,7 @@ func AllFixtures() map[string][]votes.Vote {
 		"ten-vote-stress-test":                TenVoteStressTest(),
 		"vote-with-mentions":                  VoteWithMentions(),
 		"auswahl-vote":                        AuswahlVote(),
+		"auswahl-vote-all-fraktionen":         AuswahlVoteAllFraktionen(),
 		"mixed-multi-vote":                    MixedMultiVote(),
 		"postulat-with-grnr-prefix":           PostulatWithGrNrPrefix(),
 		"kantonsrat-vote":                     KantonsratVote(),
