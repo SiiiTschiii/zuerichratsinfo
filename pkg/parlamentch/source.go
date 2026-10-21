@@ -138,11 +138,15 @@ var plainMeanings = map[string]bool{
 // label sets each vote's Subtitle to its Subject plus whatever a reader needs
 // to tell it apart and to read its Ja correctly.
 //
-// The bill is added when the group spans several. A business often carries
+// The bill is named whenever the service names one. A business often carries
 // more than one draft — a Volksinitiative and the indirect counter-proposal
 // beside it — and the Nationalrat takes a final vote on each under the same
-// Subject, so a group labelled by Subject alone shows cards a reader cannot
-// tell apart. A lone vote keeps its Subject alone: the title already names it.
+// Subject, so cards labelled by Subject alone cannot be told apart. The rule
+// is per vote rather than per group on purpose: which siblings a group still
+// holds depends on what earlier runs posted and what the fetch window
+// reached, and a label that changed with them would leave the vote on the
+// counter-proposal reading as the initiative whenever it arrived alone. A
+// bill that merely repeats the business title adds nothing and is left out.
 //
 // The meaning of Ja is added when it is anything but "adopt the bill", because
 // then the verdict is easy to misread. On the Pelz-Initiative the bill adopted
@@ -152,21 +156,13 @@ var plainMeanings = map[string]bool{
 // Both are published as the service serves them, French included; see
 // voteDTO.
 func (c *Client) label(group []votes.Vote) {
-	bills := make(map[string]bool, len(group))
-	for _, v := range group {
-		if b := c.labels[v.SourceID].bill; b != "" {
-			bills[b] = true
-		}
-	}
-	nameBills := len(bills) > 1
-
 	for i := range group {
 		l := c.labels[group[i].SourceID]
 		parts := []string{}
 		if group[i].Subtitle != "" {
 			parts = append(parts, group[i].Subtitle)
 		}
-		if nameBills && l.bill != "" {
+		if l.bill != "" && !strings.EqualFold(l.bill, group[i].Affair.Title) {
 			parts = append(parts, l.bill)
 		}
 		sub := strings.Join(parts, ": ")

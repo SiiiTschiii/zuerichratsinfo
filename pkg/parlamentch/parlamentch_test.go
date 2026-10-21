@@ -214,19 +214,52 @@ func TestGroupByAffair_LabelsBillsAndUnusualMeanings(t *testing.T) {
 	}
 
 	want := map[string]string{
-		// Several bills in one group: each names its own. The first adopts the
-		// recommendation to reject the initiative, so its Ja is spelled out.
+		// Each vote names its own bill. The first adopts the recommendation
+		// to reject the initiative, so its Ja is spelled out.
 		"38953": "Vote final: Bundesbeschluss über die Volksinitiative «Ja zum Importverbot für tierquälerisch erzeugte Pelzprodukte (Pelz-Initiative)» (Ja: Adopter le projet (recommandation de rejeter l'initiative))", //nolint:misspell // French, as the service serves it
 		"38954": "Vote final: Tierschutzgesetz (TSchG)",
 		// The service gives this one no bill.
 		"38971": "Vote final",
-		// A lone vote: the title already names its bill.
-		"38963": "Vote final",
+		// A lone vote names its bill too.
+		"38963": "Vote final: Bundesbeschluss über die Genehmigung des Freihandelsabkommens zwischen den EFTA Staaten und Mercosur",
 	}
 	for id, w := range want {
 		if subtitles[id] != w {
 			t.Errorf("%s subtitle = %q, want %q", id, subtitles[id], w)
 		}
+	}
+}
+
+func TestGroupByAffair_LabelDoesNotDependOnSiblings(t *testing.T) {
+	// 38954 alone, as it arrives when 38953 was posted by an earlier run or
+	// fell outside the fetch window. It is still the counter-proposal.
+	c, _ := newTestClient(t)
+	vs, err := c.FetchRecent(10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var lone []votes.Vote
+	for _, v := range vs {
+		if v.SourceID == "38954" {
+			lone = append(lone, v)
+		}
+	}
+	groups, err := c.GroupByAffair(lone)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := groups[0][0].Subtitle; got != "Vote final: Tierschutzgesetz (TSchG)" {
+		t.Errorf("lone subtitle = %q, want the bill named", got)
+	}
+}
+
+func TestLabel_BillRepeatingTheTitleIsLeftOut(t *testing.T) {
+	c := New(testJurisdiction)
+	c.labels["1"] = voteLabel{bill: "Raumfahrtgesetz", meaningYes: "Adopter le projet"}
+	group := []votes.Vote{{SourceID: "1", Subtitle: "Vote sur l'ensemble", Affair: votes.Affair{Title: "Raumfahrtgesetz"}}}
+	c.label(group)
+	if got := group[0].Subtitle; got != "Vote sur l'ensemble" {
+		t.Errorf("subtitle = %q", got)
 	}
 }
 
