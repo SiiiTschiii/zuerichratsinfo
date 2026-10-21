@@ -15,10 +15,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/openparldata"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/recapp"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/openparldata"
+	"github.com/siiitschiii/parlinfo/pkg/parlamentch"
+	"github.com/siiitschiii/parlinfo/pkg/recapp"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 // Jurisdiction is a body the bot posts for, plus the operational settings that
@@ -128,6 +129,38 @@ func (cantonLinks) SessionURL(date time.Time) string {
 	return "https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?" + q.Encode()
 }
 
+// NationalratKey identifies the Nationalrat.
+const NationalratKey = "nationalrat"
+
+var nationalrat = votes.Jurisdiction{
+	Key:       NationalratKey,
+	Name:      "Nationalrat",
+	ShortName: "Nationalrat",
+}
+
+// nationalratSubjects is the editorial policy for the Nationalrat: final and
+// overall votes only.
+//
+// The chamber takes around 300 votes a three-week session, up to 102 in a day,
+// and most are on a single article or a procedural motion that means nothing
+// to a reader on its own. A Gesamtabstimmung (the chamber's verdict on a whole
+// bill) and a Schlussabstimmung (the last vote before a bill becomes law) are
+// the ones that do: 25 and 18 of the 328 votes in the Herbstsession 2026.
+//
+// Both languages are listed because the German feed has served these labels in
+// French since the Wintersession 2025. Matching the German alone finds nothing
+// recent; matching the French alone would find nothing once that is fixed.
+//
+// A vote with no Subject at all — a third of them — is never one of these: in
+// the Herbstsession 2026 every one was a motion, a postulate or an
+// Ordnungsantrag. So a null Subject is left out rather than guessed at.
+var nationalratSubjects = []string{
+	"Schlussabstimmung",
+	"Vote final",
+	"Gesamtabstimmung",
+	"Vote sur l'ensemble",
+}
+
 // jurisdictions is the registry, keyed by Jurisdiction.Key.
 var jurisdictions = map[string]Jurisdiction{
 	zurichapi.JurisdictionKey: {
@@ -152,6 +185,16 @@ var jurisdictions = map[string]Jurisdiction{
 		},
 		NewMemberSource: func() votes.MemberSource {
 			return openparldata.New(zurichCanton, zurichCantonBodyKey)
+		},
+	},
+	NationalratKey: {
+		Jurisdiction: nationalrat,
+		// The log starts empty, so this alone bounds the first run. Two weeks
+		// covers a session's final votes, which all fall on its last day, while
+		// keeping the previous session out of a run started early in the next.
+		MaxAgeDays: 14,
+		NewSource: func() votes.Source {
+			return parlamentch.New(nationalrat).WithSubjects(nationalratSubjects...)
 		},
 	},
 }

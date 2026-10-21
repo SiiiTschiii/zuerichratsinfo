@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
 	"gopkg.in/yaml.v3"
 )
 

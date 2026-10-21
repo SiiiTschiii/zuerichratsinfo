@@ -23,9 +23,7 @@ type Channel struct {
 	Jurisdictions []string
 }
 
-// channels is the configured set. Only one exists today; the model is N-channel
-// from the start so that giving a future jurisdiction its own account is a
-// config change rather than a rework of credential resolution.
+// channels is the configured set.
 var channels = []Channel{
 	{
 		Key: "zurich",
@@ -34,6 +32,13 @@ var channels = []Channel{
 		// existing accounts rather than needing a new credential set and a
 		// second X Premium subscription.
 		Jurisdictions: []string{"zurich-city", ZurichCantonKey},
+	},
+	{
+		Key: "chparl",
+		// Bundesbern on an account named for Zürich would misstate whose
+		// votes these are, so the Nationalrat has accounts of its own
+		// (@chparlinfo) and its own workflow, bot-chparl.yml.
+		Jurisdictions: []string{NationalratKey},
 	},
 }
 

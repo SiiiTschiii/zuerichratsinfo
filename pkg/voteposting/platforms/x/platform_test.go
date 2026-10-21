@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/testfixtures"
 )
 
 // tweetCall records a single call to the mock postTweetFunc.

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // JurisdictionKey identifies the Gemeinderat der Stadt Zürich, the only body

@@ -7,7 +7,7 @@ import (
 
 	// Aliased because this file uses "votes" as a local variable name
 	// throughout for slices of Abstimmung.
-	votemodel "github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	votemodel "github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // Helper function to create test votes

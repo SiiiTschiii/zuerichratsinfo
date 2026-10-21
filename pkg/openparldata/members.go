@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // Client enumerates its body's roster.

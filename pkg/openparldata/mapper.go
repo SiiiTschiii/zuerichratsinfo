@@ -7,7 +7,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // dateLayouts are the timestamp shapes OpenParlData has been observed to return.

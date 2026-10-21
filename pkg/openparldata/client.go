@@ -17,7 +17,7 @@ import (
 	// on the host having tzdata installed. Vote times are published to readers.
 	_ "time/tzdata"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // DefaultBaseURL is the v1 API root.
