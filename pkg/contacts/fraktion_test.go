@@ -128,3 +128,43 @@ func TestPathsForLoadsCantonFallbackForCityOnly(t *testing.T) {
 		t.Errorf("canton only: got %v", got)
 	}
 }
+
+// Titles as the Gemeinderat has actually written them, so the patterns are
+// pinned to the real spellings rather than the ones we would have guessed.
+func TestFraktionPhrasesFromRealTitles(t *testing.T) {
+	m := newMapper([]Contact{
+		{Name: "SP Stadt Zürich", Kind: KindOrganization, X: VerifiedAccounts("https://x.com/sp")},
+		{Name: "SVP Stadt Zürich", Kind: KindOrganization, X: VerifiedAccounts("https://x.com/svp")},
+		{Name: "FDP Stadt Zürich", Kind: KindOrganization, X: VerifiedAccounts("https://x.com/fdp")},
+		{Name: "Grüne Stadt Zürich", Kind: KindOrganization, X: VerifiedAccounts("https://x.com/gruene")},
+		{Name: "GLP Stadt Zürich", Kind: KindOrganization, X: VerifiedAccounts("https://x.com/glp")},
+		{Name: "AL Stadt Zürich", Kind: KindOrganization, X: VerifiedAccounts("https://x.com/al")},
+		{Name: "Die Mitte Stadt Zürich", Kind: KindOrganization, X: VerifiedAccounts("https://x.com/mitte")},
+		{Name: "EVP Kanton Zürich", Kind: KindOrganization, X: VerifiedAccounts("https://x.com/evp")},
+	})
+	tests := []struct{ title, want string }{
+		{"Motion der SP-Fraktion vom 22.10.2025", "Motion der SP-Fraktion @sp vom 22.10.2025"},
+		{"Postulat der SP-, Grüne- und Die Mitte/EVP-Fraktion vom 05.02.2025",
+			"Postulat der SP-, Grüne- und Die Mitte/EVP-Fraktion @sp @gruene @mitte @evp vom 05.02.2025"},
+		{"Dringliche Motion der SP-, Grünen- und AL-Fraktionen betreffend X",
+			"Dringliche Motion der SP-, Grünen- und AL-Fraktionen @sp @gruene @al betreffend X"},
+		{"Postulat der SP- und Grüne-Fraktionen betreffend X", "Postulat der SP- und Grüne-Fraktionen @sp @gruene betreffend X"},
+		{"Motion der Fraktionen SP, SVP, FDP, Grüne, GLP, CVP und AL betreffend X",
+			"Motion der Fraktionen SP, SVP, FDP, Grüne, GLP, CVP und AL @sp @svp @fdp @gruene @glp @mitte @al betreffend X"},
+		{"Dringliche Motion der SP-, GLP-Fraktionen und der Parlamentsgruppe EVP betreffend X",
+			"Dringliche Motion der SP-, GLP-Fraktionen @sp @glp und der Parlamentsgruppe EVP @evp betreffend X"},
+		{"2025/354 Antrag der AL-Fraktion zu Dispositivziffer 1", "2025/354 Antrag der AL-Fraktion @al zu Dispositivziffer 1"},
+		// No party named: nothing to tag.
+		{"Digitalisierung der Prozesse für Vorstösse, Anträge und Fraktionserklärungen",
+			"Digitalisierung der Prozesse für Vorstösse, Anträge und Fraktionserklärungen"},
+		{"Fraktionserklärung", "Fraktionserklärung"},
+		// A party outside a Fraktion phrase is a member's affiliation, not a Fraktion.
+		{"Motion von Karin Stepinski (Die Mitte), Roger Föhn (EVP) vom 17.12.2025",
+			"Motion von Karin Stepinski (Die Mitte), Roger Föhn (EVP) vom 17.12.2025"},
+	}
+	for _, tt := range tests {
+		if got := m.TagXFraktionen(tt.title, "zurich-city"); got != tt.want {
+			t.Errorf("%q\n got  %q\n want %q", tt.title, got, tt.want)
+		}
+	}
+}

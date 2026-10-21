@@ -23,6 +23,7 @@ var partyAliases = map[string]string{
 	"Die Mitte":    "Die Mitte",
 	"Mitte":        "Die Mitte",
 	"Grünliberale": "GLP",
+	"CVP":          "Die Mitte",
 }
 
 // partyLevels are the organization-entry suffixes consulted for a
@@ -66,6 +67,7 @@ func PathsFor(jurisdictions ...string) []string {
 
 var (
 	fraktionRe = buildFraktionRegexp()
+	prefixRe   = buildPrefixRegexp()
 	aliasRe    = buildAliasRegexp()
 )
 
@@ -94,6 +96,16 @@ func buildFraktionRegexp() *regexp.Regexp {
 	return regexp.MustCompile(`(?:^|[^\p{L}])(` + alias + `(?:` + sep + alias + `)*)-?\s?Fraktion(?:en)?\b`)
 }
 
+// buildPrefixRegexp matches the older form where the word comes first and the
+// parties follow: "Fraktionen SP, SVP, FDP und AL", "Parlamentsgruppe EVP".
+// Spaces only between the word and the list, so a line break never reads the
+// next line as a party.
+func buildPrefixRegexp() *regexp.Regexp {
+	alias := `(?:` + aliasAlternation() + `)`
+	sep := `(?:\s*[-/,]+\s*(?:(?:und|sowie)\s+)?|\s+(?:und|sowie)\s+)`
+	return regexp.MustCompile(`(?:^|[^\p{L}])(?:Fraktionen?|Parlamentsgruppe)[ ]+(` + alias + `(?:` + sep + alias + `)*)(?:[^\p{L}-]|$)`)
+}
+
 func buildAliasRegexp() *regexp.Regexp {
 	return regexp.MustCompile(`(?:^|[^\p{L}])(` + aliasAlternation() + `)(?:[^\p{L}]|$)`)
 }
@@ -111,9 +123,9 @@ type partyMention struct {
 
 func findFraktionSpans(text string) []fraktionSpan {
 	var spans []fraktionSpan
-	for _, loc := range fraktionRe.FindAllStringSubmatchIndex(text, -1) {
+	add := func(loc []int, end int) {
 		listStart, listEnd := loc[2], loc[3]
-		span := fraktionSpan{end: loc[1]}
+		span := fraktionSpan{end: end}
 		// Re-scan the list for the parties in it. The alias regexp consumes the
 		// character after a token, so step by hand to catch adjacent ones.
 		for pos := listStart; pos < listEnd; {
@@ -127,6 +139,14 @@ func findFraktionSpans(text string) []fraktionSpan {
 		}
 		spans = append(spans, span)
 	}
+	for _, loc := range fraktionRe.FindAllStringSubmatchIndex(text, -1) {
+		add(loc, loc[1])
+	}
+	for _, loc := range prefixRe.FindAllStringSubmatchIndex(text, -1) {
+		add(loc, loc[3])
+	}
+	// tagFraktionen inserts from the back, so it needs them in text order.
+	sort.Slice(spans, func(i, j int) bool { return spans[i].end < spans[j].end })
 	return spans
 }
 
