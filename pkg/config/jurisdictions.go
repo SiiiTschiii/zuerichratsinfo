@@ -195,6 +195,7 @@ var jurisdictions = map[string]Jurisdiction{
 		NewSource: func() votes.Source {
 			return parlamentch.New(nationalrat).WithSubjects(nationalratSubjects...)
 		},
+		NewMemberSource: func() votes.MemberSource { return parlamentch.New(nationalrat) },
 	},
 }
 
