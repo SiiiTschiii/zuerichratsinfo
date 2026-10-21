@@ -105,6 +105,11 @@ func main() {
 			geschaefte = append(geschaefte, g)
 		}
 		cutoff = time.Time{}
+		// A preview of the fixtures is a preview of all of them: the live
+		// budgets would show the same oldest few every time.
+		for i := range targets {
+			targets[i].poster = dryRunPoster{targets[i].poster.Name(), len(geschaefte)}
+		}
 	} else {
 		geschaefte, err = zurichapi.NewClient().FetchGeschaefteSince(cutoff, fetchLimit)
 		if err != nil {
