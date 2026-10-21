@@ -19,6 +19,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/facebook"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 )
@@ -26,7 +27,7 @@ import (
 func main() {
 	numVotes := flag.Int("n", 1, "number of vote groups to preview")
 	fetchLimit := flag.Int("fetch", 35, "number of individual votes to fetch from the source")
-	platform := flag.String("platform", "", "platform to preview: x, bluesky, instagram (default: all)")
+	platform := flag.String("platform", "", "platform to preview: x, bluesky, instagram, facebook (default: all)")
 	jurisdictionKey := flag.String("jurisdiction", "zurich-city", "jurisdiction to preview")
 	// The limit decides where the title is cut and where the thread breaks, so
 	// previewing at a different one than the account posts at answers a
@@ -38,9 +39,10 @@ func main() {
 	showX := *platform == "" || strings.EqualFold(*platform, "x")
 	showBluesky := *platform == "" || strings.EqualFold(*platform, "bluesky") || strings.EqualFold(*platform, "bsky")
 	showInstagram := *platform == "" || strings.EqualFold(*platform, "instagram") || strings.EqualFold(*platform, "ig")
+	showFacebook := *platform == "" || strings.EqualFold(*platform, "facebook") || strings.EqualFold(*platform, "fb")
 
-	if !showX && !showBluesky && !showInstagram {
-		log.Fatalf("Unknown platform %q. Use: x, bluesky, instagram", *platform)
+	if !showX && !showBluesky && !showInstagram && !showFacebook {
+		log.Fatalf("Unknown platform %q. Use: x, bluesky, instagram, facebook", *platform)
 	}
 
 	jurisdiction, err := config.LookupJurisdiction(*jurisdictionKey)
@@ -92,5 +94,8 @@ func main() {
 		igPlatform := instagram.NewInstagramPlatform(*numVotes)
 		igPlatform.SetContactMapper(contactMapper)
 		preview("Instagram", votelog.PlatformInstagram, igPlatform)
+	}
+	if showFacebook {
+		preview("Facebook", votelog.PlatformFacebook, facebook.NewFacebookPlatform(*numVotes))
 	}
 }

@@ -99,10 +99,17 @@ jobs:
           # get wrong.
           ZURICH_IMAGE_HOST_REPO: ${{ github.repository }}
           ZURICH_IMAGE_HOST_TOKEN: ${{ github.token }}
+          # Facebook posts with the same never-expiring Page token as
+          # Instagram, so one secret and one rotation cover both. The Page ID
+          # is the switch: Facebook stays off until the variable is set, which
+          # must not happen before its vote log is seeded (pkg/fbapi/README.md).
+          ZURICH_FB_PAGE_ID: ${{ vars.ZURICH_FB_PAGE_ID }}
+          ZURICH_FB_ACCESS_TOKEN: ${{ secrets.ZURICH_IG_ACCESS_TOKEN }}
           ZURICH_X_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_X_MAX_POSTS_PER_RUN }}
           ZURICH_X_MAX_CHARS: ${{ vars.ZURICH_X_MAX_CHARS }}
           ZURICH_BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_BLUESKY_MAX_POSTS_PER_RUN }}
           ZURICH_IG_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_IG_MAX_POSTS_PER_RUN }}
+          ZURICH_FB_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_FB_MAX_POSTS_PER_RUN }}
 
           MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
           MAX_VOTE_AGE_DAYS_ZURICH_CITY: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CITY }}

@@ -14,7 +14,7 @@ This package implements a Go client for posting images to Instagram using the [I
 - A **Facebook Page** for ZueriRatsinfo
 - A **professional Instagram account** linked to the Facebook Page
 - A **Meta Developer App** with the Instagram use case configured using **API setup with Facebook Login**
-- Permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`
+- Permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`, and `pages_manage_posts` for [Facebook](../fbapi/README.md), which posts with the same token
 - A **GitHub repository** with a `gh-pages` branch and GitHub Pages enabled (see below)
 - [`jq`](https://jqlang.github.io/jq/) locally, for the setup commands below (`brew install jq`)
 
@@ -107,7 +107,7 @@ so treat that as a last resort.
 
 - Open the [Graph API Explorer](https://developers.facebook.com/tools/explorer/)
 - Select the ZueriRatsinfo app
-- Add permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`
+- Add permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`, `pages_manage_posts`
 - Click **Generate Access Token** and authorize
 
 Copy the token it prints and export it:
