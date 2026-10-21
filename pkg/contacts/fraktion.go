@@ -34,6 +34,36 @@ var partyLevels = map[string][]string{
 	"zurich-canton": {"Kanton Zürich"},
 }
 
+// partyFallbacks are the jurisdictions whose contacts file a jurisdiction's
+// party tagging reads beyond its own. partyLevels names the entries to consult;
+// this is what makes sure their file is loaded when the canton itself is not
+// being posted, previewed or checked.
+var partyFallbacks = map[string][]string{
+	"zurich-city": {"zurich-canton"},
+}
+
+// PathsFor returns the contacts files needed to tag the given jurisdictions:
+// their own, then the files their party accounts fall back to, each once.
+func PathsFor(jurisdictions ...string) []string {
+	var paths []string
+	seen := map[string]bool{}
+	add := func(key string) {
+		if !seen[key] {
+			seen[key] = true
+			paths = append(paths, PathFor(key))
+		}
+	}
+	for _, key := range jurisdictions {
+		add(key)
+	}
+	for _, key := range jurisdictions {
+		for _, fb := range partyFallbacks[key] {
+			add(fb)
+		}
+	}
+	return paths
+}
+
 var (
 	fraktionRe = buildFraktionRegexp()
 	aliasRe    = buildAliasRegexp()

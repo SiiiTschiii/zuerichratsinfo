@@ -114,3 +114,17 @@ func TestFindBlueskyFraktionMentions(t *testing.T) {
 		t.Error("expected no mentions")
 	}
 }
+
+func TestPathsForLoadsCantonFallbackForCityOnly(t *testing.T) {
+	got := PathsFor("zurich-city")
+	want := []string{PathFor("zurich-city"), PathFor("zurich-canton")}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("city only: got %v, want %v", got, want)
+	}
+	if got := PathsFor("zurich-city", "zurich-canton"); len(got) != 2 {
+		t.Errorf("both: got %v, want each file once", got)
+	}
+	if got := PathsFor("zurich-canton"); !reflect.DeepEqual(got, []string{PathFor("zurich-canton")}) {
+		t.Errorf("canton only: got %v", got)
+	}
+}

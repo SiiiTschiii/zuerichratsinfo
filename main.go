@@ -159,11 +159,11 @@ func buildPlatforms(channel config.Channel, jurisdictions []config.Jurisdiction)
 // or empty file is normal — a jurisdiction ships before its contacts are
 // curated — so this degrades to no tagging rather than failing the run.
 func loadContacts(jurisdictions []config.Jurisdiction) *contacts.Mapper {
-	var paths []string
+	keys := make([]string, 0, len(jurisdictions))
 	for _, j := range jurisdictions {
-		paths = append(paths, contacts.PathFor(j.Key))
+		keys = append(keys, j.Key)
 	}
-	mapper, err := contacts.LoadContactFiles(paths...)
+	mapper, err := contacts.LoadContactFiles(contacts.PathsFor(keys...)...)
 	if err != nil {
 		log.Printf("Warning: Could not load contacts for tagging: %v", err)
 		return nil
