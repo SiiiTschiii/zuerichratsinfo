@@ -47,9 +47,9 @@ the text and on the image, so the two are never confused.
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
 | LinkedIn    | ❌ Planned | 113                                 | -                                                                                    |
-| Facebook    | ❌ Planned | 91                                  | -                                                                                    |
+| Facebook    | ❌ Planned | 92                                  | -                                                                                    |
 | Instagram   | ✅ Active  | 102                                 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
-| X (Twitter) | ✅ Active  | 66                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| X (Twitter) | ✅ Active  | 67                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
 | Bluesky     | ✅ Active  | 27                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
 | TikTok      | ❌ Planned | 19                                  | -                                                                                    |
 
