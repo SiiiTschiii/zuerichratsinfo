@@ -132,8 +132,30 @@ git fetch origin state-log
 mkdir -p data/zurich-city
 for p in x bluesky instagram; do
   git show "FETCH_HEAD:data/zurich-city/posted_votes_$p.json" > "data/zurich-city/posted_votes_$p.json"
+  git show "FETCH_HEAD:data/zurich-city/posted_geschaefte_$p.json" > "data/zurich-city/posted_geschaefte_$p.json" 2>/dev/null || rm -f "data/zurich-city/posted_geschaefte_$p.json"
 done
 ```
+
+### Announcing newly filed Vorstösse
+
+`post_geschaefte` posts a Motion or Postulat of the Gemeinderat when it is filed,
+before any vote: the title, who filed it, and a reply explaining what that type of
+Vorstoss does and what happens next. It runs after the vote bot on the same
+schedule, behind its own switch (the `GESCHAEFTE_ENABLED` repository variable),
+and keeps its own logs, `data/zurich-city/posted_geschaefte_<platform>.json`.
+
+```bash
+# Format the real-data fixtures for every platform and write the Instagram cards
+go run ./cmd/post_geschaefte -fixtures -image-dir out/geschaefte
+
+# What a real run would post now (fetches the API; needs the logs on disk)
+go run ./cmd/post_geschaefte -dry-run
+```
+
+A platform with no log yet is seeded, not posted to: the first run records
+everything inside the age window (`MAX_GESCHAEFT_AGE_DAYS`, default 14) as
+announced and posts nothing. Fixtures live in `pkg/geschaeftposting/testfixtures`;
+a Geschäftsart is only announced once three real filings of it are there.
 
 ### Curating who gets tagged
 
