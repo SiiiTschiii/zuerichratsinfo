@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/xapi"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/xapi"
 )
 
 // XContent represents formatted content for X/Twitter

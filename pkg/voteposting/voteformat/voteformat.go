@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 var geschaeftNumberRegex = regexp.MustCompile(`^\d+/\d+\s+`)

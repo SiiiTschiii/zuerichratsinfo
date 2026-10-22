@@ -7,15 +7,15 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/config"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/igapi"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/instagram"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/x"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 type namedPlatform struct {
@@ -106,12 +106,12 @@ func main() {
 // channel-scoped names the scheduled run reads: ZURICH_X_API_KEY and so on.
 func loadCredentials(channel config.Channel) platformCredentials {
 	c := platformCredentials{
-		xAPIKey:       channel.Env("X_API_KEY"),
-		xAPISecret:    channel.Env("X_API_SECRET"),
-		xAccessToken:  channel.Env("X_ACCESS_TOKEN"),
-		xAccessSecret: channel.Env("X_ACCESS_SECRET"),
-		bskyHandle:    channel.Env("BLUESKY_HANDLE"),
-		bskyPassword:  channel.Env("BLUESKY_PASSWORD"),
+		xAPIKey:        channel.Env("X_API_KEY"),
+		xAPISecret:     channel.Env("X_API_SECRET"),
+		xAccessToken:   channel.Env("X_ACCESS_TOKEN"),
+		xAccessSecret:  channel.Env("X_ACCESS_SECRET"),
+		bskyHandle:     channel.Env("BLUESKY_HANDLE"),
+		bskyPassword:   channel.Env("BLUESKY_PASSWORD"),
 		igUserID:       channel.Env("IG_USER_ID"),
 		igAccessToken:  channel.Env("IG_ACCESS_TOKEN"),
 		imageHostToken: channel.Env("IMAGE_HOST_TOKEN"),

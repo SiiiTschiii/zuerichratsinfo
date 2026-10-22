@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
 )
 
 func names(cs []Contact) []string {

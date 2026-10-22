@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // FraktionCounts holds vote counts per faction, keyed by Abstimmungsverhalten value.

@@ -20,9 +20,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/openparldata"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/openparldata"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 // cityBodyKey is Stadt Zürich's body in OpenParlData.

@@ -29,8 +29,8 @@ Go to https://developer.x.com/en/portal/dashboard
 ## 2. Install
 
 ```bash
-git clone https://github.com/SiiiTschiii/zuerichratsinfo.git
-cd zuerichratsinfo
+git clone https://github.com/SiiiTschiii/parlinfo.git
+cd parlinfo
 ```
 
 ## 3. Configure the App
@@ -74,6 +74,9 @@ go run ./cmd/generate_vote_post
 
 # Latest Kantonsrat vote group
 go run ./cmd/generate_vote_post -jurisdiction zurich-canton
+
+# Latest Nationalrat Schluss-/Gesamtabstimmung
+go run ./cmd/generate_vote_post -jurisdiction nationalrat -platform instagram
 
 # One platform, three groups
 go run ./cmd/generate_vote_post -platform x -n 3
@@ -231,6 +234,31 @@ go run ./cmd/compare_sources -n 40
 ```
 
 It exits non-zero if any totals, decisions or titles disagree.
+
+## The CH Parl Info bot (Nationalrat)
+
+The Nationalrat posts to accounts of its own (`@chparlinfo` on Instagram) from a
+workflow of its own, [bot-chparl.yml](.github/workflows/bot-chparl.yml). It is
+the `chparl` channel, so its secrets are the zurich ones with a `CHPARL_`
+prefix, and it keeps its vote log on a branch of its own, `state-log-chparl`.
+
+The workflow refuses to run without that branch, because a missing log reads as
+"nothing was ever posted". Create it once, with an empty log:
+
+```bash
+git switch --orphan state-log-chparl
+mkdir -p data/nationalrat
+printf '{\n  "jurisdiction": "nationalrat",\n  "platform": "instagram",\n  "votes": []\n}\n' > data/nationalrat/posted_votes_instagram.json
+git add data/nationalrat/posted_votes_instagram.json
+git commit -m "Start the Nationalrat vote log"
+git push origin state-log-chparl
+git switch main
+```
+
+Then set `CHPARL_IG_USER_ID` and `CHPARL_IG_ACCESS_TOKEN` as repository secrets,
+and `JURISDICTION_NATIONALRAT_ENABLED=true` as a repository variable once the
+dry-run posts look right. Until that variable is set, every scheduled run fails
+with "No jurisdiction is enabled", which is the switch working as designed.
 
 ## Development
 

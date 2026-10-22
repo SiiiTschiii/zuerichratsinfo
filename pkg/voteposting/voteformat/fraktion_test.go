@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 func stimmabgabe(fraktion, verhalten string) votes.MemberVote {
