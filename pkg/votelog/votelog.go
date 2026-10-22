@@ -15,6 +15,7 @@ const (
 	PlatformX         Platform = "x"
 	PlatformBluesky   Platform = "bluesky"
 	PlatformInstagram Platform = "instagram"
+	PlatformFacebook  Platform = "facebook"
 	PlatformMastodon  Platform = "mastodon"
 )
 

@@ -12,6 +12,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/facebook"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
@@ -43,11 +44,15 @@ type platformCredentials struct {
 	imageHostName  string
 	imageHostToken string
 	igEnabled      bool
+
+	fbPageID      string
+	fbAccessToken string
+	fbEnabled     bool
 }
 
 func main() {
 	fixture := flag.String("fixture", "all", "fixture name from AllFixtures() keys, or 'all'")
-	platform := flag.String("platform", "all", "platform to post to: x, bluesky, instagram, or all")
+	platform := flag.String("platform", "all", "platform to post to: x, bluesky, instagram, facebook, or all")
 	contactsFile := flag.String("contacts", filepath.Join("data", "contacts_test.yaml"), "contacts YAML file (default: test contacts with fake handles)")
 	maxChars := flag.Int("x-max-chars", x.DefaultMaxChars, "per-post character limit for X (280 for free accounts, 2000 for Premium)")
 	channelKey := flag.String("channel", config.DefaultChannelKey, fmt.Sprintf("channel whose credentials to use %v", config.ChannelKeys()))
@@ -106,18 +111,21 @@ func main() {
 // channel-scoped names the scheduled run reads: ZURICH_X_API_KEY and so on.
 func loadCredentials(channel config.Channel) platformCredentials {
 	c := platformCredentials{
-		xAPIKey:       channel.Env("X_API_KEY"),
-		xAPISecret:    channel.Env("X_API_SECRET"),
-		xAccessToken:  channel.Env("X_ACCESS_TOKEN"),
-		xAccessSecret: channel.Env("X_ACCESS_SECRET"),
-		bskyHandle:    channel.Env("BLUESKY_HANDLE"),
-		bskyPassword:  channel.Env("BLUESKY_PASSWORD"),
+		xAPIKey:        channel.Env("X_API_KEY"),
+		xAPISecret:     channel.Env("X_API_SECRET"),
+		xAccessToken:   channel.Env("X_ACCESS_TOKEN"),
+		xAccessSecret:  channel.Env("X_ACCESS_SECRET"),
+		bskyHandle:     channel.Env("BLUESKY_HANDLE"),
+		bskyPassword:   channel.Env("BLUESKY_PASSWORD"),
 		igUserID:       channel.Env("IG_USER_ID"),
 		igAccessToken:  channel.Env("IG_ACCESS_TOKEN"),
 		imageHostToken: channel.Env("IMAGE_HOST_TOKEN"),
+		fbPageID:       channel.Env("FB_PAGE_ID"),
+		fbAccessToken:  channel.Env("FB_ACCESS_TOKEN"),
 	}
 	c.xEnabled = c.xAPIKey != "" && c.xAPISecret != "" && c.xAccessToken != "" && c.xAccessSecret != ""
 	c.bskyEnabled = c.bskyHandle != "" && c.bskyPassword != ""
+	c.fbEnabled = c.fbPageID != "" && c.fbAccessToken != ""
 
 	if repo := channel.Env("IMAGE_HOST_REPO"); repo != "" {
 		owner, name, err := igapi.ParseRepo(repo)
@@ -133,8 +141,8 @@ func loadCredentials(channel config.Channel) platformCredentials {
 // validatePlatform checks that the selected platform has valid credentials configured.
 func validatePlatform(platform string, creds platformCredentials, channel config.Channel) {
 	prefix := channel.EnvPrefix()
-	if !creds.xEnabled && !creds.bskyEnabled && platform != "instagram" {
-		log.Fatalf("No platform credentials configured for channel %q. Set %[2]sX_API_KEY/%[2]sX_API_SECRET/%[2]sX_ACCESS_TOKEN/%[2]sX_ACCESS_SECRET for X, or %[2]sBLUESKY_HANDLE/%[2]sBLUESKY_PASSWORD for Bluesky. Instagram (stub mode without %[2]sIG_USER_ID/%[2]sIG_ACCESS_TOKEN/%[2]sIMAGE_HOST_REPO/%[2]sIMAGE_HOST_TOKEN, or real mode with them) is available via -platform instagram.", channel.Key, prefix)
+	if !creds.xEnabled && !creds.bskyEnabled && !creds.fbEnabled && platform != "instagram" && platform != "facebook" {
+		log.Fatalf("No platform credentials configured for channel %q. Set %[2]sX_API_KEY/%[2]sX_API_SECRET/%[2]sX_ACCESS_TOKEN/%[2]sX_ACCESS_SECRET for X, or %[2]sBLUESKY_HANDLE/%[2]sBLUESKY_PASSWORD for Bluesky. Instagram (stub mode without %[2]sIG_USER_ID/%[2]sIG_ACCESS_TOKEN/%[2]sIMAGE_HOST_REPO/%[2]sIMAGE_HOST_TOKEN, or real mode with them) is available via -platform instagram, and Facebook (stub mode without %[2]sFB_PAGE_ID/%[2]sFB_ACCESS_TOKEN, real mode with them) via -platform facebook.", channel.Key, prefix)
 	}
 
 	if platform == "x" && !creds.xEnabled {
@@ -143,8 +151,8 @@ func validatePlatform(platform string, creds platformCredentials, channel config
 	if platform == "bluesky" && !creds.bskyEnabled {
 		log.Fatal("Bluesky credentials required but not set")
 	}
-	if platform != "all" && platform != "x" && platform != "bluesky" && platform != "instagram" {
-		log.Fatalf("Unknown platform %q — use x, bluesky, instagram, or all", platform)
+	if platform != "all" && platform != "x" && platform != "bluesky" && platform != "instagram" && platform != "facebook" {
+		log.Fatalf("Unknown platform %q — use x, bluesky, instagram, facebook, or all", platform)
 	}
 }
 
@@ -204,6 +212,17 @@ func buildPlatforms(platform string, creds platformCredentials, contactMapper *c
 		}
 		igPlat.SetContactMapper(contactMapper)
 		plats = append(plats, namedPlatform{name: "Instagram", plat: igPlat})
+	}
+	if platform == "all" || platform == "facebook" {
+		var fbPlat *facebook.FacebookPlatform
+		if creds.fbEnabled {
+			fbPlat = facebook.NewFacebookPlatformWithCredentials(creds.fbPageID, creds.fbAccessToken, 100)
+			fmt.Println("📘 Facebook: real mode (credentials configured)")
+		} else {
+			fbPlat = facebook.NewFacebookPlatform(100)
+			fmt.Println("📘 Facebook: stub mode (no credentials)")
+		}
+		plats = append(plats, namedPlatform{name: "Facebook", plat: fbPlat})
 	}
 
 	return plats

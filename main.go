@@ -13,6 +13,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/facebook"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
@@ -81,7 +82,7 @@ func main() {
 			"JURISDICTION_<JURISDICTION>_ENABLED=true", config.JurisdictionKeys())
 	}
 	if !anyPlatformConfigured {
-		log.Fatal("No platform credentials configured for any channel. Set <CHANNEL>_X_API_KEY/<CHANNEL>_X_API_SECRET/<CHANNEL>_X_ACCESS_TOKEN/<CHANNEL>_X_ACCESS_SECRET for X, <CHANNEL>_BLUESKY_HANDLE/<CHANNEL>_BLUESKY_PASSWORD for Bluesky, or <CHANNEL>_IG_USER_ID/<CHANNEL>_IG_ACCESS_TOKEN/<CHANNEL>_IMAGE_HOST_REPO/<CHANNEL>_IMAGE_HOST_TOKEN for Instagram.")
+		log.Fatal("No platform credentials configured for any channel. Set <CHANNEL>_X_API_KEY/<CHANNEL>_X_API_SECRET/<CHANNEL>_X_ACCESS_TOKEN/<CHANNEL>_X_ACCESS_SECRET for X, <CHANNEL>_BLUESKY_HANDLE/<CHANNEL>_BLUESKY_PASSWORD for Bluesky, <CHANNEL>_IG_USER_ID/<CHANNEL>_IG_ACCESS_TOKEN/<CHANNEL>_IMAGE_HOST_REPO/<CHANNEL>_IMAGE_HOST_TOKEN for Instagram, or <CHANNEL>_FB_PAGE_ID/<CHANNEL>_FB_ACCESS_TOKEN for Facebook.")
 	}
 
 	if hasErrors {
@@ -150,6 +151,20 @@ func buildPlatforms(channel config.Channel, jurisdictions []config.Jurisdiction)
 		plats = append(plats, channelPlatform{"Instagram", votelog.PlatformInstagram, igPlatform})
 	} else {
 		log.Printf("⚠️  Channel %q: Instagram not configured (missing IG_USER_ID/IG_ACCESS_TOKEN/IMAGE_HOST_REPO/IMAGE_HOST_TOKEN)", channel.Key)
+	}
+
+	// The Page token is the one Instagram already uses, once it carries
+	// pages_manage_posts — see pkg/fbapi/README.md. It is read under its own
+	// name all the same, so the Page ID alone decides whether Facebook posts.
+	fbPageID := channel.Env("FB_PAGE_ID")
+	fbAccessToken := channel.Env("FB_ACCESS_TOKEN")
+	if fbPageID != "" && fbAccessToken != "" {
+		plats = append(plats, channelPlatform{"Facebook", votelog.PlatformFacebook, facebook.NewFacebookPlatformWithCredentials(
+			fbPageID, fbAccessToken,
+			channel.EnvInt("FB_MAX_POSTS_PER_RUN", 5),
+		)})
+	} else {
+		log.Printf("⚠️  Channel %q: Facebook not configured (missing FB_PAGE_ID/FB_ACCESS_TOKEN)", channel.Key)
 	}
 
 	return plats
