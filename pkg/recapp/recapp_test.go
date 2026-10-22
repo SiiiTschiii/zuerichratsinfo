@@ -155,24 +155,6 @@ func TestLookupKeepsRollCallsOverTheScheme(t *testing.T) {
 	}
 }
 
-// TestLookupReportsDecision covers what OpenParlData leaves null for every
-// Kanton Zürich vote, which is why canton posts never used to state an outcome.
-func TestLookupReportsDecision(t *testing.T) {
-	c, _ := newTestClient(t)
-
-	const brake = "088BAC94-081E-08E6-BC6F-4AC3358FC790"
-
-	got, err := c.Lookup(map[string]string{
-		brake: archiveURL(sihlItem, "b76547a1-5c7e-4e2a-8669-ab5a6317ac92"),
-	})
-	if err != nil {
-		t.Fatalf("Lookup: %v", err)
-	}
-	if got[brake].Decision != "angenommen" {
-		t.Errorf("got decision %q, want %q", got[brake].Decision, "angenommen")
-	}
-}
-
 // TestLookupFetchesEachAgendaItemOnce guards the request budget. Votes are
 // grouped by business matter, so a group's votes almost always share an agenda
 // item; fetching per vote would multiply calls to a third-party archive for

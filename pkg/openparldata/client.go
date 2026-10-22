@@ -64,8 +64,6 @@ type Client struct {
 type VoteDetail struct {
 	// Type is the vote type in the vocabulary the formatters speak.
 	Type string
-	// Decision is the outcome label, e.g. "angenommen" or "abgelehnt".
-	Decision string
 }
 
 // DetailSource resolves vote details for votings this API describes

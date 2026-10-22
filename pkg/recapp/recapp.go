@@ -88,9 +88,6 @@ type Info struct {
 	// Type is the vote type in the neutral vocabulary, or "" when the archive
 	// used a label or a votingScheme this package does not recognise.
 	Type string
-	// Decision is "angenommen" or "abgelehnt", or "" when the archive reports
-	// no outcome. OpenParlData leaves this null for every Kanton Zürich vote.
-	Decision string
 }
 
 // Client reads vote segments from the archive.
@@ -243,27 +240,11 @@ type segment struct {
 	// VotingScheme is how the ballot was run: "binary", "quorum" or "cup".
 	// Absent on segments before 11.09.2023 and on some roll calls since.
 	VotingScheme string `json:"votingScheme"`
-
-	// VotingResult is "yes" or "no" and refers to whether the question carried,
-	// not to how any member voted.
-	VotingResult string `json:"votingResult"`
 }
 
 func (s segment) info() Info {
 	return Info{
-		Type:     voteType(s.Title, s.VotingScheme),
-		Decision: decisionFrom(s.VotingResult),
-	}
-}
-
-func decisionFrom(result string) string {
-	switch strings.TrimSpace(strings.ToLower(result)) {
-	case "yes":
-		return "angenommen"
-	case "no":
-		return "abgelehnt"
-	default:
-		return ""
+		Type: voteType(s.Title, s.VotingScheme),
 	}
 }
 
