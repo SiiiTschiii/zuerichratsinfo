@@ -213,7 +213,8 @@ func groupingNumber(affairID *int64, externalID string) string {
 }
 
 // decision returns the source's outcome label, and nothing when the source
-// reports none — which Kanton Zürich currently always does, for every vote.
+// reports none. Kanton Zürich reports one for binary votes only (upstream MR
+// !1264); applyDetails gates it by affair and ballot type before it is posted.
 //
 // An earlier version derived one from the counts when the source left it null.
 // That is wrong, and quietly so. Comparing Ja against Nein only decides an
@@ -225,9 +226,11 @@ func groupingNumber(affairID *int64, externalID string) string {
 // differs by which procedure the vote serves, which type_de does not say.
 //
 // So we report what the source reports. Downstream, voteformat.HasVerdict
-// renders the counts without an outcome line when this is empty. If
-// OpenParlData starts populating decision for the canton, verdicts return with
-// no further change here.
+// renders the counts without an outcome line when this is empty. Upstream now
+// fills it for binary Kanton Zürich votes, but cannot yet tell an Ausgabenbremse
+// from an ordinary one (OpenParlData GitLab #183), so applyDetails clears it
+// wherever the ballot or the business does not state its outcome. That guard is
+// temporary.
 func decision(v votingDTO) string {
 	return deref(v.Decision)
 }

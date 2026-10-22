@@ -735,15 +735,14 @@ func KantonsratMultiVote() []votes.Vote {
 // Glattalbahn group — one Normal, one Quorum — as they would arrive if
 // OpenParlData populated `decision` for the canton.
 //
-// Today it does not, for any cantonal vote, so posts carry the counts and state
-// no outcome (see the adapter's decision(), which never derives one). Upstream
-// issue 181 asks for the field, and recapp already publishes the answer as
-// `votingResult`, so this is a plausible near future rather than a hypothetical.
+// Upstream now does so for binary votes (MR !1264); a threshold vote arrives
+// without one in production, since the client clears it (see applyDetails).
+// Other votes of the canton still carry counts and no outcome, and the adapter's
+// decision() never derives one.
 //
-// The fixture pins what happens when it lands: the verdict returns on its own,
-// with no code change, and a quorum vote keeps its own counts rendering while
-// gaining the outcome line. The Decision values are recapp's votingResult for
-// these two segments, both "yes".
+// The fixture pins how the formatters render a reported verdict: a quorum vote
+// keeps its own counts rendering while gaining the outcome line. It bypasses the
+// client, so it shows rendering only, not what production would let through.
 func KantonsratDecisionReported() []votes.Vote {
 	group := KantonsratMultiVote()[:2]
 	for i := range group {

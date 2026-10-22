@@ -336,8 +336,9 @@ func CountsOf(v votes.Vote) VoteCounts {
 // not published anywhere we can read, and it differs by which procedure the
 // vote serves, which type_de does not say. So the honest rendering is silence.
 //
-// Kanton Zürich currently reports no decision at all, for any vote. If
-// OpenParlData starts populating it, verdicts return on their own.
+// Kanton Zürich reports a decision for binary votes only, and the openparldata
+// client clears it again unless the business and the ballot both state their
+// outcome, so threshold votes still arrive here without one.
 func HasVerdict(v votes.Vote) bool {
 	if IsAuswahlVote(CountsOf(v)) {
 		return false

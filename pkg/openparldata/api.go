@@ -186,20 +186,29 @@ func (c *Client) applyDetails(vs []votes.Vote) {
 			voteURLs[v.SourceID] = u
 		}
 	}
-	if len(voteURLs) == 0 {
-		return
-	}
 
-	details, err := c.details.Lookup(voteURLs)
-	if err != nil {
-		// Partial results come back alongside the error, so this reports the
-		// gap and then uses whatever did arrive.
-		log.Printf("⚠️  openparldata: vote details incomplete: %v", err)
+	var details map[string]VoteDetail
+	if len(voteURLs) > 0 {
+		var err error
+		details, err = c.details.Lookup(voteURLs)
+		if err != nil {
+			// Partial results come back alongside the error, so this reports the
+			// gap and then uses whatever did arrive.
+			log.Printf("⚠️  openparldata: vote details incomplete: %v", err)
+		}
 	}
 
 	for i := range vs {
 		d, ok := details[vs[i].SourceID]
 		if !ok {
+			// Temporary guard, retired once upstream identifies the
+			// Ausgabenbremse (OpenParlData GitLab #183). The API's own
+			// decision arrives pre-set for binary votes, and the Ausgabenbremse
+			// is one of them as far as it can tell. Without a detail entry
+			// this vote's type is unverified — type_de reads an Ausgabenbremse
+			// as Normal — so neither gate can be trusted to run, and the
+			// verdict is withheld rather than guessed.
+			vs[i].Decision = ""
 			continue
 		}
 		// Assigned even when empty. A vote the detail source knows but cannot
@@ -212,10 +221,11 @@ func (c *Client) applyDetails(vs []votes.Vote) {
 		// Two independent gates, and a verdict needs both: the business has to
 		// be one an "angenommen" is honest for, and the ballot has to be one
 		// whose reported outcome means what it says. A threshold vote fails the
-		// second even on a Vorlage, which passes the first.
-		if d.Decision != "" && vs[i].Decision == "" &&
-			affairStatesItsOutcome(vs[i].Affair.Type) && ballotStatesItsOutcome(vs[i].Type) {
-			vs[i].Decision = d.Decision
+		// second even on a Vorlage, which passes the first. They apply to the
+		// decision whatever its source: OpenParlData fills it for binary
+		// Kanton Zürich votes, and an Ausgabenbremse arrives as one of those.
+		if !affairStatesItsOutcome(vs[i].Affair.Type) || !ballotStatesItsOutcome(vs[i].Type) {
+			vs[i].Decision = ""
 		}
 	}
 }
