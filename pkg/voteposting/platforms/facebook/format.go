@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
@@ -13,27 +14,31 @@ import (
 // rather than as an opaque Graph API error after the other platforms posted.
 const maxMessageChars = 63206
 
-// FacebookContent implements platforms.Content for Facebook: one Page post.
+// maxPhotos caps the photos in one post at what an Instagram carousel holds, so
+// both platforms show the same cards.
+const maxPhotos = 10
+
+// FacebookContent implements platforms.Content for Facebook: one Page post with
+// the carousel's photos attached.
 type FacebookContent struct {
-	Message string // post text, including the link block
-	Link    string // URL Facebook renders as the preview card; may be empty
+	Images  [][]byte // JPEG-encoded carousel cards, in order
+	Message string   // post text, including the link block
 }
 
 // String returns the text representation for logging/preview
 func (c *FacebookContent) String() string {
 	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("📘 Facebook post: %d image(s)\n\n", len(c.Images)))
 	sb.WriteString(c.Message)
-	if c.Link != "" {
-		sb.WriteString(fmt.Sprintf("\n  🃏 Preview card: %s", c.Link))
-	}
 	return sb.String()
 }
 
-// FormatPost renders a group as a single Page post.
+// FormatPost renders a group as a single Page post: the Instagram carousel's
+// cards as photos, and the Instagram caption's text as the message.
 //
-// The message is the same long-form body as the Instagram caption, followed by
-// the link block. Facebook has no practical length limit, so unlike Instagram
-// nothing is truncated, and unlike X and Bluesky nothing is threaded.
+// Facebook has no practical length limit, so unlike Instagram the text is never
+// truncated, and the links stay in it as plain URLs — an attached photo gives no
+// preview card to carry them.
 //
 // Names are left untagged. A Page can only mention another Page or profile by
 // its numeric ID, which the contacts file does not hold — it records profile
@@ -41,6 +46,17 @@ func (c *FacebookContent) String() string {
 func FormatPost(group []votes.Vote) (*FacebookContent, error) {
 	if len(group) == 0 {
 		return nil, fmt.Errorf("no votes provided")
+	}
+
+	images, err := imagegen.GenerateCarousel(group)
+	if err != nil {
+		return nil, fmt.Errorf("generating carousel images: %w", err)
+	}
+	if len(images) == 0 {
+		return nil, fmt.Errorf("no carousel images generated")
+	}
+	if len(images) > maxPhotos {
+		images = images[:maxPhotos]
 	}
 
 	var message string
@@ -59,17 +75,5 @@ func FormatPost(group []votes.Vote) (*FacebookContent, error) {
 		return nil, fmt.Errorf("facebook message is %d characters, over the %d limit", n, maxMessageChars)
 	}
 
-	return &FacebookContent{Message: message, Link: previewLink(group)}, nil
-}
-
-// previewLink picks the URL Facebook turns into the preview card: the first
-// link the post lists, which is the business page wherever there is one. The
-// business page is the one with a title and a description worth a card; the
-// video archive and the sitting page are generic for every vote of a day.
-func previewLink(group []votes.Vote) string {
-	links := voteformat.GroupLinks(group)
-	if len(links) == 0 {
-		return ""
-	}
-	return links[0].URL
+	return &FacebookContent{Images: images, Message: message}, nil
 }

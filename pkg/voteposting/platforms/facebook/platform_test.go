@@ -2,68 +2,101 @@ package facebook
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 )
 
-type publishCall struct {
-	message string
-	link    string
+type fakeAPI struct {
+	uploads    []string // filenames, in call order
+	uploadErr  error    // returned by the failOn-th upload (1-based); 0 = never
+	failOn     int
+	publishErr error
+	message    string
+	attached   []string
 }
 
-func newTestPlatform(calls *[]publishCall, maxPostsPerRun int, err error) *FacebookPlatform {
+func (f *fakeAPI) upload(_ []byte, filename string) (string, error) {
+	f.uploads = append(f.uploads, filename)
+	if f.failOn == len(f.uploads) {
+		return "", f.uploadErr
+	}
+	return fmt.Sprintf("photo_%d", len(f.uploads)), nil
+}
+
+func (f *fakeAPI) publish(message string, photoIDs []string) (string, error) {
+	f.message, f.attached = message, photoIDs
+	if f.publishErr != nil {
+		return "", f.publishErr
+	}
+	return "page_1_post_1", nil
+}
+
+func newTestPlatform(f *fakeAPI, maxPostsPerRun int) *FacebookPlatform {
 	return &FacebookPlatform{
-		maxPostsPerRun: maxPostsPerRun,
-		publishPostFunc: func(message, link string) (string, error) {
-			*calls = append(*calls, publishCall{message, link})
-			if err != nil {
-				return "", err
-			}
-			return "page_1_post_1", nil
-		},
+		maxPostsPerRun:       maxPostsPerRun,
+		uploadPhotoFunc:      f.upload,
+		publishPhotoPostFunc: f.publish,
 	}
 }
 
-func TestPost_PublishesMessageAndLink(t *testing.T) {
-	var calls []publishCall
-	p := newTestPlatform(&calls, 5, nil)
-
-	content, err := p.Format(testfixtures.SingleVoteAngenommen())
+func TestPost_UploadsEveryCardThenPublishesOnePost(t *testing.T) {
+	f := &fakeAPI{}
+	p := newTestPlatform(f, 5)
+	content, err := p.Format(testfixtures.MultiVoteGroup())
 	if err != nil {
 		t.Fatalf("Format: %v", err)
 	}
+	fb := content.(*FacebookContent)
+	if len(fb.Images) < 2 {
+		t.Fatalf("fixture should give several cards, got %d", len(fb.Images))
+	}
+
 	if _, err := p.Post(content); err != nil {
 		t.Fatalf("Post: %v", err)
 	}
 
-	fb := content.(*FacebookContent)
-	if len(calls) != 1 {
-		t.Fatalf("expected 1 publish call, got %d", len(calls))
+	if len(f.uploads) != len(fb.Images) {
+		t.Errorf("uploaded %d photos, want %d", len(f.uploads), len(fb.Images))
 	}
-	if calls[0].message != fb.Message || calls[0].link != fb.Link {
-		t.Errorf("published %+v, want message/link from the formatted content", calls[0])
+	if f.message != fb.Message {
+		t.Errorf("published the wrong message")
 	}
-}
-
-func TestPost_StopsAtBudget(t *testing.T) {
-	var calls []publishCall
-	p := newTestPlatform(&calls, 2, nil)
-	content, _ := p.Format(testfixtures.SingleVoteAngenommen())
-
-	if cont, _ := p.Post(content); !cont {
-		t.Error("first post should leave budget to continue")
+	// The post attaches the uploads in the order they were made, which is the
+	// carousel's order.
+	for i, id := range f.attached {
+		if want := fmt.Sprintf("photo_%d", i+1); id != want {
+			t.Errorf("attached[%d] = %q, want %q", i, id, want)
+		}
 	}
-	if cont, _ := p.Post(content); cont {
-		t.Error("second post should exhaust a budget of 2")
+	if len(f.attached) != len(fb.Images) {
+		t.Errorf("attached %d photos, want %d", len(f.attached), len(fb.Images))
 	}
 }
 
-// A failed publish must not count against the budget or report success: the
-// pipeline would mark the votes as posted.
-func TestPost_PropagatesError(t *testing.T) {
-	var calls []publishCall
-	p := newTestPlatform(&calls, 5, errors.New("boom"))
+// A failed upload must not publish a post with some of its cards missing, and
+// must not count against the budget or report success: the pipeline would mark
+// the votes as posted.
+func TestPost_UploadFailureStopsBeforePublishing(t *testing.T) {
+	f := &fakeAPI{failOn: 2, uploadErr: errors.New("boom")}
+	p := newTestPlatform(f, 5)
+	content, _ := p.Format(testfixtures.MultiVoteGroup())
+
+	if _, err := p.Post(content); err == nil {
+		t.Fatal("expected error")
+	}
+	if f.message != "" {
+		t.Error("a post was published after an upload failed")
+	}
+	if p.postsThisRun != 0 {
+		t.Errorf("failed post counted against the budget: %d", p.postsThisRun)
+	}
+}
+
+func TestPost_PublishFailureIsAnError(t *testing.T) {
+	f := &fakeAPI{publishErr: errors.New("boom")}
+	p := newTestPlatform(f, 5)
 	content, _ := p.Format(testfixtures.SingleVoteAngenommen())
 
 	if _, err := p.Post(content); err == nil {
@@ -71,6 +104,19 @@ func TestPost_PropagatesError(t *testing.T) {
 	}
 	if p.postsThisRun != 0 {
 		t.Errorf("failed post counted against the budget: %d", p.postsThisRun)
+	}
+}
+
+func TestPost_StopsAtBudget(t *testing.T) {
+	f := &fakeAPI{}
+	p := newTestPlatform(f, 2)
+	content, _ := p.Format(testfixtures.SingleVoteAngenommen())
+
+	if cont, _ := p.Post(content); !cont {
+		t.Error("first post should leave budget to continue")
+	}
+	if cont, _ := p.Post(content); cont {
+		t.Error("second post should exhaust a budget of 2")
 	}
 }
 

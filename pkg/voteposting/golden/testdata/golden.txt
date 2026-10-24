@@ -90,7 +90,7 @@ Grüne 0/0/0/2
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-angenommen-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-angenommen-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -202,7 +202,7 @@ AL 0/5/0/0
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-abgelehnt-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-abgelehnt-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -317,7 +317,7 @@ Die Mitte 7/0/0/0
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-dringlich-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-dringlich-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -429,7 +429,7 @@ AL 0/2/0/1
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-longtrunc-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -541,7 +541,7 @@ Die Mitte 7/0/0/0
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-bandclearance-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-bandclearance-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -660,7 +660,7 @@ Fraktionslos 0/1/0/0
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-extremetitle-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-extremetitle-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -826,7 +826,7 @@ AL 0/8/0/1
 🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-multi#trakt-multi
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-multi#trakt-multi
+[images] 3
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -950,7 +950,7 @@ AL 0/2/0/1
 🔗 https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=geschaeft-antrag
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/geschaefte/detail.php?gid=geschaeft-antrag
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -1507,7 +1507,7 @@ AL 0/3/0/1
 🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+[images] 10
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -1727,7 +1727,7 @@ AL 0/0/0/1
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mention-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mention-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
@@ -1837,7 +1837,7 @@ AL 0/8/0/1
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 04.03.2026
 
@@ -1950,7 +1950,7 @@ Die Mitte 0/7/0/0
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-all-fraktionen-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-auswahl-all-fraktionen-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 30.09.2026
 
@@ -2116,7 +2116,7 @@ AL 0/0/5/1
 🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-mixed#trakt-mixed
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-mixed#trakt-mixed
+[images] 3
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 25.02.2026
 
@@ -2240,7 +2240,7 @@ AL 0/0/0/1
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-grnr-1
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-grnr-1
+[images] 1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 26.11.2025
 
@@ -2374,7 +2374,7 @@ AL 0/5/0/0
 Source: OpenParlData.ch
 
 ---- Facebook ----
-[link] https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=3e9a314a447f42f6bc8ed5995d9ae47e
+[images] 1
 [message]
 🗳️ Kantonsrat ZH | Abstimmung vom 06.07.2026 (10:21)
 
@@ -2728,7 +2728,7 @@ AL 5/0
 Source: OpenParlData.ch
 
 ---- Facebook ----
-[link] https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+[images] 6
 [message]
 🗳️ Kantonsrat ZH | Abstimmung vom 15.06.2026
 
@@ -2921,7 +2921,7 @@ AL 5/0
 Source: OpenParlData.ch
 
 ---- Facebook ----
-[link] https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+[images] 1
 [message]
 🗳️ Kantonsrat ZH | Abstimmung vom 15.06.2026 (11:30)
 
@@ -3115,7 +3115,7 @@ AL 5/0
 Source: OpenParlData.ch
 
 ---- Facebook ----
-[link] https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=89ddd67395d74b70bb1015edac49b7e2
+[images] 3
 [message]
 🗳️ Kantonsrat ZH | Abstimmung vom 15.06.2026
 
@@ -3271,7 +3271,7 @@ AL 0/5/0/0
 Source: OpenParlData.ch
 
 ---- Facebook ----
-[link] https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=2904da3a36db41d8bcae242155d64ae1
+[images] 1
 [message]
 🗳️ Kantonsrat ZH | Abstimmung vom 31.08.2026 (10:21)
 
@@ -3415,7 +3415,7 @@ AL 5/0/0/0
 Source: OpenParlData.ch
 
 ---- Facebook ----
-[link] https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=d463146e155b46589279b3228ea48c01
+[images] 1
 [message]
 🗳️ Kantonsrat ZH | Abstimmung vom 08.06.2026 (09:15)
 
@@ -3501,7 +3501,7 @@ Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
 Source: OpenParlData.ch
 
 ---- Facebook ----
-[link] https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+[images] 1
 [message]
 🗳️ Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
 
@@ -3576,7 +3576,7 @@ Zu dieser Wahl liegen uns keine Ergebnisdaten vor.
 Source: OpenParlData.ch
 
 ---- Facebook ----
-[link] https://www.kantonsrat.zh.ch/geschaefte/geschaeft/?id=5fdb30c929a04ac2a30fdd07977045e7
+[images] 1
 [message]
 🗳️ Kantonsrat ZH | Wahlgeschäft vom 14.09.2026
 
@@ -4042,7 +4042,7 @@ Sehr langes Traktandum Sehr langes Traktandum Sehr langes Traktandum Sehr langes
 🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
 
 ---- Facebook ----
-[link] https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
+[images] 10
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 

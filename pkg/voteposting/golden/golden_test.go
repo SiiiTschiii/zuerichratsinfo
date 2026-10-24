@@ -89,7 +89,7 @@ func TestGoldenOutput(t *testing.T) {
 		if err != nil {
 			t.Fatalf("formatting Facebook content for %s: %v", name, err)
 		}
-		sb.WriteString(fmt.Sprintf("[link] %s\n", fbContent.Link))
+		sb.WriteString(fmt.Sprintf("[images] %d\n", len(fbContent.Images)))
 		sb.WriteString(fmt.Sprintf("[message]\n%s\n\n", fbContent.Message))
 	}
 
