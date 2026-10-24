@@ -30,10 +30,16 @@ The Graph API Explorer offers only the permissions that the app's use cases
 include.
 
 1. Open <https://developers.facebook.com/apps/>, then the **ZueriRatsinfo** app.
-2. In the left sidebar, open **Use cases**. Click **Customize** on the Instagram
-   use case (**API setup with Facebook Login**).
-3. Under **Permissions and features**, click **Add** next to
-   `pages_manage_posts`.
+2. In the left sidebar, open **Use cases**, then click **Customize** on the
+   Instagram use case.
+3. The page that opens may be **Welcome to the Instagram API**, listing
+   `instagram_business_*` permissions with an **Add all required permissions**
+   button. That is the *Instagram login* setup, which the bot does not use: it
+   posts through a Page token, which is the Facebook-login setup. Leave that
+   button alone.
+4. Open the **Permissions and features** page. It is linked in the text of
+   section 1 on that screen, and it is also in the sidebar under the use case.
+   Find `pages_manage_posts` and click **Add**.
 
 If the Instagram use case does not list `pages_manage_posts`, add the use case
 **Manage everything on your Page** from the same **Use cases** page. Then add
