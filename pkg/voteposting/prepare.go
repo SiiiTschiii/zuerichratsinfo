@@ -131,6 +131,32 @@ func filterOldVotes(vs []votes.Vote, maxAgeDays int) []votes.Vote {
 	return recent
 }
 
+// DropBefore drops the groups whose sitting date falls before from, a calendar
+// date. It is how a platform that goes live late stays clear of the history it
+// never posted, without a vote log that claims it did: the log records what was
+// posted, and nothing else may write to it.
+//
+// Dates are compared as calendar days in the zone the source reported them in,
+// so a sitting at 00:00 Zurich time on from's own day is kept rather than lost
+// to a UTC offset. A group whose date is unknown is kept, as filterOldVotes
+// keeps such votes: a data problem should not decide what is published, and the
+// next run sees the same group again.
+func DropBefore(groups [][]votes.Vote, from time.Time) [][]votes.Vote {
+	if from.IsZero() {
+		return groups
+	}
+	var kept [][]votes.Vote
+	for _, g := range groups {
+		d := groupDate(g)
+		day := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC)
+		if day.Before(from) {
+			continue
+		}
+		kept = append(kept, g)
+	}
+	return kept
+}
+
 // VoteLogs resolves the log a group belongs in, keyed by jurisdiction. A
 // channel serving several jurisdictions posts them through one platform
 // instance but must record each in its own log.

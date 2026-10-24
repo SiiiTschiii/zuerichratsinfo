@@ -1190,3 +1190,39 @@ func TestLinkLine(t *testing.T) {
 		}
 	})
 }
+
+func TestVoteLinks(t *testing.T) {
+	const group, item = "https://example.ch/geschaeft/1", "https://rec.example/s?agendaItemUid=A"
+	vote := func(source, archive string) votes.Vote {
+		return votes.Vote{SourceURL: source, GroupURL: group, ArchiveURL: archive, ArchiveGroupURL: item}
+	}
+
+	t.Run("recording at the vote's segment, business page not repeated", func(t *testing.T) {
+		g := []votes.Vote{vote(group, item+"&segmentUid=S1"), vote(group, item+"&segmentUid=S2")}
+		got := VoteLinks(g, 1)
+		if len(got) != 1 || got[0].URL != item+"&segmentUid=S2" || got[0].Name != "Video" {
+			t.Errorf("got %+v, want only the second vote's segment", got)
+		}
+	})
+
+	t.Run("vote's own page beside the group's", func(t *testing.T) {
+		g := []votes.Vote{vote("https://example.ch/vote/1", ""), vote("https://example.ch/vote/2", "")}
+		got := VoteLinks(g, 0)
+		if len(got) != 1 || got[0].URL != "https://example.ch/vote/1" || got[0].Name != "Abstimmung" {
+			t.Errorf("got %+v, want the vote's own page", got)
+		}
+	})
+
+	t.Run("nothing the post already links", func(t *testing.T) {
+		g := []votes.Vote{vote(group, item), vote(group, item)}
+		if got := VoteLinks(g, 0); len(got) != 0 {
+			t.Errorf("got %+v, want none", got)
+		}
+	})
+
+	t.Run("out of range", func(t *testing.T) {
+		if got := VoteLinks(nil, 0); got != nil {
+			t.Errorf("got %+v, want nil", got)
+		}
+	})
+}

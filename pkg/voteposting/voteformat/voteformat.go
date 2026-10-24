@@ -909,3 +909,39 @@ func CardCountsLabel(v votes.Vote) string {
 func hasClockTime(t time.Time) bool {
 	return !t.IsZero() && (t.Hour() != 0 || t.Minute() != 0)
 }
+
+// VoteLinks returns the links that belong to one vote of a group and not to the
+// group as a whole, for a platform that shows each vote beside its own card.
+//
+// A post covering several votes links the business and the agenda item, because
+// pointing at whichever vote sorted first would be arbitrary. That leaves each
+// vote's own pages unlinked: the archive recording positioned at this vote
+// (Kanton Zürich's Recapp segment) and this vote's own page (Stadt Zürich's
+// Abstimmung, beside the Traktandum the post links). Both are returned,
+// each only where the source has one and only where the post's own link block
+// does not already carry the same URL — for Kanton Zürich the vote's page is
+// the business page, which the post links already.
+func VoteLinks(group []votes.Vote, i int) []Link {
+	if i < 0 || i >= len(group) {
+		return nil
+	}
+	v := group[i]
+
+	have := map[string]bool{}
+	for _, l := range GroupLinks(group) {
+		have[l.URL] = true
+	}
+
+	var out []Link
+	for _, l := range []Link{
+		{Icon: "🎬", Name: "Video", URL: v.ArchiveURL},
+		{Icon: "🔗", Name: "Abstimmung", URL: v.SourceURL},
+	} {
+		if l.URL == "" || have[l.URL] {
+			continue
+		}
+		have[l.URL] = true
+		out = append(out, l)
+	}
+	return out
+}

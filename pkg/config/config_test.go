@@ -183,3 +183,21 @@ func TestCantonLinks(t *testing.T) {
 		}
 	})
 }
+
+func TestParseDate(t *testing.T) {
+	got, err := ParseDate("2026-10-17")
+	if err != nil {
+		t.Fatalf("ParseDate: %v", err)
+	}
+	if want := time.Date(2026, 10, 17, 0, 0, 0, 0, time.UTC); !got.Equal(want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	// A start date that reads as "no limit" when missing or mistyped would
+	// silently re-open the backlog it exists to close.
+	for _, bad := range []string{"", "17.10.2026", "2026-13-01", "tomorrow"} {
+		if _, err := ParseDate(bad); err == nil {
+			t.Errorf("ParseDate(%q) succeeded, want an error", bad)
+		}
+	}
+}
