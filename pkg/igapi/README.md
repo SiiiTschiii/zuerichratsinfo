@@ -108,6 +108,8 @@ so treat that as a last resort.
 - Open the [Graph API Explorer](https://developers.facebook.com/tools/explorer/)
 - Select the ZueriRatsinfo app
 - Add permissions: `instagram_basic`, `instagram_content_publish`, `pages_read_engagement`, `pages_show_list`, `business_management`, `pages_manage_posts`
+  — the Explorer lists `pages_manage_posts` only once the app allows it; see
+  [Facebook setup, 1a](../fbapi/README.md#1a-allow-the-permission-in-the-app)
 - Click **Generate Access Token** and authorize
 
 Copy the token it prints and export it:

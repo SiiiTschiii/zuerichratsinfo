@@ -13,23 +13,72 @@ Facebook Page and the same never-expiring Page access token. Do
 [the Instagram setup](../igapi/README.md) first; this section covers only what
 Facebook adds.
 
-### 1. Grant `pages_manage_posts`
+### 1. Add `pages_manage_posts` to the token
 
-Publishing to a Page feed needs `pages_manage_posts`, which the Instagram token
-does not carry. Add it to the app's App Review request alongside the Instagram
-permissions, then regenerate the Page token following
-[the Instagram token steps](../igapi/README.md#access-token-never-expiring-page-token),
-ticking `pages_manage_posts` in step 2. The regenerated token replaces
-`ZURICH_IG_ACCESS_TOKEN`; Instagram keeps working with it.
+Publishing to a Page feed needs `pages_manage_posts`. The Instagram token does
+not carry it, so the Page token has to be regenerated with it.
 
-Confirm the new token carries the permission (`FB_APP_ID` and `FB_APP_SECRET`
-as exported in the Instagram steps, `IG_TOKEN` the regenerated Page token):
+**No App Review.** Meta requires App Review only for apps that reach data their
+owner does not own or manage. The bot posts to its own Page with a token that
+the app's own admin issued, so Standard Access is enough. That is the same
+footing the Instagram permissions are on today. Review would only become
+necessary if someone without a role on the app had to authorise it.
+
+#### 1a. Allow the permission in the app
+
+The Graph API Explorer offers only the permissions that the app's use cases
+include.
+
+1. Open <https://developers.facebook.com/apps/>, then the **ZueriRatsinfo** app.
+2. In the left sidebar, open **Use cases**. Click **Customize** on the Instagram
+   use case (**API setup with Facebook Login**).
+3. Under **Permissions and features**, click **Add** next to
+   `pages_manage_posts`.
+
+If the Instagram use case does not list `pages_manage_posts`, add the use case
+**Manage everything on your Page** from the same **Use cases** page. Then add
+`pages_manage_posts` under its **Customize** in the same way.
+
+#### 1b. Regenerate the Page token
+
+Follow [Access Token](../igapi/README.md#access-token-never-expiring-page-token)
+in the Instagram setup, steps 1 to 5, with two differences:
+
+- **Step 2:** the permission list there already includes `pages_manage_posts`.
+  Make sure it is ticked in the Explorer before you click
+  **Generate Access Token**. In the consent dialog, keep the ZueriRatsinfo Page
+  selected and grant everything that is asked.
+- **Step 5:** run the check below before storing the token.
+
+The new token replaces `ZURICH_IG_ACCESS_TOKEN`. Instagram keeps working with
+it, and the workflow hands the same secret to Facebook.
+
+#### 1c. Check the token before storing it
+
+Run this in the shell where you ran the Instagram steps. It needs `FB_APP_ID`
+and `FB_APP_SECRET` (step 1), `FB_LONG_TOKEN` (step 3), `IG_TOKEN` (step 4) and
+`FB_PAGE_ID` ([Getting IDs](../igapi/README.md#getting-ids)).
+
+First check that the token carries the permission:
 
 ```bash
-curl -s "https://graph.facebook.com/v25.0/debug_token?input_token=$IG_TOKEN&access_token=$FB_APP_ID|$FB_APP_SECRET" | jq '.data.scopes'
+curl -s "https://graph.facebook.com/v25.0/debug_token?input_token=$IG_TOKEN&access_token=$FB_APP_ID|$FB_APP_SECRET" | jq '{type: .data.type, scopes: .data.scopes}'
 ```
 
-The list must contain `"pages_manage_posts"`.
+The output should show `"type": "PAGE"`, and the scopes should include
+`"pages_manage_posts"`. If the scope is missing, it was not ticked in step 2, or
+1a was skipped.
+
+Then check that your account may post on the Page:
+
+```bash
+curl -s "https://graph.facebook.com/v25.0/me/accounts?fields=id,name,tasks&access_token=$FB_LONG_TOKEN" | jq --arg page "$FB_PAGE_ID" '.data[] | select(.id == $page) | .tasks'
+```
+
+The list must contain `"CREATE_CONTENT"`. If it does not, your Page role is too
+narrow: give yourself full control in the Page's settings under **Page access**.
+
+If both checks pass, store the token with step 5 of the Instagram setup.
 
 ### 2. Seed the vote log
 
