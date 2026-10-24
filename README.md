@@ -47,7 +47,7 @@ the text and on the image, so the two are never confused.
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
 | LinkedIn    | ❌ Planned | 113                                 | -                                                                                    |
-| Facebook    | ❌ Planned | 92                                  | -                                                                                    |
+| Facebook    | ✅ Active  | 92                                  | [ZueriRatsinfo](https://www.facebook.com/profile.php?id=1063164230212573)            |
 | Instagram   | ✅ Active  | 102                                 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
 | X (Twitter) | ✅ Active  | 67                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
 | Bluesky     | ✅ Active  | 27                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
@@ -70,7 +70,7 @@ _The count is how many politicians the bot can tag on that platform in case they
 - X API v2 with OAuth 1.0a, see [pkg/xapi/README.md](pkg/xapi/README.md)
 - Bluesky AT Protocol (app.bsky), see [pkg/voteposting/platforms/bluesky](pkg/voteposting/platforms/bluesky)
 - Instagram Graph API with image carousel publishing, see [pkg/igapi/README.md](pkg/igapi/README.md)
-- Facebook Pages API with link posts, see [pkg/fbapi/README.md](pkg/fbapi/README.md)
+- Facebook Pages API with photo posts, see [pkg/fbapi/README.md](pkg/fbapi/README.md)
 - Vote image generation (1080×1350 JPEG carousels), see [pkg/imagegen](pkg/imagegen)
 
 ## Setup
