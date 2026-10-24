@@ -98,31 +98,31 @@ narrow: give yourself full control in the Page's settings under **Page access**.
 
 If both checks pass, store the token with step 5 of the Instagram setup.
 
-### 2. Seed the vote log
+### 2. Set the go-live date
 
-A platform whose vote log is missing treats every vote inside
-`MAX_VOTE_AGE_DAYS_*` as unposted — 90 days for Stadt Zürich — and would work
-through that backlog at `ZURICH_FB_MAX_POSTS_PER_RUN` posts an hour. Copy the
-Instagram logs so the Page starts from the votes still to come. Pause the bot
-first, then wait for every queued and running run to finish — disabling stops
-new triggers but not those, and a run whose push lands after the seed push is
-rejected and loses its record of what it posted. Do not cancel them instead: a
-run may already have posted.
+Facebook starts with no vote log, so every vote the sources still return reads
+as unposted. A dry run on 24 October 2026 listed 40 groups back to 9 September.
+The log is not seeded to hide that: a seeded log would record posts that were
+never made. Instead Facebook posts only sittings from a start date, set in
+`.github/workflows/bot.yml`:
+
+```yaml
+ZURICH_FB_POST_FROM: "2026-10-17"
+```
+
+It is required whenever `ZURICH_FB_PAGE_ID` is set. The bot stops with an
+error if it is missing or not a `YYYY-MM-DD` date, so deleting the line cannot
+quietly reopen the backlog. Change it in the pull request that goes live, to the
+first sitting the Page should show.
+
+See what would post, without posting (the dry run reads `ZURICH_FB_POST_FROM`
+from the environment):
 
 ```bash
-gh workflow disable bot.yml
-while gh run list --workflow bot.yml --limit 20 --json status -q '.[].status' | grep -qv completed; do sleep 30; done
-git fetch origin state-log
-git worktree add --detach ../state-log-seed origin/state-log
-for j in zurich-city zurich-canton; do
-  jq '.platform = "facebook"' "../state-log-seed/data/$j/posted_votes_instagram.json" > "../state-log-seed/data/$j/posted_votes_facebook.json"
-done
-git -C ../state-log-seed add data
-git -C ../state-log-seed commit -m "Seed Facebook vote logs from Instagram [skip ci]"
-git -C ../state-log-seed push origin HEAD:state-log
-git worktree remove ../state-log-seed
-gh workflow enable bot.yml
+ZURICH_FB_POST_FROM=2026-10-17 go run ./cmd/check_unposted -platform facebook -max-posts 100
 ```
+
+The `📋` lines are the groups that would post, oldest first.
 
 ### 3. Switch it on
 
@@ -148,6 +148,7 @@ Names are channel-scoped — the `zurich` channel reads `ZURICH_FB_PAGE_ID`.
 | -------------------------------- | ---------------------------------------------------- |
 | `<CHANNEL>_FB_PAGE_ID`           | Facebook Page ID                                     |
 | `<CHANNEL>_FB_ACCESS_TOKEN`      | Page access token with `pages_manage_posts`          |
+| `<CHANNEL>_FB_POST_FROM`         | First sitting date to post, `YYYY-MM-DD` (required)  |
 | `<CHANNEL>_FB_MAX_POSTS_PER_RUN` | Posts per hourly run (default 5)                     |
 
 ## Trying it locally

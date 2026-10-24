@@ -101,10 +101,14 @@ jobs:
           ZURICH_IMAGE_HOST_TOKEN: ${{ github.token }}
           # Facebook posts with the same never-expiring Page token as
           # Instagram, so one secret and one rotation cover both. The Page ID
-          # is the switch: Facebook stays off until the variable is set, which
-          # must not happen before its vote log is seeded (pkg/fbapi/README.md).
+          # is the switch: Facebook stays off until the variable is set.
           ZURICH_FB_PAGE_ID: ${{ vars.ZURICH_FB_PAGE_ID }}
           ZURICH_FB_ACCESS_TOKEN: ${{ secrets.ZURICH_IG_ACCESS_TOKEN }}
+          # Facebook goes live without a vote log of its own. Rather than seed
+          # one — which would record posts that were never made — it posts only
+          # sittings from this date on. It is required whenever the Page ID is
+          # set, and is the go-live date.
+          ZURICH_FB_POST_FROM: "2026-10-17"
           ZURICH_X_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_X_MAX_POSTS_PER_RUN }}
           ZURICH_X_MAX_CHARS: ${{ vars.ZURICH_X_MAX_CHARS }}
           ZURICH_BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_BLUESKY_MAX_POSTS_PER_RUN }}

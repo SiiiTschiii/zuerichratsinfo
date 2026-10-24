@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"time"
 )
 
 // Channel is one set of platform credentials — in practice one account per
@@ -152,4 +153,19 @@ func Validate() error {
 		}
 	}
 	return nil
+}
+
+// ParseDate reads a calendar date written YYYY-MM-DD, as used by settings like
+// FB_POST_FROM. The result is midnight UTC of that date, meant to be compared by
+// calendar day. An empty string is an error: a setting that must be set should
+// not read as "no limit".
+func ParseDate(s string) (time.Time, error) {
+	if s == "" {
+		return time.Time{}, fmt.Errorf("not set")
+	}
+	d, err := time.Parse("2006-01-02", s)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("%q is not a YYYY-MM-DD date", s)
+	}
+	return d, nil
 }

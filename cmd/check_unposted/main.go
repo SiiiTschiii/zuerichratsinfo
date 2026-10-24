@@ -16,6 +16,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
@@ -74,19 +75,23 @@ func main() {
 		if showX {
 			maxPosts := pick(*maxPostsFlag, channel.EnvInt("X_MAX_POSTS_PER_RUN", 10))
 			check(channel.Key, "X/Twitter", votelog.PlatformX, jurisdictions, maxVotesToCheck, maxPosts,
-				x.NewXPlatform("", "", "", "", contactMapper, maxPosts))
+				time.Time{}, x.NewXPlatform("", "", "", "", contactMapper, maxPosts))
 		}
 
 		if showBluesky {
 			maxPosts := pick(*maxPostsFlag, channel.EnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10))
 			check(channel.Key, "Bluesky", votelog.PlatformBluesky, jurisdictions, maxVotesToCheck, maxPosts,
-				bluesky.NewBlueskyPlatform("", "", maxPosts, contactMapper))
+				time.Time{}, bluesky.NewBlueskyPlatform("", "", maxPosts, contactMapper))
 		}
 
 		if showFacebook {
 			maxPosts := pick(*maxPostsFlag, channel.EnvInt("FB_MAX_POSTS_PER_RUN", 5))
+			// Optional here, unlike in main.go: a dry run without it shows what
+			// Facebook would post with no start date, which is the question
+			// someone setting it up is asking.
+			postFrom, _ := config.ParseDate(channel.Env("FB_POST_FROM"))
 			check(channel.Key, "Facebook", votelog.PlatformFacebook, jurisdictions, maxVotesToCheck, maxPosts,
-				facebook.NewFacebookPlatform(maxPosts))
+				postFrom, facebook.NewFacebookPlatform(maxPosts))
 		}
 	}
 }
@@ -99,6 +104,7 @@ func check(
 	logPlatform votelog.Platform,
 	jurisdictions []config.Jurisdiction,
 	maxVotesToCheck, maxPosts int,
+	postFrom time.Time,
 	poster platforms.Platform,
 ) {
 	fmt.Printf("\n━━━ %s / %s ━━━\n", channelKey, displayName)
@@ -118,7 +124,7 @@ func check(
 		if err != nil {
 			log.Fatalf("Error preparing %s votes for %s: %v", j.Key, displayName, err)
 		}
-		perJurisdiction = append(perJurisdiction, groups)
+		perJurisdiction = append(perJurisdiction, voteposting.DropBefore(groups, postFrom))
 	}
 
 	merged := voteposting.MergeOldestFirst(perJurisdiction...)
