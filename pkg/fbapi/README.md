@@ -31,19 +31,26 @@ include.
 
 1. Open <https://developers.facebook.com/apps/>, then the **ZueriRatsinfo** app.
 2. In the left sidebar, open **Use cases**, then click **Customize** on the
-   Instagram use case.
-3. The page that opens may be **Welcome to the Instagram API**, listing
-   `instagram_business_*` permissions with an **Add all required permissions**
-   button. That is the *Instagram login* setup, which the bot does not use: it
-   posts through a Page token, which is the Facebook-login setup. Leave that
-   button alone.
-4. Open the **Permissions and features** page. It is linked in the text of
-   section 1 on that screen, and it is also in the sidebar under the use case.
-   Find `pages_manage_posts` and click **Add**.
+   Instagram use case. This opens **Customize use case**, with **Instagram API**
+   selected in the dropdown at the top of its own sidebar.
+3. That sidebar has four entries. The bot uses **API setup with Facebook
+   login**: its section 1 lists exactly the permissions the Instagram token
+   already has (`instagram_basic`, `instagram_content_publishing`,
+   `pages_read_engagement`, `business_management`, `pages_show_list`). Ignore
+   **API setup with Instagram login** and **API integration helper**. Their
+   `instagram_business_*` permissions and `graph.instagram.com` calls belong to
+   the other login flow, so don't click **Add all required permissions** there.
+4. Click **Permissions and features** in the sidebar, or the
+   **Go to permissions and features** button on the Facebook-login page. Find
+   `pages_manage_posts` in the list and click **Add**.
 
-If the Instagram use case does not list `pages_manage_posts`, add the use case
-**Manage everything on your Page** from the same **Use cases** page. Then add
-`pages_manage_posts` under its **Customize** in the same way.
+If `pages_manage_posts` is not in that list, click **Add more to this use
+case** at the bottom of the sidebar and add **Manage everything on your Page**.
+Then switch the dropdown to that use case and add `pages_manage_posts` under its
+**Permissions and features** in the same way.
+
+The Facebook-login page also has a **Complete app review** link, which offers
+Advanced Access. Skip it, for the reason given above.
 
 #### 1b. Regenerate the Page token
 
