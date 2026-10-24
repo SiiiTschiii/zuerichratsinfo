@@ -89,7 +89,15 @@ func main() {
 			// Optional here, unlike in main.go: a dry run without it shows what
 			// Facebook would post with no start date, which is the question
 			// someone setting it up is asking.
-			postFrom, _ := config.ParseDate(channel.Env("FB_POST_FROM"))
+			var postFrom time.Time
+			if raw := channel.Env("FB_POST_FROM"); raw != "" {
+				// A mistyped date is not "no date": it would show the unlimited
+				// backlog while the bot itself refuses to start.
+				var err error
+				if postFrom, err = config.ParseDate(raw); err != nil {
+					log.Fatalf("Channel %q: %sFB_POST_FROM: %v", channel.Key, channel.EnvPrefix(), err)
+				}
+			}
 			check(channel.Key, "Facebook", votelog.PlatformFacebook, jurisdictions, maxVotesToCheck, maxPosts,
 				postFrom, facebook.NewFacebookPlatform(maxPosts))
 		}
