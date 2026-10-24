@@ -77,7 +77,7 @@ func TestFormatPost_MultiVoteCaptionsEachCard(t *testing.T) {
 		t.Errorf("the title card should have no caption, got %q", content.Captions[0])
 	}
 	for i := range group {
-		want := strings.TrimRight(voteformat.LongFormVote(group, i, voteformat.Tags{}), "\n")
+		want := voteBlock(group, i)
 		if got := content.Captions[i+1]; got != want {
 			t.Errorf("card %d caption:\n%s\nwant:\n%s", i+1, got, want)
 		}
@@ -103,7 +103,7 @@ func TestFormatPost_VotesWithoutACardStayInThePost(t *testing.T) {
 		t.Fatalf("%d images, want the cap of %d", len(content.Images), maxPhotos)
 	}
 	for i := range group {
-		block := strings.TrimRight(voteformat.LongFormVote(group, i, voteformat.Tags{}), "\n")
+		block := voteBlock(group, i)
 		inCaption := i+1 < len(content.Captions) && content.Captions[i+1] == block
 		inMessage := strings.Contains(content.Message, block)
 		if inCaption == inMessage {
@@ -148,4 +148,51 @@ func TestFormatPost_WahlgeschaeftHasNoCounts(t *testing.T) {
 func firstLine(s string) string {
 	line, _, _ := strings.Cut(s, "\n")
 	return line
+}
+
+// Each card's caption links that vote's own recording, at its segment, where the
+// source has one: the post can only link the agenda item.
+func TestFormatPost_CaptionsLinkTheVotesOwnRecording(t *testing.T) {
+	group := testfixtures.KantonsratMultiVote()
+	content, err := FormatPost(group)
+	if err != nil {
+		t.Fatalf("FormatPost: %v", err)
+	}
+	seen := map[string]bool{}
+	for i, v := range group {
+		caption := content.Captions[i+1]
+		if v.ArchiveURL == "" {
+			t.Fatalf("fixture vote %d has no archive link", i)
+		}
+		if !strings.Contains(caption, "🎬 Video: "+v.ArchiveURL) {
+			t.Errorf("caption %d is missing the vote's own recording %s:\n%s", i+1, v.ArchiveURL, caption)
+		}
+		if seen[v.ArchiveURL] {
+			t.Errorf("two votes share the recording link %s", v.ArchiveURL)
+		}
+		seen[v.ArchiveURL] = true
+		// The business page is already in the post, so it is not repeated.
+		if strings.Contains(caption, "Abstimmung: "+v.SourceURL) {
+			t.Errorf("caption %d repeats the post's own Geschäft link", i+1)
+		}
+	}
+	// The post itself links the agenda item, never one vote's segment.
+	if strings.Contains(content.Message, "segmentUid") {
+		t.Errorf("post text links a single vote's segment:\n%s", content.Message)
+	}
+}
+
+// Stadt Zürich has no recording link, but each vote has its own page beside the
+// Traktandum the post links.
+func TestFormatPost_CaptionsLinkTheVotesOwnPage(t *testing.T) {
+	group := testfixtures.MultiVoteGroup()
+	content, err := FormatPost(group)
+	if err != nil {
+		t.Fatalf("FormatPost: %v", err)
+	}
+	for i, v := range group {
+		if !strings.Contains(content.Captions[i+1], "🔗 Abstimmung: "+v.SourceURL) {
+			t.Errorf("caption %d is missing the vote's own page %s:\n%s", i+1, v.SourceURL, content.Captions[i+1])
+		}
+	}
 }

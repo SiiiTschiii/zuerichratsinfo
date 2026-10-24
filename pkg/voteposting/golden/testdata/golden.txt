@@ -845,6 +845,8 @@ Grüne 12/0/5/1
 GLP 14/0/0/2
 Die Mitte 12/0/0/1
 AL 0/2/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-multi-1
 [caption of image 3]
 ❌ Abgelehnt: Schlussabstimmung
 📊 40 Ja | 70 Nein | 5 Enthaltung | 10 Abwesend
@@ -857,6 +859,8 @@ GLP 12/0/0/2
 Grüne 10/0/3/1
 Die Mitte 0/12/0/1
 AL 0/8/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-multi-2
 
 ################ FIXTURE generic-antrag-fallback ################
 
@@ -1525,6 +1529,8 @@ Die Mitte 10/5/0/1
 SVP 0/6/0/1
 AL 0/3/0/1
 
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-9
+
 🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
 [caption of image 2]
 ✅ Angenommen: Ziffer A
@@ -1538,6 +1544,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/15/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-0
 [caption of image 3]
 ✅ Angenommen: Ziffer B
 📊 81 Ja | 29 Nein | 5 Enthaltung | 10 Abwesend
@@ -1550,6 +1558,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/14/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-1
 [caption of image 4]
 ✅ Angenommen: Ziffer C
 📊 82 Ja | 28 Nein | 5 Enthaltung | 10 Abwesend
@@ -1562,6 +1572,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/13/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-2
 [caption of image 5]
 ✅ Angenommen: Ziffer D
 📊 83 Ja | 27 Nein | 5 Enthaltung | 10 Abwesend
@@ -1574,6 +1586,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/12/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-3
 [caption of image 6]
 ✅ Angenommen: Ziffer E
 📊 84 Ja | 26 Nein | 5 Enthaltung | 10 Abwesend
@@ -1586,6 +1600,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/11/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-4
 [caption of image 7]
 ✅ Angenommen: Ziffer F
 📊 85 Ja | 25 Nein | 5 Enthaltung | 10 Abwesend
@@ -1598,6 +1614,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/10/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-5
 [caption of image 8]
 ✅ Angenommen: Ziffer G
 📊 86 Ja | 24 Nein | 5 Enthaltung | 10 Abwesend
@@ -1610,6 +1628,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/9/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-6
 [caption of image 9]
 ✅ Angenommen: Ziffer H
 📊 87 Ja | 23 Nein | 5 Enthaltung | 10 Abwesend
@@ -1622,6 +1642,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/8/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-7
 [caption of image 10]
 ✅ Angenommen: Ziffer I
 📊 88 Ja | 22 Nein | 5 Enthaltung | 10 Abwesend
@@ -1634,6 +1656,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/7/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-8
 
 ################ FIXTURE vote-with-mentions ################
 
@@ -2135,6 +2159,8 @@ GLP 10/5/0/2
 Die Mitte 8/5/0/2
 Grüne 14/0/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mixed-1
 [caption of image 3]
 Änderungsantrag 17, 1. Abstimmung Weisung des Stadtrats betreffend Revision der Bau- und Zonenordnung
 📊 A: 50 | B: 24 | C: 40 | Abwesend 11
@@ -2147,6 +2173,8 @@ GLP 8/6/0/2
 Grüne 10/0/5/1
 Die Mitte 4/0/10/1
 AL 0/0/5/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mixed-2
 
 ################ FIXTURE postulat-with-grnr-prefix ################
 
@@ -2751,6 +2779,8 @@ Grüne 19/0/0/0
 Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
+
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
 [caption of image 3]
 Abstimmung 2 (11:30) · Quorum
 📊 129 Zustimmungen | 51 ohne Zustimmung
@@ -2764,6 +2794,8 @@ Grüne 19/0
 Die Mitte 12/0
 EVP 7/0
 AL 5/0
+
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
 [caption of image 4]
 Abstimmung 3 (11:40)
 📊 129 Ja | 44 Nein | 0 Enthaltung | 7 Abwesend
@@ -2777,6 +2809,8 @@ Grüne 19/0/0/0
 Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
+
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=94915e31-5be7-41db-911e-123f216f9ee9
 [caption of image 5]
 Abstimmung 4 (11:41) · Quorum
 📊 129 Zustimmungen | 51 ohne Zustimmung
@@ -2790,6 +2824,8 @@ Grüne 19/0
 Die Mitte 12/0
 EVP 7/0
 AL 5/0
+
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=c3422c5f-3dac-495d-855c-d26552ef5601
 [caption of image 6]
 Abstimmung 5 (11:42) · Quorum
 📊 128 Zustimmungen | 52 ohne Zustimmung
@@ -2803,6 +2839,8 @@ Grüne 19/0
 Die Mitte 12/0
 EVP 7/0
 AL 5/0
+
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=aa6d241e-bfdc-4ca1-beea-236337c16f0e
 
 ################ FIXTURE kantonsrat-lone-quorum-vote ################
 
@@ -3138,6 +3176,8 @@ Grüne 19/0/0/0
 Die Mitte 12/0/0/0
 EVP 7/0/0/0
 AL 5/0/0/0
+
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=95cfdd0d-453d-467b-9e57-6e1afddb766e
 [caption of image 3]
 ✅ Angenommen: Abstimmung 2 (11:30) · Quorum
 📊 129 Zustimmungen | 51 ohne Zustimmung
@@ -3151,6 +3191,8 @@ Grüne 19/0
 Die Mitte 12/0
 EVP 7/0
 AL 5/0
+
+🎬 Video: https://zh.recapp.ch/shareparl?agendaItemUid=c2c4b880-e83b-4ecc-aadb-5895d0f80f13&segmentUid=fc47bda1-dbb3-447f-bd3e-ce1d95ccea59
 
 ################ FIXTURE kantonsrat-member-business ################
 
@@ -4060,6 +4102,8 @@ Die Mitte 10/5/0/1
 SVP 0/6/0/1
 AL 0/3/0/1
 
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-9
+
 🔗 https://www.gemeinderat-zuerich.ch/sitzungen/sitzung/?gid=sitzung-stress#trakt-stress
 [caption of image 2]
 ✅ Angenommen: Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
@@ -4073,6 +4117,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/15/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-0
 [caption of image 3]
 ✅ Angenommen: Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
 📊 81 Ja | 29 Nein | 5 Enthaltung | 10 Abwesend
@@ -4085,6 +4131,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/14/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-1
 [caption of image 4]
 ✅ Angenommen: Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
 📊 82 Ja | 28 Nein | 5 Enthaltung | 10 Abwesend
@@ -4097,6 +4145,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/13/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-2
 [caption of image 5]
 ✅ Angenommen: Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
 📊 83 Ja | 27 Nein | 5 Enthaltung | 10 Abwesend
@@ -4109,6 +4159,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/12/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-3
 [caption of image 6]
 ✅ Angenommen: Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
 📊 84 Ja | 26 Nein | 5 Enthaltung | 10 Abwesend
@@ -4121,6 +4173,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/11/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-4
 [caption of image 7]
 ✅ Angenommen: Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
 📊 85 Ja | 25 Nein | 5 Enthaltung | 10 Abwesend
@@ -4133,6 +4187,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/10/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-5
 [caption of image 8]
 ✅ Angenommen: Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
 📊 86 Ja | 24 Nein | 5 Enthaltung | 10 Abwesend
@@ -4145,6 +4201,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/9/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-6
 [caption of image 9]
 ✅ Angenommen: Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
 📊 87 Ja | 23 Nein | 5 Enthaltung | 10 Abwesend
@@ -4157,6 +4215,8 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/8/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-7
 [caption of image 10]
 ✅ Angenommen: Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel Sehr langer Abstimmungstitel
 📊 88 Ja | 22 Nein | 5 Enthaltung | 10 Abwesend
@@ -4169,4 +4229,6 @@ Grüne 15/0/3/1
 Die Mitte 10/5/0/1
 SVP 0/7/0/1
 AL 0/3/0/1
+
+🔗 Abstimmung: https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-stress-8
 

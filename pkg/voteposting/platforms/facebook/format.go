@@ -92,7 +92,7 @@ func FormatPost(group []votes.Vote) (*FacebookContent, error) {
 		// goes in the post rather than being lost.
 		var uncovered strings.Builder
 		for i := range group {
-			block := strings.TrimRight(voteformat.LongFormVote(group, i, voteformat.Tags{}), "\n")
+			block := voteBlock(group, i)
 			if card := i + 1; card < len(images) {
 				captions[card] = block
 				continue
@@ -109,4 +109,20 @@ func FormatPost(group []votes.Vote) (*FacebookContent, error) {
 	}
 
 	return &FacebookContent{Images: images, Captions: captions, Message: message}, nil
+}
+
+// voteBlock is one vote's text for a caption: its counts and Fraktion table,
+// then the links that are this vote's own — the recording at its segment — so a
+// reader looking at a card can open exactly that vote.
+func voteBlock(group []votes.Vote, i int) string {
+	block := strings.TrimRight(voteformat.LongFormVote(group, i, voteformat.Tags{}), "\n")
+	links := voteformat.VoteLinks(group, i)
+	if len(links) == 0 {
+		return block
+	}
+	lines := make([]string, len(links))
+	for j, l := range links {
+		lines[j] = l.Line(true)
+	}
+	return block + "\n\n" + strings.Join(lines, "\n")
 }
