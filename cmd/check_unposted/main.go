@@ -4,7 +4,7 @@
 //
 // Usage:
 //
-//	go run ./cmd/check_unposted [-platform x|bluesky] [-jurisdiction KEY] [-n N] [-max-posts M]
+//	go run ./cmd/check_unposted [-platform x|bluesky|facebook] [-jurisdiction KEY] [-n N] [-max-posts M]
 //
 // Flags override the corresponding environment variables.
 package main
@@ -16,6 +16,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
@@ -23,12 +24,13 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/facebook"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
 )
 
 func main() {
-	platformFlag := flag.String("platform", "", "platform to check: x, bluesky (default: all)")
+	platformFlag := flag.String("platform", "", "platform to check: x, bluesky, facebook (default: all)")
 	jurisdictionFlag := flag.String("jurisdiction", "", "limit to one jurisdiction (default: every jurisdiction on the channel)")
 	nFlag := flag.Int("n", 0, "override MAX_VOTES_TO_CHECK")
 	maxPostsFlag := flag.Int("max-posts", 0, "override MAX_POSTS_PER_RUN for the chosen platform")
@@ -36,8 +38,9 @@ func main() {
 
 	showX := *platformFlag == "" || strings.EqualFold(*platformFlag, "x")
 	showBluesky := *platformFlag == "" || strings.EqualFold(*platformFlag, "bluesky") || strings.EqualFold(*platformFlag, "bsky")
-	if !showX && !showBluesky {
-		log.Fatalf("Unknown platform %q. Use: x, bluesky", *platformFlag)
+	showFacebook := *platformFlag == "" || strings.EqualFold(*platformFlag, "facebook") || strings.EqualFold(*platformFlag, "fb")
+	if !showX && !showBluesky && !showFacebook {
+		log.Fatalf("Unknown platform %q. Use: x, bluesky, facebook", *platformFlag)
 	}
 
 	if err := config.Validate(); err != nil {
@@ -72,13 +75,31 @@ func main() {
 		if showX {
 			maxPosts := pick(*maxPostsFlag, channel.EnvInt("X_MAX_POSTS_PER_RUN", 10))
 			check(channel.Key, "X/Twitter", votelog.PlatformX, jurisdictions, maxVotesToCheck, maxPosts,
-				x.NewXPlatform("", "", "", "", contactMapper, maxPosts))
+				time.Time{}, x.NewXPlatform("", "", "", "", contactMapper, maxPosts))
 		}
 
 		if showBluesky {
 			maxPosts := pick(*maxPostsFlag, channel.EnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10))
 			check(channel.Key, "Bluesky", votelog.PlatformBluesky, jurisdictions, maxVotesToCheck, maxPosts,
-				bluesky.NewBlueskyPlatform("", "", maxPosts, contactMapper))
+				time.Time{}, bluesky.NewBlueskyPlatform("", "", maxPosts, contactMapper))
+		}
+
+		if showFacebook {
+			maxPosts := pick(*maxPostsFlag, channel.EnvInt("FB_MAX_POSTS_PER_RUN", 5))
+			// Optional here, unlike in main.go: a dry run without it shows what
+			// Facebook would post with no start date, which is the question
+			// someone setting it up is asking.
+			var postFrom time.Time
+			if raw := channel.Env("FB_POST_FROM"); raw != "" {
+				// A mistyped date is not "no date": it would show the unlimited
+				// backlog while the bot itself refuses to start.
+				var err error
+				if postFrom, err = config.ParseDate(raw); err != nil {
+					log.Fatalf("Channel %q: %sFB_POST_FROM: %v", channel.Key, channel.EnvPrefix(), err)
+				}
+			}
+			check(channel.Key, "Facebook", votelog.PlatformFacebook, jurisdictions, maxVotesToCheck, maxPosts,
+				postFrom, facebook.NewFacebookPlatform(maxPosts))
 		}
 	}
 }
@@ -91,6 +112,7 @@ func check(
 	logPlatform votelog.Platform,
 	jurisdictions []config.Jurisdiction,
 	maxVotesToCheck, maxPosts int,
+	postFrom time.Time,
 	poster platforms.Platform,
 ) {
 	fmt.Printf("\n━━━ %s / %s ━━━\n", channelKey, displayName)
@@ -110,7 +132,7 @@ func check(
 		if err != nil {
 			log.Fatalf("Error preparing %s votes for %s: %v", j.Key, displayName, err)
 		}
-		perJurisdiction = append(perJurisdiction, groups)
+		perJurisdiction = append(perJurisdiction, voteposting.DropBefore(groups, postFrom))
 	}
 
 	merged := voteposting.MergeOldestFirst(perJurisdiction...)

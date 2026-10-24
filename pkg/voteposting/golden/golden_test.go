@@ -31,6 +31,7 @@ import (
 	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/facebook"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
@@ -82,6 +83,20 @@ func TestGoldenOutput(t *testing.T) {
 		}
 		sb.WriteString(fmt.Sprintf("[images] %d\n", len(content.Images)))
 		sb.WriteString(fmt.Sprintf("[caption]\n%s\n\n", content.Caption))
+
+		sb.WriteString("---- Facebook ----\n")
+		fbContent, err := facebook.FormatPost(group)
+		if err != nil {
+			t.Fatalf("formatting Facebook content for %s: %v", name, err)
+		}
+		sb.WriteString(fmt.Sprintf("[images] %d\n", len(fbContent.Images)))
+		sb.WriteString(fmt.Sprintf("[message]\n%s\n", fbContent.Message))
+		for i, caption := range fbContent.Captions {
+			if caption != "" {
+				sb.WriteString(fmt.Sprintf("[caption of image %d]\n%s\n", i+1, caption))
+			}
+		}
+		sb.WriteString("\n")
 	}
 
 	got := sb.String()
