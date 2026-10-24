@@ -43,8 +43,10 @@ include.
 4. The Instagram use case's **Permissions and features** list does not offer
    `pages_manage_posts`: it covers only `instagram_*`, `pages_read_engagement`,
    `pages_show_list` and a few others. The permission belongs to the Page use
-   case, so click **Add more to this use case** at the bottom of the sidebar
-   and add **Manage everything on your Page**.
+   case. **Add more to this use case** at the bottom of the sidebar is no way
+   to get it: it offers only Webhooks. Go back to **Use cases** in the app's
+   left sidebar and add the **Manage everything on your Page** use case there,
+   as a use case of its own.
 5. Switch the **Instagram API** dropdown at the top of the sidebar to
    **Manage everything on your Page**. Open its **Permissions and features**,
    find `pages_manage_posts` and click **Add**. Its status should read
