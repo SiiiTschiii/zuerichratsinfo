@@ -42,9 +42,10 @@ func TestFormatPost_AllFixtures(t *testing.T) {
 	}
 }
 
-// The body is the Instagram caption's body, untagged and untruncated.
-func TestFormatPost_MatchesLongFormBody(t *testing.T) {
-	group := testfixtures.MultiVoteGroup()
+// A single vote has one card and nothing to split, so its post keeps the whole
+// Instagram caption body.
+func TestFormatPost_SingleVoteKeepsAllTextInThePost(t *testing.T) {
+	group := testfixtures.SingleVoteAngenommen()
 	content, err := FormatPost(group)
 	if err != nil {
 		t.Fatalf("FormatPost: %v", err)
@@ -52,6 +53,62 @@ func TestFormatPost_MatchesLongFormBody(t *testing.T) {
 	body := strings.TrimRight(voteformat.LongFormBody(group, voteformat.Tags{}), "\n")
 	if !strings.HasPrefix(content.Message, body+"\n\n") {
 		t.Errorf("message does not start with the long-form body:\n%s", content.Message)
+	}
+	for i, c := range content.Captions {
+		if c != "" {
+			t.Errorf("caption %d = %q, want none for a single card", i, c)
+		}
+	}
+}
+
+// A multi-vote post carries the heading and links; each vote's counts ride on
+// its own card, after the title card.
+func TestFormatPost_MultiVoteCaptionsEachCard(t *testing.T) {
+	group := testfixtures.MultiVoteGroup()
+	content, err := FormatPost(group)
+	if err != nil {
+		t.Fatalf("FormatPost: %v", err)
+	}
+	if len(content.Images) != len(group)+1 || len(content.Captions) != len(content.Images) {
+		t.Fatalf("%d images and %d captions for %d votes, want one card per vote plus a title card",
+			len(content.Images), len(content.Captions), len(group))
+	}
+	if content.Captions[0] != "" {
+		t.Errorf("the title card should have no caption, got %q", content.Captions[0])
+	}
+	for i := range group {
+		want := strings.TrimRight(voteformat.LongFormVote(group, i, voteformat.Tags{}), "\n")
+		if got := content.Captions[i+1]; got != want {
+			t.Errorf("card %d caption:\n%s\nwant:\n%s", i+1, got, want)
+		}
+		// The point of the split: the counts are not repeated in the post.
+		if strings.Contains(content.Message, voteformat.FormatVoteCountsLong(voteformat.CountsOf(group[i]))) {
+			t.Errorf("vote %d's counts are in the post text as well as its caption", i)
+		}
+	}
+	if !strings.HasPrefix(content.Message, strings.TrimRight(voteformat.LongFormHeading(group, voteformat.Tags{}), "\n")) {
+		t.Errorf("message does not start with the heading:\n%s", content.Message)
+	}
+}
+
+// With more votes than cards, the votes past the cap have nowhere to caption.
+// Their text goes in the post: nothing is lost to the cap.
+func TestFormatPost_VotesWithoutACardStayInThePost(t *testing.T) {
+	group := testfixtures.TenVoteStressTest()
+	content, err := FormatPost(group)
+	if err != nil {
+		t.Fatalf("FormatPost: %v", err)
+	}
+	if len(content.Images) != maxPhotos {
+		t.Fatalf("%d images, want the cap of %d", len(content.Images), maxPhotos)
+	}
+	for i := range group {
+		block := strings.TrimRight(voteformat.LongFormVote(group, i, voteformat.Tags{}), "\n")
+		inCaption := i+1 < len(content.Captions) && content.Captions[i+1] == block
+		inMessage := strings.Contains(content.Message, block)
+		if inCaption == inMessage {
+			t.Errorf("vote %d is in the caption=%v and the message=%v, want exactly one", i, inCaption, inMessage)
+		}
 	}
 }
 

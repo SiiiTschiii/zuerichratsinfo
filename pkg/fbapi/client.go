@@ -50,11 +50,12 @@ type idResponse struct {
 }
 
 // UploadPhoto uploads a JPEG to the Page without publishing it, and returns the
-// photo ID to attach to a post with PublishPhotoPost.
+// photo ID to attach to a post with PublishPhotoPost. caption, when not empty,
+// is the photo's own text, shown with it when a reader opens it from the post.
 //
 // Meta holds an unpublished photo for about 24 hours and then deletes it, so a
 // photo whose post never happens needs no cleanup.
-func (c *Client) UploadPhoto(jpeg []byte, filename string) (string, error) {
+func (c *Client) UploadPhoto(jpeg []byte, filename, caption string) (string, error) {
 	var body bytes.Buffer
 	w := multipart.NewWriter(&body)
 
@@ -70,7 +71,11 @@ func (c *Client) UploadPhoto(jpeg []byte, filename string) (string, error) {
 	if _, err := part.Write(jpeg); err != nil {
 		return "", fmt.Errorf("building photo upload: %w", err)
 	}
-	for k, v := range map[string]string{"published": "false", "access_token": c.accessToken} {
+	fields := map[string]string{"published": "false", "access_token": c.accessToken}
+	if caption != "" {
+		fields["caption"] = caption
+	}
+	for k, v := range fields {
 		if err := w.WriteField(k, v); err != nil {
 			return "", fmt.Errorf("building photo upload: %w", err)
 		}

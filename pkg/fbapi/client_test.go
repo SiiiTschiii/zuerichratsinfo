@@ -26,6 +26,9 @@ func TestUploadPhoto(t *testing.T) {
 		if got := r.FormValue("access_token"); got != "tok123" {
 			t.Errorf("unexpected access_token: %q", got)
 		}
+		if got := r.FormValue("caption"); got != "🗳️ Abstimmung 1" {
+			t.Errorf("caption = %q", got)
+		}
 		file, header, err := r.FormFile("source")
 		if err != nil {
 			t.Fatalf("no source part: %v", err)
@@ -46,7 +49,7 @@ func TestUploadPhoto(t *testing.T) {
 	client := NewClient("page_1", "tok123")
 	client.SetAPIBase(server.URL)
 
-	id, err := client.UploadPhoto([]byte("jpeg-bytes"), "card_0.jpg")
+	id, err := client.UploadPhoto([]byte("jpeg-bytes"), "card_0.jpg", "🗳️ Abstimmung 1")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -109,12 +112,32 @@ func TestErrors(t *testing.T) {
 			client := NewClient("page_1", "tok123")
 			client.SetAPIBase(server.URL)
 
-			if _, err := client.UploadPhoto([]byte("x"), "a.jpg"); err == nil {
+			if _, err := client.UploadPhoto([]byte("x"), "a.jpg", ""); err == nil {
 				t.Error("UploadPhoto: expected error")
 			}
 			if _, err := client.PublishPhotoPost("text", []string{"p1"}); err == nil {
 				t.Error("PublishPhotoPost: expected error")
 			}
 		})
+	}
+}
+
+// A photo with no caption must send no caption field at all, not an empty one.
+func TestUploadPhoto_OmitsEmptyCaption(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseMultipartForm(1 << 20); err != nil {
+			t.Fatalf("parse multipart: %v", err)
+		}
+		if _, ok := r.MultipartForm.Value["caption"]; ok {
+			t.Errorf("caption field sent although empty")
+		}
+		_, _ = w.Write([]byte(`{"id":"photo_1"}`))
+	}))
+	defer server.Close()
+	client := NewClient("page_1", "tok123")
+	client.SetAPIBase(server.URL)
+
+	if _, err := client.UploadPhoto([]byte("x"), "a.jpg", ""); err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
 }

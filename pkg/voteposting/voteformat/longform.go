@@ -26,8 +26,7 @@ func orIdentity(f func(string, string) string) func(string, string) string {
 }
 
 // LongFormBody renders a group as one block of text, without its links: the
-// headline, the label line, the title, then per vote the verdict, the counts and
-// the Fraktion breakdown.
+// heading, then per vote the verdict, the counts and the Fraktion breakdown.
 //
 // It is what the platforms that publish a vote as a single post carry — the
 // Instagram caption and the Facebook message — where X and Bluesky spread the
@@ -41,67 +40,82 @@ func orIdentity(f func(string, string) string) func(string, string) string {
 // calls, and nothing below means anything for a headcount. Callers check
 // votes.IsWahlgeschaeftGroup first.
 func LongFormBody(group []votes.Vote, tags Tags) string {
-	tagHeading := orIdentity(tags.Heading)
-	tagSubVote := orIdentity(tags.SubVote)
-	jurisdiction := group[0].Jurisdiction
-
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("🗳️ %s\n\n", PostHeadline(group)))
-
-	// The label line: what kind of business this is, who filed it, plus the
-	// Abstimmungsgegenstand when a lone vote makes that meaningful.
-	//
-	// Tagged like the title, and for a body whose titles carry no names — Kanton
-	// Zürich's never do — this is the only line that names anyone at all.
-	if prefix := GroupPrefixLine(group); prefix != "" {
-		sb.WriteString(tagHeading(prefix, jurisdiction))
-		sb.WriteString("\n")
-	}
-
-	sb.WriteString(tagHeading(CleanVoteTitle(group[0].Title), jurisdiction))
-	sb.WriteString("\n\n")
-
-	for i, vote := range group {
-		counts := CountsOf(vote)
-
-		if len(group) > 1 {
-			// Multi-vote: include subtitle
-			voteTitle := tagSubVote(SubVoteLabel(vote, i, len(group)), vote.Jurisdiction)
-			if !HasVerdict(vote) {
-				sb.WriteString(voteTitle)
-			} else {
-				sb.WriteString(fmt.Sprintf("%s %s: %s",
-					GetVoteResultEmoji(vote.Decision), GetVoteResultText(vote.Decision), voteTitle))
-			}
-			sb.WriteString("\n")
-		} else {
-			// Single vote: the ballot type when it is one worth naming, then the
-			// result line. A lone threshold vote needs the label most — there is
-			// no sibling beside it to make the lopsided tally look unusual.
-			if label := TypeLabel(vote.Type); label != "" {
-				sb.WriteString(label + "\n")
-			}
-			if HasVerdict(vote) {
-				sb.WriteString(fmt.Sprintf("%s %s\n",
-					GetVoteResultEmoji(vote.Decision), GetVoteResultText(vote.Decision)))
-			}
-		}
-
-		sb.WriteString(FormatVoteCountsLong(counts))
-		sb.WriteString("\n")
-
-		if len(vote.MemberVotes) > 0 {
-			if breakdown := FormatFraktionBreakdown(AggregateFraktionCounts(vote)); breakdown != "" {
-				sb.WriteString("\n")
-				sb.WriteString(breakdown)
-				sb.WriteString("\n")
-			}
-		}
-
+	sb.WriteString(LongFormHeading(group, tags))
+	for i := range group {
+		sb.WriteString(LongFormVote(group, i, tags))
 		if i < len(group)-1 {
 			sb.WriteString("\n")
 		}
 	}
+	return sb.String()
+}
 
+// LongFormHeading is the top of LongFormBody: the headline, the label line —
+// what kind of business this is and who filed it, plus the
+// Abstimmungsgegenstand when a lone vote makes that meaningful — and the title,
+// ending in the blank line before the first vote.
+//
+// The label line is tagged like the title, and for a body whose titles carry no
+// names — Kanton Zürich's never do — it is the only line that names anyone at
+// all.
+func LongFormHeading(group []votes.Vote, tags Tags) string {
+	tagHeading := orIdentity(tags.Heading)
+	jurisdiction := group[0].Jurisdiction
+
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("🗳️ %s\n\n", PostHeadline(group)))
+	if prefix := GroupPrefixLine(group); prefix != "" {
+		sb.WriteString(tagHeading(prefix, jurisdiction))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(tagHeading(CleanVoteTitle(group[0].Title), jurisdiction))
+	sb.WriteString("\n\n")
+	return sb.String()
+}
+
+// LongFormVote is the part of LongFormBody that belongs to vote i of the group:
+// its label and verdict, its counts and its Fraktion breakdown, ending in a
+// newline. A platform that shows each vote beside its own card uses it on its
+// own.
+func LongFormVote(group []votes.Vote, i int, tags Tags) string {
+	tagSubVote := orIdentity(tags.SubVote)
+	vote := group[i]
+	counts := CountsOf(vote)
+
+	var sb strings.Builder
+	if len(group) > 1 {
+		// Multi-vote: include subtitle
+		voteTitle := tagSubVote(SubVoteLabel(vote, i, len(group)), vote.Jurisdiction)
+		if !HasVerdict(vote) {
+			sb.WriteString(voteTitle)
+		} else {
+			sb.WriteString(fmt.Sprintf("%s %s: %s",
+				GetVoteResultEmoji(vote.Decision), GetVoteResultText(vote.Decision), voteTitle))
+		}
+		sb.WriteString("\n")
+	} else {
+		// Single vote: the ballot type when it is one worth naming, then the
+		// result line. A lone threshold vote needs the label most — there is
+		// no sibling beside it to make the lopsided tally look unusual.
+		if label := TypeLabel(vote.Type); label != "" {
+			sb.WriteString(label + "\n")
+		}
+		if HasVerdict(vote) {
+			sb.WriteString(fmt.Sprintf("%s %s\n",
+				GetVoteResultEmoji(vote.Decision), GetVoteResultText(vote.Decision)))
+		}
+	}
+
+	sb.WriteString(FormatVoteCountsLong(counts))
+	sb.WriteString("\n")
+
+	if len(vote.MemberVotes) > 0 {
+		if breakdown := FormatFraktionBreakdown(AggregateFraktionCounts(vote)); breakdown != "" {
+			sb.WriteString("\n")
+			sb.WriteString(breakdown)
+			sb.WriteString("\n")
+		}
+	}
 	return sb.String()
 }

@@ -2,11 +2,13 @@
 
 This package publishes a post with photos to the ZueriRatsinfo Facebook Page
 through the [Pages API](https://developers.facebook.com/docs/pages-api/posts/).
-Each vote group gets the same card images as its Instagram carousel, with the
-Instagram caption's text as the message. Publishing takes two calls:
+Each vote group gets the same card images as its Instagram carousel. For a
+multi-vote group the post text is the heading, the title and the links, and each
+vote's counts and Fraktion breakdown are the caption of its own card; a single
+vote keeps all its text in the post. Publishing takes two calls:
 
 1. `POST /{page-id}/photos` once per card, as a multipart upload with
-   `published=false`, which returns a photo ID.
+   `published=false` and the card's `caption`, which returns a photo ID.
 2. `POST /{page-id}/feed` with the `message` and one `attached_media[n]` per
    photo, in carousel order.
 

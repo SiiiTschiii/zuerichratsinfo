@@ -9,6 +9,7 @@ import (
 )
 
 type fakeAPI struct {
+	captions   []string // captions, in call order
 	uploads    []string // filenames, in call order
 	uploadErr  error    // returned by the failOn-th upload (1-based); 0 = never
 	failOn     int
@@ -17,8 +18,9 @@ type fakeAPI struct {
 	attached   []string
 }
 
-func (f *fakeAPI) upload(_ []byte, filename string) (string, error) {
+func (f *fakeAPI) upload(_ []byte, filename, caption string) (string, error) {
 	f.uploads = append(f.uploads, filename)
+	f.captions = append(f.captions, caption)
 	if f.failOn == len(f.uploads) {
 		return "", f.uploadErr
 	}
@@ -62,6 +64,12 @@ func TestPost_UploadsEveryCardThenPublishesOnePost(t *testing.T) {
 	}
 	if f.message != fb.Message {
 		t.Errorf("published the wrong message")
+	}
+	// Each card travels with its own caption, in the same order as the cards.
+	for i, c := range fb.Captions {
+		if f.captions[i] != c {
+			t.Errorf("upload %d carried caption %q, want %q", i, f.captions[i], c)
+		}
 	}
 	// The post attaches the uploads in the order they were made, which is the
 	// carousel's order.

@@ -90,7 +90,13 @@ func TestGoldenOutput(t *testing.T) {
 			t.Fatalf("formatting Facebook content for %s: %v", name, err)
 		}
 		sb.WriteString(fmt.Sprintf("[images] %d\n", len(fbContent.Images)))
-		sb.WriteString(fmt.Sprintf("[message]\n%s\n\n", fbContent.Message))
+		sb.WriteString(fmt.Sprintf("[message]\n%s\n", fbContent.Message))
+		for i, caption := range fbContent.Captions {
+			if caption != "" {
+				sb.WriteString(fmt.Sprintf("[caption of image %d]\n%s\n", i+1, caption))
+			}
+		}
+		sb.WriteString("\n")
 	}
 
 	got := sb.String()

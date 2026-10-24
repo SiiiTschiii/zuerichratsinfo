@@ -11,7 +11,7 @@ import (
 
 // UploadPhotoFunc is the signature for uploading an unpublished photo. Defaults
 // to fbapi.Client.UploadPhoto.
-type UploadPhotoFunc func(jpeg []byte, filename string) (string, error)
+type UploadPhotoFunc func(jpeg []byte, filename, caption string) (string, error)
 
 // PublishPhotoPostFunc is the signature for publishing a post with attached
 // photos. Defaults to fbapi.Client.PublishPhotoPost.
@@ -86,7 +86,7 @@ func (p *FacebookPlatform) publish(c *FacebookContent) error {
 	ts := time.Now().UnixMilli()
 	photoIDs := make([]string, len(c.Images))
 	for i, img := range c.Images {
-		id, err := p.uploadPhotoFunc(img, fmt.Sprintf("carousel_%d_%d.jpg", ts, i))
+		id, err := p.uploadPhotoFunc(img, fmt.Sprintf("carousel_%d_%d.jpg", ts, i), c.Captions[i])
 		if err != nil {
 			return fmt.Errorf("uploading image %d: %w", i, err)
 		}
