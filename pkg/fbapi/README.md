@@ -44,8 +44,8 @@ include.
    **Go to permissions and features** button on the Facebook-login page. Find
    `pages_manage_posts` in the list and click **Add**.
 
-If `pages_manage_posts` is not in that list, click **Add more to this use
-case** at the bottom of the sidebar and add **Manage everything on your Page**.
+The ZueriRatsinfo app lists it there. If yours does not, click **Add more to
+this use case** at the bottom of the sidebar and add **Manage everything on your Page**.
 Then switch the dropdown to that use case and add `pages_manage_posts` under its
 **Permissions and features** in the same way.
 
