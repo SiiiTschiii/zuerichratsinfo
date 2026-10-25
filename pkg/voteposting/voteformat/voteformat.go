@@ -889,16 +889,21 @@ func SubVoteLabel(v votes.Vote, index, groupSize int) string {
 // CardCountsLabel is the heading above the counts on a card showing a lone
 // vote: when it was taken, and what kind of ballot it was.
 //
-// It is what SubVoteLabel does for the entries of a group, for the one case
-// that has no group to be numbered within. The card needs the clock more than
-// the text post does, because a card carries no headline: the caption states
-// the sitting date and time, but the image travels on its own, and two votes
-// under a recurring agenda item ("Mitteilungen") produce the same picture
-// twice. The clock is the only fact the source offers that tells them apart.
+// It is what PostHeadline does for the text post, and for the same reason: a
+// card carries no headline. The caption states the sitting date and time, but
+// the image travels on its own — saved, forwarded, screenshotted — and a card
+// that says only "(10:01)" cannot be placed on any calendar. Two votes under a
+// recurring agenda item ("Mitteilungen") at different sittings would also
+// produce the same picture twice. So the card names the date, and the clock
+// where the source has one: Stadt Zürich publishes only the sitting date, and
+// its cards say "Abstimmung vom 30.09.2026" without one.
 func CardCountsLabel(v votes.Vote) string {
 	base := ""
-	if hasClockTime(v.Date) {
-		base = fmt.Sprintf("Abstimmung (%s)", v.Date.Format("15:04"))
+	if !v.Date.IsZero() {
+		base = "Abstimmung vom " + FormatVoteDate(v.Date)
+		if hasClockTime(v.Date) {
+			base += fmt.Sprintf(" (%s)", v.Date.Format("15:04"))
+		}
 	}
 	return joinTypeLabel(base, v.Type)
 }

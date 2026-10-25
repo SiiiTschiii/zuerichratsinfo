@@ -1115,7 +1115,7 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 	// Summary: list each sub-vote with number + emoji + short subtitle.
 	cur.gap(fonts.regular, 0.75)
 	if img != nil {
-		header := fmt.Sprintf("Übersicht (%d Teilabstimmungen)", len(group))
+		header := summaryHeader(group)
 		drawCenteredText(img, fonts.small, nil, cur.baseline(fonts.small), header, bg)
 	}
 	cur.advance(fonts.small)
@@ -1199,6 +1199,10 @@ func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, 
 		return
 	}
 
+	// The date in the corner, as on a result card. Date only, like the text
+	// post's headline: the one timestamp available is the roll call's.
+	drawCornerLabels(img, fonts, *v, "", bg)
+
 	// Marker: large centered 🗳️ above the title, where an ordinary vote card
 	// carries its verdict.
 	if img != nil {
@@ -1252,15 +1256,7 @@ func renderResultCard(v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total i
 }
 
 func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) {
-	if img != nil {
-		badge := formatProgressBadge(idx, total)
-		if badge != "" {
-			badgeW := font.MeasureString(fonts.small, badge).Ceil()
-			badgeX := imgWidth - padding - badgeW
-			badgeY := bandInset(*v) + padding + fonts.small.Metrics().Ascent.Ceil()
-			drawShadowedText(img, fonts.small, nil, badgeX, badgeY, badge, bg)
-		}
-	}
+	drawCornerLabels(img, fonts, *v, formatProgressBadge(idx, total), bg)
 
 	// Heading naming this vote within the group. Without it the cards of a
 	// group whose source publishes no per-vote title are indistinguishable.
@@ -1361,6 +1357,40 @@ func auswahlResultLabel(schlussresultat string) string {
 		letter = upper[len("AUSWAHL "):]
 	}
 	return "[" + letter + "]"
+}
+
+// summaryHeader heads the title card's list of sub-votes. It carries the
+// sitting date because the title card is the one card of a carousel that names
+// the business: shared on its own, it would otherwise not say when any of it
+// was decided. The clock stays on the entries, since a group spans several.
+func summaryHeader(group []votes.Vote) string {
+	if d := voteformat.FormatVoteDate(group[0].Date); d != "" {
+		return fmt.Sprintf("Übersicht (%d Teilabstimmungen vom %s)", len(group), d)
+	}
+	return fmt.Sprintf("Übersicht (%d Teilabstimmungen)", len(group))
+}
+
+// drawCornerLabels draws the sitting date in the card's top-left corner and,
+// when one is given, the progress badge in the top-right, on the same line.
+//
+// It serves the cards whose content has no date of its own: a result card
+// heads its counts with SubVoteLabel, which the text posts share and which
+// therefore carries no date (their headline already does), and a Wahlgeschäft
+// card has no counts heading at all. Every card leaves the carousel on its own
+// sooner or later, and one that cannot be dated is one a reader cannot place.
+// The corner costs no vertical space, so no card's layout reserve changes.
+func drawCornerLabels(img *image.RGBA, fonts *fontSet, v votes.Vote, badge string, bg color.RGBA) {
+	if img == nil {
+		return
+	}
+	y := bandInset(v) + padding + fonts.small.Metrics().Ascent.Ceil()
+	if date := voteformat.FormatVoteDate(v.Date); date != "" {
+		drawShadowedText(img, fonts.small, nil, padding, y, date, bg)
+	}
+	if badge != "" {
+		badgeW := font.MeasureString(fonts.small, badge).Ceil()
+		drawShadowedText(img, fonts.small, nil, imgWidth-padding-badgeW, y, badge, bg)
+	}
 }
 
 func formatProgressBadge(index, total int) string {

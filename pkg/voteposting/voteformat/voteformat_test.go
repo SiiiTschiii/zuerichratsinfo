@@ -386,10 +386,10 @@ func TestSubVoteLabelNamesTheVoteType(t *testing.T) {
 func intPtr(n int) *int { return &n }
 
 // A card carries no headline, so the caption's date and time do not travel with
-// it. Two votes under a recurring agenda item produce the same picture twice
-// unless the clock is on the card itself.
+// it. The card has to say when the vote was taken on its own.
 func TestCardCountsLabel(t *testing.T) {
 	at0941 := time.Date(2026, 8, 17, 9, 41, 0, 0, time.UTC)
+	midnight := time.Date(2026, 8, 17, 0, 0, 0, 0, time.UTC)
 
 	tests := []struct {
 		name     string
@@ -397,11 +397,13 @@ func TestCardCountsLabel(t *testing.T) {
 		voteType string
 		expected string
 	}{
-		{"clock and type together", at0941, "Ausgabenbremse", "Abstimmung (09:41) · Ausgabenbremse"},
-		{"clock alone", at0941, "Normal", "Abstimmung (09:41)"},
+		{"date, clock and type together", at0941, "Ausgabenbremse", "Abstimmung vom 17.08.2026 (09:41) · Ausgabenbremse"},
+		{"date and clock", at0941, "Normal", "Abstimmung vom 17.08.2026 (09:41)"},
 		// Stadt Zürich supplies sitting dates at midnight, so a clock there
-		// would invent a precision the source does not have.
-		{"midnight leaves the type standing alone", time.Date(2026, 8, 17, 0, 0, 0, 0, time.UTC), "Quorum", "Quorum"},
+		// would invent a precision the source does not have. The date stands.
+		{"midnight keeps the date alone", midnight, "Normal", "Abstimmung vom 17.08.2026"},
+		{"midnight with a type", midnight, "Quorum", "Abstimmung vom 17.08.2026 · Quorum"},
+		{"unknown date leaves the type standing alone", time.Time{}, "Quorum", "Quorum"},
 		{"nothing to say", time.Time{}, "Normal", ""},
 	}
 
