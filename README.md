@@ -1,7 +1,7 @@
 # Zurich Ratsinfo
 
 <p align="center">
-  <img src="assets/brand/parlinfo-readme-header.png" alt="parlinfo" width="100%">
+  <img src="assets/logo.svg" alt="Zurich Ratsinfo Logo" width="200"/>
 </p>
 
 <p align="center">
