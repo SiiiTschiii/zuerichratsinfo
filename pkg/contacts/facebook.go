@@ -70,11 +70,14 @@ func isDigits(s string) bool {
 func (m *Mapper) TagFacebookHandlesInText(text string) string {
 	var taggable []HandleTag
 	for _, contact := range m.getAllContacts() {
-		verified := contact.Verified("facebook")
-		if len(verified) == 0 {
-			continue
+		// A contact can hold several accounts, and the one with an ID need not
+		// be the first listed: take the first that has one.
+		mention := ""
+		for _, url := range contact.Verified("facebook") {
+			if mention = ExtractFacebookMentionFromURL(url); mention != "" {
+				break
+			}
 		}
-		mention := ExtractFacebookMentionFromURL(verified[0])
 		if mention == "" {
 			continue
 		}

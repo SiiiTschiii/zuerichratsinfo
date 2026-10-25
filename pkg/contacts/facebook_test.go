@@ -40,6 +40,15 @@ func TestTagFacebookHandlesInText(t *testing.T) {
 		facebookContact("Moritz Bögli", "https://www.facebook.com/profile.php?id=444", true),
 	})
 
+	// A vanity URL listed first must not hide the account that has an ID.
+	second := NewMapperForTest([]Contact{{Name: "Serap Kahriman", Facebook: []Account{
+		{URL: "https://www.facebook.com/serap.kahriman", Verified: true},
+		{URL: "https://www.facebook.com/profile.php?id=555", Verified: true},
+	}}})
+	if got, want := second.TagFacebookHandlesInText("von Serap Kahriman"), "von @[555]"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+
 	got := m.TagFacebookHandlesInText("Postulat von Anna Graff (SP), Reto Brüesch (SVP) und Liv Mahrer (GLP)")
 	// The mention takes the name's place: it renders the account's own name,
 	// so appending it would print the name twice.
