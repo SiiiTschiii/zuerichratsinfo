@@ -739,7 +739,7 @@ func TestFormatVoteThread_NoDuplicateFacetOffsets(t *testing.T) {
 		SourceID: "no-affair", Title: "Mitteilungen", Body: "Kantonsrat ZH",
 		Date: testfixtures.MustDate("2026-08-31"),
 		Yes:  intPtr(100), No: intPtr(50), Abstention: intPtr(0), Absent: intPtr(30),
-		SourceURL: segment, GroupURL: segment, ArchiveURL: segment,
+		SourceURL: segment, GroupURL: segment, VideoURL: segment,
 		SessionURL: "https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?d=1",
 	}}
 

@@ -21,6 +21,7 @@ type voteDTO struct {
 	BusinessShortNumber string  `json:"BusinessShortNumber"`
 	BusinessTitle       string  `json:"BusinessTitle"`
 	BillTitle           *string `json:"BillTitle"`
+	IdLegislativePeriod int64   `json:"IdLegislativePeriod"`
 	IdSession           int64   `json:"IdSession"`
 	// Subject, MeaningYes and MeaningNo are served in French in the German
 	// feed since the Wintersession 2025, and are published as the service
@@ -62,7 +63,7 @@ func (c *Client) FetchRecent(limit int) ([]votes.Vote, error) {
 		"$filter":  c.voteFilter(),
 		"$orderby": "VoteEnd desc",
 		"$top":     strconv.Itoa(limit),
-		"$select":  "ID,RegistrationNumber,BusinessNumber,BusinessShortNumber,BusinessTitle,BillTitle,IdSession,Subject,MeaningYes,VoteEnd",
+		"$select":  "ID,RegistrationNumber,BusinessNumber,BusinessShortNumber,BusinessTitle,BillTitle,IdLegislativePeriod,IdSession,Subject,MeaningYes,VoteEnd",
 	}, &rows)
 	if err != nil {
 		return nil, err
@@ -381,6 +382,10 @@ func (c *Client) toVote(r voteDTO) votes.Vote {
 	id := strconv.FormatInt(r.ID, 10)
 	affairURL := BusinessURL(r.BusinessNumber)
 	title := strings.TrimSpace(r.BusinessTitle)
+	protocol := ""
+	if r.IdLegislativePeriod > 0 {
+		protocol = ProtocolURL(r.IdLegislativePeriod, r.RegistrationNumber)
+	}
 
 	return votes.Vote{
 		SourceID:     id,
@@ -396,6 +401,7 @@ func (c *Client) toVote(r voteDTO) votes.Vote {
 		Type:        "Normal",
 		SourceURL:   affairURL,
 		GroupURL:    affairURL,
+		ArchiveURL:  protocol,
 		Attribution: Attribution,
 		Affair: votes.Affair{
 			Number: r.BusinessShortNumber,
@@ -422,4 +428,13 @@ const Seats = 200
 // every vote taken on it.
 func BusinessURL(businessNumber int64) string {
 	return fmt.Sprintf("https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId=%d", businessNumber)
+}
+
+// ProtocolURL is a vote's Abstimmungsprotokoll: the Parlamentsdienste's PDF of
+// the tally and every member's vote, headed "Ref." with the vote's
+// RegistrationNumber. It is built rather than looked up, because the service
+// names no document for it; the path is the one parlament.ch links from the
+// Amtliches Bulletin, and the file is there within seconds of the vote closing.
+func ProtocolURL(legislativePeriod, registrationNumber int64) string {
+	return fmt.Sprintf("https://www.parlament.ch/poly/Abstimmung/%d/out/vote_%d_%d.pdf", legislativePeriod, legislativePeriod, registrationNumber)
 }

@@ -212,6 +212,29 @@ func TestGroupByAffair_TalliesMatchTheProtocol(t *testing.T) {
 	}
 }
 
+func TestFetchRecent_LinksTheProtocol(t *testing.T) {
+	c, _ := newTestClient(t)
+
+	vs, err := c.FetchRecent(10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The PDF headed "Ref. 33225", fetched from this URL on 25.10.2026.
+	want := "https://www.parlament.ch/poly/Abstimmung/52/out/vote_52_33225.pdf"
+	if vs[0].ArchiveURL != want {
+		t.Errorf("archive URL = %q, want %q", vs[0].ArchiveURL, want)
+	}
+}
+
+func TestToVote_NoLegislatureNoProtocol(t *testing.T) {
+	c := New(testJurisdiction)
+	v := c.toVote(voteDTO{ID: 1, RegistrationNumber: 33225, BusinessNumber: 20260033})
+	// vote_0_33225.pdf does not exist, and a link to it would be a 404 in a post.
+	if v.ArchiveURL != "" {
+		t.Errorf("archive URL = %q, want none", v.ArchiveURL)
+	}
+}
+
 func TestGroupByAffair_LabelsBillsAndUnusualMeanings(t *testing.T) {
 	c, _ := newTestClient(t)
 	groups := fetchAndGroup(t, c)

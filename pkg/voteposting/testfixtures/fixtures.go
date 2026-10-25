@@ -595,8 +595,8 @@ func PostulatWithGrNrPrefix() []votes.Vote {
 // fixture that left them empty would render a link block no cantonal post has.
 func withCantonLinks(v *votes.Vote, agendaItemUID, segmentUID string) {
 	item := "https://zh.recapp.ch/shareparl?agendaItemUid=" + agendaItemUID
-	v.ArchiveURL = item + "&segmentUid=" + segmentUID
-	v.ArchiveGroupURL = item
+	v.VideoURL = item + "&segmentUid=" + segmentUID
+	v.VideoGroupURL = item
 
 	day := v.Date.Format("2006-01-02")
 	q := url.Values{}
