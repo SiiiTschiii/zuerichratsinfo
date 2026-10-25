@@ -38,14 +38,15 @@ Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei D
 | ---------------------------- | ------------------------------------------------------------------------ | ------- |
 | **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live |
 | **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live |
-| **Nationalrat**              | [parlament.ch OData](https://ws.parlament.ch/odata.svc/), Parlamentsdienste | 🧪 Dry run |
+| **Nationalrat**              | [parlament.ch OData](https://ws.parlament.ch/odata.svc/), Parlamentsdienste | ✅ Live |
 
 The two Zürich bodies post to the same accounts (Zürich Ratsinfo). Every post
 names which chamber voted, in the text and on the image, so the two are never
 confused. The Nationalrat posts only its Schluss- and Gesamtabstimmungen, to
-accounts of its own (CH Parl Info, [@chparlinfo](https://www.instagram.com/chparlinfo)
-on Instagram, with X, Bluesky and a Facebook Page to follow), from the separate
-`bot-chparl.yml` workflow.
+accounts of its own, from the separate `bot-chparl.yml` workflow: CH Parl Info
+on [Instagram](https://www.instagram.com/chparlinfo) and
+[Facebook](https://www.facebook.com/profile.php?id=1433822196472383), with X and
+Bluesky to follow.
 
 ## Supported Platforms
 
