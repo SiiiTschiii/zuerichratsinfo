@@ -179,3 +179,36 @@ ZURICH_FB_PAGE_ID=$FB_PAGE_ID ZURICH_FB_ACCESS_TOKEN=$IG_TOKEN go run ./cmd/post
 ```
 
 The output ends with the post URL. Delete the post from the Page afterwards.
+
+## Testing mentions
+
+The bot tags politicians and parties on the other platforms. Facebook mentions
+need a numeric ID, and whether Meta lets this app mention a given Page or
+person at all is not in the documentation, so `cmd/test_fb_mention` asks Meta:
+it posts one test message per account to a **test Page**, with the account
+mentioned as `@[id]`, then reads the post back and reports whether Facebook
+turned the mention into a tag.
+
+A mention notifies the account it names, and the posts are public. Name only
+accounts that expect the test, and never the production Page, which is why the
+Page ID is a required flag and is never read from the environment.
+
+With a Page token for the test Page in `$TEST_PAGE_TOKEN` (see
+[Access Token](../igapi/README.md#access-token-never-expiring-page-token), using
+`me/accounts` to pick the test Page):
+
+```bash
+ZURICH_FB_ACCESS_TOKEN=$TEST_PAGE_TOKEN go run ./cmd/test_fb_mention \
+  -page-id <test page id> \
+  -party-url https://www.facebook.com/fdpstadtzuerich/ \
+  -contact-url https://www.facebook.com/profile.php?id=<id of a contact> \
+  -delete
+```
+
+Each account prints one of:
+
+- `🏷️ Facebook accepted the mention`: the mention works at this access level.
+- `🚫 Facebook did NOT accept the mention`: the post went out, but the mention
+  is plain text. The app lacks the access, or `@[id]` is not the syntax.
+- `🔎 Lookup refused or failed`: a vanity URL could not be turned into an ID.
+  A `profile.php?id=…` URL needs no lookup.
