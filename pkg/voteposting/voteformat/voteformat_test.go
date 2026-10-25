@@ -615,6 +615,45 @@ func TestSubVoteLabel(t *testing.T) {
 	}
 }
 
+// A result card prints the vote's time in its corner, so its heading drops the
+// clock that SubVoteLabel gives the text posts — and nothing else.
+func TestCardSubVoteLabelLeavesTheClockToTheCorner(t *testing.T) {
+	timed := time.Date(2026, 6, 29, 14, 32, 11, 0, time.UTC)
+
+	untitled := votes.Vote{Date: timed, Type: "Quorum"}
+	if got := SubVoteLabel(untitled, 1, 3); got != "Abstimmung 2 (14:32) · Quorum" {
+		t.Fatalf("SubVoteLabel = %q, the text posts' label changed", got)
+	}
+	if got := CardSubVoteLabel(untitled, 1, 3); got != "Abstimmung 2 · Quorum" {
+		t.Errorf("CardSubVoteLabel = %q, want %q", got, "Abstimmung 2 · Quorum")
+	}
+
+	titled := votes.Vote{Subtitle: "Schlussabstimmung", Date: timed}
+	if got := CardSubVoteLabel(titled, 1, 3); got != "Schlussabstimmung" {
+		t.Errorf("CardSubVoteLabel = %q, want the vote's own title", got)
+	}
+}
+
+func TestFormatVoteDateTime(t *testing.T) {
+	tests := []struct {
+		name string
+		date time.Time
+		want string
+	}{
+		{"date and clock", time.Date(2026, 6, 15, 11, 29, 43, 0, time.UTC), "15.06.2026 11:29"},
+		// PARIS dates are midnight: the date stands alone rather than "00:00".
+		{"midnight is a date alone", time.Date(2025, 6, 15, 0, 0, 0, 0, time.UTC), "15.06.2025"},
+		{"unknown date", time.Time{}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FormatVoteDateTime(tt.date); got != tt.want {
+				t.Errorf("FormatVoteDateTime(%v) = %q, want %q", tt.date, got, tt.want)
+			}
+		})
+	}
+}
+
 // A vote type nobody has taught the formatters about must not reach a reader.
 // The cases below are the real ones: Kanton Zürich serves a null type for
 // attendance determinations and for the occasional genuine quorum vote, and

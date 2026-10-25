@@ -21,6 +21,15 @@ func FormatVoteDate(t time.Time) string {
 	return t.Format("02.01.2006")
 }
 
+// FormatVoteDateTime renders a vote's timestamp as "DD.MM.YYYY HH:MM", or as
+// the date alone where the source has no time of day (see hasClockTime).
+func FormatVoteDateTime(t time.Time) string {
+	if !hasClockTime(t) {
+		return FormatVoteDate(t)
+	}
+	return t.Format("02.01.2006 15:04")
+}
+
 // GetVoteResultEmoji returns the appropriate emoji for a vote result
 func GetVoteResultEmoji(result string) string {
 	result = strings.TrimSpace(strings.ToLower(result))
@@ -874,12 +883,24 @@ func LinkLine(group []votes.Vote) string {
 // typeLabels). Unlike the clock it is not there to tell two votes apart, but to
 // stop a quorum vote's lopsided tally reading as near-unanimous agreement.
 func SubVoteLabel(v votes.Vote, index, groupSize int) string {
+	return subVoteLabel(v, index, groupSize, true)
+}
+
+// CardSubVoteLabel is SubVoteLabel without the clock, for a result card that
+// prints the vote's full date and time in its corner instead. Splitting the
+// two — date in the corner, time in the heading — left a reader to put the
+// timestamp back together.
+func CardSubVoteLabel(v votes.Vote, index, groupSize int) string {
+	return subVoteLabel(v, index, groupSize, false)
+}
+
+func subVoteLabel(v votes.Vote, index, groupSize int, withClock bool) string {
 	base := CleanVoteSubtitle(v.Subtitle)
 	if base == "" {
 		base = fmt.Sprintf("Abstimmung %d", index+1)
 		// The clock disambiguates our own ordinals, so it belongs only on them.
 		// A source that titles its votes has already done the distinguishing.
-		if groupSize > 1 && hasClockTime(v.Date) {
+		if withClock && groupSize > 1 && hasClockTime(v.Date) {
 			base += fmt.Sprintf(" (%s)", v.Date.Format("15:04"))
 		}
 	}

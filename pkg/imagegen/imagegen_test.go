@@ -444,7 +444,7 @@ func eachCard(t *testing.T, fonts *fontSet, fn func(*testing.T, cardLayout)) {
 
 			if votes.IsWahlgeschaeftGroup(group) {
 				v := group[0]
-				fn(t, cardLayout{"Wahlgeschäft card", bg, inset + cornerStrip(fonts, v, ""), func(img *image.RGBA, cur *layoutCursor) {
+				fn(t, cardLayout{"Wahlgeschäft card", bg, inset + cornerStrip(fonts, voteformat.FormatVoteDate(v.Date), ""), func(img *image.RGBA, cur *layoutCursor) {
 					layoutWahlgeschaeftCard(img, cur, &v, bg, fonts)
 				}})
 				return
@@ -465,7 +465,7 @@ func eachCard(t *testing.T, fonts *fontSet, fn func(*testing.T, cardLayout)) {
 			}})
 			for i := range group {
 				v := group[i]
-				corner := cornerStrip(fonts, v, formatProgressBadge(i+1, len(group)))
+				corner := cornerStrip(fonts, voteformat.FormatVoteDateTime(v.Date), formatProgressBadge(i+1, len(group)))
 				fn(t, cardLayout{fmt.Sprintf("result card %d", i+1), bg, inset + corner, func(img *image.RGBA, cur *layoutCursor) {
 					layoutResultCard(img, cur, &v, bg, fonts, i+1, len(group))
 				}})
@@ -496,7 +496,7 @@ func TestResultCardHeadingClearsTheCornerRow(t *testing.T) {
 	bg := SelectColor(v.Jurisdiction, v.Affair.Number)
 	const idx, total = 2, 5
 
-	inset := bandInset(v) + cornerStrip(fonts, v, formatProgressBadge(idx, total))
+	inset := bandInset(v) + cornerStrip(fonts, voteformat.FormatVoteDateTime(v.Date), formatProgressBadge(idx, total))
 	dry := newCursor(inset, imgHeight)
 	layoutResultCard(nil, dry, &v, bg, fonts, idx, total)
 	startY := centredStart(inset, dry.contentHeight())

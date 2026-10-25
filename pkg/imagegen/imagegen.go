@@ -1142,7 +1142,7 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 }
 
 func renderWahlgeschaeftCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
-	inset := bandInset(*v) + cornerStrip(fonts, *v, "")
+	inset := bandInset(*v) + cornerStrip(fonts, voteformat.FormatVoteDate(v.Date), "")
 
 	// Dry run to measure content height
 	dry := newCursor(inset, imgHeight)
@@ -1191,7 +1191,7 @@ func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, 
 		bodyReserve += lineHeight(fonts.regular)
 	}
 	bodyReserve += padding
-	bodyReserve += cornerStrip(fonts, *v, "")
+	bodyReserve += cornerStrip(fonts, voteformat.FormatVoteDate(v.Date), "")
 
 	title := voteformat.CleanVoteTitle(v.Title)
 
@@ -1202,7 +1202,7 @@ func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, 
 
 	// The date in the corner, as on a result card. Date only, like the text
 	// post's headline: the one timestamp available is the roll call's.
-	drawCornerLabels(img, fonts, *v, "", bg)
+	drawCornerLabels(img, fonts, *v, voteformat.FormatVoteDate(v.Date), "", bg)
 
 	// Marker: large centered 🗳️ above the title, where an ordinary vote card
 	// carries its verdict.
@@ -1240,7 +1240,7 @@ func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, 
 }
 
 func renderResultCard(v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) ([]byte, error) {
-	inset := bandInset(*v) + cornerStrip(fonts, *v, formatProgressBadge(idx, total))
+	inset := bandInset(*v) + cornerStrip(fonts, voteformat.FormatVoteDateTime(v.Date), formatProgressBadge(idx, total))
 
 	// Dry run to measure content height
 	dry := newCursor(inset, imgHeight)
@@ -1257,20 +1257,21 @@ func renderResultCard(v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total i
 }
 
 func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) {
-	drawCornerLabels(img, fonts, *v, formatProgressBadge(idx, total), bg)
+	stamp, badge := voteformat.FormatVoteDateTime(v.Date), formatProgressBadge(idx, total)
+	drawCornerLabels(img, fonts, *v, stamp, badge, bg)
 
 	// Heading naming this vote within the group. Without it the cards of a
 	// group whose source publishes no per-vote title are indistinguishable.
 	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 
-	if sub := voteformat.SubVoteLabel(*v, idx-1, total); sub != "" {
+	if sub := voteformat.CardSubVoteLabel(*v, idx-1, total); sub != "" {
 		maxTextWidth := imgWidth - 2*padding
 		subLines := wrapText(fonts.boldHeading, sub, maxTextWidth)
 		// Same bargain as the combined card's title: the heading gives way to
 		// the results rather than pushing Fraktionen off the bottom. It keeps
 		// its face — these labels are short enough that shrinking would only
 		// make the common card worse — and is cut with an ellipsis instead.
-		reserve := resultBottomReserve(fonts, len(fraktionCounts)) + cornerStrip(fonts, *v, formatProgressBadge(idx, total))
+		reserve := resultBottomReserve(fonts, len(fraktionCounts)) + cornerStrip(fonts, stamp, badge)
 		available := titleBudget(*v, reserve)
 		subLines = ellipsizeLines(fonts.boldHeading, subLines, maxTextWidth, available)
 		for _, line := range subLines {
@@ -1372,26 +1373,29 @@ func summaryHeader(group []votes.Vote) string {
 	return fmt.Sprintf("Übersicht (%d Teilabstimmungen)", len(group))
 }
 
-// drawCornerLabels draws the sitting date in the card's top-left corner and,
-// when one is given, the progress badge in the top-right, on the same line.
+// drawCornerLabels draws a timestamp in the card's top-left corner and, when
+// one is given, the progress badge in the top-right, on the same line. A result
+// card's stamp is the vote's date and time ("15.06.2026 11:29"), or the date
+// alone where the source has no clock; a Wahlgeschäft card's is always the
+// date alone, like its text post's headline, because the one timestamp
+// available is the roll call's.
 //
-// It serves the cards whose content has no date of its own: a result card
-// heads its counts with SubVoteLabel, which the text posts share and which
-// therefore carries no date (their headline already does), and a Wahlgeschäft
-// card has no counts heading at all. Every card leaves the carousel on its own
+// It serves the cards whose content has no date of its own: a result card's
+// heading comes from CardSubVoteLabel, which names the vote but not when, and a
+// Wahlgeschäft card has no counts heading at all. Every card leaves the carousel on its own
 // sooner or later, and one that cannot be dated is one a reader cannot place.
 //
 // The row is reserved rather than overlaid: a card that uses it starts its
 // content cornerStrip lower and charges its heading for the same height. A
 // heading wrapped to the full width would otherwise share the row with the
 // date on any card tall enough for centredStart to clamp it to the margin.
-func drawCornerLabels(img *image.RGBA, fonts *fontSet, v votes.Vote, badge string, bg color.RGBA) {
+func drawCornerLabels(img *image.RGBA, fonts *fontSet, v votes.Vote, stamp, badge string, bg color.RGBA) {
 	if img == nil {
 		return
 	}
 	y := bandInset(v) + padding + fonts.small.Metrics().Ascent.Ceil()
-	if date := voteformat.FormatVoteDate(v.Date); date != "" {
-		drawShadowedText(img, fonts.small, nil, padding, y, date, bg)
+	if stamp != "" {
+		drawShadowedText(img, fonts.small, nil, padding, y, stamp, bg)
 	}
 	if badge != "" {
 		badgeW := font.MeasureString(fonts.small, badge).Ceil()
@@ -1401,9 +1405,9 @@ func drawCornerLabels(img *image.RGBA, fonts *fontSet, v votes.Vote, badge strin
 
 // cornerStrip is the height drawCornerLabels takes from the top of a card's
 // content area: one line of the small face and a gap under it. A card with
-// neither a date nor a badge draws nothing there and reserves nothing.
-func cornerStrip(fonts *fontSet, v votes.Vote, badge string) int {
-	if voteformat.FormatVoteDate(v.Date) == "" && badge == "" {
+// neither a stamp nor a badge draws nothing there and reserves nothing.
+func cornerStrip(fonts *fontSet, stamp, badge string) int {
+	if stamp == "" && badge == "" {
 		return 0
 	}
 	return lineHeight(fonts.small) + frac(fonts.small, 0.5)
