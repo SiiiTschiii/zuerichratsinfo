@@ -3,6 +3,7 @@ package fbapi
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -56,8 +57,11 @@ func TestLookup(t *testing.T) {
 		if got := r.URL.Query().Get("fields"); got != "id,name" {
 			t.Errorf("fields = %q", got)
 		}
-		if got := r.URL.Query().Get("access_token"); got != "tok123" {
-			t.Errorf("access_token = %q", got)
+		if got := r.Header.Get("Authorization"); got != "Bearer tok123" {
+			t.Errorf("Authorization = %q", got)
+		}
+		if strings.Contains(r.URL.String(), "tok123") {
+			t.Errorf("the token is in the request URL: %s", r.URL)
 		}
 		_, _ = w.Write([]byte(`{"id":"555","name":"FDP Stadt Zürich"}`))
 	}))
@@ -94,6 +98,9 @@ func TestMessageTags(t *testing.T) {
 		}
 		if got := r.URL.Query().Get("fields"); got != "message_tags" {
 			t.Errorf("fields = %q", got)
+		}
+		if strings.Contains(r.URL.String(), "tok123") {
+			t.Errorf("the token is in the request URL: %s", r.URL)
 		}
 		_, _ = w.Write([]byte(`{"id":"page_1_post_9","message_tags":[{"id":"555","name":"FDP"},{"id":"777","name":"Alice"}]}`))
 	}))
@@ -150,6 +157,12 @@ func TestDeletePost(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodDelete || r.URL.Path != "/page_1_post_1" {
 			t.Errorf("got %s %s", r.Method, r.URL.Path)
+		}
+		if got := r.Header.Get("Authorization"); got != "Bearer tok123" {
+			t.Errorf("Authorization = %q", got)
+		}
+		if strings.Contains(r.URL.String(), "tok123") {
+			t.Errorf("the token is in the request URL: %s", r.URL)
 		}
 		_, _ = w.Write([]byte(`{"success":true}`))
 	}))

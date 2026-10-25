@@ -110,8 +110,7 @@ func (c *Client) PublishTextPost(message string) (string, error) {
 
 // DeletePost removes a post from the Page.
 func (c *Client) DeletePost(postID string) error {
-	req, err := http.NewRequest(http.MethodDelete,
-		fmt.Sprintf("%s/%s?%s", c.apiBase, url.PathEscape(postID), url.Values{"access_token": {c.accessToken}}.Encode()), nil)
+	req, err := c.newRequest(http.MethodDelete, url.PathEscape(postID), nil)
 	if err != nil {
 		return fmt.Errorf("deleting %s: %w", postID, err)
 	}
@@ -127,10 +126,30 @@ func (c *Client) DeletePost(postID string) error {
 	return nil
 }
 
+// newRequest builds a request that carries the Page token in an Authorization
+// header and not in the URL. Go's HTTP client puts the URL into the error it
+// returns for a failed connection or a timeout, and the commands print those
+// errors, so a token in the URL would end up in a terminal or a log.
+func (c *Client) newRequest(method, path string, params url.Values) (*http.Request, error) {
+	u := fmt.Sprintf("%s/%s", c.apiBase, path)
+	if len(params) > 0 {
+		u += "?" + params.Encode()
+	}
+	req, err := http.NewRequest(method, u, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.accessToken)
+	return req, nil
+}
+
 // get reads a JSON object from the Graph API with the Page token.
 func (c *Client) get(path string, params url.Values, out any) error {
-	params.Set("access_token", c.accessToken)
-	resp, err := c.httpClient.Get(fmt.Sprintf("%s/%s?%s", c.apiBase, path, params.Encode()))
+	req, err := c.newRequest(http.MethodGet, path, params)
+	if err != nil {
+		return err
+	}
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
