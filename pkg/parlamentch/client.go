@@ -55,6 +55,10 @@ type Client struct {
 	// labels holds what the listing says about each vote that votes.Vote has
 	// no field for, keyed by SourceID. See Client.label.
 	labels map[string]voteLabel
+
+	// bulletin caches each vote's Amtliches Bulletin agenda item, by session
+	// and RegistrationNumber. See Client.bulletinSubject.
+	bulletin map[string]string
 }
 
 // New builds a client for the Nationalrat.
@@ -68,6 +72,7 @@ func New(jurisdiction votes.Jurisdiction) *Client {
 		businessTypes: make(map[int64]string),
 		labels:        make(map[string]voteLabel),
 		multiBill:     make(map[int64]bool),
+		bulletin:      make(map[string]string),
 	}
 }
 

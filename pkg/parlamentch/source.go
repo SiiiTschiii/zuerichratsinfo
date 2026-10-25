@@ -3,6 +3,7 @@ package parlamentch
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -21,6 +22,7 @@ type voteDTO struct {
 	BusinessShortNumber string  `json:"BusinessShortNumber"`
 	BusinessTitle       string  `json:"BusinessTitle"`
 	BillTitle           *string `json:"BillTitle"`
+	IdLegislativePeriod int64   `json:"IdLegislativePeriod"`
 	IdSession           int64   `json:"IdSession"`
 	// Subject, MeaningYes and MeaningNo are served in French in the German
 	// feed since the Wintersession 2025, and are published as the service
@@ -39,6 +41,12 @@ type votingDTO struct {
 	ParlGroupNameAbbreviation string `json:"ParlGroupNameAbbreviation"`
 	Decision                  int    `json:"Decision"`
 	DecisionText              string `json:"DecisionText"`
+}
+
+// transcriptDTO is the part of a Transcript row that places a vote in the
+// Amtliches Bulletin.
+type transcriptDTO struct {
+	IdSubject string `json:"IdSubject"`
 }
 
 // businessDTO is the part of a Business the posts use.
@@ -62,7 +70,7 @@ func (c *Client) FetchRecent(limit int) ([]votes.Vote, error) {
 		"$filter":  c.voteFilter(),
 		"$orderby": "VoteEnd desc",
 		"$top":     strconv.Itoa(limit),
-		"$select":  "ID,RegistrationNumber,BusinessNumber,BusinessShortNumber,BusinessTitle,BillTitle,IdSession,Subject,MeaningYes,VoteEnd",
+		"$select":  "ID,RegistrationNumber,BusinessNumber,BusinessShortNumber,BusinessTitle,BillTitle,IdLegislativePeriod,IdSession,Subject,MeaningYes,VoteEnd",
 	}, &rows)
 	if err != nil {
 		return nil, err
@@ -114,8 +122,30 @@ func (c *Client) GroupByAffair(vs []votes.Vote) ([][]votes.Vote, error) {
 	groups := votes.GroupByAffairAndDate(vs)
 	for _, g := range groups {
 		c.label(g)
+		agreeOnAgendaItem(g)
 	}
 	return groups, nil
+}
+
+// agreeOnAgendaItem drops a group's Bulletin and widened video links when its
+// votes do not share one agenda item, because the post would otherwise point
+// at whichever of them sorted first. Each vote keeps its own video link, which
+// a platform showing votes one by one still carries.
+//
+// Votes are grouped by business and day, and the final votes on all of a
+// business's bills share one agenda item, so this is a guard rather than a
+// case seen: an overall vote taken in a morning sitting and a second one in the
+// afternoon would sit under two.
+func agreeOnAgendaItem(group []votes.Vote) {
+	for _, v := range group[1:] {
+		if v.BulletinURL != group[0].BulletinURL {
+			for i := range group {
+				group[i].BulletinURL = ""
+				group[i].VideoGroupURL = ""
+			}
+			return
+		}
+	}
 }
 
 // voteLabel is what the listing says about a vote beyond its Subject, kept
@@ -217,7 +247,48 @@ func (c *Client) enrich(v *votes.Vote) error {
 	if id, err := strconv.ParseInt(v.Affair.ID, 10, 64); err == nil {
 		v.Affair.Type = c.businessType(id)
 	}
+	if subject := c.bulletinSubject(v.SessionID, v.Sequence); subject != "" {
+		v.BulletinURL = BulletinURL(subject)
+		v.VideoURL = VideoURL(subject)
+		v.VideoGroupURL = v.VideoURL
+	}
 	return nil
+}
+
+// bulletinSubject returns the Amtliches Bulletin's agenda item holding a vote,
+// or "" when the Bulletin has not published it yet or the service cannot say.
+//
+// The transcript block that records a vote carries the vote's
+// RegistrationNumber as VoteId, which is the one way the service ties a vote to
+// the Bulletin: SubjectBusiness lists every agenda item of a business across
+// both chambers and every reading, and on a day the Nationalrat debated a
+// business twice nothing in it says which part held the vote. VoteId alone is
+// not unique — the numbering restarts each legislature, and the Ständerat keeps
+// its own — so the session and chamber narrow it.
+//
+// The provisional text is published about an hour after the debate, and a run
+// in between posts without the two links rather than waiting for them: the
+// Protokoll and the Geschäft already carry the vote. A miss is not cached, so
+// the next vote of the same run asks again.
+func (c *Client) bulletinSubject(sessionID, registration string) string {
+	key := sessionID + "/" + registration
+	if s, ok := c.bulletin[key]; ok {
+		return s
+	}
+	var rows []transcriptDTO
+	err := c.get("/Transcript", query{
+		"$filter": fmt.Sprintf("Language eq 'DE' and IdSession eq '%s' and MeetingCouncilAbbreviation eq 'N' and VoteId eq '%s'", sessionID, registration),
+		"$select": "IdSubject",
+	}, &rows)
+	if err != nil {
+		log.Printf("⚠️  parlamentch: could not look up vote %s of session %s in the Bulletin: %v", registration, sessionID, err)
+		return ""
+	}
+	if len(rows) == 0 || rows[0].IdSubject == "" {
+		return ""
+	}
+	c.bulletin[key] = rows[0].IdSubject
+	return rows[0].IdSubject
 }
 
 // applyMemberVotes sets a vote's member list, totals and decision from its
@@ -381,6 +452,10 @@ func (c *Client) toVote(r voteDTO) votes.Vote {
 	id := strconv.FormatInt(r.ID, 10)
 	affairURL := BusinessURL(r.BusinessNumber)
 	title := strings.TrimSpace(r.BusinessTitle)
+	protocol := ""
+	if r.IdLegislativePeriod > 0 {
+		protocol = ProtocolURL(r.IdLegislativePeriod, r.RegistrationNumber)
+	}
 
 	return votes.Vote{
 		SourceID:     id,
@@ -396,6 +471,7 @@ func (c *Client) toVote(r voteDTO) votes.Vote {
 		Type:        "Normal",
 		SourceURL:   affairURL,
 		GroupURL:    affairURL,
+		ArchiveURL:  protocol,
 		Attribution: Attribution,
 		Affair: votes.Affair{
 			Number: r.BusinessShortNumber,
@@ -422,4 +498,25 @@ const Seats = 200
 // every vote taken on it.
 func BusinessURL(businessNumber int64) string {
 	return fmt.Sprintf("https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId=%d", businessNumber)
+}
+
+// ProtocolURL is a vote's Abstimmungsprotokoll: the Parlamentsdienste's PDF of
+// the tally and every member's vote, headed "Ref." with the vote's
+// RegistrationNumber. It is built rather than looked up, because the service
+// names no document for it; the path is the one parlament.ch links from the
+// Bulletin, and the file is there within seconds of the vote closing.
+func ProtocolURL(legislativePeriod, registrationNumber int64) string {
+	return fmt.Sprintf("https://www.parlament.ch/poly/Abstimmung/%d/out/vote_%d_%d.pdf", legislativePeriod, legislativePeriod, registrationNumber)
+}
+
+// BulletinURL is the Amtliches Bulletin's page for one agenda item: the
+// debate, ending with the vote and its tally.
+func BulletinURL(subjectID string) string {
+	return "https://www.parlament.ch/de/ratsbetrieb/amtliches-bulletin/amtliches-bulletin-die-verhandlungen?SubjectId=" + url.QueryEscape(subjectID)
+}
+
+// VideoURL is the Parlamentsdienste's player for one agenda item, the one the
+// Bulletin page opens as "Video der Debatte", with each speech as a chapter.
+func VideoURL(subjectID string) string {
+	return "https://par-pcache.simplex.tv/subject/?subjectID=" + url.QueryEscape(subjectID) + "&language=de"
 }

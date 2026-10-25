@@ -776,33 +776,36 @@ func (l Link) Line(labelled bool) string {
 //
 // The order is the argument. The Geschäft permalink comes first because it is
 // the one that will still resolve in a decade and the one a reader should keep;
-// the archive and the sitting follow because they are the ones that have the
-// vote this week. Sources that publish only a business page produce a
-// single-entry block, exactly as before.
+// the record of the vote, the recording and the sitting follow because they are
+// the ones that have the vote this week. Sources that publish only a business
+// page produce a single-entry block, exactly as before.
 //
-// The archive entry follows GroupLink's rule: a post covering several votes
+// The video entry follows GroupLink's rule: a post covering several votes
 // points at the agenda item holding them, not at whichever of them happened to
-// sort first.
+// sort first. The Protokoll has no such widened form, so it appears only on a
+// post about one vote; VoteLinks carries it for each vote of a larger group.
 func GroupLinks(group []votes.Vote) []Link {
 	if len(group) == 0 {
 		return nil
 	}
 	first := group[0]
 
-	archive := first.ArchiveURL
+	video := first.VideoURL
+	protocol := first.ArchiveURL
 	if len(group) > 1 {
-		// No widened link means no archive entry rather than an arbitrary one.
-		archive = first.ArchiveGroupURL
+		// No widened link means no entry rather than an arbitrary one.
+		video = first.VideoGroupURL
+		protocol = ""
 	}
 
 	// A vote that belongs to no business matter never had its URLs replaced by
 	// an affair page, so both fields still hold the archive link the listing
 	// supplied — 47 Kanton Zürich votings carry no affair_id at all. Printing it
 	// twice would label the first copy "Geschäft", which it is not, and give
-	// Bluesky two facets hunting the same byte offset. The archive naming is the
+	// Bluesky two facets hunting the same byte offset. The video naming is the
 	// honest one, so that is the copy that survives.
 	business := GroupLink(group)
-	if business == archive {
+	if business == video {
 		business = ""
 	}
 
@@ -818,7 +821,8 @@ func GroupLinks(group []votes.Vote) []Link {
 	var out []Link
 	for _, l := range []Link{
 		{Icon: "🔗", Name: "Geschäft", URL: business},
-		{Icon: "🎬", Name: "Video", URL: archive},
+		{Icon: "📋", Name: "Protokoll", URL: protocol},
+		{Icon: "🎬", Name: "Video", URL: video},
 		sitting,
 	} {
 		if l.URL != "" {
@@ -915,11 +919,12 @@ func hasClockTime(t time.Time) bool {
 //
 // A post covering several votes links the business and the agenda item, because
 // pointing at whichever vote sorted first would be arbitrary. That leaves each
-// vote's own pages unlinked: the archive recording positioned at this vote
-// (Kanton Zürich's Recapp segment) and this vote's own page (Stadt Zürich's
-// Abstimmung, beside the Traktandum the post links). Both are returned,
-// each only where the source has one and only where the post's own link block
-// does not already carry the same URL — for Kanton Zürich the vote's page is
+// vote's own pages unlinked: the recording positioned at this vote (Kanton
+// Zürich's Recapp segment), the record of this vote (the Nationalrat's
+// Abstimmungsprotokoll) and this vote's own page (Stadt Zürich's Abstimmung,
+// beside the Traktandum the post links). All are returned, each only where the
+// source has one and only where the post's own link block does not already
+// carry the same URL — for Kanton Zürich and the Nationalrat the vote's page is
 // the business page, which the post links already.
 func VoteLinks(group []votes.Vote, i int) []Link {
 	if i < 0 || i >= len(group) {
@@ -934,7 +939,8 @@ func VoteLinks(group []votes.Vote, i int) []Link {
 
 	var out []Link
 	for _, l := range []Link{
-		{Icon: "🎬", Name: "Video", URL: v.ArchiveURL},
+		{Icon: "🎬", Name: "Video", URL: v.VideoURL},
+		{Icon: "📋", Name: "Protokoll", URL: v.ArchiveURL},
 		{Icon: "🔗", Name: "Abstimmung", URL: v.SourceURL},
 	} {
 		if l.URL == "" || have[l.URL] {
