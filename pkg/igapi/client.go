@@ -189,6 +189,9 @@ func (c *Client) PublishContainer(containerID string) (string, error) {
 
 // PollContainerStatus checks the status of a container.
 // Returns one of: PUBLISHED, FINISHED, IN_PROGRESS, ERROR, EXPIRED.
+//
+// Like GetPermalink, it sends the token as a header to keep it out of the URL
+// that a transport error carries into the log.
 func (c *Client) PollContainerStatus(containerID string) (string, error) {
 	endpoint := fmt.Sprintf("%s/%s", c.apiBase, containerID)
 
@@ -199,8 +202,8 @@ func (c *Client) PollContainerStatus(containerID string) (string, error) {
 
 	q := req.URL.Query()
 	q.Set("fields", "status_code")
-	q.Set("access_token", c.accessToken)
 	req.URL.RawQuery = q.Encode()
+	req.Header.Set("Authorization", "Bearer "+c.accessToken)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

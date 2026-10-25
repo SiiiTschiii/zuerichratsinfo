@@ -139,6 +139,12 @@ func TestPollContainerStatus(t *testing.T) {
 		if r.URL.Query().Get("fields") != "status_code" {
 			t.Errorf("expected fields=status_code, got %s", r.URL.Query().Get("fields"))
 		}
+		if r.URL.Query().Has("access_token") {
+			t.Error("access token sent in the query string")
+		}
+		if got := r.Header.Get("Authorization"); got != "Bearer tok123" {
+			t.Errorf("expected Authorization: Bearer tok123, got %q", got)
+		}
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status_code":"FINISHED"}`))
@@ -286,17 +292,24 @@ func TestRoundTrip_FullCarouselFlow(t *testing.T) {
 	}
 }
 
-// TestGetPermalink_TransportErrorOmitsToken pins why the token is a header: a
-// failed request's error names the URL, and postReal logs that error.
-func TestGetPermalink_TransportErrorOmitsToken(t *testing.T) {
+// TestGET_TransportErrorOmitsToken pins why the GET calls send the token as a
+// header: a failed request's error names the URL, and postReal logs that error.
+func TestGET_TransportErrorOmitsToken(t *testing.T) {
 	client := NewClient("ig_user_1", "secret-token-123")
 	client.SetAPIBase("http://127.0.0.1:1") // nothing listens here
 
-	_, err := client.GetPermalink("media_99")
-	if err == nil {
-		t.Fatal("expected a transport error")
-	}
-	if strings.Contains(err.Error(), "secret-token-123") {
-		t.Errorf("error leaks the access token: %v", err)
+	for name, call := range map[string]func(string) (string, error){
+		"GetPermalink":        client.GetPermalink,
+		"PollContainerStatus": client.PollContainerStatus,
+	} {
+		t.Run(name, func(t *testing.T) {
+			_, err := call("media_99")
+			if err == nil {
+				t.Fatal("expected a transport error")
+			}
+			if strings.Contains(err.Error(), "secret-token-123") {
+				t.Errorf("error leaks the access token: %v", err)
+			}
+		})
 	}
 }
