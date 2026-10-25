@@ -224,6 +224,10 @@ func (c *Client) PollContainerStatus(containerID string) (string, error) {
 // GetPermalink returns the public URL of a published media object, from the ID
 // PublishContainer returned. Instagram's /p/{shortcode} URLs cannot be derived
 // from the media ID, so this costs one call; instagram_basic covers it.
+//
+// The token travels in the Authorization header rather than the query string:
+// a transport failure comes back as a *url.Error carrying the request URL, and
+// the caller logs it, so a token in the URL would land in the log.
 func (c *Client) GetPermalink(mediaID string) (string, error) {
 	endpoint := fmt.Sprintf("%s/%s", c.apiBase, mediaID)
 
@@ -234,8 +238,8 @@ func (c *Client) GetPermalink(mediaID string) (string, error) {
 
 	q := req.URL.Query()
 	q.Set("fields", "permalink")
-	q.Set("access_token", c.accessToken)
 	req.URL.RawQuery = q.Encode()
+	req.Header.Set("Authorization", "Bearer "+c.accessToken)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

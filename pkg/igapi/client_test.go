@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -183,6 +184,13 @@ func TestGetPermalink(t *testing.T) {
 		if r.URL.Query().Get("fields") != "permalink" {
 			t.Errorf("expected fields=permalink, got %s", r.URL.Query().Get("fields"))
 		}
+		// The token must stay out of the URL, which transport errors echo
+		if r.URL.Query().Has("access_token") {
+			t.Error("access token sent in the query string")
+		}
+		if got := r.Header.Get("Authorization"); got != "Bearer tok123" {
+			t.Errorf("expected Authorization: Bearer tok123, got %q", got)
+		}
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"permalink":"https://www.instagram.com/p/DAbC123/","id":"media_99"}`))
@@ -275,5 +283,20 @@ func TestRoundTrip_FullCarouselFlow(t *testing.T) {
 	}
 	if mediaID != "media_99" {
 		t.Errorf("expected media_99, got %s", mediaID)
+	}
+}
+
+// TestGetPermalink_TransportErrorOmitsToken pins why the token is a header: a
+// failed request's error names the URL, and postReal logs that error.
+func TestGetPermalink_TransportErrorOmitsToken(t *testing.T) {
+	client := NewClient("ig_user_1", "secret-token-123")
+	client.SetAPIBase("http://127.0.0.1:1") // nothing listens here
+
+	_, err := client.GetPermalink("media_99")
+	if err == nil {
+		t.Fatal("expected a transport error")
+	}
+	if strings.Contains(err.Error(), "secret-token-123") {
+		t.Errorf("error leaks the access token: %v", err)
 	}
 }
