@@ -9,7 +9,7 @@ import (
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 const (
@@ -36,6 +36,9 @@ const (
 var bodyAccents = map[string]color.RGBA{
 	"zurich-city":   {0x0F, 0x05, 0xA0, 0xFF},
 	"zurich-canton": {0x00, 0x70, 0xB4, 0xFF},
+	// The Bund's red. The Nationalrat posts to accounts of its own, but its
+	// cards follow the same rule.
+	"nationalrat": {0xDC, 0x00, 0x18, 0xFF},
 }
 
 // fallbackAccent is the band colour for a body with no assigned colour.

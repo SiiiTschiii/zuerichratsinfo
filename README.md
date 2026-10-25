@@ -1,22 +1,22 @@
-# Zurich Ratsinfo
+# parlinfo
 
 <p align="center">
   <img src="assets/brand/parlinfo-readme-header.png" alt="parlinfo" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/go-ci.yml">
-    <img src="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/go-ci.yml/badge.svg" alt="Go CI">
+  <a href="https://github.com/SiiiTschiii/parlinfo/actions/workflows/go-ci.yml">
+    <img src="https://github.com/SiiiTschiii/parlinfo/actions/workflows/go-ci.yml/badge.svg" alt="Go CI">
   </a>
-  <a href="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/validate-contacts.yml">
-    <img src="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/validate-contacts.yml/badge.svg" alt="Validate Contacts">
+  <a href="https://github.com/SiiiTschiii/parlinfo/actions/workflows/validate-contacts.yml">
+    <img src="https://github.com/SiiiTschiii/parlinfo/actions/workflows/validate-contacts.yml/badge.svg" alt="Validate Contacts">
   </a>
-  <a href="https://github.com/SiiiTschiii/zuerichratsinfo/actions/workflows/bot.yml">
-    <img src="https://img.shields.io/github/last-commit/SiiiTschiii/zuerichratsinfo/main?label=last%20bot%20run&logo=github" alt="Last Bot Run">
+  <a href="https://github.com/SiiiTschiii/parlinfo/actions/workflows/bot.yml">
+    <img src="https://img.shields.io/github/last-commit/SiiiTschiii/parlinfo/main?label=last%20bot%20run&logo=github" alt="Last Bot Run">
   </a>
 </p>
 
-A civic tech bot that shares parliamentary vote results from Zurich on social media and tags the politicians involved, using a curated mapping of their accounts.
+A civic tech bot that shares Swiss parliamentary vote results on social media and tags the politicians involved, using a curated mapping of their accounts.
 
 We built it because a healthy democracy rests on two things that are easy to lose sight of:
 
@@ -38,9 +38,14 @@ Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei D
 | ---------------------------- | ------------------------------------------------------------------------ | ------- |
 | **Gemeinderat Stadt Zürich** | [PARIS API](https://opendatazurich.github.io/paris-api/), City of Zurich | ✅ Live |
 | **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live |
+| **Nationalrat**              | [parlament.ch OData](https://ws.parlament.ch/odata.svc/), Parlamentsdienste | 🧪 Dry run |
 
-Both bodies post to the same accounts. Every post names which chamber voted, in
-the text and on the image, so the two are never confused.
+The two Zürich bodies post to the same accounts (Zürich Ratsinfo). Every post
+names which chamber voted, in the text and on the image, so the two are never
+confused. The Nationalrat posts only its Schluss- and Gesamtabstimmungen, to
+accounts of its own (CH Parl Info, [@chparlinfo](https://www.instagram.com/chparlinfo)
+on Instagram, with X, Bluesky and a Facebook Page to follow), from the separate
+`bot-chparl.yml` workflow.
 
 ## Supported Platforms
 
@@ -67,6 +72,7 @@ _The count is how many politicians the bot can tag on that platform in case they
 - Go
 - Zurich Council PARIS API, see [pkg/zurichapi/README.md](pkg/zurichapi/README.md)
 - OpenParlData API for the Kantonsrat, see [pkg/openparldata](pkg/openparldata)
+- parlament.ch OData for the Nationalrat, see [pkg/parlamentch](pkg/parlamentch)
 - X API v2 with OAuth 1.0a, see [pkg/xapi/README.md](pkg/xapi/README.md)
 - Bluesky AT Protocol (app.bsky), see [pkg/voteposting/platforms/bluesky](pkg/voteposting/platforms/bluesky)
 - Instagram Graph API with image carousel publishing, see [pkg/igapi/README.md](pkg/igapi/README.md)
@@ -79,7 +85,7 @@ See [SETUP.md](SETUP.md) for installation and configuration instructions.
 
 ## Project Progress
 
-See the [open issues](https://github.com/SiiiTschiii/zuerichratsinfo/issues) for current tasks and roadmap.
+See the [open issues](https://github.com/SiiiTschiii/parlinfo/issues) for current tasks and roadmap.
 
 ## Recognition
 

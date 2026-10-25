@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 func TestCleanVoteTitle(t *testing.T) {

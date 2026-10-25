@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/config"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // sittingNames returns who sits in a jurisdiction. A jurisdiction whose source

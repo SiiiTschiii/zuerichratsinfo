@@ -13,15 +13,15 @@ import (
 	"log"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/facebook"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
+	"github.com/siiitschiii/parlinfo/pkg/config"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/facebook"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/instagram"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/x"
 )
 
 func main() {

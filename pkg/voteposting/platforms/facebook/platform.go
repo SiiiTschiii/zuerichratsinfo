@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/fbapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/fbapi"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // UploadPhotoFunc is the signature for uploading an unpublished photo. Defaults

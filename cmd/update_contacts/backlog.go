@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/config"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // backlog returns up to n people to look for accounts for next: sitting

@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // --- Helper Functions ---

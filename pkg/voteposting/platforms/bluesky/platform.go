@@ -5,10 +5,10 @@ import (
 	"log"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/bskyapi"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // BlueskyContent implements platforms.Content for Bluesky

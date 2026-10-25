@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // contributorPageSize covers any realistic signatory list in one request. The
