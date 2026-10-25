@@ -73,7 +73,7 @@ func main() {
 // run resolves one account, mentions it in a post, and reports whether the
 // mention was accepted. It returns false when something went wrong that is not
 // itself the experiment's answer.
-func run(client *fbapi.Client, kind, rawURL string, del bool) bool {
+func run(client *fbapi.Client, kind, rawURL string, del bool) (ok bool) {
 	account, err := fbapi.ParseAccountURL(rawURL)
 	if err != nil {
 		log.Printf("❌ %v", err)
@@ -103,6 +103,20 @@ func run(client *fbapi.Client, kind, rawURL string, del bool) bool {
 	}
 	fmt.Printf("✅ Post created: %s\n", fbapi.PostURL(postID))
 
+	// From here the post is public, so it is removed however the rest goes: a
+	// read-back that fails must not leave it behind. A failed delete turns the
+	// result into a failure, and a result that already failed stays one.
+	if del {
+		defer func() {
+			if err := client.DeletePost(postID); err != nil {
+				log.Printf("❌ Deleting the post failed: %v", err)
+				ok = false
+				return
+			}
+			fmt.Println("🗑️  Post deleted")
+		}()
+	}
+
 	tags, err := client.MessageTags(postID)
 	if err != nil {
 		log.Printf("❌ Reading the tags back failed: %v", err)
@@ -112,14 +126,6 @@ func run(client *fbapi.Client, kind, rawURL string, del bool) bool {
 		fmt.Printf("🏷️  Facebook accepted the mention (tags: %s)\n", strings.Join(tags, ", "))
 	} else {
 		fmt.Printf("🚫 Facebook did NOT accept the mention (tags: %v) — it publishes as plain text\n", tags)
-	}
-
-	if del {
-		if err := client.DeletePost(postID); err != nil {
-			log.Printf("❌ Deleting the post failed: %v", err)
-			return false
-		}
-		fmt.Println("🗑️  Post deleted")
 	}
 	return true
 }
