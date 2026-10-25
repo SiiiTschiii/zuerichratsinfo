@@ -8,7 +8,6 @@ import (
 	"image/jpeg"
 	"strings"
 	"testing"
-	"time"
 
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
@@ -155,20 +154,9 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 	if got := strings.Join(typeLines, " "); strings.Contains(got, "Ausgabenbremse") {
 		t.Fatalf("expected the ballot type to stay out of the title, got %q", got)
 	}
-	// A dated card already has a line above the counts, which the type joins;
-	// the line the type opens on its own shows only on an undated one.
-	undated, undatedTyped := withPrefix, withType
-	undated.Date, undatedTyped.Date = time.Time{}, time.Time{}
-	undatedCur, undatedTypedCur := newCursor(0, imgHeight), newCursor(0, imgHeight)
-	if _, _, err := layoutCombinedCard(nil, undatedCur, &undated, bg, fonts); err != nil {
-		t.Fatalf("layoutCombinedCard failed: %v", err)
-	}
-	if _, _, err := layoutCombinedCard(nil, undatedTypedCur, &undatedTyped, bg, fonts); err != nil {
-		t.Fatalf("layoutCombinedCard failed: %v", err)
-	}
-	if undatedTypedCur.contentHeight() <= undatedCur.contentHeight() {
+	if typeCur.contentHeight() <= prefixCur.contentHeight() {
 		t.Fatalf("expected the ballot type to take a line above the counts (untyped=%d, typed=%d)",
-			undatedCur.contentHeight(), undatedTypedCur.contentHeight())
+			prefixCur.contentHeight(), typeCur.contentHeight())
 	}
 
 	// Schlussabstimmung Abstimmungstitel: no prefix added.
@@ -452,7 +440,8 @@ func eachCard(t *testing.T, fonts *fontSet, fn func(*testing.T, cardLayout)) {
 
 			if len(group) == 1 {
 				v := group[0]
-				fn(t, cardLayout{"combined card", bg, inset, func(img *image.RGBA, cur *layoutCursor) {
+				corner := cornerStrip(fonts, voteformat.FormatVoteDateTime(v.Date), "")
+				fn(t, cardLayout{"combined card", bg, inset + corner, func(img *image.RGBA, cur *layoutCursor) {
 					if _, _, err := layoutCombinedCard(img, cur, &v, bg, fonts); err != nil {
 						t.Fatalf("layoutCombinedCard failed: %v", err)
 					}

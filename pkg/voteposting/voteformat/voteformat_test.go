@@ -385,39 +385,6 @@ func TestSubVoteLabelNamesTheVoteType(t *testing.T) {
 
 func intPtr(n int) *int { return &n }
 
-// A card carries no headline, so the caption's date and time do not travel with
-// it. The card has to say when the vote was taken on its own.
-func TestCardCountsLabel(t *testing.T) {
-	at0941 := time.Date(2026, 8, 17, 9, 41, 0, 0, time.UTC)
-	midnight := time.Date(2026, 8, 17, 0, 0, 0, 0, time.UTC)
-
-	tests := []struct {
-		name     string
-		date     time.Time
-		voteType string
-		expected string
-	}{
-		{"date, clock and type together", at0941, "Ausgabenbremse", "Abstimmung vom 17.08.2026 (09:41) · Ausgabenbremse"},
-		{"date and clock", at0941, "Normal", "Abstimmung vom 17.08.2026 (09:41)"},
-		// Stadt Zürich supplies sitting dates at midnight, so a clock there
-		// would invent a precision the source does not have. The date stands.
-		{"midnight keeps the date alone", midnight, "Normal", "Abstimmung vom 17.08.2026"},
-		{"midnight with a type", midnight, "Quorum", "Abstimmung vom 17.08.2026 · Quorum"},
-		{"unknown date leaves the type standing alone", time.Time{}, "Quorum", "Quorum"},
-		{"nothing to say", time.Time{}, "Normal", ""},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := CardCountsLabel(votes.Vote{Date: tt.date, Type: tt.voteType})
-			if got != tt.expected {
-				t.Errorf("CardCountsLabel(date=%v, type=%q) = %q, want %q",
-					tt.date, tt.voteType, got, tt.expected)
-			}
-		})
-	}
-}
-
 func TestIsDecisionConsistent(t *testing.T) {
 	tests := []struct {
 		name            string

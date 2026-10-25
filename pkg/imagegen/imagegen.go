@@ -632,7 +632,7 @@ func loadFontSet() (*fontSet, error) {
 // renderCombinedCard renders a single image with visual hierarchy:
 // large verdict, bold title, dashboard stats, and grouped party breakdown.
 func renderCombinedCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
-	inset := bandInset(*v)
+	inset := bandInset(*v) + cornerStrip(fonts, voteformat.FormatVoteDateTime(v.Date), "")
 
 	// Dry run to measure content height
 	dry := newCursor(inset, imgHeight)
@@ -665,10 +665,11 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	// Title first: bold, wrapped, centered
 	title := voteformat.CleanVoteTitle(v.Title)
 
-	// The heading above the counts: when the vote was taken and what kind of
-	// ballot it was. The multi-vote cards get theirs from SubVoteLabel; this is
-	// the lone-vote case, which has no ordinal to be numbered by.
-	countsLabel := voteformat.CardCountsLabel(*v)
+	// When the vote was taken goes in the corner, as on every other card. The
+	// line above the counts is left to say what kind of ballot it was, and is
+	// dropped for an ordinary one.
+	stamp := voteformat.FormatVoteDateTime(v.Date)
+	countsLabel := voteformat.TypeLabel(v.Type)
 
 	// Everything below the title has to fit, all of it: the reserve below
 	// mirrors the layout that follows line for line, and the title gets what is
@@ -681,12 +682,14 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	// sizes, leaving the measured height wrong for the card actually drawn.
 	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 	bottomReserved := combinedBottomReserve(fonts, len(fraktionCounts), countsLabel != "")
-	availableForTitle := titleBudget(*v, bottomReserved)
+	availableForTitle := titleBudget(*v, bottomReserved+cornerStrip(fonts, stamp, ""))
 
 	titleFace, titleLines, err := cardTitle([]votes.Vote{*v}, title, maxTextWidth, availableForTitle)
 	if err != nil {
 		return nil, nil, err
 	}
+
+	drawCornerLabels(img, fonts, *v, stamp, "", bg)
 
 	// Verdict first: large centered emoji above the title
 	var verdictText string
@@ -1374,15 +1377,14 @@ func summaryHeader(group []votes.Vote) string {
 }
 
 // drawCornerLabels draws a timestamp in the card's top-left corner and, when
-// one is given, the progress badge in the top-right, on the same line. A result
+// one is given, the progress badge in the top-right, on the same line. A vote
 // card's stamp is the vote's date and time ("15.06.2026 11:29"), or the date
 // alone where the source has no clock; a Wahlgeschäft card's is always the
 // date alone, like its text post's headline, because the one timestamp
 // available is the roll call's.
 //
-// It serves the cards whose content has no date of its own: a result card's
-// heading comes from CardSubVoteLabel, which names the vote but not when, and a
-// Wahlgeschäft card has no counts heading at all. Every card leaves the carousel on its own
+// Every card that reports a vote carries it, in the same place and the same
+// form, so a reader finds the timestamp without learning each card's layout. Every card leaves the carousel on its own
 // sooner or later, and one that cannot be dated is one a reader cannot place.
 //
 // The row is reserved rather than overlaid: a card that uses it starts its
