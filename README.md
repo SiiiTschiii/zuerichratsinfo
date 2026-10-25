@@ -16,7 +16,7 @@
   </a>
 </p>
 
-A civic tech bot that shares parliamentary vote results from the City and Canton of Zürich and the Swiss Nationalrat on social media, and tags the politicians involved, using a curated mapping of their accounts.
+A civic tech bot that brings parliamentary decisions to social media and tags the politicians involved, using a curated mapping of their accounts. It is built to grow: more parliaments, more platforms.
 
 We built it because a healthy democracy rests on two things that are easy to lose sight of:
 
@@ -25,7 +25,7 @@ We built it because a healthy democracy rests on two things that are easy to los
 
 **🇨🇭 Auf Deutsch**
 
-Ein Civic-Tech-Bot, der Abstimmungsergebnisse aus dem Gemeinderat Zürich, dem Kantonsrat Zürich und dem Nationalrat auf Social Media teilt und die beteiligten Politikerinnen und Politiker markiert, anhand einer manuell gepflegten Zuordnung ihrer Accounts.
+Ein Civic-Tech-Bot, der parlamentarische Entscheide auf Social Media bringt und die beteiligten Politikerinnen und Politiker markiert, anhand einer manuell gepflegten Zuordnung ihrer Accounts. Das Projekt ist auf Wachstum angelegt: mehr Parlamente, mehr Plattformen.
 
 Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei Dingen beruht, die leicht aus dem Blick geraten:
 
@@ -40,14 +40,6 @@ Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei D
 | **Kantonsrat Zürich**        | [OpenParlData](https://api.openparldata.ch/documentation)                | ✅ Live |
 | **Nationalrat**              | [parlament.ch OData](https://ws.parlament.ch/odata.svc/), Parlamentsdienste | ✅ Live |
 
-The two Zürich bodies post to the same accounts (Zürich Ratsinfo). Every post
-names which chamber voted, in the text and on the image, so the two are never
-confused. The Nationalrat posts only its Schluss- and Gesamtabstimmungen, to
-accounts of its own, from the separate `bot-chparl.yml` workflow: CH Parl Info
-on [Instagram](https://www.instagram.com/chparlinfo) and
-[Facebook](https://www.facebook.com/profile.php?id=61595771216866), with X and
-Bluesky to follow.
-
 ## Supported Platforms
 
 | Platform    | Status     | Zürich Ratsinfo (Gemeinderat, Kantonsrat)                                            | CH Parl Info (Nationalrat)                                                           |
@@ -59,14 +51,14 @@ Bluesky to follow.
 | LinkedIn    | ❌ Planned | -                                                                                    | -                                                                                    |
 | TikTok      | ❌ Planned | -                                                                                    | -                                                                                    |
 
-_Politicians the bot can tag per platform (Zürich mapping, in [data/](data/)): LinkedIn 113, Instagram 102, Facebook 92, X 67, Bluesky 27, TikTok 19. The Nationalrat posts do not tag politicians yet._
+_Politicians the bot can tag per platform, from the curated mapping in [data/](data/): LinkedIn 113, Instagram 102, Facebook 92, X 67, Bluesky 27, TikTok 19. Tagging is not available for every body yet._
 
 ## What It Does
 
-- **Automated Vote Posts**: Shares vote results (Abstimmungen) with the full per-faction breakdown, as image carousels. Timing depends on when each source publishes: the [PARIS API](https://opendatazurich.github.io/paris-api/) typically 5–7 days after a city vote (the same data behind [gemeinderat-zuerich.ch](https://www.gemeinderat-zuerich.ch/sitzungen/termine/?navid=968842968842)), and OpenParlData within a few days of a cantonal one.
+- **Automated Vote Posts**: Shares vote results (Abstimmungen) with the full per-faction breakdown, as image carousels. Each post names the body that voted, in the text and on the image. Posts go out once the source publishes the data, see the data sources above.
 - **Politician Tagging**: Automatically tags mentioned politicians using their social media accounts when available in our mapping
   - _Example: "Postulat von Ivo Bieri @ivo_bieri (SP) und Liv Mahrer @LivMahrer (SP)..."_
-- **Social Media Mapping**: Curates an extensive mapping of Zurich politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok) - see [data/zurich-city/contacts.yaml](data/zurich-city/contacts.yaml)
+- **Social Media Mapping**: Curates a mapping of politicians to their social media accounts (X, Facebook, Instagram, LinkedIn, Bluesky, TikTok), see [data/](data/)
 
 ## Tech Stack
 
