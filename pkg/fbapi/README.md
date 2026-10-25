@@ -196,7 +196,10 @@ a party's follows its Fraktion phrase, as on Instagram.
   turn it on only after a test post has shown it working on the Page.
 - **Try it on a test Page** with the test contacts, which map the fixtures'
   people and parties to test accounts: `post_fixture` and `generate_vote_post`
-  always tag.
+  always tag. Get `$TEST_PAGE_ID` and `$TEST_PAGE_TOKEN` as in the
+  [Access Token](../igapi/README.md#access-token-never-expiring-page-token)
+  steps: generate a user token in the Graph API Explorer with the test Page
+  ticked, then read the Page's ID and token from `me/accounts`.
 
 ```bash
 ZURICH_FB_PAGE_ID=<test page id> ZURICH_FB_ACCESS_TOKEN=$TEST_PAGE_TOKEN go run ./cmd/post_fixture -platform facebook -fixture single-vote-angenommen
