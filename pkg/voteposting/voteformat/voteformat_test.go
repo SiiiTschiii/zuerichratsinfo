@@ -1158,16 +1158,11 @@ func TestGroupLinks(t *testing.T) {
 		}
 	})
 
-	const (
-		curia    = "https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId=20250059"
-		bulletin = "https://www.parlament.ch/de/ratsbetrieb/amtliches-bulletin/amtliches-bulletin-die-verhandlungen?SubjectId=83126"
-		player   = "https://par-pcache.simplex.tv/subject/?subjectID=83126&language=de"
-	)
+	const curia = "https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId=20250059"
 	nationalrat := func(ref string) votes.Vote {
 		return votes.Vote{
 			SourceURL: curia, GroupURL: curia,
 			ArchiveURL: "https://www.parlament.ch/poly/Abstimmung/52/out/vote_52_" + ref + ".pdf",
-			VideoURL:   player, VideoGroupURL: player, BulletinURL: bulletin,
 		}
 	}
 
@@ -1176,8 +1171,6 @@ func TestGroupLinks(t *testing.T) {
 		want := []Link{
 			{Icon: "🔗", Name: "Geschäft", URL: curia},
 			{Icon: "📋", Name: "Protokoll", URL: "https://www.parlament.ch/poly/Abstimmung/52/out/vote_52_33215.pdf"},
-			{Icon: "🎬", Name: "Video", URL: player},
-			{Icon: "📄", Name: "Bulletin", URL: bulletin},
 		}
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("GroupLinks() = %+v, want %+v", got, want)
@@ -1192,8 +1185,8 @@ func TestGroupLinks(t *testing.T) {
 				t.Errorf("GroupLinks() = %+v, want no Protokoll: there is none for the group", got)
 			}
 		}
-		if len(got) != 3 {
-			t.Errorf("GroupLinks() = %+v, want the Geschäft, the video and the Bulletin", got)
+		if len(got) != 1 {
+			t.Errorf("GroupLinks() = %+v, want only the Geschäft", got)
 		}
 		per := VoteLinks(g, 1)
 		if len(per) != 1 || per[0].Name != "Protokoll" || !strings.HasSuffix(per[0].URL, "vote_52_33216.pdf") {

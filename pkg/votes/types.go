@@ -70,18 +70,16 @@ type Vote struct {
 	SourceURL string
 	GroupURL  string
 
-	// VideoURL links to the recording of the debate, positioned at this vote
-	// where the player allows it. VideoGroupURL is the same recording widened
-	// to the agenda item, for a post covering several votes. Kanton Zürich's
-	// Recapp page also names the vote, states the result and offers the
-	// Namensliste; the Nationalrat's player opens on the agenda item, so there
-	// the two fields hold the same URL.
+	// VideoURL links to the recording of the debate, positioned at this vote:
+	// Kanton Zürich's Recapp segment, which also names the vote, states the
+	// result and offers the Namensliste. VideoGroupURL is the same recording
+	// widened to the agenda item, for a post covering several votes.
 	//
-	// It, ArchiveURL and BulletinURL exist because the business page is the
-	// durable link but not the prompt one. Kanton Zürich adds a vote to its
-	// Geschäft page ten to sixteen days after the sitting, so for the first
-	// fortnight the permalink a post carries says nothing about the vote the
-	// post is about. The recording has it within the hour.
+	// It and ArchiveURL exist because the business page is the durable link
+	// but not the prompt one. Kanton Zürich adds a vote to its Geschäft page
+	// ten to sixteen days after the sitting, so for the first fortnight the
+	// permalink a post carries says nothing about the vote the post is about.
+	// The recording has it within the hour.
 	//
 	// Empty when the source publishes no such page.
 	VideoURL      string
@@ -104,16 +102,12 @@ type Vote struct {
 	// Empty when the source has no sitting page.
 	SessionURL string
 
-	// BulletinURL links to the Bulletin's account of this vote. Posts print it
-	// in place of SessionURL: it is the same sitting, one click deeper.
+	// BulletinURL links to the sitting's Bulletin, the parliament's own
+	// summary of what it decided that day. It is filled only where a post
+	// needs the reader to look the outcome up themselves, because the source
+	// serves the document but not its text — see IsWahlgeschaeft.
 	//
-	// Kanton Zürich fills it only where a post needs the reader to look the
-	// outcome up themselves, because the source serves the sitting's Bulletin
-	// PDF but not its text — see IsWahlgeschaeft. The Nationalrat fills it for
-	// every vote the Amtliches Bulletin has published yet, with the debate on
-	// the agenda item, which ends with the vote and its tally.
-	//
-	// Empty otherwise.
+	// Empty for every other vote, which is nearly all of them.
 	BulletinURL string
 
 	// Totals. Nil means "not reported", which is distinct from zero.

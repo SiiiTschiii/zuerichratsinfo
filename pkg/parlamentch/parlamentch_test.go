@@ -28,11 +28,9 @@ var finalAndOverall = []string{"Schlussabstimmung", "Vote final", "Gesamtabstimm
 // 02.10.2026, recorded with __metadata stripped. Three are on 25.059, the
 // Pelzinitiative, whose tallies were checked against the Nationalrat's
 // Abstimmungsprotokoll (Ref. 33215 and 33233); the fourth, 26.033, is a lone
-// vote on its business. The transcript rows were recorded on 25.10.2026 and
-// place the three Pelzinitiative votes in one Bulletin agenda item.
+// vote on its business.
 var (
 	idVoting   = regexp.MustCompile(`IdVote eq (\d+)`)
-	voteID     = regexp.MustCompile(`VoteId eq '(\d+)'`)
 	idBusiness = regexp.MustCompile(`^/Business\(ID=(\d+),`)
 )
 
@@ -57,13 +55,6 @@ func newTestClient(t *testing.T) (*Client, *[]string) {
 			}
 			_, _ = w.Write([]byte(n))
 			return
-		case "/Transcript":
-			m := voteID.FindStringSubmatch(r.URL.Query().Get("$filter"))
-			if m == nil {
-				http.Error(w, "no VoteId in filter", http.StatusBadRequest)
-				return
-			}
-			name = "transcript_" + m[1] + ".json"
 		case "/MemberCouncil":
 			name = "members.json"
 		case "/Voting":
@@ -241,79 +232,6 @@ func TestToVote_NoLegislatureNoProtocol(t *testing.T) {
 	// vote_0_33225.pdf does not exist, and a link to it would be a 404 in a post.
 	if v.ArchiveURL != "" {
 		t.Errorf("archive URL = %q, want none", v.ArchiveURL)
-	}
-}
-
-func TestGroupByAffair_LinksTheBulletinAndTheVideo(t *testing.T) {
-	c, requests := newTestClient(t)
-	groups := fetchAndGroup(t, c)
-
-	want := map[string]string{"26.033": "83136", "25.059": "83126"}
-	for _, g := range groups {
-		subject := want[g[0].Affair.Number]
-		bulletin := "https://www.parlament.ch/de/ratsbetrieb/amtliches-bulletin/amtliches-bulletin-die-verhandlungen?SubjectId=" + subject
-		video := "https://par-pcache.simplex.tv/subject/?subjectID=" + subject + "&language=de"
-		for _, v := range g {
-			if v.BulletinURL != bulletin {
-				t.Errorf("%s: bulletin URL = %q, want %q", v.SourceID, v.BulletinURL, bulletin)
-			}
-			if v.VideoURL != video || v.VideoGroupURL != video {
-				t.Errorf("%s: video URLs = %q/%q, want %q", v.SourceID, v.VideoURL, v.VideoGroupURL, video)
-			}
-		}
-	}
-
-	// VoteId restarts each legislature and the Ständerat numbers its own, so
-	// the session and the chamber have to narrow it.
-	for _, raw := range *requests {
-		if !strings.Contains(raw, "VoteId") {
-			continue
-		}
-		filter := firstQueryValue(t, raw, "$filter")
-		for _, part := range []string{"IdSession eq '5215'", "MeetingCouncilAbbreviation eq 'N'"} {
-			if !strings.Contains(filter, part) {
-				t.Errorf("transcript filter %q lacks %q", filter, part)
-			}
-		}
-	}
-}
-
-func TestGroupByAffair_UnpublishedBulletinKeepsTheVote(t *testing.T) {
-	c, _ := newTestClient(t)
-	vs, err := c.FetchRecent(10)
-	if err != nil {
-		t.Fatal(err)
-	}
-	// An hour after the debate the Bulletin has nothing yet. The service
-	// answers an empty collection, which no recorded fixture is.
-	empty := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte(`{"d":{"results":[]}}`))
-	}))
-	t.Cleanup(empty.Close)
-
-	c.SetBaseURL(empty.URL)
-	if got := c.bulletinSubject(vs[0].SessionID, vs[0].Sequence); got != "" {
-		t.Errorf("subject before publication = %q, want none", got)
-	}
-	if _, cached := c.bulletin[vs[0].SessionID+"/"+vs[0].Sequence]; cached {
-		t.Error("a miss was cached, so the link would never appear in this run")
-	}
-}
-
-func TestAgreeOnAgendaItem_SplitGroupLinksNoAgendaItem(t *testing.T) {
-	g := []votes.Vote{
-		{BulletinURL: "b1", VideoURL: "v1", VideoGroupURL: "v1"},
-		{BulletinURL: "b2", VideoURL: "v2", VideoGroupURL: "v2"},
-	}
-	agreeOnAgendaItem(g)
-	for i, v := range g {
-		if v.BulletinURL != "" || v.VideoGroupURL != "" {
-			t.Errorf("vote %d keeps group links %q/%q", i, v.BulletinURL, v.VideoGroupURL)
-		}
-	}
-	// Each vote's own recording is still right for that vote.
-	if g[0].VideoURL != "v1" || g[1].VideoURL != "v2" {
-		t.Errorf("per-vote video lost: %q/%q", g[0].VideoURL, g[1].VideoURL)
 	}
 }
 
