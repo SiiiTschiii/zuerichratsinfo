@@ -1142,7 +1142,7 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 }
 
 func renderWahlgeschaeftCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
-	inset := bandInset(*v)
+	inset := bandInset(*v) + cornerStrip(fonts, *v, "")
 
 	// Dry run to measure content height
 	dry := newCursor(inset, imgHeight)
@@ -1191,6 +1191,7 @@ func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, 
 		bodyReserve += lineHeight(fonts.regular)
 	}
 	bodyReserve += padding
+	bodyReserve += cornerStrip(fonts, *v, "")
 
 	title := voteformat.CleanVoteTitle(v.Title)
 
@@ -1239,7 +1240,7 @@ func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, 
 }
 
 func renderResultCard(v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) ([]byte, error) {
-	inset := bandInset(*v)
+	inset := bandInset(*v) + cornerStrip(fonts, *v, formatProgressBadge(idx, total))
 
 	// Dry run to measure content height
 	dry := newCursor(inset, imgHeight)
@@ -1269,7 +1270,8 @@ func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg colo
 		// the results rather than pushing Fraktionen off the bottom. It keeps
 		// its face — these labels are short enough that shrinking would only
 		// make the common card worse — and is cut with an ellipsis instead.
-		available := titleBudget(*v, resultBottomReserve(fonts, len(fraktionCounts)))
+		reserve := resultBottomReserve(fonts, len(fraktionCounts)) + cornerStrip(fonts, *v, formatProgressBadge(idx, total))
+		available := titleBudget(*v, reserve)
 		subLines = ellipsizeLines(fonts.boldHeading, subLines, maxTextWidth, available)
 		for _, line := range subLines {
 			if img != nil {
@@ -1378,7 +1380,11 @@ func summaryHeader(group []votes.Vote) string {
 // therefore carries no date (their headline already does), and a Wahlgeschäft
 // card has no counts heading at all. Every card leaves the carousel on its own
 // sooner or later, and one that cannot be dated is one a reader cannot place.
-// The corner costs no vertical space, so no card's layout reserve changes.
+//
+// The row is reserved rather than overlaid: a card that uses it starts its
+// content cornerStrip lower and charges its heading for the same height. A
+// heading wrapped to the full width would otherwise share the row with the
+// date on any card tall enough for centredStart to clamp it to the margin.
 func drawCornerLabels(img *image.RGBA, fonts *fontSet, v votes.Vote, badge string, bg color.RGBA) {
 	if img == nil {
 		return
@@ -1391,6 +1397,16 @@ func drawCornerLabels(img *image.RGBA, fonts *fontSet, v votes.Vote, badge strin
 		badgeW := font.MeasureString(fonts.small, badge).Ceil()
 		drawShadowedText(img, fonts.small, nil, imgWidth-padding-badgeW, y, badge, bg)
 	}
+}
+
+// cornerStrip is the height drawCornerLabels takes from the top of a card's
+// content area: one line of the small face and a gap under it. A card with
+// neither a date nor a badge draws nothing there and reserves nothing.
+func cornerStrip(fonts *fontSet, v votes.Vote, badge string) int {
+	if voteformat.FormatVoteDate(v.Date) == "" && badge == "" {
+		return 0
+	}
+	return lineHeight(fonts.small) + frac(fonts.small, 0.5)
 }
 
 func formatProgressBadge(index, total int) string {

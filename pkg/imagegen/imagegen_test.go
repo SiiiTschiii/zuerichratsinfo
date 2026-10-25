@@ -442,6 +442,14 @@ func eachCard(t *testing.T, fonts *fontSet, fn func(*testing.T, cardLayout)) {
 			bg := SelectColor(group[0].Jurisdiction, group[0].Affair.Number)
 			inset := bandInset(group[0])
 
+			if votes.IsWahlgeschaeftGroup(group) {
+				v := group[0]
+				fn(t, cardLayout{"Wahlgeschäft card", bg, inset + cornerStrip(fonts, v, ""), func(img *image.RGBA, cur *layoutCursor) {
+					layoutWahlgeschaeftCard(img, cur, &v, bg, fonts)
+				}})
+				return
+			}
+
 			if len(group) == 1 {
 				v := group[0]
 				fn(t, cardLayout{"combined card", bg, inset, func(img *image.RGBA, cur *layoutCursor) {
@@ -457,11 +465,52 @@ func eachCard(t *testing.T, fonts *fontSet, fn func(*testing.T, cardLayout)) {
 			}})
 			for i := range group {
 				v := group[i]
-				fn(t, cardLayout{fmt.Sprintf("result card %d", i+1), bg, inset, func(img *image.RGBA, cur *layoutCursor) {
+				corner := cornerStrip(fonts, v, formatProgressBadge(i+1, len(group)))
+				fn(t, cardLayout{fmt.Sprintf("result card %d", i+1), bg, inset + corner, func(img *image.RGBA, cur *layoutCursor) {
 					layoutResultCard(img, cur, &v, bg, fonts, i+1, len(group))
 				}})
 			}
 		})
+	}
+}
+
+// TestResultCardHeadingClearsTheCornerRow checks that a result card's heading
+// never shares a row with the date and badge in its corners.
+//
+// The heading is centred, so a long one wraps to the full column width and
+// reaches both corners. On a card tall enough for centredStart to clamp the
+// content to the top margin, its first line would land on the corner row unless
+// the row is reserved. A full Fraktion roster under a heading that wraps to
+// several lines is that card.
+func TestResultCardHeadingClearsTheCornerRow(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	v := testfixtures.ExtremeTitleFullRoster()[0]
+	v.Subtitle = strings.Repeat("Änderungsantrag zu Artikel 12 Absatz 3 der Gemeindeordnung ", 4)
+	if voteformat.FormatVoteDate(v.Date) == "" {
+		t.Fatal("fixture has no date, so no corner row to clear")
+	}
+	bg := SelectColor(v.Jurisdiction, v.Affair.Number)
+	const idx, total = 2, 5
+
+	inset := bandInset(v) + cornerStrip(fonts, v, formatProgressBadge(idx, total))
+	dry := newCursor(inset, imgHeight)
+	layoutResultCard(nil, dry, &v, bg, fonts, idx, total)
+	startY := centredStart(inset, dry.contentHeight())
+
+	cornerBottom := bandInset(v) + padding + lineHeight(fonts.small)
+	if startY < cornerBottom {
+		t.Errorf("heading starts at y=%d, inside the corner row ending at y=%d", startY, cornerBottom)
+	}
+
+	real := newCursor(startY, imgHeight)
+	layoutResultCard(newImage(bg), real, &v, bg, fonts, idx, total)
+	if real.contentHeight() != dry.contentHeight() {
+		t.Errorf("drawn card is %dpx tall against %dpx measured — the table dropped rows",
+			real.contentHeight(), dry.contentHeight())
 	}
 }
 
