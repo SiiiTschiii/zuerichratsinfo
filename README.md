@@ -43,8 +43,9 @@ Wir haben das Projekt ins Leben gerufen, weil eine gesunde Demokratie auf zwei D
 The two Zürich bodies post to the same accounts (Zürich Ratsinfo). Every post
 names which chamber voted, in the text and on the image, so the two are never
 confused. The Nationalrat posts only its Schluss- and Gesamtabstimmungen, to
-accounts of its own: [@chparlinfo](https://www.instagram.com/chparlinfo) on
-Instagram, from the separate `bot-chparl.yml` workflow.
+accounts of its own (CH Parl Info, [@chparlinfo](https://www.instagram.com/chparlinfo)
+on Instagram, with X, Bluesky and a Facebook Page to follow), from the separate
+`bot-chparl.yml` workflow.
 
 ## Supported Platforms
 

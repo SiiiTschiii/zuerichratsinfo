@@ -237,28 +237,110 @@ It exits non-zero if any totals, decisions or titles disagree.
 
 ## The CH Parl Info bot (Nationalrat)
 
-The Nationalrat posts to accounts of its own (`@chparlinfo` on Instagram) from a
+The Nationalrat posts to accounts of its own (CH Parl Info, `@chparlinfo`) from a
 workflow of its own, [bot-chparl.yml](.github/workflows/bot-chparl.yml). It is
-the `chparl` channel, so its secrets are the zurich ones with a `CHPARL_`
-prefix, and it keeps its vote log on a branch of its own, `state-log-chparl`.
+the `chparl` channel: every setting is the zurich one with a `CHPARL_` prefix,
+and the vote log lives on a branch of its own, `state-log-chparl`.
 
-The workflow refuses to run without that branch, because a missing log reads as
-"nothing was ever posted". Create it once, with an empty log:
+Each platform switches itself on when its credentials are set and stays off
+while they are missing, so the platforms can go live one at a time. Nothing
+posts at all until the last step.
+
+### 1. Create the state branch
+
+The workflow refuses to run without it, because a missing log reads as "nothing
+was ever posted". Create it once, with an empty log per platform:
 
 ```bash
 git switch --orphan state-log-chparl
 mkdir -p data/nationalrat
-printf '{\n  "jurisdiction": "nationalrat",\n  "platform": "instagram",\n  "votes": []\n}\n' > data/nationalrat/posted_votes_instagram.json
-git add data/nationalrat/posted_votes_instagram.json
-git commit -m "Start the Nationalrat vote log"
+for p in instagram facebook x bluesky; do
+  printf '{\n  "jurisdiction": "nationalrat",\n  "platform": "%s",\n  "votes": []\n}\n' "$p" > "data/nationalrat/posted_votes_$p.json"
+done
+git add data/nationalrat
+git commit -m "Start the Nationalrat vote logs"
 git push origin state-log-chparl
 git switch main
 ```
 
-Then set `CHPARL_IG_USER_ID` and `CHPARL_IG_ACCESS_TOKEN` as repository secrets,
-and `JURISDICTION_NATIONALRAT_ENABLED=true` as a repository variable once the
-dry-run posts look right. Until that variable is set, every scheduled run fails
-with "No jurisdiction is enabled", which is the switch working as designed.
+### 2. Instagram and Facebook (one Meta setup)
+
+The Graph API reaches an Instagram account only through the Facebook Page it is
+linked to, so `@chparlinfo` on Instagram needs a CH Parl Info Facebook Page
+whatever you decide about posting there. The existing Meta app serves both
+channels; what differs is the Page, and so the token.
+
+1. Create the CH Parl Info Facebook Page, switch `@chparlinfo` to a
+   professional account, and link it to that Page.
+2. Generate a never-expiring Page token for the **new** Page, following
+   [the Instagram setup](pkg/igapi/README.md#access-token-never-expiring-page-token)
+   with `pages_manage_posts` ticked as in
+   [the Facebook setup](pkg/fbapi/README.md). In step 4 pick the CH Parl Info
+   entry of `/me/accounts`, not ZueriRatsinfo.
+3. Read the IDs as in [Getting IDs](pkg/igapi/README.md#getting-ids), for the
+   new Page.
+4. Set them:
+
+```bash
+gh secret set CHPARL_IG_ACCESS_TOKEN
+gh secret set CHPARL_IG_USER_ID
+gh variable set CHPARL_FB_PAGE_ID --body "<page id>"
+gh variable set CHPARL_FB_POST_FROM --body "<go-live date, YYYY-MM-DD>"
+```
+
+Facebook uses the same token secret, so a rotation covers both. Leave
+`CHPARL_FB_PAGE_ID` unset to post to Instagram only; set it and
+`CHPARL_FB_POST_FROM` is required too, or the run stops.
+
+### 3. X
+
+Create the X account, then sign in to <https://developer.x.com> **as that
+account** and create a project and app there, as in
+[section 1](#1-get-x-api-credentials). Tokens generated under **Keys and tokens**
+act for the account that owns the app, which is the point: reusing the Zürich
+app would need a separate OAuth sign-in, and would share Zürich's free-tier
+quota.
+
+```bash
+gh secret set CHPARL_X_API_KEY
+gh secret set CHPARL_X_API_SECRET
+gh secret set CHPARL_X_ACCESS_TOKEN
+gh secret set CHPARL_X_ACCESS_SECRET
+```
+
+`CHPARL_X_MAX_CHARS` defaults to 280; set it to 2000 only if the account has
+X Premium.
+
+### 4. Bluesky
+
+Create the account, then **Settings → Privacy and security → App passwords**,
+and add one for the bot. Never use the account password.
+
+```bash
+gh variable set CHPARL_BLUESKY_HANDLE --body "chparlinfo.bsky.social"
+gh secret set CHPARL_BLUESKY_PASSWORD
+```
+
+### 5. Go live
+
+Check what would be posted, then turn the switch on and run once by hand:
+
+```bash
+go run ./cmd/generate_vote_post -jurisdiction nationalrat -n 3
+gh variable set JURISDICTION_NATIONALRAT_ENABLED --body true
+gh workflow run bot-chparl.yml
+```
+
+The first run posts the final votes of the last 14 days
+(`MAX_VOTE_AGE_DAYS_NATIONALRAT`), so outside a session it posts nothing and
+the first posts follow the next session's final votes. Until the switch is set,
+every scheduled run fails with "No jurisdiction is enabled". That is the switch
+working as designed; `gh workflow disable bot-chparl.yml` silences it until
+then. To stop posting again (the runs then fail the same way):
+
+```bash
+gh variable set JURISDICTION_NATIONALRAT_ENABLED --body false
+```
 
 ## Development
 
