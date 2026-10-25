@@ -172,6 +172,60 @@ func TestPollContainerStatus_Error(t *testing.T) {
 	}
 }
 
+func TestGetPermalink(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("expected GET, got %s", r.Method)
+		}
+		if r.URL.Path != "/media_99" {
+			t.Errorf("expected path /media_99, got %s", r.URL.Path)
+		}
+		if r.URL.Query().Get("fields") != "permalink" {
+			t.Errorf("expected fields=permalink, got %s", r.URL.Query().Get("fields"))
+		}
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"permalink":"https://www.instagram.com/p/DAbC123/","id":"media_99"}`))
+	}))
+	defer server.Close()
+
+	client := NewClient("ig_user_1", "tok123")
+	client.SetAPIBase(server.URL)
+
+	permalink, err := client.GetPermalink("media_99")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if permalink != "https://www.instagram.com/p/DAbC123/" {
+		t.Errorf("unexpected permalink %q", permalink)
+	}
+}
+
+func TestGetPermalink_Errors(t *testing.T) {
+	for name, tc := range map[string]struct {
+		status int
+		body   string
+	}{
+		"server error":    {http.StatusInternalServerError, `server error`},
+		"empty permalink": {http.StatusOK, `{"id":"media_99"}`},
+	} {
+		t.Run(name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.WriteHeader(tc.status)
+				_, _ = w.Write([]byte(tc.body))
+			}))
+			defer server.Close()
+
+			client := NewClient("ig_user_1", "tok123")
+			client.SetAPIBase(server.URL)
+
+			if _, err := client.GetPermalink("media_99"); err == nil {
+				t.Fatal("expected error")
+			}
+		})
+	}
+}
+
 // TestRoundTrip_FullCarouselFlow tests the complete flow: create items → create carousel → publish
 func TestRoundTrip_FullCarouselFlow(t *testing.T) {
 	step := 0

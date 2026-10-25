@@ -58,6 +58,11 @@ type statusResponse struct {
 	StatusCode string `json:"status_code"`
 }
 
+// permalinkResponse is the response from querying a media object's permalink.
+type permalinkResponse struct {
+	Permalink string `json:"permalink"`
+}
+
 // CreateMediaContainer creates a carousel item container for a single image.
 // The imageURL must be a publicly accessible JPEG URL.
 // Returns the container ID.
@@ -214,4 +219,42 @@ func (c *Client) PollContainerStatus(containerID string) (string, error) {
 	}
 
 	return result.StatusCode, nil
+}
+
+// GetPermalink returns the public URL of a published media object, from the ID
+// PublishContainer returned. Instagram's /p/{shortcode} URLs cannot be derived
+// from the media ID, so this costs one call; instagram_basic covers it.
+func (c *Client) GetPermalink(mediaID string) (string, error) {
+	endpoint := fmt.Sprintf("%s/%s", c.apiBase, mediaID)
+
+	req, err := http.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return "", fmt.Errorf("creating permalink request: %w", err)
+	}
+
+	q := req.URL.Query()
+	q.Set("fields", "permalink")
+	q.Set("access_token", c.accessToken)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("fetching permalink: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("fetch permalink returned %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result permalinkResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return "", fmt.Errorf("parsing permalink response: %w", err)
+	}
+	if result.Permalink == "" {
+		return "", fmt.Errorf("permalink response carried no permalink: %s", string(body))
+	}
+
+	return result.Permalink, nil
 }

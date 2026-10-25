@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/siiitschiii/parlinfo/pkg/bskyapi"
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
 	"github.com/siiitschiii/parlinfo/pkg/voteposting/testfixtures"
 )
 
@@ -73,7 +74,7 @@ func TestPost_SinglePost(t *testing.T) {
 		t.Fatalf("Format error: %v", err)
 	}
 
-	shouldContinue, err := p.Post(content)
+	_, shouldContinue, err := p.Post(content)
 	if err != nil {
 		t.Fatalf("Post error: %v", err)
 	}
@@ -102,7 +103,7 @@ func TestPost_ThreadChaining(t *testing.T) {
 		t.Fatalf("Format error: %v", err)
 	}
 
-	shouldContinue, err := p.Post(content)
+	post, shouldContinue, err := p.Post(content)
 	if err != nil {
 		t.Fatalf("Post error: %v", err)
 	}
@@ -121,6 +122,12 @@ func TestPost_ThreadChaining(t *testing.T) {
 
 	rootURI := "at://did:fake/app.bsky.feed.post/1"
 	rootCID := "cid-fake-1"
+
+	// The logged ref is the root post, addressed by DID rather than handle
+	want := votelog.PostRef{ID: rootURI, URL: "https://bsky.app/profile/did:fake/post/1"}
+	if post != want {
+		t.Errorf("expected ref %+v, got %+v", want, post)
+	}
 
 	// All replies should reference the root as Root, and the previous post as Parent
 	for i := 1; i < len(recordCalls); i++ {
@@ -168,7 +175,7 @@ func TestPost_WithMentionFacets(t *testing.T) {
 			bskyapi.LinkFacet(0, 5, "https://example.com"))
 	}
 
-	_, err = p.Post(content)
+	_, _, err = p.Post(content)
 	if err != nil {
 		t.Fatalf("Post error: %v", err)
 	}
@@ -193,11 +200,11 @@ func TestPost_SessionLazyAuth(t *testing.T) {
 	content1, _ := p.Format(votes)
 	content2, _ := p.Format(votes)
 
-	_, err := p.Post(content1)
+	_, _, err := p.Post(content1)
 	if err != nil {
 		t.Fatalf("Post 1 error: %v", err)
 	}
-	_, err = p.Post(content2)
+	_, _, err = p.Post(content2)
 	if err != nil {
 		t.Fatalf("Post 2 error: %v", err)
 	}
@@ -213,7 +220,7 @@ func TestPost_EmptyThread(t *testing.T) {
 	p := newTestBlueskyPlatform(&recordCalls, &sessionCalls, 10)
 
 	content := &BlueskyContent{thread: []*BlueskyPost{}}
-	_, err := p.Post(content)
+	_, _, err := p.Post(content)
 	if err == nil {
 		t.Error("expected error for empty thread")
 	}
@@ -230,11 +237,26 @@ func TestPost_PostLimitReached(t *testing.T) {
 		t.Fatalf("Format error: %v", err)
 	}
 
-	shouldContinue, err := p.Post(content)
+	_, shouldContinue, err := p.Post(content)
 	if err != nil {
 		t.Fatalf("Post error: %v", err)
 	}
 	if shouldContinue {
 		t.Error("expected shouldContinue=false after reaching maxPostsPerRun=1")
+	}
+}
+
+func TestPostURL(t *testing.T) {
+	cases := map[string]string{
+		"at://did:plc:abc123/app.bsky.feed.post/3kxyz": "https://bsky.app/profile/did:plc:abc123/post/3kxyz",
+		"at://did:plc:abc123/app.bsky.feed.like/3kxyz": "",
+		"at://did:plc:abc123/app.bsky.feed.post":       "",
+		"https://bsky.app/profile/x/post/y":            "",
+		"":                                             "",
+	}
+	for uri, want := range cases {
+		if got := postURL(uri); got != want {
+			t.Errorf("postURL(%q) = %q, want %q", uri, got, want)
+		}
 	}
 }

@@ -96,7 +96,7 @@ func main() {
 
 			fmt.Printf("Preview:\n%s\n\n", content.String())
 
-			_, err = p.plat.Post(content)
+			_, _, err = p.plat.Post(content)
 			if err != nil {
 				log.Printf("Post error (%s / %s): %v", p.name, name, err)
 				continue

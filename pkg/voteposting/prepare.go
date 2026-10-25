@@ -281,7 +281,7 @@ func PostToPlatform(
 				fmt.Printf("   %s\n", v.SourceURL)
 			}
 
-			shouldContinue, err := platform.Post(content)
+			post, shouldContinue, err := platform.Post(content)
 			if err != nil {
 				return posted, err
 			}
@@ -289,7 +289,7 @@ func PostToPlatform(
 			// Mark the posted votes. Any vote dropped above is deliberately
 			// absent from this slice, so it is retried rather than buried.
 			for _, v := range group {
-				voteLog.MarkAsPosted(v.SourceID)
+				voteLog.MarkAsPosted(v.SourceID, post)
 			}
 
 			// Save vote log after each successful post

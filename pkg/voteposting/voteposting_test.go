@@ -64,13 +64,14 @@ func (p *MockPlatform) Format(group []votes.Vote) (platforms.Content, error) {
 	return &MockContent{text: "mock post"}, nil
 }
 
-func (p *MockPlatform) Post(content platforms.Content) (bool, error) {
+func (p *MockPlatform) Post(content platforms.Content) (votelog.PostRef, bool, error) {
 	if p.shouldFailPost {
-		return false, errors.New("mock posting error")
+		return votelog.PostRef{}, false, errors.New("mock posting error")
 	}
 	p.postCalls++
 	shouldContinue := p.postCalls < p.maxPosts
-	return shouldContinue, nil
+	id := fmt.Sprintf("post%d", p.postCalls)
+	return votelog.PostRef{ID: id, URL: "https://example.test/" + id}, shouldContinue, nil
 }
 
 func (p *MockPlatform) MaxPostsPerRun() int {
@@ -97,8 +98,8 @@ func createVote(guid, affair, date string) votes.Vote {
 
 func TestFilterUnpostedVotes(t *testing.T) {
 	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
-	voteLog.MarkAsPosted("vote1")
-	voteLog.MarkAsPosted("vote3")
+	voteLog.MarkAsPosted("vote1", votelog.PostRef{})
+	voteLog.MarkAsPosted("vote3", votelog.PostRef{})
 
 	group := []votes.Vote{
 		createVote("vote1", "2025/369", "2025-11-19"),
@@ -257,8 +258,8 @@ func TestPostToPlatform_ErrorHandling(t *testing.T) {
 
 func TestFilterUnpostedVotes_AllPosted(t *testing.T) {
 	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
-	voteLog.MarkAsPosted("vote1")
-	voteLog.MarkAsPosted("vote2")
+	voteLog.MarkAsPosted("vote1", votelog.PostRef{})
+	voteLog.MarkAsPosted("vote2", votelog.PostRef{})
 
 	group := []votes.Vote{
 		createVote("vote1", "2025/369", "2025-11-19"),
@@ -389,6 +390,39 @@ func TestPostToPlatform_MultipleGroupsAllVotesLogged(t *testing.T) {
 		voteID := fmt.Sprintf("vote%d", i)
 		if !voteLog.IsPosted(voteID) {
 			t.Errorf("Expected %s to be logged as posted", voteID)
+		}
+	}
+}
+
+// TestPostToPlatform_LogsEachVoteWithItsPost checks the audit half of the log:
+// every vote carries the ref of the post it went out in, and votes grouped into
+// one post share it.
+func TestPostToPlatform_LogsEachVoteWithItsPost(t *testing.T) {
+	defer setupTempDir(t)()
+
+	mockPlatform := &MockPlatform{maxPosts: 10}
+	voteLog := votelog.NewEmpty(testJurisdiction, votelog.PlatformX)
+
+	groups := [][]votes.Vote{
+		{createVote("vote1", "2025/369", "2025-11-19")},
+		{
+			createVote("vote2", "2025/370", "2025-11-19"),
+			createVote("vote3", "2025/370", "2025-11-19"),
+		},
+	}
+
+	if _, err := PostToPlatform(groups, mockPlatform, SingleLog(testJurisdiction, voteLog), false); err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	want := map[string]votelog.PostRef{
+		"vote1": {ID: "post1", URL: "https://example.test/post1"},
+		"vote2": {ID: "post2", URL: "https://example.test/post2"},
+		"vote3": {ID: "post2", URL: "https://example.test/post2"},
+	}
+	for _, entry := range voteLog.Votes {
+		if entry.PostRef != want[entry.ID] {
+			t.Errorf("%s logged with %+v, want %+v", entry.ID, entry.PostRef, want[entry.ID])
 		}
 	}
 }
