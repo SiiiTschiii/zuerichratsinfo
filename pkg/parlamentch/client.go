@@ -48,6 +48,10 @@ type Client struct {
 	// would otherwise ask for separately.
 	businessTypes map[int64]string
 
+	// multiBill caches whether a business holds more than one bill, by
+	// BusinessNumber. See Client.hasSeveralBills.
+	multiBill map[int64]bool
+
 	// labels holds what the listing says about each vote that votes.Vote has
 	// no field for, keyed by SourceID. See Client.label.
 	labels map[string]voteLabel
@@ -63,6 +67,7 @@ func New(jurisdiction votes.Jurisdiction) *Client {
 		retryDelay:    2 * time.Second,
 		businessTypes: make(map[int64]string),
 		labels:        make(map[string]voteLabel),
+		multiBill:     make(map[int64]bool),
 	}
 }
 
@@ -163,6 +168,22 @@ func (c *Client) getOne(path string, q query, out any) error {
 		return fmt.Errorf("parlamentch: decoding %s: %w", endpoint, err)
 	}
 	return nil
+}
+
+// count performs a GET on an entity set's $count, which answers a bare integer
+// rather than the usual JSON envelope, and does not take $format.
+func (c *Client) count(path, filter string) (int, error) {
+	endpoint := c.baseURL + path + "/$count?$filter=" + url.PathEscape(filter)
+
+	body, err := c.fetch(endpoint)
+	if err != nil {
+		return 0, err
+	}
+	n, err := strconv.Atoi(strings.TrimSpace(strings.TrimPrefix(string(body), "\ufeff")))
+	if err != nil {
+		return 0, fmt.Errorf("parlamentch: %s: not a count: %q", endpoint, truncate(string(body), 40))
+	}
+	return n, nil
 }
 
 // fetch retries what is worth retrying. The service is slow under load and

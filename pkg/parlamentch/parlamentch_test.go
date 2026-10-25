@@ -47,6 +47,14 @@ func newTestClient(t *testing.T) (*Client, *[]string) {
 		switch r.URL.Path {
 		case "/Vote":
 			name = "votes.json"
+		case "/Vote/$count":
+			// Only the Pelzinitiative's business has a second bill.
+			n := "0"
+			if strings.Contains(r.URL.Query().Get("$filter"), "BusinessNumber eq 20250059 ") {
+				n = "4"
+			}
+			_, _ = w.Write([]byte(n))
+			return
 		case "/MemberCouncil":
 			name = "members.json"
 		case "/Voting":
@@ -222,8 +230,8 @@ func TestGroupByAffair_LabelsBillsAndUnusualMeanings(t *testing.T) {
 		"38954": "Vote final: Tierschutzgesetz (TSchG)",
 		// The service gives this one no bill.
 		"38971": "Vote final",
-		// A lone vote names its bill too.
-		"38963": "Vote final: Bundesbeschluss über die Genehmigung des Freihandelsabkommens zwischen den EFTA Staaten und Mercosur",
+		// A single-bill business does not repeat its title as a bill.
+		"38963": "Vote final",
 	}
 	for id, w := range want {
 		if subtitles[id] != w {
@@ -252,6 +260,35 @@ func TestGroupByAffair_LabelDoesNotDependOnSiblings(t *testing.T) {
 	}
 	if got := groups[0][0].Subtitle; got != "Vote final: Tierschutzgesetz (TSchG)" {
 		t.Errorf("lone subtitle = %q, want the bill named", got)
+	}
+}
+
+func TestLabel_SingleBillBusinessDoesNotNameItsBill(t *testing.T) {
+	// Vote 38971's bill is nameless; 38963's is a longer form of its title.
+	// Neither belongs on the card, which is what posted on 25.10.2026 with
+	// four lines of restated title above the subject.
+	c, _ := newTestClient(t)
+	groups := fetchAndGroup(t, c)
+	for _, g := range groups {
+		for _, v := range g {
+			if v.SourceID == "38963" && strings.Contains(v.Subtitle, "Bundesbeschluss") {
+				t.Errorf("single-bill vote carries its bill: %q", v.Subtitle)
+			}
+		}
+	}
+}
+
+func TestLabel_UncountableBillsAreNamed(t *testing.T) {
+	// A service that cannot say errs towards naming, so that two cards on one
+	// business are never left looking the same.
+	c := New(testJurisdiction)
+	c.baseURL = "http://127.0.0.1:1"
+	c.maxAttempts = 1
+	c.labels["1"] = voteLabel{bill: "Tierschutzgesetz (TSchG)"}
+	group := []votes.Vote{{SourceID: "1", Subtitle: "Vote final", Affair: votes.Affair{ID: "20250059", Title: "Pelzinitiative"}}}
+	c.label(group)
+	if got := group[0].Subtitle; got != "Vote final: Tierschutzgesetz (TSchG)" {
+		t.Errorf("subtitle = %q", got)
 	}
 }
 

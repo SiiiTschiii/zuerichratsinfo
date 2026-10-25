@@ -138,15 +138,19 @@ var plainMeanings = map[string]bool{
 // label sets each vote's Subtitle to its Subject plus whatever a reader needs
 // to tell it apart and to read its Ja correctly.
 //
-// The bill is named whenever the service names one. A business often carries
-// more than one draft — a Volksinitiative and the indirect counter-proposal
-// beside it — and the Nationalrat takes a final vote on each under the same
-// Subject, so cards labelled by Subject alone cannot be told apart. The rule
-// is per vote rather than per group on purpose: which siblings a group still
-// holds depends on what earlier runs posted and what the fetch window
-// reached, and a label that changed with them would leave the vote on the
-// counter-proposal reading as the initiative whenever it arrived alone. A
-// bill that merely repeats the business title adds nothing and is left out.
+// The bill is named only when its business holds several. A business often
+// carries more than one draft — a Volksinitiative and the indirect
+// counter-proposal beside it — and the Nationalrat takes a final vote on each
+// under the same Subject, so cards labelled by Subject alone cannot be told
+// apart. For the usual business of a single bill the bill title only restates
+// the business title at greater length, and on a card it pushed the real
+// subject below four lines of it.
+//
+// Whether a business has several is asked of the service rather than read off
+// the group, because which siblings a group still holds depends on what earlier
+// runs posted and what the fetch window reached: a label that changed with them
+// would leave the vote on the counter-proposal reading as the initiative
+// whenever it arrived alone. See hasSeveralBills.
 //
 // The meaning of Ja is added when it is anything but "adopt the bill", because
 // then the verdict is easy to misread. On the Pelz-Initiative the bill adopted
@@ -162,7 +166,7 @@ func (c *Client) label(group []votes.Vote) {
 		if group[i].Subtitle != "" {
 			parts = append(parts, group[i].Subtitle)
 		}
-		if l.bill != "" && !strings.EqualFold(l.bill, group[i].Affair.Title) {
+		if l.bill != "" && !strings.EqualFold(l.bill, group[i].Affair.Title) && c.hasSeveralBills(group[i].Affair.ID) {
 			parts = append(parts, l.bill)
 		}
 		sub := strings.Join(parts, ": ")
@@ -171,6 +175,30 @@ func (c *Client) label(group []votes.Vote) {
 		}
 		group[i].Subtitle = strings.TrimSpace(sub)
 	}
+}
+
+// hasSeveralBills reports whether a business holds more than one bill, which
+// is whether any of its votes belongs to a bill numbered above the first.
+//
+// When the service cannot say, it answers true. The two mistakes are not
+// symmetric: a bill named needlessly costs a longer label, while one left out
+// where it was needed leaves two cards on the same business that nothing
+// tells apart.
+func (c *Client) hasSeveralBills(affairID string) bool {
+	id, err := strconv.ParseInt(affairID, 10, 64)
+	if err != nil {
+		return false
+	}
+	if several, ok := c.multiBill[id]; ok {
+		return several
+	}
+	n, err := c.count("/Vote", fmt.Sprintf("Language eq 'DE' and BusinessNumber eq %d and BillNumber gt 1", id))
+	if err != nil {
+		log.Printf("⚠️  parlamentch: could not count the bills of business %d, naming the bill: %v", id, err)
+		return true
+	}
+	c.multiBill[id] = n > 0
+	return n > 0
 }
 
 // enrich reads one vote's member rows and derives everything that rests on
