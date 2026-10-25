@@ -752,8 +752,8 @@ func PostHeadline(group []votes.Vote) string {
 	}
 
 	headline := prefix + "Abstimmung vom " + FormatVoteDate(group[0].Date)
-	if len(group) == 1 && hasClockTime(group[0].Date) {
-		headline += fmt.Sprintf(" (%s)", group[0].Date.Format("15:04"))
+	if len(group) == 1 {
+		headline += clockSuffix(group[0].Date)
 	}
 	return headline
 }
@@ -900,11 +900,20 @@ func subVoteLabel(v votes.Vote, index, groupSize int, withClock bool) string {
 		base = fmt.Sprintf("Abstimmung %d", index+1)
 		// The clock disambiguates our own ordinals, so it belongs only on them.
 		// A source that titles its votes has already done the distinguishing.
-		if withClock && groupSize > 1 && hasClockTime(v.Date) {
-			base += fmt.Sprintf(" (%s)", v.Date.Format("15:04"))
+		if withClock && groupSize > 1 {
+			base += clockSuffix(v.Date)
 		}
 	}
 	return joinTypeLabel(base, v.Type)
+}
+
+// clockSuffix is the " (14:32)" a text label appends for the time a vote was
+// taken, or "" where the source has no time of day.
+func clockSuffix(t time.Time) string {
+	if !hasClockTime(t) {
+		return ""
+	}
+	return " (" + t.Format("15:04") + ")"
 }
 
 // hasClockTime reports whether a date carries a time of day worth showing.
