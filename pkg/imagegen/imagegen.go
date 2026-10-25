@@ -1063,7 +1063,7 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 }
 
 func renderTitleCard(group []votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
-	inset := bandInset(group[0])
+	inset := bandInset(group[0]) + cornerStrip(fonts, voteformat.FormatVoteDate(group[0].Date), "")
 
 	// Dry run to measure content height
 	dry := newCursor(inset, imgHeight)
@@ -1102,10 +1102,17 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 	// Title: bold, wrapped, centered (no verdict — ambiguous for multi-vote groups)
 	title := voteformat.CleanVoteTitle(v.Title)
 
+	// The date alone: the group spans several votes, each listed below with
+	// its own time where the source has one.
+	stamp := voteformat.FormatVoteDate(v.Date)
+	summaryReserve += cornerStrip(fonts, stamp, "")
+
 	titleFace, titleLines, err := cardTitle(group, title, maxTextWidth, titleBudget(v, summaryReserve))
 	if err != nil {
 		return
 	}
+
+	drawCornerLabels(img, fonts, v, stamp, "", bg)
 
 	for _, line := range titleLines {
 		if img != nil {
@@ -1118,7 +1125,7 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 	// Summary: list each sub-vote with number + emoji + short subtitle.
 	cur.gap(fonts.regular, 0.75)
 	if img != nil {
-		header := summaryHeader(group)
+		header := fmt.Sprintf("Übersicht (%d Teilabstimmungen)", len(group))
 		drawCenteredText(img, fonts.small, nil, cur.baseline(fonts.small), header, bg)
 	}
 	cur.advance(fonts.small)
@@ -1365,17 +1372,6 @@ func auswahlResultLabel(schlussresultat string) string {
 	return "[" + letter + "]"
 }
 
-// summaryHeader heads the title card's list of sub-votes. It carries the
-// sitting date because the title card is the one card of a carousel that names
-// the business: shared on its own, it would otherwise not say when any of it
-// was decided. The clock stays on the entries, since a group spans several.
-func summaryHeader(group []votes.Vote) string {
-	if d := voteformat.FormatVoteDate(group[0].Date); d != "" {
-		return fmt.Sprintf("Übersicht (%d Teilabstimmungen vom %s)", len(group), d)
-	}
-	return fmt.Sprintf("Übersicht (%d Teilabstimmungen)", len(group))
-}
-
 // drawCornerLabels draws a timestamp in the card's top-left corner and, when
 // one is given, the progress badge in the top-right, on the same line. A vote
 // card's stamp is the vote's date and time ("15.06.2026 11:29"), or the date
@@ -1384,7 +1380,9 @@ func summaryHeader(group []votes.Vote) string {
 // available is the roll call's.
 //
 // Every card that reports a vote carries it, in the same place and the same
-// form, so a reader finds the timestamp without learning each card's layout. Every card leaves the carousel on its own
+// form, so a reader finds the timestamp without learning each card's layout.
+// The overview card that opens a multi-vote carousel carries the date alone,
+// since its votes were taken at several times. Every card leaves the carousel on its own
 // sooner or later, and one that cannot be dated is one a reader cannot place.
 //
 // The row is reserved rather than overlaid: a card that uses it starts its

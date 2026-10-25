@@ -449,7 +449,8 @@ func eachCard(t *testing.T, fonts *fontSet, fn func(*testing.T, cardLayout)) {
 				return
 			}
 
-			fn(t, cardLayout{"title card", bg, inset, func(img *image.RGBA, cur *layoutCursor) {
+			titleCorner := cornerStrip(fonts, voteformat.FormatVoteDate(group[0].Date), "")
+			fn(t, cardLayout{"title card", bg, inset + titleCorner, func(img *image.RGBA, cur *layoutCursor) {
 				layoutTitleCard(img, cur, group, bg, fonts)
 			}})
 			for i := range group {
