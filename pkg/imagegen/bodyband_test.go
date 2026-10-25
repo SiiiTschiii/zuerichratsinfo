@@ -64,7 +64,7 @@ func TestCardContentClearsBand(t *testing.T) {
 	bg := SelectColor(v.Jurisdiction, v.Affair.Number)
 
 	cur := newCursor(bandInset(v), imgHeight)
-	if _, _, err := layoutCombinedCard(nil, cur, &v, bg, fonts); err != nil {
+	if _, _, err := layoutCombinedCard(nil, cur, bandInset(v), &v, bg, fonts); err != nil {
 		t.Fatalf("layoutCombinedCard failed: %v", err)
 	}
 	if cur.startY < bandHeight {

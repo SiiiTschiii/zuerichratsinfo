@@ -21,6 +21,15 @@ func FormatVoteDate(t time.Time) string {
 	return t.Format("02.01.2006")
 }
 
+// FormatVoteDateTime renders a vote's timestamp as "DD.MM.YYYY HH:MM", or as
+// the date alone where the source has no time of day (see hasClockTime).
+func FormatVoteDateTime(t time.Time) string {
+	if !hasClockTime(t) {
+		return FormatVoteDate(t)
+	}
+	return t.Format("02.01.2006 15:04")
+}
+
 // GetVoteResultEmoji returns the appropriate emoji for a vote result
 func GetVoteResultEmoji(result string) string {
 	result = strings.TrimSpace(strings.ToLower(result))
@@ -743,8 +752,8 @@ func PostHeadline(group []votes.Vote) string {
 	}
 
 	headline := prefix + "Abstimmung vom " + FormatVoteDate(group[0].Date)
-	if len(group) == 1 && hasClockTime(group[0].Date) {
-		headline += fmt.Sprintf(" (%s)", group[0].Date.Format("15:04"))
+	if len(group) == 1 {
+		headline += clockSuffix(group[0].Date)
 	}
 	return headline
 }
@@ -878,33 +887,37 @@ func LinkLine(group []votes.Vote) string {
 // typeLabels). Unlike the clock it is not there to tell two votes apart, but to
 // stop a quorum vote's lopsided tally reading as near-unanimous agreement.
 func SubVoteLabel(v votes.Vote, index, groupSize int) string {
+	return subVoteLabel(v, index, groupSize, true)
+}
+
+// CardSubVoteLabel is SubVoteLabel without the clock, for a result card that
+// prints the vote's full date and time in its corner instead. Splitting the
+// two — date in the corner, time in the heading — left a reader to put the
+// timestamp back together.
+func CardSubVoteLabel(v votes.Vote, index, groupSize int) string {
+	return subVoteLabel(v, index, groupSize, false)
+}
+
+func subVoteLabel(v votes.Vote, index, groupSize int, withClock bool) string {
 	base := CleanVoteSubtitle(v.Subtitle)
 	if base == "" {
 		base = fmt.Sprintf("Abstimmung %d", index+1)
 		// The clock disambiguates our own ordinals, so it belongs only on them.
 		// A source that titles its votes has already done the distinguishing.
-		if groupSize > 1 && hasClockTime(v.Date) {
-			base += fmt.Sprintf(" (%s)", v.Date.Format("15:04"))
+		if withClock && groupSize > 1 {
+			base += clockSuffix(v.Date)
 		}
 	}
 	return joinTypeLabel(base, v.Type)
 }
 
-// CardCountsLabel is the heading above the counts on a card showing a lone
-// vote: when it was taken, and what kind of ballot it was.
-//
-// It is what SubVoteLabel does for the entries of a group, for the one case
-// that has no group to be numbered within. The card needs the clock more than
-// the text post does, because a card carries no headline: the caption states
-// the sitting date and time, but the image travels on its own, and two votes
-// under a recurring agenda item ("Mitteilungen") produce the same picture
-// twice. The clock is the only fact the source offers that tells them apart.
-func CardCountsLabel(v votes.Vote) string {
-	base := ""
-	if hasClockTime(v.Date) {
-		base = fmt.Sprintf("Abstimmung (%s)", v.Date.Format("15:04"))
+// clockSuffix is the " (14:32)" a text label appends for the time a vote was
+// taken, or "" where the source has no time of day.
+func clockSuffix(t time.Time) string {
+	if !hasClockTime(t) {
+		return ""
 	}
-	return joinTypeLabel(base, v.Type)
+	return " (" + t.Format("15:04") + ")"
 }
 
 // hasClockTime reports whether a date carries a time of day worth showing.
