@@ -46,10 +46,10 @@ the text and on the image, so the two are never confused.
 
 | Platform    | Status     | Politicians with a verified account | Account                                                                              |
 | ----------- | ---------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
-| LinkedIn    | ❌ Planned | 113                                 | -                                                                                    |
-| Facebook    | ✅ Active  | 92                                  | [ZueriRatsinfo](https://www.facebook.com/people/ZueriRatsinfo/1063164230212573/)            |
-| Instagram   | ✅ Active  | 102                                 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
-| X (Twitter) | ✅ Active  | 67                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
+| LinkedIn    | ❌ Planned | 118                                 | -                                                                                    |
+| Facebook    | ✅ Active  | 96                                  | [ZueriRatsinfo](https://www.facebook.com/people/ZueriRatsinfo/1063164230212573/)            |
+| Instagram   | ✅ Active  | 105                                 | [@zueriratsinfo](https://www.instagram.com/zueriratsinfo)                            |
+| X (Twitter) | ✅ Active  | 71                                  | [@zuerichratsinfo](https://x.com/zuerichratsinfo)                                    |
 | Bluesky     | ✅ Active  | 27                                  | [@zuerichratsinfo.bsky.social](https://bsky.app/profile/zuerichratsinfo.bsky.social) |
 | TikTok      | ❌ Planned | 19                                  | -                                                                                    |
 
