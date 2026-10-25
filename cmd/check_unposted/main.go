@@ -98,8 +98,12 @@ func main() {
 					log.Fatalf("Channel %q: %sFB_POST_FROM: %v", channel.Key, channel.EnvPrefix(), err)
 				}
 			}
+			fbPlatform := facebook.NewFacebookPlatform(maxPosts)
+			if channel.Env("FB_TAGGING") == "true" {
+				fbPlatform.SetContactMapper(contactMapper)
+			}
 			check(channel.Key, "Facebook", votelog.PlatformFacebook, jurisdictions, maxVotesToCheck, maxPosts,
-				postFrom, facebook.NewFacebookPlatform(maxPosts))
+				postFrom, fbPlatform)
 		}
 	}
 }

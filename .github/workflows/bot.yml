@@ -114,6 +114,9 @@ jobs:
           ZURICH_BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_BLUESKY_MAX_POSTS_PER_RUN }}
           ZURICH_IG_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_IG_MAX_POSTS_PER_RUN }}
           ZURICH_FB_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_FB_MAX_POSTS_PER_RUN }}
+          # Mentions of members and parties in Facebook posts. Off unless this
+          # is "true", until one has been seen to work on the Page.
+          ZURICH_FB_TAGGING: ${{ vars.ZURICH_FB_TAGGING }}
 
           MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
           MAX_VOTE_AGE_DAYS_ZURICH_CITY: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CITY }}

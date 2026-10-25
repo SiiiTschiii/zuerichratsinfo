@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/fbapi"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
@@ -22,6 +23,7 @@ type FacebookPlatform struct {
 	postsThisRun   int
 	maxPostsPerRun int
 	stubMode       bool // true when no credentials are configured
+	contactMapper  *contacts.Mapper
 
 	// Injectable functions for testing
 	uploadPhotoFunc      UploadPhotoFunc
@@ -48,9 +50,15 @@ func NewFacebookPlatformWithCredentials(pageID, accessToken string, maxPostsPerR
 	}
 }
 
+// SetContactMapper configures the contacts whose Facebook accounts are
+// mentioned in posts.
+func (p *FacebookPlatform) SetContactMapper(contactMapper *contacts.Mapper) {
+	p.contactMapper = contactMapper
+}
+
 // Format formats a group of votes into a single Page post
 func (p *FacebookPlatform) Format(group []votes.Vote) (platforms.Content, error) {
-	return FormatPost(group)
+	return FormatPostWithContacts(group, p.contactMapper)
 }
 
 // Post publishes content to the Page: each card is uploaded unpublished, then

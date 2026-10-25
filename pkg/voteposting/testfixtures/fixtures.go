@@ -441,6 +441,26 @@ func VoteWithMentions() []votes.Vote {
 	return []votes.Vote{v}
 }
 
+// FraktionMotion returns a vote whose title names the Fraktionen that filed it,
+// so party tagging has a phrase to find ("SP-, Grüne- und AL-Fraktion").
+func FraktionMotion() []votes.Vote {
+	v := vote("fraktion-1", "Motion der SP-, Grüne- und AL-Fraktion betreffend Ausbau des Velowegnetzes in der Stadt Zürich", "2025/140", "abgelehnt", 52, 63, 4, 6)
+	v.Affair.Title = "Ausbau des Velowegnetzes in der Stadt Zürich"
+	v.MemberVotes = makeStimmabgaben([]struct {
+		Name                string
+		Ja, Nein, Enth, Abw int
+	}{
+		{"SP", 32, 0, 0, 2},
+		{"Grüne", 14, 0, 2, 1},
+		{"AL", 6, 0, 0, 1},
+		{"SVP", 0, 22, 0, 1},
+		{"FDP", 0, 21, 0, 1},
+		{"GLP", 0, 12, 2, 0},
+		{"Die Mitte", 0, 8, 0, 0},
+	})
+	return []votes.Vote{v}
+}
+
 // AuswahlVote returns a single Auswahl vote with A/B/C counts (no ✅/❌ prefix).
 func AuswahlVote() []votes.Vote {
 	const title = "Weisung des Stadtrats betreffend Objektkredit für die Erneuerung der Jugendwohnsiedlung Buchegg und Erweiterung des Betreuungsangebots"
@@ -1087,6 +1107,7 @@ var FixtureNames = []string{
 	"generic-antrag-fallback",
 	"ten-vote-stress-test",
 	"vote-with-mentions",
+	"fraktion-motion",
 	"auswahl-vote",
 	"auswahl-vote-all-fraktionen",
 	"mixed-multi-vote",
@@ -1114,6 +1135,7 @@ func AllFixtures() map[string][]votes.Vote {
 		"generic-antrag-fallback":             GenericAntragFallback(),
 		"ten-vote-stress-test":                TenVoteStressTest(),
 		"vote-with-mentions":                  VoteWithMentions(),
+		"fraktion-motion":                     FraktionMotion(),
 		"auswahl-vote":                        AuswahlVote(),
 		"auswahl-vote-all-fraktionen":         AuswahlVoteAllFraktionen(),
 		"mixed-multi-vote":                    MixedMultiVote(),

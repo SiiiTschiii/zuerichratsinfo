@@ -179,3 +179,26 @@ ZURICH_FB_PAGE_ID=$FB_PAGE_ID ZURICH_FB_ACCESS_TOKEN=$IG_TOKEN go run ./cmd/post
 ```
 
 The output ends with the post URL. Delete the post from the Page afterwards.
+
+## Tagging
+
+Posts can mention the contacts and parties they name. A Facebook mention is
+written `@[id]` with the numeric ID, which Facebook renders as the account's
+own name, so a member's mention replaces the name instead of following it, and
+a party's follows its Fraktion phrase, as on Instagram.
+
+- **Only URLs that carry an ID are tagged:** `profile.php?id=<id>`,
+  `facebook.com/<id>`, `/people/<name>/<id>` and `/pages/<name>/<id>`. Most
+  contacts hold a vanity URL (`facebook.com/alice.kohli`), which has no ID and
+  stays untagged until one is found.
+- **It is off in the bot** until `ZURICH_FB_TAGGING` is `true`. Where Facebook
+  does not accept a mention the post would show `@[id]` in place of a name, so
+  turn it on only after a test post has shown it working on the Page.
+- **Try it on a test Page** with the test contacts, which map the fixtures'
+  people and parties to test accounts: `post_fixture` and `generate_vote_post`
+  always tag.
+
+```bash
+ZURICH_FB_PAGE_ID=<test page id> ZURICH_FB_ACCESS_TOKEN=$TEST_PAGE_TOKEN go run ./cmd/post_fixture -platform facebook -fixture single-vote-angenommen
+ZURICH_FB_PAGE_ID=<test page id> ZURICH_FB_ACCESS_TOKEN=$TEST_PAGE_TOKEN go run ./cmd/post_fixture -platform facebook -fixture fraktion-motion
+```

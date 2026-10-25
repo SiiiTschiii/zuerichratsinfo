@@ -94,7 +94,7 @@ Grüne 0/0/0/2
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Postulat von Reto Brüesch (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
+Postulat von @[1433822196472383] (SVP) und Martin Götzl (FDP) betreffend Anpassung der Mindest- und Höchstarealfläche bei der städtischen Liegenschaftenverwaltung
 
 ✅ Angenommen
 📊 90 Ja | 30 Nein | 0 Enthaltung | 5 Abwesend
@@ -206,7 +206,7 @@ AL 0/5/0/0
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Motion von Liv Mahrer (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
+Motion von @[1433822196472383] (SP) vom 05.02.2025 betreffend Festsetzung der Selnaustrasse als Begegnungszone und Aufhebung des motorisierten Individualverkehrs
 
 ❌ Abgelehnt
 📊 20 Ja | 95 Nein | 5 Enthaltung | 5 Abwesend
@@ -545,7 +545,7 @@ Die Mitte 7/0/0/0
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Postulat von Reto Brüesch (SVP) und Jean-Marc Jung (SVP) vom 03.12.2025: Bau- und Entwicklungsprojekte sowie Erarbeitung und Genehmigung von Nutzungs- und Sondernutzungsplanungen, Verankerung einer klaren, standardisierten und nachvollziehbaren Interessenabwägung gemäss Art. 3 Raumplanungsverordnung (RPV)
+Postulat von @[1433822196472383] (SVP) und Jean-Marc Jung (SVP) vom 03.12.2025: Bau- und Entwicklungsprojekte sowie Erarbeitung und Genehmigung von Nutzungs- und Sondernutzungsplanungen, Verankerung einer klaren, standardisierten und nachvollziehbaren Interessenabwägung gemäss Art. 3 Raumplanungsverordnung (RPV)
 
 ✅ Angenommen
 📊 117 Ja | 0 Nein | 0 Enthaltung | 8 Abwesend
@@ -958,7 +958,7 @@ AL 0/2/0/1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Postulat von Max Müller (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
+Postulat von @[1433822196472383] (FDP) und Sarah Weber (Grüne) vom 12.11.2024 betreffend Verbesserung der Veloinfrastruktur entlang der Langstrasse und angrenzender Quartiere
 
 ✅ Angenommen
 📊 80 Ja | 35 Nein | 5 Enthaltung | 5 Abwesend
@@ -1755,7 +1755,7 @@ AL 0/0/0/1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
 
-Postulat von Anna Graff (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
+Postulat von @[1433822196472383] (SP) vom 18.09.2024 betreffend Verbesserung der Sicherheit im öffentlichen Raum rund um den Hauptbahnhof
 
 ✅ Angenommen
 📊 80 Ja | 30 Nein | 5 Enthaltung | 10 Abwesend
@@ -1770,6 +1770,117 @@ Die Mitte 7/3/0/1
 AL 0/0/0/1
 
 🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-mention-1
+
+################ FIXTURE fraktion-motion ################
+
+---- X (limit 280) ----
+[post 0]
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+❌ Abgelehnt: Motion der SP-, Grüne- und AL-Fraktion betreffend Ausbau des Velowegnetzes in der Stadt Zürich
+
+👇 Details im Thread
+
+[post 1]
+📊 52 Ja | 63 Nein | 4 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+SVP 0/22/0/1
+FDP 0/21/0/1
+Grüne 14/0/2/1
+GLP 0/12/2/0
+Die Mitte 0/8/0/0
+AL 6/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-fraktion-1
+
+---- X (limit 2000) ----
+[post 0]
+🗳️  Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+❌ Abgelehnt: Motion der SP-, Grüne- und AL-Fraktion betreffend Ausbau des Velowegnetzes in der Stadt Zürich
+
+👇 Details im Thread
+
+[post 1]
+📊 52 Ja | 63 Nein | 4 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+SVP 0/22/0/1
+FDP 0/21/0/1
+Grüne 14/0/2/1
+GLP 0/12/2/0
+Die Mitte 0/8/0/0
+AL 6/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-fraktion-1
+
+---- Bluesky ----
+[post 0]
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+❌ Abgelehnt: Motion der SP-, Grüne- und AL-Fraktion betreffend Ausbau des Velowegnetzes in der Stadt Zürich
+
+👇 Details im Thread
+
+[post 1]
+📊 52 Ja | 63 Nein | 4 Enth. | 6 Abw.
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+SVP 0/22/0/1
+FDP 0/21/0/1
+Grüne 14/0/2/1
+GLP 0/12/2/0
+Die Mitte 0/8/0/0
+AL 6/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-fraktion-1
+[facet] {Index:{ByteStart:182 ByteEnd:263} Features:[{Type:app.bsky.richtext.facet#link URI:https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-fraktion-1 DID: Tag:}]}
+
+---- Instagram ----
+[images] 1
+[caption]
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+Motion der SP-, Grüne- und AL-Fraktion betreffend Ausbau des Velowegnetzes in der Stadt Zürich
+
+❌ Abgelehnt
+📊 52 Ja | 63 Nein | 4 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+SVP 0/22/0/1
+FDP 0/21/0/1
+Grüne 14/0/2/1
+GLP 0/12/2/0
+Die Mitte 0/8/0/0
+AL 6/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-fraktion-1
+
+---- Facebook ----
+[images] 1
+[message]
+🗳️ Gemeinderat ZH | Abstimmung vom 15.06.2025
+
+Motion der SP-, Grüne- und AL-Fraktion @[925752307473616] betreffend Ausbau des Velowegnetzes in der Stadt Zürich
+
+❌ Abgelehnt
+📊 52 Ja | 63 Nein | 4 Enthaltung | 6 Abwesend
+
+🏛️ Fraktionen (Ja/Nein/Enth/Abw):
+SP 32/0/0/2
+SVP 0/22/0/1
+FDP 0/21/0/1
+Grüne 14/0/2/1
+GLP 0/12/2/0
+Die Mitte 0/8/0/0
+AL 6/0/0/1
+
+🔗 https://www.gemeinderat-zuerich.ch/abstimmungen/detail.php?aid=objguid-fraktion-1
 
 ################ FIXTURE auswahl-vote ################
 
@@ -2272,7 +2383,7 @@ AL 0/0/0/1
 [message]
 🗳️ Gemeinderat ZH | Abstimmung vom 26.11.2025
 
-Postulat von Reto Brüesch (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
+Postulat von @[1433822196472383] (SVP) vom 05.03.2025: Anpassung der Mindest- und Höchstarealfläche
 
 ❌ Abgelehnt
 📊 21 Ja | 38 Nein | 56 Enthaltung | 10 Abwesend
@@ -3317,7 +3428,7 @@ Source: OpenParlData.ch
 [message]
 🗳️ Kantonsrat ZH | Abstimmung vom 31.08.2026 (10:21)
 
-Postulat von Tobias Weidmann (SVP)
+Postulat von @[1433822196472383] (SVP)
 Verbindliche Richtlinien – keine Smartphones an Volksschulen
 
 📊 92 Ja | 82 Nein | 2 Enthaltung | 4 Abwesend

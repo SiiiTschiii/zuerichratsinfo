@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
@@ -52,10 +53,33 @@ func (c *FacebookContent) String() string {
 // truncated, and the links stay in the text as plain URLs — an attached photo
 // gives no preview card to carry them.
 //
-// Names are left untagged. A Page can only mention another Page or profile by
-// its numeric ID, which the contacts file does not hold — it records profile
-// URLs — so a tag here would publish as literal "@name" text.
+// Nobody is tagged; see FormatPostWithContacts.
 func FormatPost(group []votes.Vote) (*FacebookContent, error) {
+	return FormatPostWithContacts(group, nil)
+}
+
+// tagsFor builds the tagging a Facebook post applies, from the contacts.
+//
+// A mention is written with a numeric ID, so only a contact whose Facebook URL
+// carries one is tagged; see contacts.ExtractFacebookMentionFromURL. Members
+// are mentioned in the title and the label line, and the parties of a Fraktion
+// phrase wherever one appears, as on Instagram.
+func tagsFor(mapper *contacts.Mapper) voteformat.Tags {
+	if mapper == nil {
+		return voteformat.Tags{}
+	}
+	return voteformat.Tags{
+		Heading: func(text, jurisdiction string) string {
+			return mapper.TagFacebookFraktionen(mapper.TagFacebookHandlesInText(text), jurisdiction)
+		},
+		SubVote: mapper.TagFacebookFraktionen,
+	}
+}
+
+// FormatPostWithContacts is FormatPost with the contacts' Facebook accounts
+// mentioned where the text names them. Only the post text and the captions are
+// tagged; the images carry no mentions.
+func FormatPostWithContacts(group []votes.Vote, mapper *contacts.Mapper) (*FacebookContent, error) {
 	if len(group) == 0 {
 		return nil, fmt.Errorf("no votes provided")
 	}
@@ -71,6 +95,7 @@ func FormatPost(group []votes.Vote) (*FacebookContent, error) {
 		images = images[:maxPhotos]
 	}
 
+	tags := tagsFor(mapper)
 	captions := make([]string, len(images))
 	var message string
 	links := strings.TrimLeft(voteformat.LinkLine(group), "\n")
@@ -83,7 +108,7 @@ func FormatPost(group []votes.Vote) (*FacebookContent, error) {
 		message = header + voteformat.WahlgeschaeftBody(group) + voteformat.LinkLine(group)
 
 	case len(group) == 1:
-		body := strings.TrimRight(voteformat.LongFormBody(group, voteformat.Tags{}), "\n")
+		body := strings.TrimRight(voteformat.LongFormBody(group, tags), "\n")
 		message = body + "\n\n" + links
 
 	default:
@@ -92,14 +117,14 @@ func FormatPost(group []votes.Vote) (*FacebookContent, error) {
 		// goes in the post rather than being lost.
 		var uncovered strings.Builder
 		for i := range group {
-			block := voteBlock(group, i)
+			block := voteBlock(group, i, tags)
 			if card := i + 1; card < len(images) {
 				captions[card] = block
 				continue
 			}
 			uncovered.WriteString("\n\n" + block)
 		}
-		heading := strings.TrimRight(voteformat.LongFormHeading(group, voteformat.Tags{}), "\n")
+		heading := strings.TrimRight(voteformat.LongFormHeading(group, tags), "\n")
 		message = heading + uncovered.String() + "\n\n" + links
 	}
 	message = strings.TrimRight(message, "\n")
@@ -114,8 +139,8 @@ func FormatPost(group []votes.Vote) (*FacebookContent, error) {
 // voteBlock is one vote's text for a caption: its counts and Fraktion table,
 // then the links that are this vote's own — the recording at its segment — so a
 // reader looking at a card can open exactly that vote.
-func voteBlock(group []votes.Vote, i int) string {
-	block := strings.TrimRight(voteformat.LongFormVote(group, i, voteformat.Tags{}), "\n")
+func voteBlock(group []votes.Vote, i int, tags voteformat.Tags) string {
+	block := strings.TrimRight(voteformat.LongFormVote(group, i, tags), "\n")
 	links := voteformat.VoteLinks(group, i)
 	if len(links) == 0 {
 		return block

@@ -85,7 +85,7 @@ func TestGoldenOutput(t *testing.T) {
 		sb.WriteString(fmt.Sprintf("[caption]\n%s\n\n", content.Caption))
 
 		sb.WriteString("---- Facebook ----\n")
-		fbContent, err := facebook.FormatPost(group)
+		fbContent, err := facebook.FormatPostWithContacts(group, mapper)
 		if err != nil {
 			t.Fatalf("formatting Facebook content for %s: %v", name, err)
 		}

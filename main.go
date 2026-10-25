@@ -177,14 +177,21 @@ func buildPlatforms(channel config.Channel, jurisdictions []config.Jurisdiction)
 			log.Fatalf("Channel %q: %sFB_POST_FROM must be the first sitting date Facebook posts, as YYYY-MM-DD: %v",
 				channel.Key, channel.EnvPrefix(), err)
 		}
+		fbPlatform := facebook.NewFacebookPlatformWithCredentials(
+			fbPageID, fbAccessToken,
+			channel.EnvInt("FB_MAX_POSTS_PER_RUN", 5),
+		)
+		// Off until a mention has been seen to work on the Page: where Facebook
+		// does not accept one, the post would read "@[100070693802425]" in
+		// place of the member's name.
+		if channel.Env("FB_TAGGING") == "true" {
+			fbPlatform.SetContactMapper(contactMapper)
+		}
 		plats = append(plats, channelPlatform{
 			displayName: "Facebook",
 			logPlatform: votelog.PlatformFacebook,
-			poster: facebook.NewFacebookPlatformWithCredentials(
-				fbPageID, fbAccessToken,
-				channel.EnvInt("FB_MAX_POSTS_PER_RUN", 5),
-			),
-			postFrom: postFrom,
+			poster:      fbPlatform,
+			postFrom:    postFrom,
 		})
 	} else {
 		log.Printf("⚠️  Channel %q: Facebook not configured (missing FB_PAGE_ID/FB_ACCESS_TOKEN)", channel.Key)

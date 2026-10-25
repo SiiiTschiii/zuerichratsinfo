@@ -96,6 +96,8 @@ func main() {
 		preview("Instagram", votelog.PlatformInstagram, igPlatform)
 	}
 	if showFacebook {
-		preview("Facebook", votelog.PlatformFacebook, facebook.NewFacebookPlatform(*numVotes))
+		fbPlatform := facebook.NewFacebookPlatform(*numVotes)
+		fbPlatform.SetContactMapper(contactMapper)
+		preview("Facebook", votelog.PlatformFacebook, fbPlatform)
 	}
 }

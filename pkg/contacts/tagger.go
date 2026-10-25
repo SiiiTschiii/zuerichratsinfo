@@ -160,8 +160,38 @@ func (m *Mapper) TagInstagramHandlesInText(text string) string {
 	return tagHandlesInText(text, taggableContacts)
 }
 
+// nameMatch is one contact name found in a text and the handle it maps to.
+type nameMatch struct {
+	start  int
+	end    int
+	handle string
+}
+
 // tagHandlesInText inserts social handles after matching contact names in text.
 func tagHandlesInText(text string, taggableContacts []HandleTag) string {
+	result := text
+	for _, m := range matchNames(text, taggableContacts) {
+		result = result[:m.end] + " " + m.handle + result[m.end:]
+	}
+	return result
+}
+
+// replaceNamesInText replaces each matching contact name with its handle.
+//
+// It is for a platform whose mention renders the account's own name: appending
+// that after the name, as tagHandlesInText does, would print the name twice.
+func replaceNamesInText(text string, taggableContacts []HandleTag) string {
+	result := text
+	for _, m := range matchNames(text, taggableContacts) {
+		result = result[:m.start] + m.handle + result[m.end:]
+	}
+	return result
+}
+
+// matchNames finds the contact names in text, longest names first and without
+// overlaps, and returns them back to front so an edit at one does not shift the
+// offsets of those still to come.
+func matchNames(text string, taggableContacts []HandleTag) []nameMatch {
 	// Sort by name length (descending) to match longer names first
 	for i := 0; i < len(taggableContacts); i++ {
 		for j := i + 1; j < len(taggableContacts); j++ {
@@ -171,12 +201,7 @@ func tagHandlesInText(text string, taggableContacts []HandleTag) string {
 		}
 	}
 
-	type match struct {
-		start  int
-		end    int
-		handle string
-	}
-	var matches []match
+	var matches []nameMatch
 
 	for _, tag := range taggableContacts {
 		pattern := fmt.Sprintf(`\b%s\b`, regexp.QuoteMeta(tag.Name))
@@ -184,7 +209,7 @@ func tagHandlesInText(text string, taggableContacts []HandleTag) string {
 
 		indices := re.FindAllStringIndex(text, -1)
 		for _, idx := range indices {
-			matches = append(matches, match{
+			matches = append(matches, nameMatch{
 				start:  idx[0],
 				end:    idx[1],
 				handle: tag.Handle,
@@ -192,7 +217,7 @@ func tagHandlesInText(text string, taggableContacts []HandleTag) string {
 		}
 	}
 
-	var filtered []match
+	var filtered []nameMatch
 	for _, m1 := range matches {
 		overlaps := false
 		for _, m2 := range filtered {
@@ -216,12 +241,7 @@ func tagHandlesInText(text string, taggableContacts []HandleTag) string {
 		}
 	}
 
-	result := text
-	for _, m := range filtered {
-		result = result[:m.end] + " " + m.handle + result[m.end:]
-	}
-
-	return result
+	return filtered
 }
 
 // getAllContacts returns all contacts (helper method for internal use)

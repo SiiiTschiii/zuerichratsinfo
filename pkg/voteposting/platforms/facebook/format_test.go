@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
 	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
 )
@@ -77,7 +79,7 @@ func TestFormatPost_MultiVoteCaptionsEachCard(t *testing.T) {
 		t.Errorf("the title card should have no caption, got %q", content.Captions[0])
 	}
 	for i := range group {
-		want := voteBlock(group, i)
+		want := voteBlock(group, i, voteformat.Tags{})
 		if got := content.Captions[i+1]; got != want {
 			t.Errorf("card %d caption:\n%s\nwant:\n%s", i+1, got, want)
 		}
@@ -103,7 +105,7 @@ func TestFormatPost_VotesWithoutACardStayInThePost(t *testing.T) {
 		t.Fatalf("%d images, want the cap of %d", len(content.Images), maxPhotos)
 	}
 	for i := range group {
-		block := voteBlock(group, i)
+		block := voteBlock(group, i, voteformat.Tags{})
 		inCaption := i+1 < len(content.Captions) && content.Captions[i+1] == block
 		inMessage := strings.Contains(content.Message, block)
 		if inCaption == inMessage {
@@ -194,5 +196,50 @@ func TestFormatPost_CaptionsLinkTheVotesOwnPage(t *testing.T) {
 		if !strings.Contains(content.Captions[i+1], "🔗 Abstimmung: "+v.SourceURL) {
 			t.Errorf("caption %d is missing the vote's own page %s:\n%s", i+1, v.SourceURL, content.Captions[i+1])
 		}
+	}
+}
+
+func testContacts() *contacts.Mapper {
+	return contacts.NewMapperForTest([]contacts.Contact{
+		{Name: "Reto Brüesch", Facebook: []contacts.Account{{URL: "https://www.facebook.com/profile.php?id=111", Verified: true}}},
+		{Name: "SP Stadt Zürich", Kind: contacts.KindOrganization, Facebook: []contacts.Account{{URL: "https://www.facebook.com/profile.php?id=900", Verified: true}}},
+	})
+}
+
+// A mention takes the member's place in the post text, and the party follows
+// its Fraktion phrase.
+func TestFormatPostWithContacts_MentionsMembersAndParties(t *testing.T) {
+	content, err := FormatPostWithContacts(testfixtures.SingleVoteAngenommen(), testContacts())
+	if err != nil {
+		t.Fatalf("FormatPost: %v", err)
+	}
+	if !strings.Contains(content.Message, "Postulat von @[111] (SVP)") {
+		t.Errorf("the member is not mentioned in place of the name:\n%s", content.Message)
+	}
+	if strings.Contains(content.Message, "Reto Brüesch") {
+		t.Errorf("the name is still in the text beside its mention:\n%s", content.Message)
+	}
+
+	content, err = FormatPostWithContacts(testfixtures.FraktionMotion(), testContacts())
+	if err != nil {
+		t.Fatalf("FormatPost: %v", err)
+	}
+	if !strings.Contains(content.Message, "SP-, Grüne- und AL-Fraktion @[900]") {
+		t.Errorf("the party is not mentioned after its Fraktion phrase:\n%s", content.Message)
+	}
+}
+
+// Without contacts nothing is tagged: that is how the bot posts until tagging
+// is switched on.
+func TestFormatPost_TagsNobodyWithoutContacts(t *testing.T) {
+	content, err := FormatPost(testfixtures.SingleVoteAngenommen())
+	if err != nil {
+		t.Fatalf("FormatPost: %v", err)
+	}
+	if strings.Contains(content.Message, "@[") {
+		t.Errorf("a mention in an untagged post:\n%s", content.Message)
+	}
+	if !strings.Contains(content.Message, "Reto Brüesch") {
+		t.Errorf("the name was lost:\n%s", content.Message)
 	}
 }

@@ -222,6 +222,7 @@ func buildPlatforms(platform string, creds platformCredentials, contactMapper *c
 			fbPlat = facebook.NewFacebookPlatform(100)
 			fmt.Println("📘 Facebook: stub mode (no credentials)")
 		}
+		fbPlat.SetContactMapper(contactMapper)
 		plats = append(plats, namedPlatform{name: "Facebook", plat: fbPlat})
 	}
 
