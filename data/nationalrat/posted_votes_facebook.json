@@ -1,5 +1,10 @@
 {
   "jurisdiction": "nationalrat",
   "platform": "facebook",
-  "votes": []
+  "votes": [
+    {
+      "id": "38832",
+      "posted_at": "2026-10-25T18:17:36.165569131Z"
+    }
+  ]
 }
