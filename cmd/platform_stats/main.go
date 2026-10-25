@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	contactsPkg "github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	contactsPkg "github.com/siiitschiii/parlinfo/pkg/contacts"
 )
 
 type PlatformStat struct {

@@ -34,4 +34,4 @@ This app uses the Meta (Facebook/Instagram) API solely to publish content to the
 
 If you have any questions about this privacy policy, please open an issue on the project's GitHub repository:
 
-[https://github.com/SiiiTschiii/zuerichratsinfo](https://github.com/SiiiTschiii/zuerichratsinfo)
+[https://github.com/SiiiTschiii/parlinfo](https://github.com/SiiiTschiii/parlinfo)

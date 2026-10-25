@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 func groupOn(id string, date time.Time) []votes.Vote {

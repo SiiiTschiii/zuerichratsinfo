@@ -4,11 +4,32 @@ import (
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 func TestValidate(t *testing.T) {
 	if err := Validate(); err != nil {
 		t.Errorf("the shipped configuration must be valid: %v", err)
+	}
+}
+
+// update_contacts -prune asks every other jurisdiction who sits there, to tell
+// a member who moved chambers from one who left. A body that cannot answer
+// stops it for every other body, so each one must be able to.
+func TestEveryJurisdictionCanSayWhoSits(t *testing.T) {
+	for _, key := range JurisdictionKeys() {
+		j, err := LookupJurisdiction(key)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if j.NewMemberSource == nil {
+			t.Errorf("%s has no roster", key)
+			continue
+		}
+		if _, ok := j.NewMemberSource().(votes.SittingLister); !ok {
+			t.Errorf("%s's roster cannot say who sits", key)
+		}
 	}
 }
 

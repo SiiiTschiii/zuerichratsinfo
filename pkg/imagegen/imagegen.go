@@ -19,8 +19,8 @@ import (
 	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 //go:embed fonts/NotoEmoji-Regular.ttf

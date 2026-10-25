@@ -17,6 +17,9 @@ on:
 # lose its record of what it had just posted, and the votes would be published
 # again on the next run. Queue rather than cancel: a run that has already posted
 # must still be allowed to write down that it did.
+#
+# bot-chparl.yml joins this group too: both workflows commit carousel images to
+# gh-pages, and serialising them is what keeps those commits from colliding.
 concurrency:
   group: bot
   cancel-in-progress: false
@@ -80,6 +83,9 @@ jobs:
 
       - name: Run bot
         env:
+          # Only the zurich channel's accounts; the Nationalrat posts from
+          # bot-chparl.yml. main.go walks every channel when this is unset.
+          CHANNEL: zurich
           # Platform credentials and limits are scoped to a channel — one set
           # of accounts serving one or more jurisdictions. The prefix is the
           # channel key, so a second channel is purely additive.

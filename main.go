@@ -7,17 +7,17 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/facebook"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/config"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/igapi"
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/facebook"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/instagram"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/x"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // channelPlatform pairs a constructed platform with the vote-log key it uses.
@@ -50,7 +50,12 @@ func main() {
 	anyPlatformConfigured := false
 	anyJurisdictionEnabled := false
 
-	for _, channel := range config.Channels() {
+	channels, err := selectedChannels(os.Getenv("CHANNEL"))
+	if err != nil {
+		log.Fatalf("Invalid CHANNEL: %v", err)
+	}
+
+	for _, channel := range channels {
 		// Only jurisdictions explicitly cleared to post. A newly registered
 		// body ships disabled: its vote log has to be seeded and its first
 		// posts reviewed before it runs unattended, and merging code should not
@@ -94,6 +99,24 @@ func main() {
 		log.Println("❌ Action failed: one or more platforms encountered errors. Check logs above.")
 		os.Exit(1)
 	}
+}
+
+// selectedChannels returns the channel named by CHANNEL, or every channel when
+// it is unset.
+//
+// Each channel's accounts are posted by a workflow of their own, so that one
+// account's schedule, failures and pauses never touch another's. Without this
+// every workflow would also walk the other channels and depend on their
+// switches being off in its environment to leave them alone.
+func selectedChannels(key string) ([]config.Channel, error) {
+	if key == "" {
+		return config.Channels(), nil
+	}
+	c, err := config.LookupChannel(key)
+	if err != nil {
+		return nil, fmt.Errorf("%w; known channels: %v", err, config.ChannelKeys())
+	}
+	return []config.Channel{c}, nil
 }
 
 // buildPlatforms constructs one instance per platform for a channel, using that

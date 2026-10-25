@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // bulletinServer serves the two routes the Bulletin lookup walks, from bodies

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/bskyapi"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // maxGraphemes is the Bluesky post character limit (graphemes)

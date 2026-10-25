@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // Tags rewrites text to tag the accounts it names. Each func takes the text and

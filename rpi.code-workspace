@@ -1,14 +1,14 @@
 {
-  "folders": [{ "name": "zuerichratsinfo", "path": "." }],
+  "folders": [{ "name": "parlinfo", "path": "." }],
   "settings": {
     "chat.instructionsFilesLocations": {
-      "zuerichratsinfo/.github/instructions": true,
+      "parlinfo/.github/instructions": true,
     },
     "chat.promptFilesLocations": {
-      "zuerichratsinfo/.github/prompts": true,
+      "parlinfo/.github/prompts": true,
     },
     "chat.agentFilesLocations": {
-      "zuerichratsinfo/.github/agents": true,
+      "parlinfo/.github/agents": true,
     },
   },
 }

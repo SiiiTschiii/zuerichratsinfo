@@ -11,8 +11,8 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 	"gopkg.in/yaml.v3"
 )
 
@@ -120,7 +120,7 @@ Wir arbeiten laufend daran, die Posts weiterzuentwickeln, zum Beispiel kürzlich
 %s
 
 Weitere Informationen zum Projekt:
-https://github.com/SiiiTschiii/zuerichratsinfo
+https://github.com/SiiiTschiii/parlinfo
 
 Herzliche Grüsse
 Christof
@@ -143,7 +143,7 @@ Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit St
 Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
  
 Weitere Informationen zum Projekt:
-https://github.com/SiiiTschiii/zuerichratsinfo
+https://github.com/SiiiTschiii/parlinfo
 
 Vielen Dank und liebe Grüsse
 Christof
@@ -167,7 +167,7 @@ Wir arbeiten laufend daran, die Posts weiterzuentwickeln – zum Beispiel mit St
 Ich würde mich freuen, wenn du dem Account folgst. Und vielleicht hast du ja mal Lust einen Abstimmungspost mit deinen Followern zu teilen.
 
 Weitere Informationen zum Projekt:
-https://github.com/SiiiTschiii/zuerichratsinfo
+https://github.com/SiiiTschiii/parlinfo
 
 Vielen Dank und liebe Grüsse
 Christof

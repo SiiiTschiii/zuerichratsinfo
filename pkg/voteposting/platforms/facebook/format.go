@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/imagegen"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // maxMessageChars is the Pages API limit on a post's message. Nothing this bot

@@ -1,6 +1,6 @@
 package platforms
 
-import "github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+import "github.com/siiitschiii/parlinfo/pkg/votes"
 
 // Content represents platform-specific formatted content
 type Content interface {

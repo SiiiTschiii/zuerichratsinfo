@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/parlinfo/pkg/bskyapi"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/testfixtures"
 )
 
 // recordCall records a single call to the mock createRecordFunc.
