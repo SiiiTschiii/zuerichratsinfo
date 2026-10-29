@@ -1330,21 +1330,14 @@ contacts:
   - name: Tobias Weidmann
     facebook:
       - url: https://www.facebook.com/tobiasweidmann.ch/
-        verified: false
-        confidence: high
-    instagram:
-      - url: https://www.instagram.com/tmweidmann/
-        verified: false
-        confidence: high
+        verified: true
     linkedin:
       - url: https://ch.linkedin.com/in/tobiasweidmann
-        verified: false
-        confidence: high
+        verified: true
   - name: Tumasch Mischol
     facebook:
       - url: https://www.facebook.com/tumasch.mischol
-        verified: false
-        confidence: high
+        verified: true
     linkedin:
       - url: https://www.linkedin.com/in/tumasch-mischol-90685b131/
         verified: true
