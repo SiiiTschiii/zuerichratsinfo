@@ -1384,22 +1384,17 @@ contacts:
         confidence: high
     linkedin:
       - url: https://www.linkedin.com/in/wilma-willi-923b2b174/
-        verified: false
-        confidence: high
+        verified: true
     x:
       - url: https://x.com/wilma_willi
-        verified: false
-        confidence: high
+        verified: true
   - name: Yiea Wey Te
     facebook:
       - url: https://www.facebook.com/yweyTeOfficial/
-        verified: false
-        confidence: medium
+        verified: true
     linkedin:
       - url: https://www.linkedin.com/in/yweyte/
-        verified: false
-        confidence: medium
+        verified: true
     x:
       - url: https://x.com/yweyte
-        verified: false
-        confidence: medium
+        verified: true
