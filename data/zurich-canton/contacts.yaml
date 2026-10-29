@@ -1347,41 +1347,31 @@ contacts:
         confidence: high
     linkedin:
       - url: https://www.linkedin.com/in/tumasch-mischol-90685b131/
-        verified: false
-        confidence: high
+        verified: true
   - name: Ueli Bamert
     linkedin:
       - url: https://ch.linkedin.com/in/ueli-bamert
-        verified: false
-        confidence: high
+        verified: true
   - name: Ulrich Pfister
   - name: Urs Glättli
     linkedin:
       - url: https://www.linkedin.com/in/urs-gl%C3%A4ttli/
-        verified: false
-        confidence: high
+        verified: true
   - name: Urs Waser
     facebook:
       - url: https://www.facebook.com/people/Urs-Waser-Kantonsrat/100063696195477/
-        verified: false
-        confidence: high
+        verified: true
   - name: Urs Wegmann
-    linkedin:
-      - url: https://www.linkedin.com/in/urs-wegmann-21690487/
-        verified: false
-        confidence: high
   - name: Ursula Junker
   - name: Viviane Kägi
     linkedin:
       - url: https://www.linkedin.com/in/viviane-k%C3%A4gi/
-        verified: false
-        confidence: high
+        verified: true
   - name: Walter Staub
   - name: Wilma Willi
     instagram:
       - url: https://www.instagram.com/wilma.willi/
-        verified: false
-        confidence: high
+        verified: true
     linkedin:
       - url: https://www.linkedin.com/in/wilma-willi-923b2b174/
         verified: true
