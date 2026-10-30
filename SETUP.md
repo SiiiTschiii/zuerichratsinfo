@@ -294,7 +294,7 @@ Facebook uses the same token secret, so a rotation covers both. Leave
 
 ### 3. X
 
-Create the X account, then sign in to <https://developer.x.com> **as that
+Create the X account (`@chparlinfo` exists), then sign in to <https://developer.x.com> **as that
 account** and create a project and app there, as in
 [section 1](#1-get-x-api-credentials). Tokens generated under **Keys and tokens**
 act for the account that owns the app, which is the point: reusing the Zürich
@@ -319,6 +319,31 @@ and add one for the bot. Never use the account password.
 ```bash
 gh variable set CHPARL_BLUESKY_HANDLE --body "chparlinfo.bsky.social"
 gh secret set CHPARL_BLUESKY_PASSWORD
+```
+
+### Adding a platform once the Nationalrat is live
+
+A platform added after `JURISDICTION_NATIONALRAT_ENABLED` is on starts from an
+empty log, so its first run posts every final vote still inside
+`MAX_VOTE_AGE_DAYS_NATIONALRAT`, up to its per-run cap, which defaults to 10.
+Set the cap **before** the last credential, since that one switches the
+platform on:
+
+```bash
+gh variable set CHPARL_X_MAX_POSTS_PER_RUN --body 1
+gh variable set CHPARL_BLUESKY_MAX_POSTS_PER_RUN --body 1
+```
+
+Then see what that backlog is, against the live log, without posting
+(`check_unposted` reads the logs from `data/`, which `.gitignore` keeps out of
+commits):
+
+```bash
+git fetch origin state-log-chparl
+git checkout FETCH_HEAD -- 'data/nationalrat/posted_votes_*.json' && git reset -q data/nationalrat
+CHANNEL=chparl MAX_VOTES_TO_CHECK=35 MAX_VOTE_AGE_DAYS_NATIONALRAT="$(gh variable get MAX_VOTE_AGE_DAYS_NATIONALRAT)" \
+  go run ./cmd/check_unposted -jurisdiction nationalrat -platform x
+rm data/nationalrat/posted_votes_*.json
 ```
 
 ### 5. Go live
