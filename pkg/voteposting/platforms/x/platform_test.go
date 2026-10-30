@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
 	"github.com/siiitschiii/parlinfo/pkg/voteposting/testfixtures"
 )
 
@@ -46,7 +47,7 @@ func TestPost_SingleTweet(t *testing.T) {
 		t.Fatalf("Format error: %v", err)
 	}
 
-	shouldContinue, err := p.Post(content)
+	_, shouldContinue, err := p.Post(content)
 	if err != nil {
 		t.Fatalf("Post error: %v", err)
 	}
@@ -75,7 +76,7 @@ func TestPost_ThreadChaining(t *testing.T) {
 		t.Fatalf("Format error: %v", err)
 	}
 
-	shouldContinue, err := p.Post(content)
+	post, shouldContinue, err := p.Post(content)
 	if err != nil {
 		t.Fatalf("Post error: %v", err)
 	}
@@ -99,6 +100,12 @@ func TestPost_ThreadChaining(t *testing.T) {
 			t.Errorf("call %d: expected inReplyToTweetID=%q, got %q", i, expectedParent, calls[i].inReplyToTweetID)
 		}
 	}
+
+	// The logged ref is the root tweet, not the last reply
+	want := votelog.PostRef{ID: "fake-tweet-1", URL: "https://x.com/i/status/fake-tweet-1"}
+	if post != want {
+		t.Errorf("expected ref %+v, got %+v", want, post)
+	}
 }
 
 func TestPost_EmptyThread(t *testing.T) {
@@ -107,7 +114,7 @@ func TestPost_EmptyThread(t *testing.T) {
 
 	// Create empty content
 	content := &XContent{thread: []*XPost{}}
-	_, err := p.Post(content)
+	_, _, err := p.Post(content)
 	if err == nil {
 		t.Error("expected error for empty thread")
 	}
@@ -123,7 +130,7 @@ func TestPost_PostLimitReached(t *testing.T) {
 		t.Fatalf("Format error: %v", err)
 	}
 
-	shouldContinue, err := p.Post(content)
+	_, shouldContinue, err := p.Post(content)
 	if err != nil {
 		t.Fatalf("Post error: %v", err)
 	}

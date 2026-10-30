@@ -138,6 +138,15 @@ for p in x bluesky instagram; do
 done
 ```
 
+The logs double as an audit trail: each entry records the post it went out in
+as `post_id` and `post_url` — the root of the thread on X and Bluesky, and the
+same post for every vote grouped into it. Entries written before these fields
+existed have neither. To find where one vote was posted, on every platform:
+
+```bash
+jq -r --arg id "<vote id>" '.platform as $p | .votes[] | select(.id == $id) | "\($p)\t\(.post_url // .post_id // "-")"' data/zurich-city/posted_votes_*.json
+```
+
 ### Curating who gets tagged
 
 Tagging works by matching names in a post against `data/<jurisdiction>/contacts.yaml`.
