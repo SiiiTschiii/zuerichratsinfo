@@ -334,16 +334,18 @@ gh variable set CHPARL_X_MAX_POSTS_PER_RUN --body 1
 gh variable set CHPARL_BLUESKY_MAX_POSTS_PER_RUN --body 1
 ```
 
-Then see what that backlog is, against the live log, without posting
-(`check_unposted` reads the logs from `data/`, which `.gitignore` keeps out of
-commits):
+Then see what that backlog is, per platform and against the live logs, without
+posting. It runs in a throwaway worktree, because `check_unposted` reads the logs
+from `data/` and would otherwise overwrite the ones a local bot run relies on:
 
 ```bash
-git fetch origin state-log-chparl
-git checkout FETCH_HEAD -- 'data/nationalrat/posted_votes_*.json' && git reset -q data/nationalrat
-CHANNEL=chparl MAX_VOTES_TO_CHECK=35 MAX_VOTE_AGE_DAYS_NATIONALRAT="$(gh variable get MAX_VOTE_AGE_DAYS_NATIONALRAT)" \
-  go run ./cmd/check_unposted -jurisdiction nationalrat -platform x
-rm data/nationalrat/posted_votes_*.json
+tmp="$(mktemp -d)"
+git fetch origin main state-log-chparl
+git worktree add --detach "$tmp" origin/main
+git -C "$tmp" checkout origin/state-log-chparl -- 'data/nationalrat/posted_votes_*.json'
+(cd "$tmp" && CHANNEL=chparl MAX_VOTES_TO_CHECK=35 MAX_VOTE_AGE_DAYS_NATIONALRAT="$(gh variable get MAX_VOTE_AGE_DAYS_NATIONALRAT)" \
+  go run ./cmd/check_unposted -jurisdiction nationalrat)
+git worktree remove --force "$tmp"
 ```
 
 ### 5. Go live
