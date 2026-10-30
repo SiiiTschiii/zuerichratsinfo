@@ -17,6 +17,9 @@ on:
 # lose its record of what it had just posted, and the votes would be published
 # again on the next run. Queue rather than cancel: a run that has already posted
 # must still be allowed to write down that it did.
+#
+# bot-chparl.yml joins this group too: both workflows commit carousel images to
+# gh-pages, and serialising them is what keeps those commits from colliding.
 concurrency:
   group: bot
   cancel-in-progress: false
@@ -88,6 +91,9 @@ jobs:
 
       - name: Run bot
         env:
+          # Only the zurich channel's accounts; the Nationalrat posts from
+          # bot-chparl.yml. main.go walks every channel when this is unset.
+          CHANNEL: zurich
           # Platform credentials and limits are scoped to a channel — one set
           # of accounts serving one or more jurisdictions. The prefix is the
           # channel key, so a second channel is purely additive.
@@ -107,10 +113,21 @@ jobs:
           # get wrong.
           ZURICH_IMAGE_HOST_REPO: ${{ github.repository }}
           ZURICH_IMAGE_HOST_TOKEN: ${{ github.token }}
+          # Facebook posts with the same never-expiring Page token as
+          # Instagram, so one secret and one rotation cover both. The Page ID
+          # is the switch: Facebook stays off until the variable is set.
+          ZURICH_FB_PAGE_ID: ${{ vars.ZURICH_FB_PAGE_ID }}
+          ZURICH_FB_ACCESS_TOKEN: ${{ secrets.ZURICH_IG_ACCESS_TOKEN }}
+          # Facebook goes live without a vote log of its own. Rather than seed
+          # one — which would record posts that were never made — it posts only
+          # sittings from this date on. It is required whenever the Page ID is
+          # set, and is the go-live date.
+          ZURICH_FB_POST_FROM: "2026-10-17"
           ZURICH_X_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_X_MAX_POSTS_PER_RUN }}
           ZURICH_X_MAX_CHARS: ${{ vars.ZURICH_X_MAX_CHARS }}
           ZURICH_BLUESKY_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_BLUESKY_MAX_POSTS_PER_RUN }}
           ZURICH_IG_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_IG_MAX_POSTS_PER_RUN }}
+          ZURICH_FB_MAX_POSTS_PER_RUN: ${{ vars.ZURICH_FB_MAX_POSTS_PER_RUN }}
 
           MAX_VOTES_TO_CHECK: ${{ vars.MAX_VOTES_TO_CHECK }}
           MAX_VOTE_AGE_DAYS_ZURICH_CITY: ${{ vars.MAX_VOTE_AGE_DAYS_ZURICH_CITY }}

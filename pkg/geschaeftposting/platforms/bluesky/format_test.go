@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/internal/testcontacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/testfixtures"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting/internal/testcontacts"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting/testfixtures"
 )
 
 func TestEveryPostFitsAndLinksResolve(t *testing.T) {

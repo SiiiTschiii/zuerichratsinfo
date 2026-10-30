@@ -70,20 +70,29 @@ type Vote struct {
 	SourceURL string
 	GroupURL  string
 
-	// ArchiveURL links to the parliament's own record of the vote itself,
-	// rather than of the business it belongs to: the debate, the tally and,
-	// where the body publishes one, the Namensliste. ArchiveGroupURL is the
-	// same thing widened to the agenda item, for a post covering several votes.
+	// VideoURL links to the recording of the debate, positioned at this vote:
+	// Kanton Zürich's Recapp segment, which also names the vote, states the
+	// result and offers the Namensliste. VideoGroupURL is the same recording
+	// widened to the agenda item, for a post covering several votes.
 	//
-	// They exist because the business page is the durable link but not the
-	// prompt one. Kanton Zürich adds a vote to its Geschäft page ten to sixteen
-	// days after the sitting, so for the first fortnight the permalink a post
-	// carries says nothing about the vote the post is about. The archive has it
-	// within the hour.
+	// It and ArchiveURL exist because the business page is the durable link
+	// but not the prompt one. Kanton Zürich adds a vote to its Geschäft page
+	// ten to sixteen days after the sitting, so for the first fortnight the
+	// permalink a post carries says nothing about the vote the post is about.
+	// The recording has it within the hour.
 	//
 	// Empty when the source publishes no such page.
-	ArchiveURL      string
-	ArchiveGroupURL string
+	VideoURL      string
+	VideoGroupURL string
+
+	// ArchiveURL links to the parliament's written record of this one vote:
+	// the Nationalrat's Abstimmungsprotokoll, a PDF with the tally and every
+	// member's vote, online within seconds of the vote closing. It has no
+	// widened form, so a post covering several votes carries it per vote
+	// rather than in the post's own link block.
+	//
+	// Empty when the source publishes no such record.
+	ArchiveURL string
 
 	// SessionURL links to the sitting this vote was taken in, where the body
 	// publishes the Traktandenliste, the Bulletin and the recording as one

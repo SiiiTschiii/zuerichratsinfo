@@ -2,6 +2,7 @@ package openparldata
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -12,9 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 var testJurisdiction = votes.Jurisdiction{
@@ -371,11 +372,11 @@ func TestArchiveAndSessionLinksSurviveEnrichment(t *testing.T) {
 	if !strings.Contains(got.SourceURL, "kantonsrat.zh.ch") {
 		t.Fatalf("precondition: SourceURL = %q, want enrichment to have replaced it", got.SourceURL)
 	}
-	if !strings.Contains(got.ArchiveURL, "zh.recapp.ch") {
-		t.Errorf("ArchiveURL = %q, want the vote's own archive link kept", got.ArchiveURL)
+	if !strings.Contains(got.VideoURL, "zh.recapp.ch") {
+		t.Errorf("VideoURL = %q, want the vote's own archive link kept", got.VideoURL)
 	}
-	if want := "item:" + got.ArchiveURL; got.ArchiveGroupURL != want {
-		t.Errorf("ArchiveGroupURL = %q, want the LinkSource's widening %q", got.ArchiveGroupURL, want)
+	if want := "item:" + got.VideoURL; got.VideoGroupURL != want {
+		t.Errorf("VideoGroupURL = %q, want the LinkSource's widening %q", got.VideoGroupURL, want)
 	}
 	if want := "session:" + got.Date.Format("2006-01-02"); got.SessionURL != want {
 		t.Errorf("SessionURL = %q, want %q", got.SessionURL, want)
@@ -391,9 +392,9 @@ func TestNoLinkSourceLeavesTheExtraLinksEmpty(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FetchRecent: %v", err)
 	}
-	if vs[0].ArchiveURL != "" || vs[0].ArchiveGroupURL != "" || vs[0].SessionURL != "" {
-		t.Errorf("got ArchiveURL %q, ArchiveGroupURL %q and SessionURL %q, want all empty",
-			vs[0].ArchiveURL, vs[0].ArchiveGroupURL, vs[0].SessionURL)
+	if vs[0].VideoURL != "" || vs[0].VideoGroupURL != "" || vs[0].SessionURL != "" {
+		t.Errorf("got VideoURL %q, VideoGroupURL %q and SessionURL %q, want all empty",
+			vs[0].VideoURL, vs[0].VideoGroupURL, vs[0].SessionURL)
 	}
 }
 
@@ -922,10 +923,11 @@ func TestGroupByAffairAppliesDetailTypes(t *testing.T) {
 	// no type at all.
 	for i := range vs {
 		vs[i].Type = ""
+		vs[i].Decision = "Ja"
 	}
 
 	details := &stubDetails{byVoting: map[string]VoteDetail{
-		vs[0].SourceID: {Type: "Quorum", Decision: "angenommen"},
+		vs[0].SourceID: {Type: "Quorum"},
 	}}
 	c.WithDetails(details)
 
@@ -1149,8 +1151,9 @@ func TestGroupByAffairWithholdsVerdictFromAThresholdVote(t *testing.T) {
 	// type arrives with enrichment, so which of them is a Vorlage is checked
 	// after grouping rather than assumed from the listing.
 	byVoting := make(map[string]VoteDetail, len(vs))
-	for _, v := range vs {
-		byVoting[v.SourceID] = VoteDetail{Type: "Ausgabenbremse", Decision: "angenommen"}
+	for i, v := range vs {
+		vs[i].Decision = "Ja"
+		byVoting[v.SourceID] = VoteDetail{Type: "Ausgabenbremse"}
 	}
 	c.WithDetails(&stubDetails{byVoting: byVoting})
 
@@ -1191,8 +1194,9 @@ func TestGroupByAffairWithholdsVerdictFromAnInitiative(t *testing.T) {
 
 	// Offer a verdict for every vote; the gate decides which may keep it.
 	byVoting := make(map[string]VoteDetail, len(vs))
-	for _, v := range vs {
-		byVoting[v.SourceID] = VoteDetail{Type: "Normal", Decision: "angenommen"}
+	for i, v := range vs {
+		vs[i].Decision = "angenommen"
+		byVoting[v.SourceID] = VoteDetail{Type: "Normal"}
 	}
 	c.WithDetails(&stubDetails{byVoting: byVoting})
 
@@ -1228,5 +1232,117 @@ func TestGroupByAffairWithholdsVerdictFromAnInitiative(t *testing.T) {
 	if !checkedWithheld || !checkedKept {
 		t.Fatalf("fixtures no longer cover both sides of the gate (withheld=%v kept=%v)",
 			checkedWithheld, checkedKept)
+	}
+}
+
+// upstreamVerdictVotes returns the recent votes with the API's own decision
+// already set, as OpenParlData MR !1264 now serves it for binary Kanton Zürich
+// votes, and the detail source answering with the given ballot type for each.
+func upstreamVerdictVotes(t *testing.T, c *Client, ballot string) []votes.Vote {
+	t.Helper()
+	vs, err := c.FetchRecent(12)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	byVoting := make(map[string]VoteDetail, len(vs))
+	for i := range vs {
+		vs[i].Decision = "Ja"
+		byVoting[vs[i].SourceID] = VoteDetail{Type: ballot}
+	}
+	c.WithDetails(&stubDetails{byVoting: byVoting})
+	return vs
+}
+
+// TestGroupByAffairDropsUpstreamVerdictOnAThresholdVote is the safety gap the
+// ballot gate had once upstream filled decision itself: the Ausgabenbremse
+// votings 105409 and 105410 arrive as votingScheme binary, so upstream says
+// "Ja" for them unverified. Temporary, until upstream identifies the
+// Ausgabenbremse (OpenParlData GitLab #183).
+func TestGroupByAffairDropsUpstreamVerdictOnAThresholdVote(t *testing.T) {
+	for _, ballot := range []string{"Ausgabenbremse", "Quorum"} {
+		t.Run(ballot, func(t *testing.T) {
+			c, _ := newTestClient(t)
+			vs := upstreamVerdictVotes(t, c, ballot)
+
+			groups, err := c.GroupByAffair(vs)
+			if err != nil {
+				t.Fatalf("GroupByAffair: %v", err)
+			}
+			var checked bool
+			for _, g := range groups {
+				for _, v := range g {
+					if affairStatesItsOutcome(v.Affair.Type) {
+						checked = true
+					}
+					if v.Decision != "" {
+						t.Errorf("vote %s (%s, %s): Decision = %q, want none", v.SourceID, v.Affair.Type, v.Type, v.Decision)
+					}
+				}
+			}
+			if !checked {
+				t.Fatal("fixtures no longer contain a verdict-bearing business")
+			}
+		})
+	}
+}
+
+// TestGroupByAffairKeepsUpstreamVerdictOnAGatedBinaryVote pins both halves of
+// the affair gate for a decision that arrives pre-set: kept on an allowlisted
+// affair type, dropped on any other.
+func TestGroupByAffairKeepsUpstreamVerdictOnAGatedBinaryVote(t *testing.T) {
+	c, _ := newTestClient(t)
+	vs := upstreamVerdictVotes(t, c, "Normal")
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+	var kept, dropped bool
+	for _, g := range groups {
+		for _, v := range g {
+			if affairStatesItsOutcome(v.Affair.Type) {
+				if v.Decision != "Ja" {
+					t.Errorf("vote %s (%s): Decision = %q, want upstream's %q", v.SourceID, v.Affair.Type, v.Decision, "Ja")
+				}
+				kept = true
+				continue
+			}
+			if v.Decision != "" {
+				t.Errorf("vote %s (%s): Decision = %q, want none on a non-allowlisted affair type", v.SourceID, v.Affair.Type, v.Decision)
+			}
+			dropped = true
+		}
+	}
+	if !kept || !dropped {
+		t.Fatalf("fixtures no longer cover both sides of the gate (kept=%v dropped=%v)", kept, dropped)
+	}
+}
+
+// TestGroupByAffairDropsUpstreamVerdictWithoutDetails: a vote the detail source
+// says nothing about has an unverified type — type_de reads an Ausgabenbremse
+// as Normal — so neither gate can vouch for upstream's verdict, and it is
+// withheld. A failing source therefore costs the outcome line, never a wrong one.
+func TestGroupByAffairDropsUpstreamVerdictWithoutDetails(t *testing.T) {
+	c, _ := newTestClient(t)
+	vs, err := c.FetchRecent(12)
+	if err != nil {
+		t.Fatalf("FetchRecent: %v", err)
+	}
+	for i := range vs {
+		vs[i].Decision = "Ja"
+		vs[i].Type = "Normal"
+	}
+	c.WithDetails(&stubDetails{err: errors.New("archive down")})
+
+	groups, err := c.GroupByAffair(vs)
+	if err != nil {
+		t.Fatalf("GroupByAffair: %v", err)
+	}
+	for _, g := range groups {
+		for _, v := range g {
+			if v.Decision != "" {
+				t.Errorf("vote %s: Decision = %q, want none without a detail entry", v.SourceID, v.Decision)
+			}
+		}
 	}
 }

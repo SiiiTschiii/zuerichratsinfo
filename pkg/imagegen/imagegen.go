@@ -19,8 +19,8 @@ import (
 	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 //go:embed fonts/NotoEmoji-Regular.ttf
@@ -435,44 +435,95 @@ func GenerateCarousel(group []votes.Vote) ([][]byte, error) {
 	}
 
 	var images [][]byte
-
-	// An election business gets one text-only card, not the usual stats
-	// dashboard: its only votes are attendance roll calls, and none of their
-	// counts mean anything here. Checked on the whole group, because a second
-	// ballot round adds a second roll call — see votes.IsWahlgeschaeftGroup.
-	if votes.IsWahlgeschaeftGroup(group) {
-		img, err := renderWahlgeschaeftCard(&group[0], bgColor, fonts)
+	for _, c := range carouselCards(group, bgColor, fonts) {
+		img, err := renderCard(c, bgColor, fonts)
 		if err != nil {
-			return nil, fmt.Errorf("rendering Wahlgeschäft card: %w", err)
+			return nil, fmt.Errorf("rendering %s: %w", c.name, err)
 		}
-		return [][]byte{img}, nil
+		images = append(images, img)
+	}
+	return images, nil
+}
+
+// card is one image of a carousel: the vote whose band and corner it carries,
+// what its corners say, and how it lays out its content below a given inset.
+//
+// Every card goes through renderCard, so the band, the corner row and the
+// centring are decided once for all of them, and carouselCards is the one
+// place that says which card gets which corner.
+type card struct {
+	name   string
+	vote   votes.Vote
+	corner cardCorner
+	layout func(img *image.RGBA, cur *layoutCursor, inset int) error
+}
+
+// inset is the Y the card's content starts below: the band, then the corner
+// row.
+func (c card) inset(fonts *fontSet) int {
+	return bandInset(c.vote) + c.corner.height(fonts)
+}
+
+// carouselCards returns the cards GenerateCarousel draws for a group, in order.
+//
+// An election business gets one text-only card, not the usual stats
+// dashboard: its only votes are attendance roll calls, and none of their
+// counts mean anything here. Checked on the whole group, because a second
+// ballot round adds a second roll call — see votes.IsWahlgeschaeftGroup.
+//
+// A single vote combines title and results on one card. A multi-vote group
+// gets an overview card, then one result card per vote.
+func carouselCards(group []votes.Vote, bg color.RGBA, fonts *fontSet) []card {
+	if votes.IsWahlgeschaeftGroup(group) {
+		v := group[0]
+		return []card{{"Wahlgeschäft card", v, dateCorner(v), func(img *image.RGBA, cur *layoutCursor, inset int) error {
+			layoutWahlgeschaeftCard(img, cur, inset, &v, bg, fonts)
+			return nil
+		}}}
 	}
 
 	if len(group) == 1 {
-		// Single vote: combine title + results into one image
-		combinedImg, err := renderCombinedCard(&group[0], bgColor, fonts)
-		if err != nil {
-			return nil, fmt.Errorf("rendering combined card: %w", err)
-		}
-		images = append(images, combinedImg)
-	} else {
-		// Multi-vote: title card + one result card per vote
-		titleImg, err := renderTitleCard(group, bgColor, fonts)
-		if err != nil {
-			return nil, fmt.Errorf("rendering title card: %w", err)
-		}
-		images = append(images, titleImg)
-
-		for i := range group {
-			resultImg, err := renderResultCard(&group[i], bgColor, fonts, i+1, len(group))
-			if err != nil {
-				return nil, fmt.Errorf("rendering result card %d: %w", i, err)
-			}
-			images = append(images, resultImg)
-		}
+		v := group[0]
+		return []card{{"combined card", v, voteCorner(v, ""), func(img *image.RGBA, cur *layoutCursor, inset int) error {
+			_, _, err := layoutCombinedCard(img, cur, inset, &v, bg, fonts)
+			return err
+		}}}
 	}
 
-	return images, nil
+	cards := []card{{"title card", group[0], dateCorner(group[0]), func(img *image.RGBA, cur *layoutCursor, inset int) error {
+		layoutTitleCard(img, cur, inset, group, bg, fonts)
+		return nil
+	}}}
+	for i := range group {
+		v := group[i]
+		cards = append(cards, card{fmt.Sprintf("result card %d", i+1), v, voteCorner(v, formatProgressBadge(i+1, len(group))), func(img *image.RGBA, cur *layoutCursor, inset int) error {
+			layoutResultCard(img, cur, inset, &v, bg, fonts, i+1, len(group))
+			return nil
+		}})
+	}
+	return cards
+}
+
+// renderCard lays a card out twice: a dry run at its inset to measure it, then
+// the real run, centred in the space the band and the corner row leave.
+func renderCard(c card, bg color.RGBA, fonts *fontSet) ([]byte, error) {
+	inset := c.inset(fonts)
+
+	dry := newCursor(inset, imgHeight)
+	if err := c.layout(nil, dry, inset); err != nil {
+		return nil, err
+	}
+
+	startY := centredStart(inset, dry.contentHeight())
+	img := newImage(bg)
+	drawBodyBand(img, fonts.bandLabel, c.vote)
+	c.corner.draw(img, fonts, c.vote, bg)
+
+	cur := newCursor(startY, imgHeight)
+	if err := c.layout(img, cur, inset); err != nil {
+		return nil, err
+	}
+	return encodeJPEG(img)
 }
 
 // centredStart returns the Y the card's content starts at, centring a block of
@@ -629,33 +680,9 @@ func loadFontSet() (*fontSet, error) {
 	return &fs, nil
 }
 
-// renderCombinedCard renders a single image with visual hierarchy:
-// large verdict, bold title, dashboard stats, and grouped party breakdown.
-func renderCombinedCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
-	inset := bandInset(*v)
-
-	// Dry run to measure content height
-	dry := newCursor(inset, imgHeight)
-	_, _, err := layoutCombinedCard(nil, dry, v, bg, fonts)
-	if err != nil {
-		return nil, err
-	}
-
-	// Real run, centred in the space the band leaves
-	startY := centredStart(inset, dry.contentHeight())
-	img := newImage(bg)
-	drawBodyBand(img, fonts.bandLabel, *v)
-
-	cur := newCursor(startY, imgHeight)
-	_, _, err = layoutCombinedCard(img, cur, v, bg, fonts)
-	if err != nil {
-		return nil, err
-	}
-
-	return encodeJPEG(img)
-}
-
-func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg color.RGBA, fonts *fontSet) (font.Face, []string, error) {
+// layoutCombinedCard lays out a single vote with visual hierarchy: large
+// verdict, bold title, dashboard stats, and grouped party breakdown.
+func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, inset int, v *votes.Vote, bg color.RGBA, fonts *fontSet) (font.Face, []string, error) {
 	maxTextWidth := imgWidth - 2*padding
 
 	// Build counts
@@ -665,23 +692,23 @@ func layoutCombinedCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg co
 	// Title first: bold, wrapped, centered
 	title := voteformat.CleanVoteTitle(v.Title)
 
-	// The heading above the counts: when the vote was taken and what kind of
-	// ballot it was. The multi-vote cards get theirs from SubVoteLabel; this is
-	// the lone-vote case, which has no ordinal to be numbered by.
-	countsLabel := voteformat.CardCountsLabel(*v)
+	// When the vote was taken goes in the corner, as on every other card. The
+	// line above the counts is left to say what kind of ballot it was, and is
+	// dropped for an ordinary one.
+	countsLabel := voteformat.TypeLabel(v.Type)
 
 	// Everything below the title has to fit, all of it: the reserve below
 	// mirrors the layout that follows line for line, and the title gets what is
 	// left over.
 	//
 	// The budget is measured from the band inset rather than from cur.y,
-	// because renderCombinedCard lays the card out twice — a dry run at the
+	// because renderCard lays the card out twice — a dry run at the
 	// inset, then the real run at the centred start — and a title that sized
 	// itself against each run's own cur.y would come out at two different
 	// sizes, leaving the measured height wrong for the card actually drawn.
 	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 	bottomReserved := combinedBottomReserve(fonts, len(fraktionCounts), countsLabel != "")
-	availableForTitle := titleBudget(*v, bottomReserved)
+	availableForTitle := titleBudget(inset, bottomReserved)
 
 	titleFace, titleLines, err := cardTitle([]votes.Vote{*v}, title, maxTextWidth, availableForTitle)
 	if err != nil {
@@ -788,16 +815,16 @@ func statsBlockHeight(fonts *fontSet) int {
 }
 
 // titleBudget returns the vertical space a card's title may take: the frame
-// below the band, less the margin that has to stay under the band, less what
-// the results below the title need.
+// below the card's inset (band and corner row), less the margin that has to
+// stay under it, less what the results below the title need.
 //
 // The top margin is budgeted rather than hoped for. Centring only ever
 // protected the bottom edge, so a title long enough to fill the card was
 // accepted at full size and the top paid for it: on the 03.12.2025 Postulat the
 // verdict emoji came out 2px under the band, all but touching it. Charging the
 // title for the margin makes it give up a font size instead.
-func titleBudget(v votes.Vote, reserve int) int {
-	return imgHeight - bandInset(v) - padding - reserve
+func titleBudget(inset, reserve int) int {
+	return imgHeight - inset - padding - reserve
 }
 
 // combinedBottomReserve returns the space layoutCombinedCard needs for
@@ -1016,7 +1043,7 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 	}
 	rowGap := int(float64(rowHeight) * fraktionRowGapFactor)
 
-	// The measuring pass takes every row. It has to: renderCombinedCard centres
+	// The measuring pass takes every row. It has to: renderCard centres
 	// the card on the height this pass reports, so a measurement that had
 	// already dropped rows would report a short card, centre it lower, and make
 	// the drawing pass drop them for real — which is how a long title used to
@@ -1059,24 +1086,7 @@ func drawFraktionTable(img *image.RGBA, cur *layoutCursor, fraktionCounts map[st
 	}
 }
 
-func renderTitleCard(group []votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
-	inset := bandInset(group[0])
-
-	// Dry run to measure content height
-	dry := newCursor(inset, imgHeight)
-	layoutTitleCard(nil, dry, group, bg, fonts)
-
-	startY := centredStart(inset, dry.contentHeight())
-	img := newImage(bg)
-	drawBodyBand(img, fonts.bandLabel, group[0])
-
-	cur := newCursor(startY, imgHeight)
-	layoutTitleCard(img, cur, group, bg, fonts)
-
-	return encodeJPEG(img)
-}
-
-func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg color.RGBA, fonts *fontSet) {
+func layoutTitleCard(img *image.RGBA, cur *layoutCursor, inset int, group []votes.Vote, bg color.RGBA, fonts *fontSet) {
 	v := group[0]
 	maxTextWidth := imgWidth - 2*padding
 
@@ -1099,7 +1109,7 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 	// Title: bold, wrapped, centered (no verdict — ambiguous for multi-vote groups)
 	title := voteformat.CleanVoteTitle(v.Title)
 
-	titleFace, titleLines, err := cardTitle(group, title, maxTextWidth, titleBudget(v, summaryReserve))
+	titleFace, titleLines, err := cardTitle(group, title, maxTextWidth, titleBudget(inset, summaryReserve))
 	if err != nil {
 		return
 	}
@@ -1141,23 +1151,6 @@ func layoutTitleCard(img *image.RGBA, cur *layoutCursor, group []votes.Vote, bg 
 	}
 }
 
-func renderWahlgeschaeftCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]byte, error) {
-	inset := bandInset(*v)
-
-	// Dry run to measure content height
-	dry := newCursor(inset, imgHeight)
-	layoutWahlgeschaeftCard(nil, dry, v, bg, fonts)
-
-	startY := centredStart(inset, dry.contentHeight())
-	img := newImage(bg)
-	drawBodyBand(img, fonts.bandLabel, *v)
-
-	cur := newCursor(startY, imgHeight)
-	layoutWahlgeschaeftCard(img, cur, v, bg, fonts)
-
-	return encodeJPEG(img)
-}
-
 // layoutWahlgeschaeftCard draws a large 🗳️, then the business title, a
 // divider, and the sentence saying the result is not in our data.
 //
@@ -1168,7 +1161,7 @@ func renderWahlgeschaeftCard(v *votes.Vote, bg color.RGBA, fonts *fontSet) ([]by
 // as everything else on the timeline instead of a visibly thinner one. There
 // is no stats dashboard and no Fraktion table, because the only recorded vote
 // is the roll call taken before the ballot (see votes.IsWahlgeschaeft).
-func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg color.RGBA, fonts *fontSet) {
+func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, inset int, v *votes.Vote, bg color.RGBA, fonts *fontSet) {
 	maxTextWidth := imgWidth - 2*padding
 
 	// The sentence is built first: it is what the title has to leave room for,
@@ -1194,7 +1187,7 @@ func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, 
 
 	title := voteformat.CleanVoteTitle(v.Title)
 
-	titleFace, titleLines, err := fitTitle(title, maxTextWidth, titleBudget(*v, bodyReserve))
+	titleFace, titleLines, err := fitTitle(title, maxTextWidth, titleBudget(inset, bodyReserve))
 	if err != nil {
 		return
 	}
@@ -1234,46 +1227,19 @@ func layoutWahlgeschaeftCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, 
 	}
 }
 
-func renderResultCard(v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) ([]byte, error) {
-	inset := bandInset(*v)
-
-	// Dry run to measure content height
-	dry := newCursor(inset, imgHeight)
-	layoutResultCard(nil, dry, v, bg, fonts, idx, total)
-
-	// Real run, centred in the space the band leaves
-	startY := centredStart(inset, dry.contentHeight())
-	img := newImage(bg)
-	drawBodyBand(img, fonts.bandLabel, *v)
-	cur := newCursor(startY, imgHeight)
-	layoutResultCard(img, cur, v, bg, fonts, idx, total)
-
-	return encodeJPEG(img)
-}
-
-func layoutResultCard(img *image.RGBA, cur *layoutCursor, v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) {
-	if img != nil {
-		badge := formatProgressBadge(idx, total)
-		if badge != "" {
-			badgeW := font.MeasureString(fonts.small, badge).Ceil()
-			badgeX := imgWidth - padding - badgeW
-			badgeY := bandInset(*v) + padding + fonts.small.Metrics().Ascent.Ceil()
-			drawShadowedText(img, fonts.small, nil, badgeX, badgeY, badge, bg)
-		}
-	}
-
+func layoutResultCard(img *image.RGBA, cur *layoutCursor, inset int, v *votes.Vote, bg color.RGBA, fonts *fontSet, idx, total int) {
 	// Heading naming this vote within the group. Without it the cards of a
 	// group whose source publishes no per-vote title are indistinguishable.
 	fraktionCounts := voteformat.AggregateFraktionCounts(*v)
 
-	if sub := voteformat.SubVoteLabel(*v, idx-1, total); sub != "" {
+	if sub := voteformat.CardSubVoteLabel(*v, idx-1, total); sub != "" {
 		maxTextWidth := imgWidth - 2*padding
 		subLines := wrapText(fonts.boldHeading, sub, maxTextWidth)
 		// Same bargain as the combined card's title: the heading gives way to
 		// the results rather than pushing Fraktionen off the bottom. It keeps
 		// its face — these labels are short enough that shrinking would only
 		// make the common card worse — and is cut with an ellipsis instead.
-		available := titleBudget(*v, resultBottomReserve(fonts, len(fraktionCounts)))
+		available := titleBudget(inset, resultBottomReserve(fonts, len(fraktionCounts)))
 		subLines = ellipsizeLines(fonts.boldHeading, subLines, maxTextWidth, available)
 		for _, line := range subLines {
 			if img != nil {
@@ -1361,6 +1327,60 @@ func auswahlResultLabel(schlussresultat string) string {
 		letter = upper[len("AUSWAHL "):]
 	}
 	return "[" + letter + "]"
+}
+
+// cardCorner is what a card prints in its top corners: a timestamp on the
+// left and, on a result card, the progress badge on the right.
+//
+// Every card carries a timestamp there, in the same place and the same form,
+// so a reader finds it without learning each card's layout, and a card shared
+// on its own still says when the vote was taken.
+//
+// The row is reserved rather than overlaid: renderCard starts the content
+// below it and titleBudget charges the title for it. A heading wrapped to the
+// full width would otherwise share the row with the date on any card tall
+// enough for centredStart to clamp it to the margin.
+type cardCorner struct {
+	stamp, badge string
+}
+
+// voteCorner stamps a card that reports one vote with its date and time
+// ("15.06.2026 11:29"), or the date alone where the source has no clock.
+func voteCorner(v votes.Vote, badge string) cardCorner {
+	return cardCorner{stamp: voteformat.FormatVoteDateTime(v.Date), badge: badge}
+}
+
+// dateCorner stamps the date alone. The overview card spans votes taken at
+// several times, which its list already names; a Wahlgeschäft card's only
+// timestamp is the roll call's, and printing it would date an election to the
+// minute the chamber was counted.
+func dateCorner(v votes.Vote) cardCorner {
+	return cardCorner{stamp: voteformat.FormatVoteDate(v.Date)}
+}
+
+// height is the space the corner row takes from the top of the content area:
+// one line of the small face and a gap under it. A corner with nothing to
+// print reserves nothing.
+func (c cardCorner) height(fonts *fontSet) int {
+	if c.stamp == "" && c.badge == "" {
+		return 0
+	}
+	return lineHeight(fonts.small) + frac(fonts.small, 0.5)
+}
+
+// draw prints the stamp and the badge on one line under the band.
+func (c cardCorner) draw(img *image.RGBA, fonts *fontSet, v votes.Vote, bg color.RGBA) {
+	if img == nil {
+		return
+	}
+	y := bandInset(v) + padding + fonts.small.Metrics().Ascent.Ceil()
+	if c.stamp != "" {
+		drawShadowedText(img, fonts.small, nil, padding, y, c.stamp, bg)
+	}
+	if c.badge != "" {
+		badgeW := font.MeasureString(fonts.small, c.badge).Ceil()
+		drawShadowedText(img, fonts.small, nil, imgWidth-padding-badgeW, y, c.badge, bg)
+	}
 }
 
 func formatProgressBadge(index, total int) string {

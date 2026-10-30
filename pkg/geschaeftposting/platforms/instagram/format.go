@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	igvote "github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting"
+	"github.com/siiitschiii/parlinfo/pkg/imagegen"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	igvote "github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/instagram"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 // Formatter returns a geschaeftposting.Formatter tagging members known to

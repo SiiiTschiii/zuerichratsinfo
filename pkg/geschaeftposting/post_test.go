@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting/testfixtures"
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 func grNrs(gs []zurichapi.Geschaeft) []string {
@@ -47,7 +47,7 @@ func TestUnposted(t *testing.T) {
 
 	posted := testfixtures.MotionCounted()
 	log := votelog.NewEmpty("zurich-city", votelog.PlatformX)
-	log.MarkAsPosted(posted.OBJGUID)
+	log.MarkAsPosted(posted.OBJGUID, votelog.PostRef{})
 
 	gs := []zurichapi.Geschaeft{
 		testfixtures.MotionMember(),        // 2026/541, 30.09.
@@ -76,12 +76,12 @@ type fakePoster struct {
 	failAt int // 1-based post that fails; 0 never
 }
 
-func (p *fakePoster) Post(c platforms.Content) (bool, error) {
+func (p *fakePoster) Post(c platforms.Content) (votelog.PostRef, bool, error) {
 	if p.failAt == len(p.posted)+1 {
-		return false, errors.New("boom")
+		return votelog.PostRef{}, false, errors.New("boom")
 	}
 	p.posted = append(p.posted, c.String())
-	return len(p.posted) < p.budget, nil
+	return votelog.PostRef{ID: "id-" + c.String(), URL: "https://example.test/" + c.String()}, len(p.posted) < p.budget, nil
 }
 func (p *fakePoster) MaxPostsPerRun() int { return p.budget }
 func (p *fakePoster) Name() string        { return "fake" }
@@ -124,6 +124,10 @@ func TestPostStopsAtBudgetAndRecordsWhatWentOut(t *testing.T) {
 	}
 	if !votelog.Exists(votelog.KindVotes, "zurich-city", votelog.PlatformBluesky) {
 		t.Error("log not saved after posting")
+	}
+	// The entry records where the announcement went, as vote entries do.
+	if got := log.Votes[0].PostRef; got.ID != "id-2026/541" || got.URL != "https://example.test/2026/541" {
+		t.Errorf("first entry's post ref = %+v", got)
 	}
 }
 

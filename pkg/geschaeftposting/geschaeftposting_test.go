@@ -5,8 +5,8 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting/testfixtures"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 func TestSupportedMatchesFixtures(t *testing.T) {

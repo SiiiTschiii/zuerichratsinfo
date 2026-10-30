@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/imagegen"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/imagegen"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // maxCaptionChars is Instagram's caption character limit.
@@ -66,7 +66,7 @@ func FormatCarouselWithContacts(group []votes.Vote, contactMapper *contacts.Mapp
 }
 
 // buildCaption creates the caption text for an Instagram carousel post.
-// Includes vote details (similar to X/Bluesky thread text flattened) + vote page link.
+// The body is voteformat.LongFormBody, shared with Facebook, plus the link block.
 func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 	// A Wahlgeschäft gets its own caption: the title, the sentence saying we
 	// have no result, and the links — no counts, no verdict emoji. Its only
@@ -83,81 +83,14 @@ func buildCaption(group []votes.Vote, contactMapper *contacts.Mapper) string {
 		return header + voteformat.WahlgeschaeftBody(group) + voteformat.LinkLine(group)
 	}
 
-	firstVote := group[0]
-
-	// Header
-	title := voteformat.CleanVoteTitle(firstVote.Title)
+	var tags voteformat.Tags
 	if contactMapper != nil {
-		title = contactMapper.TagInstagramHandlesInText(title)
+		tags.Heading = func(text, jurisdiction string) string {
+			return contactMapper.TagInstagramFraktionen(contactMapper.TagInstagramHandlesInText(text), jurisdiction)
+		}
+		tags.SubVote = contactMapper.TagInstagramFraktionen
 	}
-
-	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("🗳️ %s\n\n", voteformat.PostHeadline(group)))
-
-	// The label line: what kind of business this is, who filed it, plus the
-	// Abstimmungsgegenstand when a lone vote makes that meaningful.
-	//
-	// Tagged like the title, and for a body whose titles carry no names — Kanton
-	// Zürich's never do — this is the only line that names anyone at all.
-	if prefix := voteformat.GroupPrefixLine(group); prefix != "" {
-		if contactMapper != nil {
-			prefix = contactMapper.TagInstagramHandlesInText(prefix)
-		}
-		sb.WriteString(prefix)
-		sb.WriteString("\n")
-	}
-
-	sb.WriteString(title)
-	sb.WriteString("\n\n")
-
-	// Vote details for each vote
-	for i, vote := range group {
-		counts := voteformat.CountsOf(vote)
-
-		if len(group) > 1 {
-			// Multi-vote: include subtitle
-			voteTitle := voteformat.SubVoteLabel(vote, i, len(group))
-			if !voteformat.HasVerdict(vote) {
-				sb.WriteString(voteTitle)
-			} else {
-				emoji := voteformat.GetVoteResultEmoji(vote.Decision)
-				result := voteformat.GetVoteResultText(vote.Decision)
-				sb.WriteString(fmt.Sprintf("%s %s: %s", emoji, result, voteTitle))
-			}
-			sb.WriteString("\n")
-		} else {
-			// Single vote: the ballot type when it is one worth naming, then the
-			// result line. A lone threshold vote needs the label most — there is
-			// no sibling beside it to make the lopsided tally look unusual.
-			if label := voteformat.TypeLabel(vote.Type); label != "" {
-				sb.WriteString(label + "\n")
-			}
-			if voteformat.HasVerdict(vote) {
-				emoji := voteformat.GetVoteResultEmoji(vote.Decision)
-				result := voteformat.GetVoteResultText(vote.Decision)
-				sb.WriteString(fmt.Sprintf("%s %s\n", emoji, result))
-			}
-		}
-
-		sb.WriteString(voteformat.FormatVoteCountsLong(counts))
-		sb.WriteString("\n")
-
-		// Fraktion breakdown
-		if len(vote.MemberVotes) > 0 {
-			fraktionCounts := voteformat.AggregateFraktionCounts(vote)
-			if breakdown := voteformat.FormatFraktionBreakdown(fraktionCounts); breakdown != "" {
-				sb.WriteString("\n")
-				sb.WriteString(breakdown)
-				sb.WriteString("\n")
-			}
-		}
-
-		if i < len(group)-1 {
-			sb.WriteString("\n")
-		}
-	}
-
-	return buildCaptionWithPreservedLink(sb.String(), voteformat.LinkLine(group))
+	return buildCaptionWithPreservedLink(voteformat.LongFormBody(group, tags), voteformat.LinkLine(group))
 }
 
 func buildCaptionWithPreservedLink(body, linkBlock string) string {

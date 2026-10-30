@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 // beginnLayout is how PARIS writes Beginn.Start.
@@ -80,7 +80,9 @@ func grSortKey(grNr string) int {
 // weeks old.
 func Seed(gs []zurichapi.Geschaeft, log *votelog.VoteLog) error {
 	for _, g := range gs {
-		log.MarkAsPosted(g.OBJGUID)
+		// No ref: nothing was published, and an empty ref is what the log
+		// format uses for exactly that.
+		log.MarkAsPosted(g.OBJGUID, votelog.PostRef{})
 	}
 	return log.Save()
 }
@@ -91,8 +93,10 @@ type Formatter func(g zurichapi.Geschaeft) (platforms.Content, error)
 // Poster publishes formatted content. The vote platforms satisfy it, so a
 // Geschäft goes out through exactly the code a vote does.
 type Poster interface {
-	// Post returns shouldContinue=false once the per-run budget is spent.
-	Post(content platforms.Content) (shouldContinue bool, err error)
+	// Post returns the published root, recorded in the log so an entry says
+	// where its announcement went, and shouldContinue=false once the per-run
+	// budget is spent.
+	Post(content platforms.Content) (post votelog.PostRef, shouldContinue bool, err error)
 	MaxPostsPerRun() int
 	Name() string
 }
@@ -131,11 +135,11 @@ func Post(gs []zurichapi.Geschaeft, format Formatter, p Poster, log *votelog.Vot
 		}
 
 		fmt.Printf("%s %s (%s):\n   %s\n", g.Geschaeftsart, g.GRNr, g.Beginn.Text, Link(g))
-		shouldContinue, err := p.Post(content)
+		ref, shouldContinue, err := p.Post(content)
 		if err != nil {
 			return posted, err
 		}
-		log.MarkAsPosted(g.OBJGUID)
+		log.MarkAsPosted(g.OBJGUID, ref)
 		if err := log.Save(); err != nil {
 			return posted, err
 		}

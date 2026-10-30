@@ -6,12 +6,12 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/bskyapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	bsky "github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/bskyapi"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	bsky "github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 // maxGraphemes is the Bluesky post limit.

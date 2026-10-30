@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 func TestCleanVoteTitle(t *testing.T) {
@@ -385,37 +385,6 @@ func TestSubVoteLabelNamesTheVoteType(t *testing.T) {
 
 func intPtr(n int) *int { return &n }
 
-// A card carries no headline, so the caption's date and time do not travel with
-// it. Two votes under a recurring agenda item produce the same picture twice
-// unless the clock is on the card itself.
-func TestCardCountsLabel(t *testing.T) {
-	at0941 := time.Date(2026, 8, 17, 9, 41, 0, 0, time.UTC)
-
-	tests := []struct {
-		name     string
-		date     time.Time
-		voteType string
-		expected string
-	}{
-		{"clock and type together", at0941, "Ausgabenbremse", "Abstimmung (09:41) · Ausgabenbremse"},
-		{"clock alone", at0941, "Normal", "Abstimmung (09:41)"},
-		// Stadt Zürich supplies sitting dates at midnight, so a clock there
-		// would invent a precision the source does not have.
-		{"midnight leaves the type standing alone", time.Date(2026, 8, 17, 0, 0, 0, 0, time.UTC), "Quorum", "Quorum"},
-		{"nothing to say", time.Time{}, "Normal", ""},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := CardCountsLabel(votes.Vote{Date: tt.date, Type: tt.voteType})
-			if got != tt.expected {
-				t.Errorf("CardCountsLabel(date=%v, type=%q) = %q, want %q",
-					tt.date, tt.voteType, got, tt.expected)
-			}
-		})
-	}
-}
-
 func TestIsDecisionConsistent(t *testing.T) {
 	tests := []struct {
 		name            string
@@ -608,6 +577,45 @@ func TestSubVoteLabel(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := SubVoteLabel(tc.vote, tc.index, tc.groupSize); got != tc.want {
 				t.Errorf("SubVoteLabel = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+// A result card prints the vote's time in its corner, so its heading drops the
+// clock that SubVoteLabel gives the text posts — and nothing else.
+func TestCardSubVoteLabelLeavesTheClockToTheCorner(t *testing.T) {
+	timed := time.Date(2026, 6, 29, 14, 32, 11, 0, time.UTC)
+
+	untitled := votes.Vote{Date: timed, Type: "Quorum"}
+	if got := SubVoteLabel(untitled, 1, 3); got != "Abstimmung 2 (14:32) · Quorum" {
+		t.Fatalf("SubVoteLabel = %q, the text posts' label changed", got)
+	}
+	if got := CardSubVoteLabel(untitled, 1, 3); got != "Abstimmung 2 · Quorum" {
+		t.Errorf("CardSubVoteLabel = %q, want %q", got, "Abstimmung 2 · Quorum")
+	}
+
+	titled := votes.Vote{Subtitle: "Schlussabstimmung", Date: timed}
+	if got := CardSubVoteLabel(titled, 1, 3); got != "Schlussabstimmung" {
+		t.Errorf("CardSubVoteLabel = %q, want the vote's own title", got)
+	}
+}
+
+func TestFormatVoteDateTime(t *testing.T) {
+	tests := []struct {
+		name string
+		date time.Time
+		want string
+	}{
+		{"date and clock", time.Date(2026, 6, 15, 11, 29, 43, 0, time.UTC), "15.06.2026 11:29"},
+		// PARIS dates are midnight: the date stands alone rather than "00:00".
+		{"midnight is a date alone", time.Date(2025, 6, 15, 0, 0, 0, 0, time.UTC), "15.06.2025"},
+		{"unknown date", time.Time{}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FormatVoteDateTime(tt.date); got != tt.want {
+				t.Errorf("FormatVoteDateTime(%v) = %q, want %q", tt.date, got, tt.want)
 			}
 		})
 	}
@@ -1106,7 +1114,7 @@ func TestGroupLinks(t *testing.T) {
 	)
 	canton := votes.Vote{
 		SourceURL: geschaeft, GroupURL: geschaeft,
-		ArchiveURL: segment, ArchiveGroupURL: item, SessionURL: sitting,
+		VideoURL: segment, VideoGroupURL: item, SessionURL: sitting,
 	}
 
 	t.Run("a lone vote links its own segment", func(t *testing.T) {
@@ -1124,7 +1132,7 @@ func TestGroupLinks(t *testing.T) {
 	t.Run("a group links the agenda item, not the first vote", func(t *testing.T) {
 		got := GroupLinks([]votes.Vote{canton, canton})
 		if len(got) != 3 || got[1].URL != item {
-			t.Errorf("archive link = %+v, want the widened %q", got, item)
+			t.Errorf("video link = %+v, want the widened %q", got, item)
 		}
 	})
 
@@ -1132,7 +1140,7 @@ func TestGroupLinks(t *testing.T) {
 		// applyAffair never ran, so both URL fields still hold the archive link.
 		noAffair := votes.Vote{
 			SourceURL: segment, GroupURL: segment,
-			ArchiveURL: segment, SessionURL: sitting,
+			VideoURL: segment, SessionURL: sitting,
 		}
 		got := GroupLinks([]votes.Vote{noAffair})
 		want := []Link{
@@ -1144,9 +1152,9 @@ func TestGroupLinks(t *testing.T) {
 		}
 	})
 
-	t.Run("a group whose archive has no agenda item drops the entry", func(t *testing.T) {
+	t.Run("a group whose recording has no agenda item drops the entry", func(t *testing.T) {
 		noItem := canton
-		noItem.ArchiveGroupURL = ""
+		noItem.VideoGroupURL = ""
 		got := GroupLinks([]votes.Vote{noItem, noItem})
 		for _, l := range got {
 			if l.URL == segment {
@@ -1155,6 +1163,42 @@ func TestGroupLinks(t *testing.T) {
 		}
 		if len(got) != 2 {
 			t.Errorf("GroupLinks() = %+v, want the Geschäft and the sitting", got)
+		}
+	})
+
+	const curia = "https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId=20250059"
+	nationalrat := func(ref string) votes.Vote {
+		return votes.Vote{
+			SourceURL: curia, GroupURL: curia,
+			ArchiveURL: "https://www.parlament.ch/poly/Abstimmung/52/out/vote_52_" + ref + ".pdf",
+		}
+	}
+
+	t.Run("a lone Nationalrat vote links its Protokoll", func(t *testing.T) {
+		got := GroupLinks([]votes.Vote{nationalrat("33215")})
+		want := []Link{
+			{Icon: "🔗", Name: "Geschäft", URL: curia},
+			{Icon: "📋", Name: "Protokoll", URL: "https://www.parlament.ch/poly/Abstimmung/52/out/vote_52_33215.pdf"},
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("GroupLinks() = %+v, want %+v", got, want)
+		}
+	})
+
+	t.Run("a Nationalrat group leaves the Protokolle to the votes", func(t *testing.T) {
+		g := []votes.Vote{nationalrat("33215"), nationalrat("33216")}
+		got := GroupLinks(g)
+		for _, l := range got {
+			if l.Name == "Protokoll" {
+				t.Errorf("GroupLinks() = %+v, want no Protokoll: there is none for the group", got)
+			}
+		}
+		if len(got) != 1 {
+			t.Errorf("GroupLinks() = %+v, want only the Geschäft", got)
+		}
+		per := VoteLinks(g, 1)
+		if len(per) != 1 || per[0].Name != "Protokoll" || !strings.HasSuffix(per[0].URL, "vote_52_33216.pdf") {
+			t.Errorf("VoteLinks() = %+v, want the second vote's own Protokoll", per)
 		}
 	})
 }
@@ -1173,7 +1217,7 @@ func TestLinkLine(t *testing.T) {
 	t.Run("several links are named so a reader can tell them apart", func(t *testing.T) {
 		canton := []votes.Vote{{
 			SourceURL:  geschaeft,
-			ArchiveURL: "https://zh.recapp.ch/shareparl?agendaItemUid=item&segmentUid=seg",
+			VideoURL:   "https://zh.recapp.ch/shareparl?agendaItemUid=item&segmentUid=seg",
 			SessionURL: "https://www.kantonsrat.zh.ch/ratsbetrieb/sitzungenundprotokolle/?d=1",
 		}}
 		got := LinkLine(canton)
@@ -1187,6 +1231,42 @@ func TestLinkLine(t *testing.T) {
 	t.Run("a source with no links at all posts no block", func(t *testing.T) {
 		if got := LinkLine([]votes.Vote{{Attribution: "Source: X"}}); got != "" {
 			t.Errorf("LinkLine() = %q, want nothing — a credit with no link is not a link block", got)
+		}
+	})
+}
+
+func TestVoteLinks(t *testing.T) {
+	const group, item = "https://example.ch/geschaeft/1", "https://rec.example/s?agendaItemUid=A"
+	vote := func(source, video string) votes.Vote {
+		return votes.Vote{SourceURL: source, GroupURL: group, VideoURL: video, VideoGroupURL: item}
+	}
+
+	t.Run("recording at the vote's segment, business page not repeated", func(t *testing.T) {
+		g := []votes.Vote{vote(group, item+"&segmentUid=S1"), vote(group, item+"&segmentUid=S2")}
+		got := VoteLinks(g, 1)
+		if len(got) != 1 || got[0].URL != item+"&segmentUid=S2" || got[0].Name != "Video" {
+			t.Errorf("got %+v, want only the second vote's segment", got)
+		}
+	})
+
+	t.Run("vote's own page beside the group's", func(t *testing.T) {
+		g := []votes.Vote{vote("https://example.ch/vote/1", ""), vote("https://example.ch/vote/2", "")}
+		got := VoteLinks(g, 0)
+		if len(got) != 1 || got[0].URL != "https://example.ch/vote/1" || got[0].Name != "Abstimmung" {
+			t.Errorf("got %+v, want the vote's own page", got)
+		}
+	})
+
+	t.Run("nothing the post already links", func(t *testing.T) {
+		g := []votes.Vote{vote(group, item), vote(group, item)}
+		if got := VoteLinks(g, 0); len(got) != 0 {
+			t.Errorf("got %+v, want none", got)
+		}
+	})
+
+	t.Run("out of range", func(t *testing.T) {
+		if got := VoteLinks(nil, 0); got != nil {
+			t.Errorf("got %+v, want nil", got)
 		}
 	})
 }

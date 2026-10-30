@@ -12,9 +12,9 @@ import (
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/testfixtures"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 func TestGenerateCarousel_ValidJPEG(t *testing.T) {
@@ -82,10 +82,10 @@ func TestLayoutResultCard_WrapsLongSubtitle(t *testing.T) {
 	bg := SelectColor("zurich-city", shortVote.Affair.Number)
 
 	shortCur := newCursor(0, imgHeight)
-	layoutResultCard(nil, shortCur, &shortVote, bg, fonts, 1, 2)
+	layoutResultCard(nil, shortCur, bandInset(shortVote), &shortVote, bg, fonts, 1, 2)
 
 	longCur := newCursor(0, imgHeight)
-	layoutResultCard(nil, longCur, &longVote, bg, fonts, 2, 2)
+	layoutResultCard(nil, longCur, bandInset(longVote), &longVote, bg, fonts, 2, 2)
 
 	if longCur.contentHeight() <= shortCur.contentHeight() {
 		t.Fatalf("expected wrapped long subtitle to use more vertical space (short=%d, long=%d)", shortCur.contentHeight(), longCur.contentHeight())
@@ -109,10 +109,10 @@ func TestLayoutTitleCard_WrapsLongSummaryLine(t *testing.T) {
 	bg := SelectColor("zurich-city", shortVotes[0].Affair.Number)
 
 	shortCur := newCursor(0, imgHeight)
-	layoutTitleCard(nil, shortCur, shortVotes, bg, fonts)
+	layoutTitleCard(nil, shortCur, bandInset(shortVotes[0]), shortVotes, bg, fonts)
 
 	longCur := newCursor(0, imgHeight)
-	layoutTitleCard(nil, longCur, longVotes, bg, fonts)
+	layoutTitleCard(nil, longCur, bandInset(longVotes[0]), longVotes, bg, fonts)
 
 	if longCur.contentHeight() <= shortCur.contentHeight() {
 		t.Fatalf("expected wrapped long summary line to use more vertical space (short=%d, long=%d)", shortCur.contentHeight(), longCur.contentHeight())
@@ -133,7 +133,7 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 	withPrefix := base
 	withPrefix.Subtitle = "Dringlicherklärung"
 	prefixCur := newCursor(0, imgHeight)
-	_, prefixLines, err := layoutCombinedCard(nil, prefixCur, &withPrefix, bg, fonts)
+	_, prefixLines, err := layoutCombinedCard(nil, prefixCur, 0, &withPrefix, bg, fonts)
 	if err != nil {
 		t.Fatalf("layoutCombinedCard failed: %v", err)
 	}
@@ -147,7 +147,7 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 	withType := withPrefix
 	withType.Type = "Ausgabenbremse"
 	typeCur := newCursor(0, imgHeight)
-	_, typeLines, err := layoutCombinedCard(nil, typeCur, &withType, bg, fonts)
+	_, typeLines, err := layoutCombinedCard(nil, typeCur, 0, &withType, bg, fonts)
 	if err != nil {
 		t.Fatalf("layoutCombinedCard failed: %v", err)
 	}
@@ -163,7 +163,7 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 	schluss := base
 	schluss.Subtitle = "Schlussabstimmung"
 	schlussCur := newCursor(0, imgHeight)
-	_, schlussLines, err := layoutCombinedCard(nil, schlussCur, &schluss, bg, fonts)
+	_, schlussLines, err := layoutCombinedCard(nil, schlussCur, 0, &schluss, bg, fonts)
 	if err != nil {
 		t.Fatalf("layoutCombinedCard failed: %v", err)
 	}
@@ -175,7 +175,7 @@ func TestLayoutCombinedCard_AbstimmungsgegenstandPrefix(t *testing.T) {
 	none := base
 	none.Subtitle = ""
 	noneCur := newCursor(0, imgHeight)
-	_, noneLines, err := layoutCombinedCard(nil, noneCur, &none, bg, fonts)
+	_, noneLines, err := layoutCombinedCard(nil, noneCur, 0, &none, bg, fonts)
 	if err != nil {
 		t.Fatalf("layoutCombinedCard failed: %v", err)
 	}
@@ -297,7 +297,7 @@ func TestDrawFraktionTable_LimitsRowsWhenSpaceIsTight(t *testing.T) {
 	maxRows := 3
 
 	// The clamp is a drawing-pass guard, not a measuring one: the measuring
-	// pass has to report the card's true height so renderCombinedCard can
+	// pass has to report the card's true height so renderCard can
 	// centre it without pushing rows out of the frame. So this needs a real
 	// destination image to exercise it.
 	customImgHeight := padding + rowHeight + rowGap + maxRows*rowStride
@@ -358,7 +358,7 @@ func TestMeasureMixedTextLeavesPlainTextAlone(t *testing.T) {
 // drawFraktionTable stops at imgHeight-padding, so a card laid out too low
 // simply loses its last Fraktionen — with nothing on the card to say any were
 // dropped, and the breakdown is the one part of a vote a reader cannot
-// reconstruct from the caption. The check mirrors what render*Card does: it
+// reconstruct from the caption. The check mirrors what renderCard does: it
 // measures the card, centres it the way the real render does, and asserts the
 // drawing pass covers the same height the measuring pass reported. A dropped
 // row makes the drawn card shorter than the measured one.
@@ -368,20 +368,21 @@ func TestCardsKeepEveryFraktion(t *testing.T) {
 		t.Fatalf("loadFontSet failed: %v", err)
 	}
 
-	eachCard(t, fonts, func(t *testing.T, c cardLayout) {
-		dry := newCursor(c.inset, imgHeight)
-		c.layout(nil, dry)
+	eachCard(t, fonts, func(t *testing.T, c card, bg color.RGBA) {
+		inset := c.inset(fonts)
+		dry := newCursor(inset, imgHeight)
+		mustLayout(t, c, nil, dry, inset)
 
-		startY := centredStart(c.inset, dry.contentHeight())
+		startY := centredStart(inset, dry.contentHeight())
 		if bottom := startY + dry.contentHeight(); bottom > imgHeight-padding {
-			t.Errorf("%s: content ends at y=%d, past the %dpx bottom limit", c.label, bottom, imgHeight-padding)
+			t.Errorf("%s: content ends at y=%d, past the %dpx bottom limit", c.name, bottom, imgHeight-padding)
 		}
 
 		real := newCursor(startY, imgHeight)
-		c.layout(newImage(c.bg), real)
+		mustLayout(t, c, newImage(bg), real, inset)
 		if real.contentHeight() != dry.contentHeight() {
 			t.Errorf("%s: drawn card is %dpx tall against %dpx measured — the table dropped rows",
-				c.label, real.contentHeight(), dry.contentHeight())
+				c.name, real.contentHeight(), dry.contentHeight())
 		}
 	})
 }
@@ -399,57 +400,80 @@ func TestCardsClearTheBodyBand(t *testing.T) {
 		t.Fatalf("loadFontSet failed: %v", err)
 	}
 
-	eachCard(t, fonts, func(t *testing.T, c cardLayout) {
-		dry := newCursor(c.inset, imgHeight)
-		c.layout(nil, dry)
+	eachCard(t, fonts, func(t *testing.T, c card, _ color.RGBA) {
+		inset := c.inset(fonts)
+		dry := newCursor(inset, imgHeight)
+		mustLayout(t, c, nil, dry, inset)
 
-		startY := centredStart(c.inset, dry.contentHeight())
-		if gap := startY - c.inset; gap < padding {
+		startY := centredStart(inset, dry.contentHeight())
+		if gap := startY - inset; gap < padding {
 			t.Errorf("%s: content starts %dpx below the band, under the %dpx margin (card is %dpx tall)",
-				c.label, gap, padding, dry.contentHeight())
+				c.name, gap, padding, dry.contentHeight())
 		}
 	})
 }
 
-// cardLayout is one card of one fixture: everything eachCard's callers need to
-// lay it out the way render*Card does.
-type cardLayout struct {
-	label  string
-	bg     color.RGBA
-	inset  int
-	layout func(*image.RGBA, *layoutCursor)
-}
-
-// eachCard runs fn over every card every fixture produces — the same cards
-// GenerateCarousel draws — as a subtest per fixture.
-func eachCard(t *testing.T, fonts *fontSet, fn func(*testing.T, cardLayout)) {
+// eachCard runs fn over every card every fixture produces — the cards
+// carouselCards hands GenerateCarousel — as a subtest per fixture.
+func eachCard(t *testing.T, fonts *fontSet, fn func(*testing.T, card, color.RGBA)) {
 	t.Helper()
 
 	for name, group := range testfixtures.AllFixtures() {
 		t.Run(name, func(t *testing.T) {
 			bg := SelectColor(group[0].Jurisdiction, group[0].Affair.Number)
-			inset := bandInset(group[0])
-
-			if len(group) == 1 {
-				v := group[0]
-				fn(t, cardLayout{"combined card", bg, inset, func(img *image.RGBA, cur *layoutCursor) {
-					if _, _, err := layoutCombinedCard(img, cur, &v, bg, fonts); err != nil {
-						t.Fatalf("layoutCombinedCard failed: %v", err)
-					}
-				}})
-				return
-			}
-
-			fn(t, cardLayout{"title card", bg, inset, func(img *image.RGBA, cur *layoutCursor) {
-				layoutTitleCard(img, cur, group, bg, fonts)
-			}})
-			for i := range group {
-				v := group[i]
-				fn(t, cardLayout{fmt.Sprintf("result card %d", i+1), bg, inset, func(img *image.RGBA, cur *layoutCursor) {
-					layoutResultCard(img, cur, &v, bg, fonts, i+1, len(group))
-				}})
+			for _, c := range carouselCards(group, bg, fonts) {
+				fn(t, c, bg)
 			}
 		})
+	}
+}
+
+// mustLayout runs one layout pass of a card, failing the test on an error.
+func mustLayout(t *testing.T, c card, img *image.RGBA, cur *layoutCursor, inset int) {
+	t.Helper()
+	if err := c.layout(img, cur, inset); err != nil {
+		t.Fatalf("%s: layout failed: %v", c.name, err)
+	}
+}
+
+// TestResultCardHeadingClearsTheCornerRow checks that a result card's heading
+// never shares a row with the date and badge in its corners.
+//
+// The heading is centred, so a long one wraps to the full column width and
+// reaches both corners. On a card tall enough for centredStart to clamp the
+// content to the top margin, its first line would land on the corner row unless
+// the row is reserved. A full Fraktion roster under a heading that wraps to
+// several lines is that card.
+func TestResultCardHeadingClearsTheCornerRow(t *testing.T) {
+	fonts, err := loadFontSet()
+	if err != nil {
+		t.Fatalf("loadFontSet failed: %v", err)
+	}
+
+	v := testfixtures.ExtremeTitleFullRoster()[0]
+	v.Subtitle = strings.Repeat("Änderungsantrag zu Artikel 12 Absatz 3 der Gemeindeordnung ", 4)
+	if voteformat.FormatVoteDate(v.Date) == "" {
+		t.Fatal("fixture has no date, so no corner row to clear")
+	}
+	bg := SelectColor(v.Jurisdiction, v.Affair.Number)
+
+	// The second result card of a five-vote group, as GenerateCarousel builds it.
+	c := carouselCards([]votes.Vote{v, v, v, v, v}, bg, fonts)[2]
+	inset := c.inset(fonts)
+	dry := newCursor(inset, imgHeight)
+	mustLayout(t, c, nil, dry, inset)
+	startY := centredStart(inset, dry.contentHeight())
+
+	cornerBottom := bandInset(v) + padding + lineHeight(fonts.small)
+	if startY < cornerBottom {
+		t.Errorf("heading starts at y=%d, inside the corner row ending at y=%d", startY, cornerBottom)
+	}
+
+	real := newCursor(startY, imgHeight)
+	mustLayout(t, c, newImage(bg), real, inset)
+	if real.contentHeight() != dry.contentHeight() {
+		t.Errorf("drawn card is %dpx tall against %dpx measured — the table dropped rows",
+			real.contentHeight(), dry.contentHeight())
 	}
 }
 

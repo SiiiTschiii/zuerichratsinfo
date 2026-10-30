@@ -4,7 +4,7 @@
 
 ## Overview
 
-ZueriRatsinfo is an automated bot that fetches publicly available vote results from the Zurich City Council (Gemeinderat Stadt Zürich) and the Zurich Cantonal Council (Kantonsrat Zürich) and publishes them to social media platforms including X (Twitter), Bluesky, and Instagram.
+ZueriRatsinfo is an automated bot that fetches publicly available vote results from the Zurich City Council (Gemeinderat Stadt Zürich) and the Zurich Cantonal Council (Kantonsrat Zürich) and publishes them to social media platforms including X (Twitter), Bluesky, Instagram, and Facebook.
 
 This privacy policy applies to the ZueriRatsinfo application and its associated Meta Developer App used for Instagram publishing.
 
@@ -34,4 +34,4 @@ This app uses the Meta (Facebook/Instagram) API solely to publish content to the
 
 If you have any questions about this privacy policy, please open an issue on the project's GitHub repository:
 
-[https://github.com/SiiiTschiii/zuerichratsinfo](https://github.com/SiiiTschiii/zuerichratsinfo)
+[https://github.com/SiiiTschiii/parlinfo](https://github.com/SiiiTschiii/parlinfo)

@@ -5,17 +5,19 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/config"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/igapi"
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/facebook"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/instagram"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/x"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // channelPlatform pairs a constructed platform with the vote-log key it uses.
@@ -28,6 +30,10 @@ type channelPlatform struct {
 	displayName string
 	logPlatform votelog.Platform
 	poster      platforms.Platform
+	// postFrom, when set, is the first sitting date this platform posts. A
+	// platform that goes live after the others has no history of its own, and
+	// without this it would work through whatever the source still returns.
+	postFrom time.Time
 }
 
 func main() {
@@ -44,7 +50,12 @@ func main() {
 	anyPlatformConfigured := false
 	anyJurisdictionEnabled := false
 
-	for _, channel := range config.Channels() {
+	channels, err := selectedChannels(os.Getenv("CHANNEL"))
+	if err != nil {
+		log.Fatalf("Invalid CHANNEL: %v", err)
+	}
+
+	for _, channel := range channels {
 		// Only jurisdictions explicitly cleared to post. A newly registered
 		// body ships disabled: its vote log has to be seeded and its first
 		// posts reviewed before it runs unattended, and merging code should not
@@ -81,13 +92,31 @@ func main() {
 			"JURISDICTION_<JURISDICTION>_ENABLED=true", config.JurisdictionKeys())
 	}
 	if !anyPlatformConfigured {
-		log.Fatal("No platform credentials configured for any channel. Set <CHANNEL>_X_API_KEY/<CHANNEL>_X_API_SECRET/<CHANNEL>_X_ACCESS_TOKEN/<CHANNEL>_X_ACCESS_SECRET for X, <CHANNEL>_BLUESKY_HANDLE/<CHANNEL>_BLUESKY_PASSWORD for Bluesky, or <CHANNEL>_IG_USER_ID/<CHANNEL>_IG_ACCESS_TOKEN/<CHANNEL>_IMAGE_HOST_REPO/<CHANNEL>_IMAGE_HOST_TOKEN for Instagram.")
+		log.Fatal("No platform credentials configured for any channel. Set <CHANNEL>_X_API_KEY/<CHANNEL>_X_API_SECRET/<CHANNEL>_X_ACCESS_TOKEN/<CHANNEL>_X_ACCESS_SECRET for X, <CHANNEL>_BLUESKY_HANDLE/<CHANNEL>_BLUESKY_PASSWORD for Bluesky, <CHANNEL>_IG_USER_ID/<CHANNEL>_IG_ACCESS_TOKEN/<CHANNEL>_IMAGE_HOST_REPO/<CHANNEL>_IMAGE_HOST_TOKEN for Instagram, or <CHANNEL>_FB_PAGE_ID/<CHANNEL>_FB_ACCESS_TOKEN/<CHANNEL>_FB_POST_FROM for Facebook.")
 	}
 
 	if hasErrors {
 		log.Println("❌ Action failed: one or more platforms encountered errors. Check logs above.")
 		os.Exit(1)
 	}
+}
+
+// selectedChannels returns the channel named by CHANNEL, or every channel when
+// it is unset.
+//
+// Each channel's accounts are posted by a workflow of their own, so that one
+// account's schedule, failures and pauses never touch another's. Without this
+// every workflow would also walk the other channels and depend on their
+// switches being off in its environment to leave them alone.
+func selectedChannels(key string) ([]config.Channel, error) {
+	if key == "" {
+		return config.Channels(), nil
+	}
+	c, err := config.LookupChannel(key)
+	if err != nil {
+		return nil, fmt.Errorf("%w; known channels: %v", err, config.ChannelKeys())
+	}
+	return []config.Channel{c}, nil
 }
 
 // buildPlatforms constructs one instance per platform for a channel, using that
@@ -110,7 +139,7 @@ func buildPlatforms(channel config.Channel, jurisdictions []config.Jurisdiction)
 			channel.EnvInt("X_MAX_POSTS_PER_RUN", 10),
 		)
 		xPlatform.SetMaxChars(channel.EnvInt("X_MAX_CHARS", x.DefaultMaxChars))
-		plats = append(plats, channelPlatform{"X/Twitter", votelog.PlatformX, xPlatform})
+		plats = append(plats, channelPlatform{displayName: "X/Twitter", logPlatform: votelog.PlatformX, poster: xPlatform})
 	} else {
 		log.Printf("⚠️  Channel %q: X/Twitter not configured (missing X_API_KEY/X_API_SECRET/X_ACCESS_TOKEN/X_ACCESS_SECRET)", channel.Key)
 	}
@@ -118,11 +147,15 @@ func buildPlatforms(channel config.Channel, jurisdictions []config.Jurisdiction)
 	bskyHandle := channel.Env("BLUESKY_HANDLE")
 	bskyPassword := channel.Env("BLUESKY_PASSWORD")
 	if bskyHandle != "" && bskyPassword != "" {
-		plats = append(plats, channelPlatform{"Bluesky", votelog.PlatformBluesky, bluesky.NewBlueskyPlatform(
-			bskyHandle, bskyPassword,
-			channel.EnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10),
-			contactMapper,
-		)})
+		plats = append(plats, channelPlatform{
+			displayName: "Bluesky",
+			logPlatform: votelog.PlatformBluesky,
+			poster: bluesky.NewBlueskyPlatform(
+				bskyHandle, bskyPassword,
+				channel.EnvInt("BLUESKY_MAX_POSTS_PER_RUN", 10),
+				contactMapper,
+			),
+		})
 	} else {
 		log.Printf("⚠️  Channel %q: Bluesky not configured (missing BLUESKY_HANDLE/BLUESKY_PASSWORD)", channel.Key)
 	}
@@ -147,9 +180,37 @@ func buildPlatforms(channel config.Channel, jurisdictions []config.Jurisdiction)
 			channel.EnvInt("IG_MAX_POSTS_PER_RUN", 5),
 		)
 		igPlatform.SetContactMapper(contactMapper)
-		plats = append(plats, channelPlatform{"Instagram", votelog.PlatformInstagram, igPlatform})
+		plats = append(plats, channelPlatform{displayName: "Instagram", logPlatform: votelog.PlatformInstagram, poster: igPlatform})
 	} else {
 		log.Printf("⚠️  Channel %q: Instagram not configured (missing IG_USER_ID/IG_ACCESS_TOKEN/IMAGE_HOST_REPO/IMAGE_HOST_TOKEN)", channel.Key)
+	}
+
+	// The Page token is the one Instagram already uses, once it carries
+	// pages_manage_posts — see pkg/fbapi/README.md. It is read under its own
+	// name all the same, so the Page ID alone decides whether Facebook posts.
+	fbPageID := channel.Env("FB_PAGE_ID")
+	fbAccessToken := channel.Env("FB_ACCESS_TOKEN")
+	if fbPageID != "" && fbAccessToken != "" {
+		// Facebook goes live without a vote log, and a vote log must never be
+		// seeded to make up for that: it would record posts that were never
+		// made. The start date does the same job honestly. It is required, so
+		// that dropping the variable cannot silently re-open the backlog.
+		postFrom, err := config.ParseDate(channel.Env("FB_POST_FROM"))
+		if err != nil || postFrom.IsZero() {
+			log.Fatalf("Channel %q: %sFB_POST_FROM must be the first sitting date Facebook posts, as YYYY-MM-DD: %v",
+				channel.Key, channel.EnvPrefix(), err)
+		}
+		plats = append(plats, channelPlatform{
+			displayName: "Facebook",
+			logPlatform: votelog.PlatformFacebook,
+			poster: facebook.NewFacebookPlatformWithCredentials(
+				fbPageID, fbAccessToken,
+				channel.EnvInt("FB_MAX_POSTS_PER_RUN", 5),
+			),
+			postFrom: postFrom,
+		})
+	} else {
+		log.Printf("⚠️  Channel %q: Facebook not configured (missing FB_PAGE_ID/FB_ACCESS_TOKEN)", channel.Key)
 	}
 
 	return plats
@@ -159,11 +220,11 @@ func buildPlatforms(channel config.Channel, jurisdictions []config.Jurisdiction)
 // or empty file is normal — a jurisdiction ships before its contacts are
 // curated — so this degrades to no tagging rather than failing the run.
 func loadContacts(jurisdictions []config.Jurisdiction) *contacts.Mapper {
-	var paths []string
+	keys := make([]string, 0, len(jurisdictions))
 	for _, j := range jurisdictions {
-		paths = append(paths, contacts.PathFor(j.Key))
+		keys = append(keys, j.Key)
 	}
-	mapper, err := contacts.LoadContactFiles(paths...)
+	mapper, err := contacts.LoadContactFiles(contacts.PathsFor(keys...)...)
 	if err != nil {
 		log.Printf("Warning: Could not load contacts for tagging: %v", err)
 		return nil
@@ -211,6 +272,12 @@ func runChannelPlatform(
 			log.Printf("❌ Error preparing %s votes for %s, skipping %s this run: %v", j.Key, p.displayName, j.Key, err)
 			failed = true
 			continue
+		}
+		if before := len(groups); !p.postFrom.IsZero() && before > 0 {
+			groups = voteposting.DropBefore(groups, p.postFrom)
+			if dropped := before - len(groups); dropped > 0 {
+				fmt.Printf("Skipping %d group(s) from %s sitting before %s\n", dropped, j.Key, p.postFrom.Format("2006-01-02"))
+			}
 		}
 		if len(groups) > 0 {
 			fmt.Printf("Found %d group(s) from %s\n", len(groups), j.Key)

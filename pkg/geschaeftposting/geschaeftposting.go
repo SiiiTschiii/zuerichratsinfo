@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 // Body names the chamber in every headline.

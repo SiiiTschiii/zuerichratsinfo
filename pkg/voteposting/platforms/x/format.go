@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // DefaultMaxChars is the X post character limit.
@@ -48,6 +48,7 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 	// Tag X handles in the title if contact mapper is provided
 	if contactMapper != nil {
 		title = contactMapper.TagXHandlesInText(title)
+		title = contactMapper.TagXFraktionen(title, firstVote.Jurisdiction)
 	}
 
 	// --- Build root post ---
@@ -65,7 +66,7 @@ func FormatVoteThread(group []votes.Vote, contactMapper *contacts.Mapper, charLi
 	if contactMapper != nil {
 		signatories = contactMapper.TagXHandlesInText(signatories)
 	}
-	replies := buildReplyPosts(group, signatories, voteformat.LinkLine(group), charLimit)
+	replies := buildReplyPosts(group, signatories, voteformat.LinkLine(group), contactMapper, charLimit)
 
 	thread := make([]*XPost, 0, 1+len(replies))
 	thread = append(thread, root)
@@ -132,6 +133,7 @@ func buildRootPost(group []votes.Vote, title string, contactMapper *contacts.Map
 	// named, so tagging the title alone would tag nobody.
 	if contactMapper != nil {
 		subtitlePrefix = contactMapper.TagXHandlesInText(subtitlePrefix)
+		subtitlePrefix = contactMapper.TagXFraktionen(subtitlePrefix, firstJurisdiction(group))
 	}
 
 	if subtitlePrefix != "" {
@@ -179,7 +181,7 @@ func buildRootPost(group []votes.Vote, title string, contactMapper *contacts.Map
 // buildReplyPosts creates reply posts with vote details and link.
 // Packs as many vote entries as fit into each reply (≤charLimit).
 // The link is appended to the last reply.
-func buildReplyPosts(group []votes.Vote, signatoryLine, linkLine string, charLimit int) []*XPost {
+func buildReplyPosts(group []votes.Vote, signatoryLine, linkLine string, contactMapper *contacts.Mapper, charLimit int) []*XPost {
 
 	// Build individual vote entry strings
 	var entries []string
@@ -205,6 +207,11 @@ func buildReplyPosts(group []votes.Vote, signatoryLine, linkLine string, charLim
 		} else {
 			// Multi-vote: subtitle + counts
 			voteTitle := voteformat.SubVoteLabel(vote, i, len(group))
+			if contactMapper != nil {
+				// A Fraktion can be named in the subtitle too: "Antrag der
+				// AL-Fraktion zu Dispositivziffer 1".
+				voteTitle = contactMapper.TagXFraktionen(voteTitle, vote.Jurisdiction)
+			}
 			if !voteformat.HasVerdict(vote) {
 				// Auswahl: no ✅/❌ prefix
 				entry.WriteString(fmt.Sprintf("%s\n", voteTitle))
@@ -282,4 +289,13 @@ func buildReplyPosts(group []votes.Vote, signatoryLine, linkLine string, charLim
 func truncateText(s string, maxLen int) string {
 	truncated := strings.TrimRight(truncateToWeighted(s, maxLen), " \n")
 	return truncated + "…"
+}
+
+// firstJurisdiction is the jurisdiction a group is posted for; every vote in
+// one shares it.
+func firstJurisdiction(group []votes.Vote) string {
+	if len(group) == 0 {
+		return ""
+	}
+	return group[0].Jurisdiction
 }

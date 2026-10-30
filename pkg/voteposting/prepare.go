@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/voteformat"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/voteformat"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // ErrUnsupportedVoteType is returned when a group contains a vote whose type or
@@ -129,6 +129,32 @@ func filterOldVotes(vs []votes.Vote, maxAgeDays int) []votes.Vote {
 		recent = append(recent, v)
 	}
 	return recent
+}
+
+// DropBefore drops the groups whose sitting date falls before from, a calendar
+// date. It is how a platform that goes live late stays clear of the history it
+// never posted, without a vote log that claims it did: the log records what was
+// posted, and nothing else may write to it.
+//
+// Dates are compared as calendar days in the zone the source reported them in,
+// so a sitting at 00:00 Zurich time on from's own day is kept rather than lost
+// to a UTC offset. A group whose date is unknown is kept, as filterOldVotes
+// keeps such votes: a data problem should not decide what is published, and the
+// next run sees the same group again.
+func DropBefore(groups [][]votes.Vote, from time.Time) [][]votes.Vote {
+	if from.IsZero() {
+		return groups
+	}
+	var kept [][]votes.Vote
+	for _, g := range groups {
+		d := groupDate(g)
+		day := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC)
+		if day.Before(from) {
+			continue
+		}
+		kept = append(kept, g)
+	}
+	return kept
 }
 
 // VoteLogs resolves the log a group belongs in, keyed by jurisdiction. A
@@ -255,7 +281,7 @@ func PostToPlatform(
 				fmt.Printf("   %s\n", v.SourceURL)
 			}
 
-			shouldContinue, err := platform.Post(content)
+			post, shouldContinue, err := platform.Post(content)
 			if err != nil {
 				return posted, err
 			}
@@ -263,7 +289,7 @@ func PostToPlatform(
 			// Mark the posted votes. Any vote dropped above is deliberately
 			// absent from this slice, so it is retried rather than buried.
 			for _, v := range group {
-				voteLog.MarkAsPosted(v.SourceID)
+				voteLog.MarkAsPosted(v.SourceID, post)
 			}
 
 			// Save vote log after each successful post

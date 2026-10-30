@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/internal/testcontacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/testfixtures"
-	xvote "github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting/internal/testcontacts"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting/testfixtures"
+	xvote "github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/x"
 )
 
 // Both limits the channel can be configured with: free accounts and Premium.

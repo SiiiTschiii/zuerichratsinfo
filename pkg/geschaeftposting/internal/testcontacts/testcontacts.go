@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
 )
 
 // Handles every platform tags Brigitte Fürer with — the first signer of

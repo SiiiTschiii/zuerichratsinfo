@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 func TestMemberName_GivenNameFirst(t *testing.T) {

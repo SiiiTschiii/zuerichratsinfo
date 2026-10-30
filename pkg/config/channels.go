@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"time"
 )
 
 // Channel is one set of platform credentials — in practice one account per
@@ -23,9 +24,7 @@ type Channel struct {
 	Jurisdictions []string
 }
 
-// channels is the configured set. Only one exists today; the model is N-channel
-// from the start so that giving a future jurisdiction its own account is a
-// config change rather than a rework of credential resolution.
+// channels is the configured set.
 var channels = []Channel{
 	{
 		Key: "zurich",
@@ -34,6 +33,13 @@ var channels = []Channel{
 		// existing accounts rather than needing a new credential set and a
 		// second X Premium subscription.
 		Jurisdictions: []string{"zurich-city", ZurichCantonKey},
+	},
+	{
+		Key: "chparl",
+		// Bundesbern on an account named for Zürich would misstate whose
+		// votes these are, so the Nationalrat has accounts of its own
+		// (@chparlinfo) and its own workflow, bot-chparl.yml.
+		Jurisdictions: []string{NationalratKey},
 	},
 }
 
@@ -152,4 +158,19 @@ func Validate() error {
 		}
 	}
 	return nil
+}
+
+// ParseDate reads a calendar date written YYYY-MM-DD, as used by settings like
+// FB_POST_FROM. The result is midnight UTC of that date, meant to be compared by
+// calendar day. An empty string is an error: a setting that must be set should
+// not read as "no limit".
+func ParseDate(s string) (time.Time, error) {
+	if s == "" {
+		return time.Time{}, fmt.Errorf("not set")
+	}
+	d, err := time.Parse("2006-01-02", s)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("%q is not a YYYY-MM-DD date", s)
+	}
+	return d, nil
 }

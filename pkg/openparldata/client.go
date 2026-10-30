@@ -17,7 +17,7 @@ import (
 	// on the host having tzdata installed. Vote times are published to readers.
 	_ "time/tzdata"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 // DefaultBaseURL is the v1 API root.
@@ -64,8 +64,6 @@ type Client struct {
 type VoteDetail struct {
 	// Type is the vote type in the vocabulary the formatters speak.
 	Type string
-	// Decision is the outcome label, e.g. "angenommen" or "abgelehnt".
-	Decision string
 }
 
 // DetailSource resolves vote details for votings this API describes

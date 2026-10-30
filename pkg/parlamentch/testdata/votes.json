@@ -1,0 +1,56 @@
+{
+ "d": [
+  {
+   "ID": 38963,
+   "RegistrationNumber": 33225,
+   "BusinessNumber": 20260033,
+   "BusinessShortNumber": "26.033",
+   "BusinessTitle": " Freihandelsabkommen zwischen den EFTA-Staaten und Mercosur. Genehmigung",
+   "BillTitle": "Bundesbeschluss über die Genehmigung des Freihandelsabkommens zwischen den EFTA Staaten und Mercosur",
+   "IdLegislativePeriod": 52,
+   "IdSession": 5215,
+   "Subject": "Vote final",
+   "MeaningYes": "Adopter le projet",
+   "VoteEnd": "/Date(1790934036907)/"
+  },
+  {
+   "ID": 38971,
+   "RegistrationNumber": 33233,
+   "BusinessNumber": 20250059,
+   "BusinessShortNumber": "25.059",
+   "BusinessTitle": "«Ja zum Importverbot für tierquälerisch erzeugte Pelzprodukte (Pelzinitiative)». Volksinitiative und indirekter Gegenvorschlag (Änderung des Tierschutzgesetzes)",
+   "BillTitle": null,
+   "IdLegislativePeriod": 52,
+   "IdSession": 5215,
+   "Subject": "Vote final",
+   "MeaningYes": "Adopter le projet",
+   "VoteEnd": "/Date(1790933659739)/"
+  },
+  {
+   "ID": 38954,
+   "RegistrationNumber": 33216,
+   "BusinessNumber": 20250059,
+   "BusinessShortNumber": "25.059",
+   "BusinessTitle": "«Ja zum Importverbot für tierquälerisch erzeugte Pelzprodukte (Pelzinitiative)». Volksinitiative und indirekter Gegenvorschlag (Änderung des Tierschutzgesetzes)",
+   "BillTitle": "Tierschutzgesetz (TSchG)",
+   "IdLegislativePeriod": 52,
+   "IdSession": 5215,
+   "Subject": "Vote final",
+   "MeaningYes": "Adopter le projet",
+   "VoteEnd": "/Date(1790933414682)/"
+  },
+  {
+   "ID": 38953,
+   "RegistrationNumber": 33215,
+   "BusinessNumber": 20250059,
+   "BusinessShortNumber": "25.059",
+   "BusinessTitle": "«Ja zum Importverbot für tierquälerisch erzeugte Pelzprodukte (Pelzinitiative)». Volksinitiative und indirekter Gegenvorschlag (Änderung des Tierschutzgesetzes)",
+   "BillTitle": "Bundesbeschluss über die Volksinitiative «Ja zum Importverbot für tierquälerisch erzeugte Pelzprodukte (Pelz-Initiative)»",
+   "IdLegislativePeriod": 52,
+   "IdSession": 5215,
+   "Subject": "Vote final",
+   "MeaningYes": "Adopter le projet (recommandation de rejeter l'initiative)",
+   "VoteEnd": "/Date(1790933358735)/"
+  }
+ ]
+}

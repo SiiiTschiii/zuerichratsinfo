@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
 )
 
 var geschaeftNumberRegex = regexp.MustCompile(`^\d+/\d+\s+`)
@@ -19,6 +19,15 @@ func FormatVoteDate(t time.Time) string {
 		return ""
 	}
 	return t.Format("02.01.2006")
+}
+
+// FormatVoteDateTime renders a vote's timestamp as "DD.MM.YYYY HH:MM", or as
+// the date alone where the source has no time of day (see hasClockTime).
+func FormatVoteDateTime(t time.Time) string {
+	if !hasClockTime(t) {
+		return FormatVoteDate(t)
+	}
+	return t.Format("02.01.2006 15:04")
 }
 
 // GetVoteResultEmoji returns the appropriate emoji for a vote result
@@ -336,8 +345,9 @@ func CountsOf(v votes.Vote) VoteCounts {
 // not published anywhere we can read, and it differs by which procedure the
 // vote serves, which type_de does not say. So the honest rendering is silence.
 //
-// Kanton Zürich currently reports no decision at all, for any vote. If
-// OpenParlData starts populating it, verdicts return on their own.
+// Kanton Zürich reports a decision for binary votes only, and the openparldata
+// client clears it again unless the business and the ballot both state their
+// outcome, so threshold votes still arrive here without one.
 func HasVerdict(v votes.Vote) bool {
 	if IsAuswahlVote(CountsOf(v)) {
 		return false
@@ -742,8 +752,8 @@ func PostHeadline(group []votes.Vote) string {
 	}
 
 	headline := prefix + "Abstimmung vom " + FormatVoteDate(group[0].Date)
-	if len(group) == 1 && hasClockTime(group[0].Date) {
-		headline += fmt.Sprintf(" (%s)", group[0].Date.Format("15:04"))
+	if len(group) == 1 {
+		headline += clockSuffix(group[0].Date)
 	}
 	return headline
 }
@@ -775,33 +785,36 @@ func (l Link) Line(labelled bool) string {
 //
 // The order is the argument. The Geschäft permalink comes first because it is
 // the one that will still resolve in a decade and the one a reader should keep;
-// the archive and the sitting follow because they are the ones that have the
-// vote this week. Sources that publish only a business page produce a
-// single-entry block, exactly as before.
+// the record of the vote, the recording and the sitting follow because they are
+// the ones that have the vote this week. Sources that publish only a business
+// page produce a single-entry block, exactly as before.
 //
-// The archive entry follows GroupLink's rule: a post covering several votes
+// The video entry follows GroupLink's rule: a post covering several votes
 // points at the agenda item holding them, not at whichever of them happened to
-// sort first.
+// sort first. The Protokoll has no such widened form, so it appears only on a
+// post about one vote; VoteLinks carries it for each vote of a larger group.
 func GroupLinks(group []votes.Vote) []Link {
 	if len(group) == 0 {
 		return nil
 	}
 	first := group[0]
 
-	archive := first.ArchiveURL
+	video := first.VideoURL
+	protocol := first.ArchiveURL
 	if len(group) > 1 {
-		// No widened link means no archive entry rather than an arbitrary one.
-		archive = first.ArchiveGroupURL
+		// No widened link means no entry rather than an arbitrary one.
+		video = first.VideoGroupURL
+		protocol = ""
 	}
 
 	// A vote that belongs to no business matter never had its URLs replaced by
 	// an affair page, so both fields still hold the archive link the listing
 	// supplied — 47 Kanton Zürich votings carry no affair_id at all. Printing it
 	// twice would label the first copy "Geschäft", which it is not, and give
-	// Bluesky two facets hunting the same byte offset. The archive naming is the
+	// Bluesky two facets hunting the same byte offset. The video naming is the
 	// honest one, so that is the copy that survives.
 	business := GroupLink(group)
-	if business == archive {
+	if business == video {
 		business = ""
 	}
 
@@ -817,7 +830,8 @@ func GroupLinks(group []votes.Vote) []Link {
 	var out []Link
 	for _, l := range []Link{
 		{Icon: "🔗", Name: "Geschäft", URL: business},
-		{Icon: "🎬", Name: "Video", URL: archive},
+		{Icon: "📋", Name: "Protokoll", URL: protocol},
+		{Icon: "🎬", Name: "Video", URL: video},
 		sitting,
 	} {
 		if l.URL != "" {
@@ -873,33 +887,37 @@ func LinkLine(group []votes.Vote) string {
 // typeLabels). Unlike the clock it is not there to tell two votes apart, but to
 // stop a quorum vote's lopsided tally reading as near-unanimous agreement.
 func SubVoteLabel(v votes.Vote, index, groupSize int) string {
+	return subVoteLabel(v, index, groupSize, true)
+}
+
+// CardSubVoteLabel is SubVoteLabel without the clock, for a result card that
+// prints the vote's full date and time in its corner instead. Splitting the
+// two — date in the corner, time in the heading — left a reader to put the
+// timestamp back together.
+func CardSubVoteLabel(v votes.Vote, index, groupSize int) string {
+	return subVoteLabel(v, index, groupSize, false)
+}
+
+func subVoteLabel(v votes.Vote, index, groupSize int, withClock bool) string {
 	base := CleanVoteSubtitle(v.Subtitle)
 	if base == "" {
 		base = fmt.Sprintf("Abstimmung %d", index+1)
 		// The clock disambiguates our own ordinals, so it belongs only on them.
 		// A source that titles its votes has already done the distinguishing.
-		if groupSize > 1 && hasClockTime(v.Date) {
-			base += fmt.Sprintf(" (%s)", v.Date.Format("15:04"))
+		if withClock && groupSize > 1 {
+			base += clockSuffix(v.Date)
 		}
 	}
 	return joinTypeLabel(base, v.Type)
 }
 
-// CardCountsLabel is the heading above the counts on a card showing a lone
-// vote: when it was taken, and what kind of ballot it was.
-//
-// It is what SubVoteLabel does for the entries of a group, for the one case
-// that has no group to be numbered within. The card needs the clock more than
-// the text post does, because a card carries no headline: the caption states
-// the sitting date and time, but the image travels on its own, and two votes
-// under a recurring agenda item ("Mitteilungen") produce the same picture
-// twice. The clock is the only fact the source offers that tells them apart.
-func CardCountsLabel(v votes.Vote) string {
-	base := ""
-	if hasClockTime(v.Date) {
-		base = fmt.Sprintf("Abstimmung (%s)", v.Date.Format("15:04"))
+// clockSuffix is the " (14:32)" a text label appends for the time a vote was
+// taken, or "" where the source has no time of day.
+func clockSuffix(t time.Time) string {
+	if !hasClockTime(t) {
+		return ""
 	}
-	return joinTypeLabel(base, v.Type)
+	return " (" + t.Format("15:04") + ")"
 }
 
 // hasClockTime reports whether a date carries a time of day worth showing.
@@ -907,4 +925,42 @@ func CardCountsLabel(v votes.Vote) string {
 // invent a precision the source does not have.
 func hasClockTime(t time.Time) bool {
 	return !t.IsZero() && (t.Hour() != 0 || t.Minute() != 0)
+}
+
+// VoteLinks returns the links that belong to one vote of a group and not to the
+// group as a whole, for a platform that shows each vote beside its own card.
+//
+// A post covering several votes links the business and the agenda item, because
+// pointing at whichever vote sorted first would be arbitrary. That leaves each
+// vote's own pages unlinked: the recording positioned at this vote (Kanton
+// Zürich's Recapp segment), the record of this vote (the Nationalrat's
+// Abstimmungsprotokoll) and this vote's own page (Stadt Zürich's Abstimmung,
+// beside the Traktandum the post links). All are returned, each only where the
+// source has one and only where the post's own link block does not already
+// carry the same URL — for Kanton Zürich and the Nationalrat the vote's page is
+// the business page, which the post links already.
+func VoteLinks(group []votes.Vote, i int) []Link {
+	if i < 0 || i >= len(group) {
+		return nil
+	}
+	v := group[i]
+
+	have := map[string]bool{}
+	for _, l := range GroupLinks(group) {
+		have[l.URL] = true
+	}
+
+	var out []Link
+	for _, l := range []Link{
+		{Icon: "🎬", Name: "Video", URL: v.VideoURL},
+		{Icon: "📋", Name: "Protokoll", URL: v.ArchiveURL},
+		{Icon: "🔗", Name: "Abstimmung", URL: v.SourceURL},
+	} {
+		if l.URL == "" || have[l.URL] {
+			continue
+		}
+		have[l.URL] = true
+		out = append(out, l)
+	}
+	return out
 }

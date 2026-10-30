@@ -27,20 +27,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/config"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting"
-	gbluesky "github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/platforms/bluesky"
-	ginstagram "github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/platforms/instagram"
-	gx "github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/platforms/x"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/geschaeftposting/testfixtures"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/igapi"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votelog"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/bluesky"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/instagram"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms/x"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+	"github.com/siiitschiii/parlinfo/pkg/config"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting"
+	gbluesky "github.com/siiitschiii/parlinfo/pkg/geschaeftposting/platforms/bluesky"
+	ginstagram "github.com/siiitschiii/parlinfo/pkg/geschaeftposting/platforms/instagram"
+	gx "github.com/siiitschiii/parlinfo/pkg/geschaeftposting/platforms/x"
+	"github.com/siiitschiii/parlinfo/pkg/geschaeftposting/testfixtures"
+	"github.com/siiitschiii/parlinfo/pkg/igapi"
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/bluesky"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/instagram"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms/x"
+	"github.com/siiitschiii/parlinfo/pkg/zurichapi"
 )
 
 const (
@@ -271,8 +271,8 @@ type dryRunPoster struct {
 	budget int
 }
 
-func (p dryRunPoster) Post(platforms.Content) (bool, error) {
-	return false, fmt.Errorf("dry-run poster asked to post")
+func (p dryRunPoster) Post(platforms.Content) (votelog.PostRef, bool, error) {
+	return votelog.PostRef{}, false, fmt.Errorf("dry-run poster asked to post")
 }
 func (p dryRunPoster) MaxPostsPerRun() int { return p.budget }
 func (p dryRunPoster) Name() string        { return p.name }

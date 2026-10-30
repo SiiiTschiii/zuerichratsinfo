@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siiitschiii/zuerichratsinfo/pkg/contacts"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/voteposting/platforms"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/votes"
-	"github.com/siiitschiii/zuerichratsinfo/pkg/xapi"
+	"github.com/siiitschiii/parlinfo/pkg/contacts"
+	"github.com/siiitschiii/parlinfo/pkg/votelog"
+	"github.com/siiitschiii/parlinfo/pkg/voteposting/platforms"
+	"github.com/siiitschiii/parlinfo/pkg/votes"
+	"github.com/siiitschiii/parlinfo/pkg/xapi"
 )
 
 // XContent represents formatted content for X/Twitter
@@ -80,16 +81,17 @@ func (p *XPlatform) Format(group []votes.Vote) (platforms.Content, error) {
 	return &XContent{thread: thread}, nil
 }
 
-// Post posts a thread to X/Twitter (root post + reply chain).
+// Post posts a thread to X/Twitter (root post + reply chain) and returns a
+// ref to the root tweet.
 // Returns shouldContinue=false when the post limit is reached.
-func (p *XPlatform) Post(content platforms.Content) (bool, error) {
+func (p *XPlatform) Post(content platforms.Content) (votelog.PostRef, bool, error) {
 	xContent, ok := content.(*XContent)
 	if !ok {
-		return false, fmt.Errorf("unexpected content type for X")
+		return votelog.PostRef{}, false, fmt.Errorf("unexpected content type for X")
 	}
 
 	if len(xContent.thread) == 0 {
-		return false, fmt.Errorf("empty thread")
+		return votelog.PostRef{}, false, fmt.Errorf("empty thread")
 	}
 
 	// Post the root
@@ -99,9 +101,9 @@ func (p *XPlatform) Post(content platforms.Content) (bool, error) {
 		root.Text, "",
 	)
 	if err != nil {
-		return false, fmt.Errorf("failed to post root: %w", err)
+		return votelog.PostRef{}, false, fmt.Errorf("failed to post root: %w", err)
 	}
-	fmt.Printf("   🔗 https://x.com/i/status/%s\n", rootTweetID)
+	fmt.Printf("   🔗 %s\n", tweetURL(rootTweetID))
 
 	// Post replies as a chain
 	parentTweetID := rootTweetID
@@ -111,16 +113,22 @@ func (p *XPlatform) Post(content platforms.Content) (bool, error) {
 			reply.Text, parentTweetID,
 		)
 		if err != nil {
-			return false, fmt.Errorf("failed to post reply %d: %w", i+1, err)
+			return votelog.PostRef{}, false, fmt.Errorf("failed to post reply %d: %w", i+1, err)
 		}
-		fmt.Printf("   🔗 https://x.com/i/status/%s\n", tweetID)
+		fmt.Printf("   🔗 %s\n", tweetURL(tweetID))
 		parentTweetID = tweetID
 	}
 
 	p.postsThisRun++
 	shouldContinue := p.postsThisRun < p.maxPostsPerRun
 
-	return shouldContinue, nil
+	return votelog.PostRef{ID: rootTweetID, URL: tweetURL(rootTweetID)}, shouldContinue, nil
+}
+
+// tweetURL returns the public URL of a tweet. The /i/ form resolves without
+// the account's handle, so it survives a rename.
+func tweetURL(tweetID string) string {
+	return "https://x.com/i/status/" + tweetID
 }
 
 // MaxPostsPerRun returns the configured per-run posting limit.

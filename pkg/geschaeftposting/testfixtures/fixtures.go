@@ -11,7 +11,7 @@
 // normalising it is part of what the formatters must do.
 package testfixtures
 
-import "github.com/siiitschiii/zuerichratsinfo/pkg/zurichapi"
+import "github.com/siiitschiii/parlinfo/pkg/zurichapi"
 
 func intPtr(n int) *int { return &n }
 
